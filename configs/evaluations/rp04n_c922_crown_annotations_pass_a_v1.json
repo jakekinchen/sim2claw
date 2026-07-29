@@ -1,0 +1,132 @@
+{
+  "schema_version": "sim2claw.rp04n_c922_crown_annotations.v1",
+  "pass": "pass_a",
+  "simulator_projection_visible_during_annotation": false,
+  "rows": [
+    {
+      "kind": "anchor",
+      "visibility": "visible",
+      "crown_center_px": [
+        269.0,
+        250.0
+      ]
+    },
+    {
+      "kind": "carry",
+      "sample_index": 263,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 255,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 346,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 271,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 354,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 313,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 362,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 329,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 321,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 379,
+      "visibility": "visible",
+      "crown_center_px": [
+        256.5,
+        213.0
+      ]
+    },
+    {
+      "kind": "carry",
+      "sample_index": 304,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 280,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 387,
+      "visibility": "visible",
+      "crown_center_px": [
+        256.0,
+        213.0
+      ]
+    },
+    {
+      "kind": "carry",
+      "sample_index": 296,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 370,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 288,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 337,
+      "visibility": "occluded",
+      "crown_center_px": null
+    },
+    {
+      "kind": "carry",
+      "sample_index": 395,
+      "visibility": "visible",
+      "crown_center_px": [
+        256.0,
+        213.0
+      ]
+    }
+  ]
+}

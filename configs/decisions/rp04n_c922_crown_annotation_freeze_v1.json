@@ -1,0 +1,52 @@
+{
+  "schema_version": "sim2claw.rp04n_c922_crown_annotation_freeze.v1",
+  "status": "FROZEN_BEFORE_SIMULATOR_PIXEL_PROJECTION",
+  "experiment_id": "rp04n-c922-crown-track-v1",
+  "contract": {
+    "path": "configs/evaluations/rp04n_c922_crown_track_v1.json",
+    "sha256": "4a01f1990c696dcc69b8762e517f23f0bc8b832c312843d136b0980026346184"
+  },
+  "prepare_receipt": {
+    "path": "outputs/rp04n_c922_crown_track_v1/prepare_receipt.json",
+    "sha256": "ff9a2e41a77a8f7a5d03263c7699ff2416eca62e8f1ed0636591338003ecedb2",
+    "artifact_sha256": "dedf762bb7af97627c158da5b1ab721646a0fff4ebe7f82fe6adcf379d41bc6e"
+  },
+  "annotations": [
+    {
+      "pass": "pass_a",
+      "path": "configs/evaluations/rp04n_c922_crown_annotations_pass_a_v1.json",
+      "sha256": "54b0aaac6e05f80c34c5255a54bb632f5e651855680f37c70b32a243a989de5f"
+    },
+    {
+      "pass": "pass_b",
+      "path": "configs/evaluations/rp04n_c922_crown_annotations_pass_b_v1.json",
+      "sha256": "952e18b00c2dcdfdcc723d90e0de8e8935b47b2a06c94801ce2fdb770690aa8b"
+    }
+  ],
+  "annotation_result_before_projection": {
+    "visible_carry_points": 3,
+    "total_carry_points": 18,
+    "visible_sample_indices": [
+      379,
+      387,
+      395
+    ],
+    "observation": "The gripper occludes the selected pawn crown through the carry. Only three late release or egress frames expose the crown.",
+    "preregistered_minimum_visible_points": 12,
+    "visibility_gate_can_pass": false
+  },
+  "blinding": {
+    "simulator_pixel_projection_opened_before_freeze": false,
+    "strict_blinding": false,
+    "limitation": "The executor inspected RP04K selected-pawn 3D rows while locating the simulator trace before the contract freeze, but did not compute or view their C922 projection before freezing both annotations."
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "paid_compute": false
+  }
+}
