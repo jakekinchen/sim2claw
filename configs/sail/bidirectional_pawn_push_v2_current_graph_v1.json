@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "0e6149df938e264df764ec49138b8cdad8bbf896e89fd4aed36a5c7d220a021a",
+      "sha256": "f26cc5e4aaa067b87203c7d8ef2dc9ef047a21b5604b6293a55ec3b85893eb3e",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1786,6 +1786,16 @@
         "schema_version": "sim2claw.canonical_wrist_path_temporal_closeout.v1",
         "status": "bidirectional_simulator_screen_pass",
         "proof_class": "cpu_fp64_exact_statically_selected_action_isolated_reset_bidirectional_simulator_screen"
+      }
+    },
+    "calibration_graph_v1_contract": {
+      "path": "configs/evaluations/calibration_graph_v1.json",
+      "sha256": "f80e4e14539c43902b1c9d04257c937ca6c2a2cc41fe58892c5463034cbd358c",
+      "proof_class": "prospective_gauge_fixed_existing_evidence_mapping_diagnostic",
+      "payload_contract": {
+        "schema_version": "sim2claw.calibration_graph.v1",
+        "status": "frozen_before_existing_evidence_mapping_evaluation",
+        "proof_class": "prospective_gauge_fixed_existing_evidence_mapping_diagnostic"
       }
     },
     "simulator_candidate": {
@@ -4841,6 +4851,24 @@
       }
     },
     {
+      "id": "checkpoint:calibration-graph-v1-frozen",
+      "type": "checkpoint",
+      "label": "Minimum gauge-fixed CalibrationGraph.v1 frozen",
+      "status": "preregistered_before_exactly_once_mapping_evaluation",
+      "source_binding": "calibration_graph_v1_contract",
+      "data": {
+        "active_joint_scale_count": 4,
+        "fixed_camera_board": true,
+        "fixed_robot_board": true,
+        "fixed_joint_signs_and_zeros": true,
+        "fixed_jaw_reference": true,
+        "untouched_composite_heldout_required": true,
+        "mapping_approval": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -6617,6 +6645,16 @@
       }
     },
     {
+      "source": "checkpoint:calibration-graph-v1-frozen",
+      "type": "generated-from",
+      "target": "verdict:canonical-wrist-path-selected-temporal-v5-pass",
+      "metadata": {
+        "cc02_complete": true,
+        "gauge_fixed": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -7948,14 +7986,23 @@
       "node_ids_added": [
         "verdict:canonical-wrist-path-selected-temporal-v5-pass"
       ]
+    },
+    {
+      "revision": 143,
+      "event_id": "CALIBRATION_GRAPH_V1_FROZEN",
+      "status": "preregistered_before_exactly_once_mapping_evaluation",
+      "source_binding": "calibration_graph_v1_contract",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-v1-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:canonical-wrist-path-selected-temporal-v5-pass",
+    "node_id": "checkpoint:calibration-graph-v1-frozen",
     "milestone_id": "CC03",
-    "status": "bidirectional_simulator_screen_pass_before_calibration_graph",
-    "queue_status": "ACTIVE_CC03_CALIBRATION_GRAPH",
-    "resume_action": "implement_minimum_gauge_fixed_calibration_graph_v1",
+    "status": "preregistered_before_exactly_once_mapping_evaluation",
+    "queue_status": "ACTIVE_CC03_CALIBRATION_GRAPH_REPLAY",
+    "resume_action": "execute_calibration_graph_v1_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC03"
     assert tracked["active_pointer"] == {
-        "node_id": "verdict:canonical-wrist-path-selected-temporal-v5-pass",
+        "node_id": "checkpoint:calibration-graph-v1-frozen",
         "milestone_id": "CC03",
-        "status": "bidirectional_simulator_screen_pass_before_calibration_graph",
-        "queue_status": "ACTIVE_CC03_CALIBRATION_GRAPH",
+        "status": "preregistered_before_exactly_once_mapping_evaluation",
+        "queue_status": "ACTIVE_CC03_CALIBRATION_GRAPH_REPLAY",
         "resume_action": (
-            "implement_minimum_gauge_fixed_calibration_graph_v1"
+            "execute_calibration_graph_v1_exactly_once"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(143)
+        range(144)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CANONICAL_WRIST_PATH_SELECTED_TEMPORAL_V5_PASS"
+        "CALIBRATION_GRAPH_V1_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:canonical-wrist-path-selected-temporal-v5-pass"
+        "checkpoint:calibration-graph-v1-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True

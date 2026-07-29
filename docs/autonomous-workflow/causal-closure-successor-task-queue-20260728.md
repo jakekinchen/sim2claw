@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_CALIBRATION_GRAPH`
+Status: `ACTIVE_CC03_CALIBRATION_GRAPH_REPLAY`
 
 Created: `2026-07-28`
 
@@ -460,6 +460,11 @@ Current state:
   closeout SHA-256
   `2c7f8483663a619c25c6aece2c041a7327aa440b8d961857a101bbc0590a5ed5`.
   This closes CC02 as simulator-only evidence.
+- Minimum gauge-fixed CalibrationGraph.v1 is frozen before evaluation at
+  contract SHA-256
+  `f80e4e14539c43902b1c9d04257c937ca6c2a2cc41fe58892c5463034cbd358c`.
+  Camera/board, robot/board, joint signs/zeros, and jaw reference are fixed;
+  four joint scales are active; the untouched composite heldout is required.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -501,5 +506,5 @@ This authorization:
 
 Next step:
 
-- Implement and audit the minimum gauge-fixed CalibrationGraph.v1 for CC03.
-  Keep mapping approval, evaluator V2, cameras, gateway, and motion closed.
+- Execute CalibrationGraph.v1 exactly once and preserve its approval/rejection
+  receipt. Keep evaluator V2, cameras, gateway, and motion closed.

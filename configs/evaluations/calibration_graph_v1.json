@@ -1,0 +1,75 @@
+{
+  "schema_version": "sim2claw.calibration_graph.v1",
+  "contract_id": "minimum-gauge-fixed-calibration-graph-20260729-v1",
+  "status": "frozen_before_existing_evidence_mapping_evaluation",
+  "proof_class": "prospective_gauge_fixed_existing_evidence_mapping_diagnostic",
+  "sources": {
+    "accepted_task_plane_registration": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json",
+      "sha256": "566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5"
+    },
+    "one_joint_differential": {
+      "path": "runs/geometric-hover/20260727-pose-j-single-joint-image-jacobian-sweep-tricam-v1/evaluation/single-joint-image-jacobian-v1.json",
+      "sha256": "c7d5082eb7c66ff494eb639848c85e419ba58de041bc652ab5d77457cd9532d6"
+    },
+    "prior_mapping_evaluation": {
+      "path": "runs/pi-link-tag-calibration/20260726-current-pi-cad-keyed-joint-mapping-v1/evaluation.json",
+      "sha256": "f330d5a4da40570ee7ab1cb55167016bf998bf4986a17cb46acd220272664d8e"
+    }
+  },
+  "implementation": {
+    "path": "src/sim2claw/calibration_graph_v1.py",
+    "sha256": "cd3dbb8cc37b15af32875117aed06b81429c9bbaf8cbbc817a0fe7955b7e1c5c"
+  },
+  "variables": {
+    "active_joint_scales": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex"
+    ],
+    "fixed": {
+      "camera_board": "accepted_canonical_task_plane_registration",
+      "robot_to_board_rigid_transform": "accepted_current_workcell_registration",
+      "physical_degree_to_mujoco_joint_signs": "current_gateway_mapping",
+      "physical_degree_to_mujoco_joint_zero_offsets": "current_gateway_mapping",
+      "jaw_reference": "closed_jaw_rad_minus_0p1727003294848389",
+      "gripper_scale": "fixed_no_independent_differential_factor"
+    }
+  },
+  "factors": {
+    "fixed_camera_board_registration": true,
+    "fixed_robot_board_registration": true,
+    "one_joint_image_differentials": true,
+    "exact_encoder_holds": true,
+    "untouched_composite_heldout_required": true,
+    "free_tag_mounts_forbidden": true
+  },
+  "gates": {
+    "joint_scale_bounds": [
+      0.65,
+      1.35
+    ],
+    "direction_difference_max_degrees": 20.0,
+    "observed_r_squared_minimum": 0.55,
+    "condition_number_maximum": 1000.0,
+    "full_active_rank_required": true,
+    "all_encoder_holds_required": true,
+    "untouched_composite_heldout_required": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-v1",
+  "authority": {
+    "read_existing_evidence": true,
+    "fit_mapping_diagnostic": true,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Minimum gauge-fixed CalibrationGraph.v1 over existing physical evidence. Camera/board, robot/board, joint signs and zeros, and jaw reference remain fixed; only four local joint scales are active. The graph reports factor residuals, active Jacobian rank and spectrum, correlations, bounds, encoder holds, and untouched heldout availability. It may reject the current mapping but cannot approve it because mapping approval authority remains false; no camera, gateway, serial, or physical motion is opened."
+}
