@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.rp04n_c922_crown_track_closeout.v1",
+  "decision_id": "rp04n-c922-crown-track-v1-closeout",
+  "result": "TERMINAL_DIAGNOSTIC_NEGATIVE",
+  "proof_class": "action_free_c922_crown_correspondence_diagnostic",
+  "contract_freeze_commit": "dba0f57",
+  "annotation_freeze_commit": "cee2691",
+  "contract": {
+    "path": "configs/evaluations/rp04n_c922_crown_track_v1.json",
+    "sha256": "4a01f1990c696dcc69b8762e517f23f0bc8b832c312843d136b0980026346184"
+  },
+  "implementation": {
+    "path": "src/sim2claw/rp04n_crown_track.py",
+    "sha256": "f0fc410d0a228a24d5ad4e3420cf2115ead202e4fe32a19aabfb14729587e0c2"
+  },
+  "annotation_freeze": {
+    "path": "configs/decisions/rp04n_c922_crown_annotation_freeze_v1.json",
+    "pass_a_sha256": "54b0aaac6e05f80c34c5255a54bb632f5e651855680f37c70b32a243a989de5f",
+    "pass_b_sha256": "952e18b00c2dcdfdcc723d90e0de8e8935b47b2a06c94801ce2fdb770690aa8b"
+  },
+  "generated_receipt": {
+    "path": "outputs/rp04n_c922_crown_track_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "fd85934b5c00c455857232e96f4628d7f34a819058299f4e4f88728cc1cfe7d5",
+    "artifact_sha256": "cf1fbfff5d914b2a5fedff7825bcb3f89ef60a8001ab653e97bbc5f33a35bf0b"
+  },
+  "coverage": {
+    "admitted_visible_points": 3,
+    "required_visible_points": 12,
+    "temporal_tercile_counts": [
+      0,
+      0,
+      3
+    ],
+    "maximum_consecutive_invalid": 15,
+    "allowed_consecutive_invalid": 3,
+    "anchor_disagreement_px": 0.5
+  },
+  "curve_diagnostics": {
+    "d1_translation_norm_px": 120.28133877955698,
+    "pointwise_residual_median_px": 53.36670064674206,
+    "pointwise_residual_p90_px": 53.75116085248656,
+    "ordered_discrete_frechet_px": 53.36670064674206,
+    "net_displacement_cosine": 0.6399073166128295
+  },
+  "ledger": {
+    "camera_projected_carry_prefix_real_to_sim": {
+      "successes": 0,
+      "attempts": 1
+    },
+    "realized_action_outcome_transfer_added": 0
+  },
+  "claim_boundary": "The gripper occludes the selected pawn crown until the late release or egress interval. Only three late points survived the frozen two-pass visibility gate, so this retained video cannot establish the preregistered carry-prefix correspondence. The action-free result does not test timing, actuation, contact, metric 3D, or action transfer.",
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "paid_compute": false
+  },
+  "next_card": "C3"
+}
