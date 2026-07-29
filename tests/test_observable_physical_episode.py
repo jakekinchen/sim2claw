@@ -16,6 +16,13 @@ def test_live_schedule_contract_is_telemetry_only_and_fail_closed() -> None:
     ]
     assert indices == sorted(set(indices))
     assert len(indices) == 49
+    assert contract["experiment_id"] == "observable-physical-episode-schedule-v2"
+    assert (
+        contract["expected"]["maximum_c922_association_error_ms"] == 35.0
+    )
+    assert contract["successor_lineage"]["bound_derivation"][
+        "uses_visual_outcome"
+    ] is False
     assert contract["annotation_policy"][
         "schedule_may_change_after_visual_open"
     ] is False

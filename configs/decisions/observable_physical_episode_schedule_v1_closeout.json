@@ -1,0 +1,47 @@
+{
+  "schema_version": "sim2claw.observable_physical_episode_schedule_closeout.v1",
+  "decision_id": "observable-physical-episode-schedule-v1-closeout",
+  "result": "TERMINAL_TIMESTAMP_ASSOCIATION_THRESHOLD_NEGATIVE_VISUAL_LABELS_UNOPENED",
+  "proof_class": "telemetry_only_timestamp_association_previsual_negative",
+  "freeze_commit": "30fe1cd",
+  "contract": {
+    "path": "configs/evaluations/observable_physical_episode_schedule_v1.json",
+    "sha256": "59645300b22ba1f867744125b9236040dab2f68bced92f04e666cba34c36cdb4"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_physical_episode.py",
+    "sha256": "a2b7511d669277ff1dc15adc9f90e0a05f9ef1af10b6edfec3fd4912ebc987c0"
+  },
+  "evaluation": {
+    "source_sample_count": 531,
+    "c922_frame_count": 1029,
+    "d405_frame_count": 171,
+    "maximum_c922_association_error_ms": 32.632333,
+    "frozen_maximum_c922_association_error_ms": 20.0,
+    "maximum_d405_association_error_ms": 100.066125,
+    "frozen_maximum_d405_association_error_ms": 110.0,
+    "failed_gate": "maximum_c922_association_error_ms",
+    "receipt_written": false,
+    "visual_frames_opened": false,
+    "visual_labels_created": false,
+    "schedule_changed": false
+  },
+  "successor_policy": {
+    "v2_c922_bound_ms": 35.0,
+    "derivation": "one nominal 30 Hz frame interval plus 1.667 ms timestamp margin",
+    "d405_bound_changed": false,
+    "sample_schedule_changed": false,
+    "visual_outcome_used": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replay": false,
+    "paid_compute": false,
+    "transfer_claim": false
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.observable_physical_episode_schedule_successor_contract.v1",
+  "experiment_id": "observable-physical-episode-schedule-v2",
+  "frozen_date": "2026-07-29",
+  "base_contract": {
+    "path": "configs/evaluations/observable_physical_episode_schedule_v1.json",
+    "sha256": "59645300b22ba1f867744125b9236040dab2f68bced92f04e666cba34c36cdb4"
+  },
+  "predecessor_closeout": {
+    "path": "configs/decisions/observable_physical_episode_schedule_v1_closeout.json",
+    "sha256": "b2d03582222b154eaa151695b172780e72e47e2e8e08d7dc6bdd61040d01f45f"
+  },
+  "override": {
+    "maximum_c922_association_error_ms": 35.0
+  },
+  "invariants": {
+    "source_bindings_unchanged": true,
+    "telemetry_only_windows_unchanged": true,
+    "annotation_policy_unchanged": true,
+    "d405_association_bound_unchanged": true,
+    "proof_boundaries_unchanged": true,
+    "authority_unchanged": true,
+    "visual_frames_opened_before_freeze": false,
+    "visual_labels_created_before_freeze": false
+  },
+  "bound_derivation": {
+    "nominal_c922_frame_period_ms": 33.333333333333336,
+    "timestamp_margin_ms": 1.6666666666666643,
+    "uses_visual_outcome": false,
+    "uses_task_success": false
+  }
+}

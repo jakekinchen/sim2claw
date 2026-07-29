@@ -20,25 +20,34 @@ from .paths import REPO_ROOT
 
 
 SCHEDULE_SCHEMA = "sim2claw.observable_physical_episode_schedule_contract.v1"
+SCHEDULE_SUCCESSOR_SCHEMA = (
+    "sim2claw.observable_physical_episode_schedule_successor_contract.v1"
+)
 SCHEDULE_RECEIPT_SCHEMA = (
     "sim2claw.observable_physical_episode_schedule_receipt.v1"
 )
-SCHEDULE_CONTRACT_PATH = (
+SCHEDULE_V1_CONTRACT_PATH = (
     REPO_ROOT
     / "configs"
     / "evaluations"
     / "observable_physical_episode_schedule_v1.json"
 )
+SCHEDULE_CONTRACT_PATH = (
+    REPO_ROOT
+    / "configs"
+    / "evaluations"
+    / "observable_physical_episode_schedule_v2.json"
+)
 SCHEDULE_OUTPUT_PATH = (
     REPO_ROOT
     / "outputs"
-    / "observable_physical_episode_schedule_v1"
+    / "observable_physical_episode_schedule_v2"
     / "receipt.json"
 )
 FRAME_OUTPUT_DIRECTORY = (
     REPO_ROOT
     / "outputs"
-    / "observable_physical_episode_schedule_v1"
+    / "observable_physical_episode_schedule_v2"
     / "frames"
 )
 
@@ -78,6 +87,67 @@ def load_schedule_contract(
     path: Path = SCHEDULE_CONTRACT_PATH, *, root: Path = REPO_ROOT
 ) -> dict[str, Any]:
     contract = load_json_object(path, label="physical observation schedule")
+    if contract.get("schema_version") == SCHEDULE_SUCCESSOR_SCHEMA:
+        base_path = _bound_path(
+            contract["base_contract"],
+            root=root,
+            label="schedule v1 base contract",
+        )
+        _bound_path(
+            contract["predecessor_closeout"],
+            root=root,
+            label="schedule v1 closeout",
+        )
+        invariants = contract.get("invariants")
+        _require(
+            isinstance(invariants, dict)
+            and invariants
+            and all(
+                invariants.get(field) is True
+                for field in (
+                    "source_bindings_unchanged",
+                    "telemetry_only_windows_unchanged",
+                    "annotation_policy_unchanged",
+                    "d405_association_bound_unchanged",
+                    "proof_boundaries_unchanged",
+                    "authority_unchanged",
+                )
+            )
+            and invariants.get("visual_frames_opened_before_freeze") is False
+            and invariants.get("visual_labels_created_before_freeze") is False,
+            "schedule successor invariant changed",
+        )
+        override = contract.get("override")
+        _require(
+            isinstance(override, dict)
+            and set(override) == {"maximum_c922_association_error_ms"}
+            and float(override["maximum_c922_association_error_ms"]) == 35.0,
+            "schedule successor override changed",
+        )
+        derivation = contract.get("bound_derivation")
+        _require(
+            isinstance(derivation, dict)
+            and derivation.get("uses_visual_outcome") is False
+            and derivation.get("uses_task_success") is False,
+            "schedule successor used visual outcome",
+        )
+        base = load_json_object(base_path, label="physical observation base")
+        _require(
+            base.get("schema_version") == SCHEDULE_SCHEMA,
+            "schedule successor base schema changed",
+        )
+        base["experiment_id"] = contract["experiment_id"]
+        base["frozen_date"] = contract["frozen_date"]
+        base["expected"]["maximum_c922_association_error_ms"] = float(
+            override["maximum_c922_association_error_ms"]
+        )
+        base["successor_lineage"] = {
+            "base_contract": contract["base_contract"],
+            "predecessor_closeout": contract["predecessor_closeout"],
+            "invariants": invariants,
+            "bound_derivation": derivation,
+        }
+        contract = base
     _require(
         contract.get("schema_version") == SCHEDULE_SCHEMA,
         "unsupported physical observation schedule schema",
@@ -200,7 +270,10 @@ def _sample_host_ns(row: dict[str, Any]) -> int:
 
 
 def compile_schedule(
-    contract: dict[str, Any], *, root: Path = REPO_ROOT
+    contract: dict[str, Any],
+    *,
+    root: Path = REPO_ROOT,
+    contract_sha256: str | None = None,
 ) -> dict[str, Any]:
     sources = contract["sources"]
     samples = _load_jsonl(
@@ -314,11 +387,7 @@ def compile_schedule(
     unsigned = {
         "schema_version": SCHEDULE_RECEIPT_SCHEMA,
         "experiment_id": contract["experiment_id"],
-        "contract_sha256": (
-            sha256_file(SCHEDULE_CONTRACT_PATH)
-            if root == REPO_ROOT and SCHEDULE_CONTRACT_PATH.is_file()
-            else canonical_digest(contract)
-        ),
+        "contract_sha256": contract_sha256 or canonical_digest(contract),
         "source_sample_count": len(samples),
         "source_frame_counts": {
             stream: len(items) for stream, items in frames.items()
@@ -335,6 +404,7 @@ def compile_schedule(
         "maximum_association_error_ms": max_errors,
         "association": contract["association"],
         "annotation_policy": contract["annotation_policy"],
+        "successor_lineage": contract.get("successor_lineage"),
         "proof_boundaries": contract["proof_boundaries"],
         "authority": contract["authority"],
         "result": "TIMESTAMP_BOUND_TELEMETRY_SCHEDULE_FROZEN_VISUAL_LABELS_UNOPENED",
@@ -349,7 +419,11 @@ def build_schedule_receipt(
     root: Path = REPO_ROOT,
 ) -> dict[str, Any]:
     contract = load_schedule_contract(contract_path, root=root)
-    receipt = compile_schedule(contract, root=root)
+    receipt = compile_schedule(
+        contract,
+        root=root,
+        contract_sha256=sha256_file(contract_path),
+    )
     atomic_write_json(output_path, receipt)
     return receipt
 
@@ -422,6 +496,7 @@ __all__ = [
     "FRAME_OUTPUT_DIRECTORY",
     "SCHEDULE_CONTRACT_PATH",
     "SCHEDULE_OUTPUT_PATH",
+    "SCHEDULE_V1_CONTRACT_PATH",
     "admitted_callback_frames",
     "build_schedule_receipt",
     "compile_schedule",
