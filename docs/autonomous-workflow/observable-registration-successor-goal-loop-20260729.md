@@ -99,12 +99,12 @@ after repository evidence and bounded alternatives have been exhausted.
 
 ```text
 Current state: ACTIVE
-Active card: OR2
-Completed: predecessor evidence; OR0 corpus; OR1 bounded camera model
-Evidence: OR1 artifact f6add6ce80386e9795d2f51e65d42dfad042ebf095b3a1b325aa253c2d4baeb4
-Remaining: OR2-OR8
+Active card: OR5
+Completed: predecessor evidence; OR0 corpus; OR1 bounded camera model; OR2 rigid mapping negative; OR3 physical event episode; OR4 first contact divergence
+Evidence: OR4 artifact e6a44d7c1791fcae8a5403b10ed6d580874bafc91d6cb4bb3d10e1f4564f1745; missing simulator selected-jaw enclosure at physical sample 232; 7.697 s object-consequence gap
+Remaining: OR5-OR8
 Blockers: no current software blocker; physical motion remains service-gated
-Next step: robot/jaw mapping under immutable OR1 camera
+Next step: prospectively freeze the smallest static-observation-supported jaw aperture/contact geometry mechanism
 ```
 
 ## Stop conditions

@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or4_first_contact_divergence",
+  "status": "active_or5_mechanism_declaration",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "65adc4e120c18d0706647fc34166858787d2204272ccf8d1983e4af243eb814a",
+      "sha256": "ce03169ccaa28464af3b6b5c81ff16fa185fe8ee918cd43713b8dd24cb5b84e8",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -85,6 +85,11 @@
       "path": "configs/decisions/observable_physical_episode_observations_v1_closeout.json",
       "sha256": "4d64346dfbf671e04a6d05ac204f2381abfc650a2c7bbe2418b471b26c6469bf",
       "proof_class": "timestamp_bound_two_pass_wrist_rgb_contact_motion_event_observation"
+    },
+    "or4": {
+      "path": "configs/decisions/observable_first_contact_divergence_v1_closeout.json",
+      "sha256": "61d750b9a270e22fb7d5fe1f0ca919ead7bb941a371bc5c91c14b74dec0b678e",
+      "proof_class": "exact_time_base_physical_simulator_contact_object_first_divergence"
     }
   },
   "nodes": [
@@ -98,7 +103,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or4",
+      "status": "active_or5",
       "source_binding": "queue"
     },
     {
@@ -132,7 +137,7 @@
       "id": "residual:jaw-aperture-underprediction",
       "type": "residual_channel",
       "label": "Observed versus modeled jaw aperture",
-      "status": "localized_not_yet_authorized_as_mechanism",
+      "status": "causally_linked_to_missing_selected_jaw_enclosure",
       "source_binding": "or2",
       "data": {
         "fit_observed_separation_px": 32.27857893787832,
@@ -156,6 +161,29 @@
         "pawn_crown_track_count": 10,
         "metric_depth_available": false
       }
+    },
+    {
+      "id": "evidence:or4-first-contact-divergence",
+      "type": "evaluator_verdict",
+      "label": "Physical simulator first contact divergence",
+      "status": "accepted_missing_selected_jaw_enclosure",
+      "source_binding": "or4",
+      "data": {
+        "physical_definite_enclosure_sample": 232,
+        "simulator_first_planar_motion_sample": 386,
+        "gap_samples": 154,
+        "gap_seconds": 7.69659558404237,
+        "enclosure_gripper_absolute_error_degrees": 0.2335511385120288,
+        "selected_mechanism_family_for_or5": "jaw_aperture_and_gripper_geometry_mapping",
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "mechanism:or5-jaw-aperture-geometry",
+      "type": "mechanism",
+      "label": "Bounded jaw aperture and contact geometry",
+      "status": "active_identifiability_and_preregistration",
+      "source_binding": "queue"
     },
     {
       "id": "evidence:or0-corpus",
@@ -241,6 +269,21 @@
       "type": "counterexample-to"
     },
     {
+      "source": "evidence:or3-physical-events",
+      "target": "evidence:or4-first-contact-divergence",
+      "type": "generated-from"
+    },
+    {
+      "source": "evidence:immutable-c6",
+      "target": "evidence:or4-first-contact-divergence",
+      "type": "generated-from"
+    },
+    {
+      "source": "evidence:or4-first-contact-divergence",
+      "target": "mechanism:or5-jaw-aperture-geometry",
+      "type": "predicts"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -256,6 +299,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR4",
-  "next_transition": "or4_bind_physical_and_simulator_contact_object_events_on_exact_time_base"
+  "active_card": "OR5",
+  "next_transition": "or5_freeze_smallest_static_observation_supported_jaw_aperture_contact_geometry_mechanism"
 }

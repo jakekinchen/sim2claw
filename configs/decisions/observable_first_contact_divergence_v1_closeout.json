@@ -1,0 +1,83 @@
+{
+  "schema_version": "sim2claw.observable_first_contact_divergence_closeout.v1",
+  "decision_id": "observable-first-contact-divergence-v1-closeout",
+  "result": "FIRST_DIVERGENCE_LOCALIZED_TO_MISSING_SELECTED_JAW_ENCLOSURE",
+  "proof_class": "exact_time_base_physical_simulator_contact_object_first_divergence",
+  "freeze_commit": "d87e61e",
+  "contract": {
+    "path": "configs/evaluations/observable_first_contact_divergence_v1.json",
+    "sha256": "b325e74359c152a798d97ff707ade8607baae808da4803f7a4b444c4ee796e72"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_first_divergence.py",
+    "sha256": "af4f5a75b467d72752cd6db8a4d50ebe6f71a7d439ce771aad8ead3d9b414979"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_first_contact_divergence_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "ade604c728081e7bf5c1b319f7a6f58f2401770700defb2d751429424c3382ae",
+    "artifact_sha256": "e6a44d7c1791fcae8a5403b10ed6d580874bafc91d6cb4bb3d10e1f4564f1745"
+  },
+  "action_and_time_identity": {
+    "requested_actions": true,
+    "gateway_sent_actions": true,
+    "row_order": true,
+    "timestamps": true,
+    "sample_count": 531,
+    "maximum_timestamp_absolute_error_seconds": 0.0
+  },
+  "physical_event": {
+    "candidate_contact_interval_samples": [228, 232],
+    "candidate_contact_interval_seconds": [
+      11.40506241703406,
+      11.605064500006847
+    ],
+    "first_definite_enclosure_sample": 232,
+    "first_definite_enclosure_seconds": 11.605064500006847,
+    "first_definite_object_consequence_sample": 260,
+    "first_definite_object_consequence_seconds": 13.002207625075243
+  },
+  "simulator_event": {
+    "selected_jaw_contact_steps": 0,
+    "selected_jaw_contact_at_physical_enclosure": 0,
+    "first_planar_motion_over_1mm_sample": 386,
+    "first_planar_motion_over_1mm_seconds": 19.301660084049217
+  },
+  "causal_localization": {
+    "earliest_divergence_channel": "selected_jaw_contact",
+    "physical_enclosure_to_simulator_motion_gap_samples": 154,
+    "physical_enclosure_to_simulator_motion_gap_seconds": 7.69659558404237,
+    "enclosure_all_joint_rms_degrees": 0.4129855121275521,
+    "enclosure_gripper_absolute_error_degrees": 0.2335511385120288,
+    "or2_mean_jaw_separation_underprediction_px": 21.21954727821677,
+    "selected_mechanism_family_for_or5": "jaw_aperture_and_gripper_geometry_mapping",
+    "actuator_timing_selected": false,
+    "contact_material_selected": false,
+    "parameters_fit": false
+  },
+  "remaining_alternatives": [
+    "global_articulated_wrist_mapping_unapproved",
+    "full_3d_jaw_pad_geometry_unmeasured",
+    "contact_material_unidentifiable_until_geometric_contact_exists"
+  ],
+  "proof_boundaries": {
+    "global_mapping_approved": false,
+    "physical_candidate_contact_is_force_ground_truth": false,
+    "jaw_aperture_residual_proves_unique_3d_geometry": false,
+    "mechanism_promoted": false,
+    "simulator_changed": false,
+    "matching_simulator_outcome": false,
+    "bidirectional_transfer": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "OR5"
+}

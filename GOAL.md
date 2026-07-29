@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR4 FIRST CONTACT DIVERGENCE`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR5 JAW MECHANISM DECLARATION`
 
 ## Active long-horizon alignment successor
 
@@ -21,8 +21,11 @@ rejects a rigid robot-board correction: fit and validation remain at
 separation by about `21.2 px`. OR3 now accepts the physical timeline:
 enclosure is bounded to samples `228–232`, carried motion is visible from
 `260–390`, release occurs within `400–407`, and the accepted endpoint is
-upright at D2. OR4 is active to compare those events with immutable C6 on the
-exact source sample/time base. Physical motion remains closed at the
+upright at D2. OR4 localizes the first divergence: physical enclosure is
+definite by sample `232`, while the simulator has zero selected-jaw contact and
+does not move the pawn by more than `1 mm` until sample `386`, `7.697 s` later.
+OR5 is active to declare one jaw-aperture/contact-geometry mechanism using only
+the frozen static observations. Physical motion remains closed at the
 follower-elbow service boundary.
 
 ## Latest realized-action outcome result
