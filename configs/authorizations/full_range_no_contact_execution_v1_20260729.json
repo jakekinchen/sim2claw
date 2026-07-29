@@ -1,0 +1,16 @@
+{
+  "schema_version": "sim2claw.owner_physical_authorization.v1",
+  "authorization_id": "owner-standing-rp04c-full-range-20260729-v1",
+  "operation_id": "rp04c-full-range-no-contact-20260729-v1",
+  "packet_sha256": "1c00e5cdbe884ffb7256158851f6f049f7fef9e4a925eb73035451675732bf6c",
+  "issued_at": "2026-07-29T11:17:15-05:00",
+  "expires_at": "2026-07-29T12:17:15-05:00",
+  "maximum_executions": 1,
+  "physical_no_contact_diagnostic": true,
+  "physical_task_attempt": false,
+  "pawn_contact": false,
+  "autonomous_agent_supervision": true,
+  "power_down_supply_on_torque_cleanup_error": true,
+  "owner_authority_source": "The owner explicitly granted Codex authority to issue all future scoped authorizations and instructed it to continue until goal metrics advance.",
+  "scope": "One exact packet-hash-bound, camera-enclosed, dual-scene-static-qualified full-range robot-only identification execution plus exact reverse. No retry, task attempt, pawn contact, configuration write, mapping approval, V5 reopening, or transfer claim is authorized."
+}
