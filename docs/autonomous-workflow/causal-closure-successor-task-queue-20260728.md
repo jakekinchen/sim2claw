@@ -797,6 +797,16 @@ Current state:
   and new viewer/architecture work are receipt-backed rejects. `CC03K` is the
   prospectively frozen proof-task redesign; it cannot inherit a straight-push
   claim.
+- `CC03E` is prospectively frozen before physical execution at contract
+  SHA-256
+  `95666864bb00d8cb43308399eacf6c6bac377610d789b8f4b92e1640af5f317a`
+  and executor SHA-256
+  `7dd414f3793e4c40821adb45c89ad48721d827d5a420a3f85ae822eaac9a4db7`.
+  It records `+3/-3/+5/-5 deg` elbow offsets, the identical wrist-flex
+  control, one torque off/on repeat, exact-target and calibrated-limit checks,
+  native D405 enclosure, and six optional servo registers at `5 Hz`. It
+  grants no pawn, task-attempt, gain-write, or configuration-write authority.
+  `38` focused tests pass.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task

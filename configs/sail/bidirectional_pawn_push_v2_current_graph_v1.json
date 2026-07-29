@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "171091e6b60c5cac66d39fc5f7369c17be19bb58718f6c7476477b52e1a34b2e",
+      "sha256": "17113149d489c67a0a1013e6d49322313823ce0f4702f7e767b238963c145617",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -2381,6 +2381,20 @@
       "path": "docs/advisory/fable-elbow-boundary-and-endgame-review-20260729.md",
       "sha256": "96b5f641e624c70fac4d352819976d9fd8df3c138a0237f32491caa09cd50024",
       "proof_class": "read_only_advisory_independent_pose_sweep_and_recommendation_disposition"
+    },
+    "elbow_telemetry_probe_contract_v1": {
+      "path": "configs/evaluations/elbow_telemetry_probe_v1.json",
+      "sha256": "95666864bb00d8cb43308399eacf6c6bac377610d789b8f4b92e1640af5f317a",
+      "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+      "payload_contract": {
+        "schema_version": "sim2claw.elbow_telemetry_probe_contract.v1",
+        "status": "preregistered_before_no_contact_probe",
+        "proof_class": "prospective_no_contact_physical_elbow_telemetry_diagnostic",
+        "physical_task_attempt": false,
+        "pawn_contact": false,
+        "gain_write": false,
+        "configuration_write": false
+      }
     },
     "simulator_candidate": {
       "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
@@ -6278,6 +6292,28 @@
       }
     },
     {
+      "id": "checkpoint:elbow-telemetry-probe-v1-frozen",
+      "type": "checkpoint",
+      "label": "CC03E elbow and wrist-control telemetry probe frozen",
+      "status": "preregistered_before_no_contact_probe",
+      "source_binding": "elbow_telemetry_probe_contract_v1",
+      "data": {
+        "executor_sha256": "7dd414f3793e4c40821adb45c89ad48721d827d5a420a3f85ae822eaac9a4db7",
+        "elbow_offsets_degrees": [
+          3.0,
+          -3.0,
+          5.0,
+          -5.0
+        ],
+        "matched_wrist_control": true,
+        "torque_cycle_repeat": true,
+        "camera_required": true,
+        "gain_write_authorized": false,
+        "configuration_write_authorized": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -10022,14 +10058,23 @@
       "node_ids_added": [
         "evidence:fable-elbow-boundary-endgame-review-v1"
       ]
+    },
+    {
+      "revision": 199,
+      "event_id": "ELBOW_TELEMETRY_PROBE_V1_FROZEN",
+      "status": "preregistered_before_no_contact_probe",
+      "source_binding": "elbow_telemetry_probe_contract_v1",
+      "node_ids_added": [
+        "checkpoint:elbow-telemetry-probe-v1-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "evidence:fable-elbow-boundary-endgame-review-v1",
+    "node_id": "checkpoint:elbow-telemetry-probe-v1-frozen",
     "milestone_id": "CC03E",
     "status": "bounded_elbow_telemetry_diagnostic_active",
     "queue_status": "IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC",
-    "resume_action": "preregister_and_execute_no_contact_elbow_and_wrist_control_probe",
+    "resume_action": "execute_frozen_no_contact_elbow_and_wrist_control_probe_once",
     "resume_authorized": true,
     "heldout_open_count": 4,
     "cumulative_manifest_read_count": 4,

@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC03E"
     assert tracked["active_pointer"] == {
-        "node_id": "evidence:fable-elbow-boundary-endgame-review-v1",
+        "node_id": "checkpoint:elbow-telemetry-probe-v1-frozen",
         "milestone_id": "CC03E",
         "status": "bounded_elbow_telemetry_diagnostic_active",
         "queue_status": "IN_PROGRESS_CC03E_ELBOW_TELEMETRY_DIAGNOSTIC",
         "resume_action": (
-            "preregister_and_execute_no_contact_elbow_and_wrist_control_probe"
+            "execute_frozen_no_contact_elbow_and_wrist_control_probe_once"
         ),
         "resume_authorized": True,
         "heldout_open_count": 4,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(199)
+        range(200)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "FABLE_ELBOW_BOUNDARY_ENDGAME_REVIEW_V1"
+        "ELBOW_TELEMETRY_PROBE_V1_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "evidence:fable-elbow-boundary-endgame-review-v1"
+        "checkpoint:elbow-telemetry-probe-v1-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True
