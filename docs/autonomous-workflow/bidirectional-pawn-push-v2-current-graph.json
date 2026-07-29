@@ -95,10 +95,10 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 183,
+    "nodes": 184,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 119,
+      "checkpoint": 120,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "2e49a26d2e487b42f7c7f79ed6b7826cc1a39ffa14835447386e99b64592a9c0",
+  "graph_digest": "9bde49edcb7ec3f593fb936ed7c9a02de6ccd0249683e6e39e19933778512984",
   "node_types": [
     "workcell",
     "session",
@@ -2365,7 +2365,7 @@
       "source": {
         "path": "tools/evaluate_calibration_graph_d405_corner_shape_heldout_v2.py",
         "proof_class": "prospective_gauge_free_d405_fixed_tag_raw_corner_trajectory_shape_evaluator",
-        "sha256": "f364b374616e89becbdf8eb1a49358f85aa796b4389550021a271db5238cc3ad"
+        "sha256": "fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0"
       },
       "status": "preregistered_before_new_capture",
       "type": "checkpoint"
@@ -2418,6 +2418,26 @@
         "sha256": "80e2d59d56f91987741ceed3774711bd608a973f6f3e8cc88021de4f336d9aaa"
       },
       "status": "preregistered_before_packet_compile",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "action_interval_trajectories_opened": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_d405_corner_shape_evaluator_v2",
+        "stage_1_final_hold_safety_frame_permitted": true,
+        "stage_2_frames_opened": false
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-d405-corner-shape-safety-provenance-v2-frozen",
+      "label": "Corner-shape evaluator safety-frame provenance frozen before capture",
+      "proof_class": "prospective_gauge_free_d405_fixed_tag_raw_corner_trajectory_shape_evaluator",
+      "source": {
+        "path": "tools/evaluate_calibration_graph_d405_corner_shape_heldout_v2.py",
+        "proof_class": "prospective_gauge_free_d405_fixed_tag_raw_corner_trajectory_shape_evaluator",
+        "sha256": "fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0"
+      },
+      "status": "preregistered_before_new_capture",
       "type": "checkpoint"
     },
     {
@@ -3425,7 +3445,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "6077a9bbfd14fb929100c0a0b375e63ecf14df1567ebdeda4d9e888e1ecbcd2f"
+        "sha256": "c24e9bd2ee72cc4f53ca4880591d2ca4232e322a2269178ed8c1568fc611ee59"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -8730,7 +8750,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "6077a9bbfd14fb929100c0a0b375e63ecf14df1567ebdeda4d9e888e1ecbcd2f",
+      "source_sha256": "c24e9bd2ee72cc4f53ca4880591d2ca4232e322a2269178ed8c1568fc611ee59",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -9310,7 +9330,7 @@
       ],
       "revision": 161,
       "source_binding": "calibration_graph_d405_corner_shape_evaluator_v2",
-      "source_sha256": "f364b374616e89becbdf8eb1a49358f85aa796b4389550021a271db5238cc3ad",
+      "source_sha256": "fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0",
       "status": "preregistered_before_new_capture"
     },
     {
@@ -9332,6 +9352,16 @@
       "source_binding": "calibration_graph_d405_corner_shape_review_v2",
       "source_sha256": "184052d965563e6d111dc33bb9ef3abb92188abdff98e94733db1c438b88bad9",
       "status": "admitted_for_one_execution_per_stage"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_D405_CORNER_SHAPE_SAFETY_PROVENANCE_V2_FROZEN",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-corner-shape-safety-provenance-v2-frozen"
+      ],
+      "revision": 164,
+      "source_binding": "calibration_graph_d405_corner_shape_evaluator_v2",
+      "source_sha256": "fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0",
+      "status": "preregistered_before_new_capture"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -9438,7 +9468,7 @@
       "id": "calibration_graph_d405_corner_shape_evaluator_v2",
       "path": "tools/evaluate_calibration_graph_d405_corner_shape_heldout_v2.py",
       "proof_class": "prospective_gauge_free_d405_fixed_tag_raw_corner_trajectory_shape_evaluator",
-      "sha256": "f364b374616e89becbdf8eb1a49358f85aa796b4389550021a271db5238cc3ad"
+      "sha256": "fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0"
     },
     {
       "id": "calibration_graph_d405_corner_shape_packet_v2",
@@ -10232,7 +10262,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "6077a9bbfd14fb929100c0a0b375e63ecf14df1567ebdeda4d9e888e1ecbcd2f"
+      "sha256": "c24e9bd2ee72cc4f53ca4880591d2ca4232e322a2269178ed8c1568fc611ee59"
     },
     {
       "id": "current_task_scene_labels",

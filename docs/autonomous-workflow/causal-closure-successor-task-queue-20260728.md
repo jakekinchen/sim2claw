@@ -570,10 +570,13 @@ Current state:
 - Corner-shape heldout V2 is prospectively defined by route SHA-256
   `80e2d59d56f91987741ceed3774711bd608a973f6f3e8cc88021de4f336d9aaa`
   and evaluator implementation SHA-256
-  `f364b374616e89becbdf8eb1a49358f85aa796b4389550021a271db5238cc3ad`.
+  `fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0`.
   It increases only the elbow excursion from three to five degrees, retains
   the wrist action at three degrees, replaces PnP rotation with normalized raw
-  tag-corner trajectory shape, fits nothing, and requires no depth.
+  tag-corner trajectory shape, fits nothing, and requires no depth. Before
+  either new capture exists, its provenance contract permits only one
+  stage-1 final-hold frame for between-stage safety; both action trajectories
+  remain unopened until the evaluator contract is frozen.
 - Corner-shape V2 compiled from the fresh torque-off anchor with no modeled
   contact. Packet SHA-256 is
   `241eea8d705bf303d5f7c3d9c8e5c4e7b81def094108d221a584374b97c428e7`;

@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "6077a9bbfd14fb929100c0a0b375e63ecf14df1567ebdeda4d9e888e1ecbcd2f",
+      "sha256": "c24e9bd2ee72cc4f53ca4880591d2ca4232e322a2269178ed8c1568fc611ee59",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -2004,7 +2004,7 @@
     },
     "calibration_graph_d405_corner_shape_evaluator_v2": {
       "path": "tools/evaluate_calibration_graph_d405_corner_shape_heldout_v2.py",
-      "sha256": "f364b374616e89becbdf8eb1a49358f85aa796b4389550021a271db5238cc3ad",
+      "sha256": "fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0",
       "proof_class": "prospective_gauge_free_d405_fixed_tag_raw_corner_trajectory_shape_evaluator"
     },
     "calibration_graph_d405_corner_shape_packet_v2": {
@@ -5392,6 +5392,19 @@
         "stage_count": 2,
         "no_contact_calibration_only": true,
         "physical_motion_at_review": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:calibration-graph-d405-corner-shape-safety-provenance-v2-frozen",
+      "type": "checkpoint",
+      "label": "Corner-shape evaluator safety-frame provenance frozen before capture",
+      "status": "preregistered_before_new_capture",
+      "source_binding": "calibration_graph_d405_corner_shape_evaluator_v2",
+      "data": {
+        "stage_1_final_hold_safety_frame_permitted": true,
+        "action_interval_trajectories_opened": false,
+        "stage_2_frames_opened": false,
         "physical_task_attempts": 0
       }
     },
@@ -8824,6 +8837,15 @@
       "source_binding": "calibration_graph_d405_corner_shape_review_v2",
       "node_ids_added": [
         "verdict:calibration-graph-d405-corner-shape-review-v2-admit"
+      ]
+    },
+    {
+      "revision": 164,
+      "event_id": "CALIBRATION_GRAPH_D405_CORNER_SHAPE_SAFETY_PROVENANCE_V2_FROZEN",
+      "status": "preregistered_before_new_capture",
+      "source_binding": "calibration_graph_d405_corner_shape_evaluator_v2",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-d405-corner-shape-safety-provenance-v2-frozen"
       ]
     }
   ],
