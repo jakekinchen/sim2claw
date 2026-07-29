@@ -474,9 +474,17 @@ def replay(
         contract["live_seed"] = raw_contract["live_seed"]
         contract["output_directory"] = raw_contract["output_directory"]
         contract["claim_boundary"] = raw_contract["claim_boundary"]
-    elif contract.get("schema_version") == (
-        "sim2claw.canonical_wrist_path_reset_temporal.v2"
-    ):
+    elif contract.get("schema_version") in {
+        "sim2claw.canonical_wrist_path_reset_temporal.v2",
+        "sim2claw.canonical_wrist_path_low_contact_temporal.v3",
+    }:
+        reset_schema = contract["schema_version"]
+        expected_case_count = (
+            6
+            if reset_schema
+            == "sim2claw.canonical_wrist_path_reset_temporal.v2"
+            else 4
+        )
         expected_fields = {
             "schema_version",
             "contract_id",
@@ -498,7 +506,7 @@ def replay(
         if (
             set(contract) != expected_fields
             or not all(contract["unchanged_from_base"].values())
-            or len(contract["cases"]) != 6
+            or len(contract["cases"]) != expected_case_count
         ):
             raise CanonicalSeededActionTemporalError(
                 "canonical reset-layout temporal contract widened"
@@ -534,7 +542,14 @@ def replay(
         contract["cases"] = raw_contract["cases"]
         contract["live_seed"] = raw_contract["live_seed"]
         contract["reset_layout"] = raw_contract["reset_layout"]
-        contract["observable_episode"]["expected_episode_count"] = 60
+        contract["observable_episode"]["expected_episode_count"] = (
+            expected_case_count * 10
+        )
+        contract["action_completion_expected_status"] = (
+            "two_unopened_v4_family_actions_frozen"
+            if expected_case_count == 6
+            else "four_low_contact_v4_family_actions_frozen"
+        )
         contract["output_directory"] = raw_contract["output_directory"]
         contract["claim_boundary"] = raw_contract["claim_boundary"]
     elif contract.get("schema_version") != (
@@ -633,7 +648,10 @@ def replay(
     if completion_receipt is not None:
         if (
             completion_receipt["status"]
-            != "two_unopened_v4_family_actions_frozen"
+            != contract.get(
+                "action_completion_expected_status",
+                "two_unopened_v4_family_actions_frozen",
+            )
             or completion_receipt["dynamic_simulation"]
             or completion_receipt["physical_motion"]
         ):
@@ -644,9 +662,8 @@ def replay(
     static_by_id = {row["case_id"]: row for row in static_rows}
     contract_case_ids = [case["case_id"] for case in contract["cases"]]
     if (
-        len(static_by_id) != len(contract["cases"])
-        or len(set(contract_case_ids)) != len(contract_case_ids)
-        or set(contract_case_ids) != set(static_by_id)
+        len(set(contract_case_ids)) != len(contract_case_ids)
+        or not set(contract_case_ids).issubset(static_by_id)
     ):
         raise CanonicalSeededActionTemporalError(
             "canonical temporal case count changed"

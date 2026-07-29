@@ -1,0 +1,94 @@
+{
+  "authority": {
+    "camera": false,
+    "dynamic_simulation": false,
+    "gateway": false,
+    "mapping_approval": false,
+    "model_loading": true,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "static_simulation": true,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective materialization of exactly four V4 cells that were already static-eligible at the lower 10 mm contact-height setting. Their case cells, float64 hashes, shapes, wrist targets, path mechanism, current anchor, and static evidence predate this run. The 14 mm actions and their negative outcomes remain immutable. This completion performs no dynamic simulation, family search, mapping, hardware action, or transfer.",
+  "contract_path": "configs/evaluations/canonical_wrist_path_action_completion_v2.json",
+  "contract_sha256": "3987ee1b898cb634b6f9688c2a35d057a0a07c936ab631b9d4deaa515067379a",
+  "dynamic_simulation": false,
+  "frozen_actions": [
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-action-completion-v2/actions/00.f64le",
+      "action_sha256": "4bddb04b234d54fc9b857785911330e98959b3d24a9c5b8257afd762f1ff371a",
+      "action_shape": [
+        1053,
+        6
+      ],
+      "case_id": "tan_pawn_h7__h7_h8",
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "h8",
+      "dynamic_outcome_opened": false,
+      "selected_piece_id": "tan_pawn_h7",
+      "source_square": "h7",
+      "wrist_orientation_index": 1,
+      "wrist_roll_target_rad": -1.803634756676338
+    },
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-action-completion-v2/actions/01.f64le",
+      "action_sha256": "5e41c0ff9f1ec28abb19cf23f4be0914ca264517b2c357ab87783c62138468b9",
+      "action_shape": [
+        1160,
+        6
+      ],
+      "case_id": "tan_pawn_d7__d7_c7",
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "c7",
+      "dynamic_outcome_opened": false,
+      "selected_piece_id": "tan_pawn_d7",
+      "source_square": "d7",
+      "wrist_orientation_index": 0,
+      "wrist_roll_target_rad": -1.9562840850716032
+    },
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-action-completion-v2/actions/02.f64le",
+      "action_sha256": "6606b3915151acd162c6767ddd44c484928a0640552602997872572990212505",
+      "action_shape": [
+        1033,
+        6
+      ],
+      "case_id": "tan_pawn_f7__f7_e7",
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "e7",
+      "dynamic_outcome_opened": false,
+      "selected_piece_id": "tan_pawn_f7",
+      "source_square": "f7",
+      "wrist_orientation_index": 2,
+      "wrist_roll_target_rad": -1.6509854282810728
+    },
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-action-completion-v2/actions/03.f64le",
+      "action_sha256": "2d77116b1b37f20e6da8e535baaa0599a9cc003ef9755db9d60eba6fa2208047",
+      "action_shape": [
+        1370,
+        6
+      ],
+      "case_id": "tan_pawn_d7__d7_e7",
+      "contact_height_index": 0,
+      "contact_height_m": 0.01,
+      "destination_square": "e7",
+      "dynamic_outcome_opened": false,
+      "selected_piece_id": "tan_pawn_d7",
+      "source_square": "d7",
+      "wrist_orientation_index": 0,
+      "wrist_roll_target_rad": -1.9562840850716032
+    }
+  ],
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "proof_class": "cpu_fp64_static_action_completion_without_dynamic_outcomes",
+  "schema_version": "sim2claw.canonical_wrist_path_action_completion_receipt.v1",
+  "status": "four_low_contact_v4_family_actions_frozen"
+}

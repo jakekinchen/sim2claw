@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "820c1005257e7a5ad3532f1b879a0e565513ee751824f307414cdfdfe3ff2ce6",
+      "sha256": "de3b4fa00c9c5f0dd44d9cba387029711aeb36026896476934e42d54d2bd6884",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1596,6 +1596,26 @@
         "schema_version": "sim2claw.canonical_wrist_path_action_completion.v2",
         "status": "frozen_after_isolated_reset_partial_before_four_low_contact_action_materialization",
         "proof_class": "prospective_cpu_fp64_static_low_contact_action_completion_without_dynamic_outcomes"
+      }
+    },
+    "canonical_wrist_path_action_completion_v2_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-action-completion-v2/receipt.json",
+      "sha256": "ee26fa9d39661f31063a1036cc9eb0edc935996e399cf46696b6b9f53ba02336",
+      "proof_class": "cpu_fp64_static_action_completion_without_dynamic_outcomes",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_action_completion_receipt.v1",
+        "status": "four_low_contact_v4_family_actions_frozen",
+        "proof_class": "cpu_fp64_static_action_completion_without_dynamic_outcomes"
+      }
+    },
+    "canonical_wrist_path_low_contact_temporal_v3_contract": {
+      "path": "configs/evaluations/canonical_wrist_path_low_contact_temporal_v3.json",
+      "sha256": "fd00a7c4b16ed15d93dea4addf370be9374f4774073e58371c6345ce71ea69b4",
+      "proof_class": "prospective_cpu_fp64_exact_low_contact_action_isolated_reset_direct_target_and_diagnostic_zoh_causal_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_low_contact_temporal.v3",
+        "status": "frozen_after_four_low_contact_action_completion_before_isolated_reset_dynamic_replay",
+        "proof_class": "prospective_cpu_fp64_exact_low_contact_action_isolated_reset_direct_target_and_diagnostic_zoh_causal_replay"
       }
     },
     "simulator_candidate": {
@@ -4411,6 +4431,40 @@
       }
     },
     {
+      "id": "checkpoint:canonical-wrist-path-action-completion-v2-pass",
+      "type": "checkpoint",
+      "label": "Four low-contact V4 family actions materialized exactly",
+      "status": "four_low_contact_v4_family_actions_frozen",
+      "source_binding": "canonical_wrist_path_action_completion_v2_receipt",
+      "data": {
+        "action_count": 4,
+        "contact_height_m": 0.01,
+        "action_hashes_match_preregistration": true,
+        "dynamic_simulation_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:canonical-wrist-path-low-contact-temporal-v3-frozen",
+      "type": "checkpoint",
+      "label": "Four-action low-contact isolated-reset dynamic replay frozen",
+      "status": "preregistered_before_exactly_once_low_contact_dynamic_replay",
+      "source_binding": "canonical_wrist_path_low_contact_temporal_v3_contract",
+      "data": {
+        "action_count": 4,
+        "real_to_sim_families": 2,
+        "sim_to_real_families": 2,
+        "plant_path_count": 2,
+        "reset_variant_count": 5,
+        "expected_observable_episode_count": 40,
+        "all_actions_dynamic_outcome_unopened": true,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -6053,6 +6107,26 @@
       }
     },
     {
+      "source": "checkpoint:canonical-wrist-path-action-completion-v2-pass",
+      "type": "evaluated-on",
+      "target": "checkpoint:canonical-wrist-path-action-completion-v2-frozen",
+      "metadata": {
+        "exact_action_hashes_reproduced": true,
+        "dynamic_execution": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:canonical-wrist-path-low-contact-temporal-v3-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:canonical-wrist-path-action-completion-v2-pass",
+      "metadata": {
+        "four_low_contact_actions_frozen": true,
+        "two_cases_per_direction": true,
+        "mapping_and_physical_authority": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -7267,14 +7341,32 @@
       "node_ids_added": [
         "checkpoint:canonical-wrist-path-action-completion-v2-frozen"
       ]
+    },
+    {
+      "revision": 130,
+      "event_id": "CANONICAL_WRIST_PATH_ACTION_COMPLETION_V2_PASS",
+      "status": "four_low_contact_v4_family_actions_frozen",
+      "source_binding": "canonical_wrist_path_action_completion_v2_receipt",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-action-completion-v2-pass"
+      ]
+    },
+    {
+      "revision": 131,
+      "event_id": "CANONICAL_WRIST_PATH_LOW_CONTACT_TEMPORAL_V3_FROZEN",
+      "status": "preregistered_before_exactly_once_low_contact_dynamic_replay",
+      "source_binding": "canonical_wrist_path_low_contact_temporal_v3_contract",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-low-contact-temporal-v3-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-wrist-path-action-completion-v2-frozen",
+    "node_id": "checkpoint:canonical-wrist-path-low-contact-temporal-v3-frozen",
     "milestone_id": "CC02",
-    "status": "preregistered_before_exactly_once_four_action_low_contact_completion",
+    "status": "preregistered_before_exactly_once_low_contact_dynamic_replay",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_wrist_path_action_completion_v2_exactly_once",
+    "resume_action": "execute_canonical_wrist_path_low_contact_temporal_v3_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

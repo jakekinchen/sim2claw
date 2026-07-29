@@ -165,6 +165,8 @@ Confirmed:
 - Reset V2 passed only `1/1` families; receipt `e2986fac...`, closeout
   `30633e88...`.
 - Four already-static-safe 10 mm contact actions are frozen at `3987ee1b...`.
+- Completion reproduced all four hashes at `ee26fa9d...`.
+- Low-contact isolated-reset dynamic V3 is frozen at `fd00a7c4...`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -211,7 +213,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC02 finite current-workcell wrist-orientation and precontact-path static successor.
 Completed: CC00, CC00A, CC01.
-Evidence: reset V2 partial e2986fac...; low-contact completion freeze 3987ee1b....
+Evidence: reset V2 partial e2986fac...; low-contact completion ee26fa9d...; V3 freeze fd00a7c4....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -219,7 +221,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push reset V2 closeout and low-contact freeze, then materialize the four exact actions once.
+Next step: commit/push low-contact completion and V3 freeze, then execute four exact actions under both plants once.
 ```
 
 ## Physical Authority Boundaries

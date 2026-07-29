@@ -388,6 +388,13 @@ Current state:
   `3987ee1b898cb634b6f9688c2a35d057a0a07c936ab631b9d4deaa515067379a`.
   Their 14 mm predecessors remain immutable; no family search or dynamic
   outcome occurs in this step.
+- The four low-contact actions reproduced their preregistered hashes exactly
+  without dynamics. Completion receipt SHA-256
+  `ee26fa9d39661f31063a1036cc9eb0edc935996e399cf46696b6b9f53ba02336`.
+- Low-contact temporal V3 is frozen at contract SHA-256
+  `fd00a7c4b16ed15d93dea4addf370be9374f4774073e58371c6345ce71ea69b4`.
+  It assigns two cases per direction before dynamic opening and preserves the
+  isolated reset, both plant paths, five deltas, physics, traces, and gates.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -430,7 +437,7 @@ This authorization:
 
 Next step:
 
-- Commit and push reset V2's partial negative plus the four-action low-contact
-  completion freeze, then materialize those four exact tensors once.
-  Preserve all gates and prior action bytes; no result itself promotes
-  geometry, approves mapping, or opens hardware.
+- Commit and push the low-contact completion result plus temporal V3 freeze,
+  then replay the four new exact tensors under both plant paths and five
+  deltas exactly once. Preserve all gates and prior action bytes; no result
+  itself promotes geometry, approves mapping, or opens hardware.
