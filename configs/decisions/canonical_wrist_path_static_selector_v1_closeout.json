@@ -1,0 +1,42 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_static_selector_closeout.v1",
+  "decision_id": "canonical-wrist-path-static-selector-20260729-v1-closeout",
+  "status": "four_family_static_selector_pass",
+  "proof_class": "static_only_frozen_action_candidate_selection",
+  "contract": {
+    "path": "configs/evaluations/canonical_wrist_path_static_selector_v1.json",
+    "sha256": "cdd2d7ced436b789d2c90fddece2d29d0c9725ec95a70e205b0227b063c53e8b"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/receipt.json",
+    "sha256": "18921a5d066c0e8e41f84850cc01a59bf44a6f3de64b62df8b9496d908ddeec9"
+  },
+  "result": {
+    "selected_case_count": 4,
+    "direction_counts": {
+      "REAL_TO_SIM": 2,
+      "SIM_TO_REAL": 2
+    },
+    "canonical_single_lane_selected": 3,
+    "two_lane_selected": 1,
+    "two_lane_case_id": "tan_pawn_d7__d7_e7",
+    "dynamic_outcomes_used": false,
+    "dynamic_simulation": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Admit the four selected exact tensors to one prospectively frozen dynamic replay under the unchanged isolated reset, both plant paths, five deltas, 36.025 mm progress gate, and two-family-per-direction requirement. The selector and actions remain immutable; no fallback or case switch is allowed after dynamic opening.",
+  "authority": {
+    "dynamic_replay_freeze": true,
+    "dynamic_replay": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

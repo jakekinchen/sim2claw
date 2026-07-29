@@ -1,0 +1,120 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_selected_temporal.v5",
+  "contract_id": "canonical-wrist-path-selected-temporal-20260729-v5",
+  "status": "frozen_after_static_selector_pass_before_isolated_reset_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_exact_statically_selected_action_isolated_reset_direct_target_and_diagnostic_zoh_causal_replay",
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/receipt.json",
+    "sha256": "18921a5d066c0e8e41f84850cc01a59bf44a6f3de64b62df8b9496d908ddeec9"
+  },
+  "static_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_static_selector_v1_closeout.json",
+    "sha256": "0ca11fb87d1357034b82f37b7ab689ee1a259254c805e8e69c14a627c20cb661"
+  },
+  "temporal_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_stroke_temporal_v4_closeout.json",
+    "sha256": "54c85ca5221164c40622c5fa8a00256c55979984f355b4b08092f8b231cf51cc"
+  },
+  "temporal_implementation": {
+    "path": "src/sim2claw/canonical_seeded_action_temporal.py",
+    "sha256": "b0efd334657f3318b085e946ffd272c4aa2acce22435867c42bc3f42d9872235"
+  },
+  "cases": [
+    {
+      "case_id": "tan_pawn_h7__h7_h8",
+      "direction": "REAL_TO_SIM",
+      "source_square": "h7",
+      "destination_square": "h8",
+      "selected_piece_id": "tan_pawn_h7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/actions/00.f64le",
+      "action_sha256": "c7fe9e844a39769ba13c566b7947bdb6c66d72bc0e6b87f430bb5ced5646a993",
+      "action_shape": [
+        1083,
+        6
+      ],
+      "selected_candidate": "canonical_single_lane_stroke_v5"
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_c7",
+      "direction": "SIM_TO_REAL",
+      "source_square": "d7",
+      "destination_square": "c7",
+      "selected_piece_id": "tan_pawn_d7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/actions/01.f64le",
+      "action_sha256": "a36f056a279de3aa106b8bacb42527bd65e53415f3ac22cfafb1987aae798b40",
+      "action_shape": [
+        1191,
+        6
+      ],
+      "selected_candidate": "canonical_single_lane_stroke_v5"
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_e7",
+      "direction": "REAL_TO_SIM",
+      "source_square": "f7",
+      "destination_square": "e7",
+      "selected_piece_id": "tan_pawn_f7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/actions/02.f64le",
+      "action_sha256": "e9f128e0e3497039e1267ea84523a260ab4f0a8eb6df515fc5242ce089c15cae",
+      "action_shape": [
+        1038,
+        6
+      ],
+      "selected_candidate": "canonical_single_lane_stroke_v5"
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_e7",
+      "direction": "SIM_TO_REAL",
+      "source_square": "d7",
+      "destination_square": "e7",
+      "selected_piece_id": "tan_pawn_d7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/actions/03.f64le",
+      "action_sha256": "dcd5edef44f2dc5f5603c46534409a68d3462a15048c29381447a5cce2d0407d",
+      "action_shape": [
+        3405,
+        6
+      ],
+      "selected_candidate": "two_lane_v6"
+    }
+  ],
+  "live_seed": {
+    "source": "canonical_wrist_path_static_selector_v1_exact_row_zero",
+    "follower_position_degrees": [
+      6.5054945054945055,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.3752969121140137
+    ],
+    "torque_enabled": false
+  },
+  "reset_layout": {
+    "mode": "isolated_selected_pawn_offboard_parking",
+    "parking_origin_xyz_m": [
+      0.8,
+      0.1,
+      0.800883941
+    ],
+    "parking_spacing_m": 0.05,
+    "selected_pawn_pose_unchanged": true,
+    "nonselected_pawn_dynamics_unchanged": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-selected-temporal-v5",
+  "unchanged_from_base": {
+    "all_four_requested_action_hashes_and_shapes_frozen": true,
+    "forty_hz_row_order_and_timing": true,
+    "direct_target_baseline_and_uncalibrated_0p11s_zoh_challenger": true,
+    "isolated_reset_and_five_selected_pawn_deltas": true,
+    "cpu_fp64_mujoco_physics_and_substeps": true,
+    "observable_episode_v2_min_and_first_divergence": true,
+    "progress_contact_exclusion_no_lift_collision_and_camera_gates": true,
+    "two_cases_per_direction_both_plant_paths": true,
+    "dynamic_only_authority": true
+  },
+  "claim_boundary": "Prospectively frozen CPU/fp64 replay of four exact actions chosen by the outcome-blind static selector V1. The selector, action bytes, direction assignment, MuJoCo physics, isolated reset, direct-target baseline, diagnostic 0.11 second ZOH challenger, five reset deltas, ObservableEpisode.v2-min traces, and all gates are frozen. No fallback or candidate switch is allowed after opening dynamics. A pass can close the CC02 simulator screen for this isolated development slice only; it cannot approve mapping, evaluator V2, hardware, or transfer."
+}

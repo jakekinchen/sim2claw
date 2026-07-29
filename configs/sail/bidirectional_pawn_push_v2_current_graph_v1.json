@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "649e646f2e270bdec3d97e5db4ced3e94f793c558b8423e56a94459175a19392",
+      "sha256": "e49050e588a37a89b414a171ea7e86fa42a325f0ed810dc720509c7bbbde666a",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1736,6 +1736,36 @@
         "schema_version": "sim2claw.canonical_wrist_path_static_selector.v1",
         "status": "frozen_after_two_lane_static_partial_before_static_only_candidate_selection",
         "proof_class": "prospective_static_only_frozen_action_candidate_selection"
+      }
+    },
+    "canonical_wrist_path_static_selector_v1_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/receipt.json",
+      "sha256": "18921a5d066c0e8e41f84850cc01a59bf44a6f3de64b62df8b9496d908ddeec9",
+      "proof_class": "static_only_frozen_action_candidate_selection",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_static_selector_receipt.v1",
+        "status": "four_family_static_selector_pass",
+        "passed": true
+      }
+    },
+    "canonical_wrist_path_static_selector_v1_closeout": {
+      "path": "configs/decisions/canonical_wrist_path_static_selector_v1_closeout.json",
+      "sha256": "0ca11fb87d1357034b82f37b7ab689ee1a259254c805e8e69c14a627c20cb661",
+      "proof_class": "static_only_frozen_action_candidate_selection",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_static_selector_closeout.v1",
+        "status": "four_family_static_selector_pass",
+        "proof_class": "static_only_frozen_action_candidate_selection"
+      }
+    },
+    "canonical_wrist_path_selected_temporal_v5_contract": {
+      "path": "configs/evaluations/canonical_wrist_path_selected_temporal_v5.json",
+      "sha256": "a303b12eaf959186fc0b904023552ab8a4898ac691ec933d60b4cd00ae6b09a5",
+      "proof_class": "prospective_cpu_fp64_exact_statically_selected_action_isolated_reset_direct_target_and_diagnostic_zoh_causal_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_selected_temporal.v5",
+        "status": "frozen_after_static_selector_pass_before_isolated_reset_dynamic_replay",
+        "proof_class": "prospective_cpu_fp64_exact_statically_selected_action_isolated_reset_direct_target_and_diagnostic_zoh_causal_replay"
       }
     },
     "simulator_candidate": {
@@ -4735,6 +4765,42 @@
       }
     },
     {
+      "id": "checkpoint:canonical-wrist-path-static-selector-v1-pass",
+      "type": "checkpoint",
+      "label": "Static selector freezes two families per direction",
+      "status": "four_family_static_selector_pass",
+      "source_binding": "canonical_wrist_path_static_selector_v1_closeout",
+      "data": {
+        "receipt_source_binding": "canonical_wrist_path_static_selector_v1_receipt",
+        "selected_case_count": 4,
+        "canonical_single_lane_selected": 3,
+        "two_lane_selected": 1,
+        "dynamic_outcomes_used": false,
+        "dynamic_simulation": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:canonical-wrist-path-selected-temporal-v5-frozen",
+      "type": "checkpoint",
+      "label": "Four statically selected exact actions frozen for dynamic replay",
+      "status": "preregistered_before_exactly_once_selected_dynamic_replay",
+      "source_binding": "canonical_wrist_path_selected_temporal_v5_contract",
+      "data": {
+        "action_count": 4,
+        "real_to_sim_families": 2,
+        "sim_to_real_families": 2,
+        "plant_path_count": 2,
+        "reset_variant_count": 5,
+        "expected_observable_episode_count": 40,
+        "candidate_fallback_allowed": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -6481,6 +6547,26 @@
       }
     },
     {
+      "source": "checkpoint:canonical-wrist-path-static-selector-v1-pass",
+      "type": "evaluated-on",
+      "target": "checkpoint:canonical-wrist-path-static-selector-v1-frozen",
+      "metadata": {
+        "two_cases_per_direction": true,
+        "dynamic_outcomes_used": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:canonical-wrist-path-selected-temporal-v5-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:canonical-wrist-path-static-selector-v1-pass",
+      "metadata": {
+        "four_exact_actions_frozen": true,
+        "candidate_fallback_allowed": false,
+        "mapping_and_physical_authority": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -7785,14 +7871,32 @@
       "node_ids_added": [
         "checkpoint:canonical-wrist-path-static-selector-v1-frozen"
       ]
+    },
+    {
+      "revision": 140,
+      "event_id": "CANONICAL_WRIST_PATH_STATIC_SELECTOR_V1_PASS",
+      "status": "four_family_static_selector_pass",
+      "source_binding": "canonical_wrist_path_static_selector_v1_closeout",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-static-selector-v1-pass"
+      ]
+    },
+    {
+      "revision": 141,
+      "event_id": "CANONICAL_WRIST_PATH_SELECTED_TEMPORAL_V5_FROZEN",
+      "status": "preregistered_before_exactly_once_selected_dynamic_replay",
+      "source_binding": "canonical_wrist_path_selected_temporal_v5_contract",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-selected-temporal-v5-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-wrist-path-static-selector-v1-frozen",
+    "node_id": "checkpoint:canonical-wrist-path-selected-temporal-v5-frozen",
     "milestone_id": "CC02",
-    "status": "preregistered_before_exactly_once_static_candidate_selection",
-    "queue_status": "ACTIVE_CC02_STATIC_SELECTOR",
-    "resume_action": "execute_canonical_wrist_path_static_selector_v1_exactly_once",
+    "status": "preregistered_before_exactly_once_selected_dynamic_replay",
+    "queue_status": "ACTIVE_CC02_SELECTED_DYNAMIC_REPLAY",
+    "resume_action": "execute_canonical_wrist_path_selected_temporal_v5_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

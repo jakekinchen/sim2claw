@@ -552,9 +552,10 @@ def replay(
         )
         contract["output_directory"] = raw_contract["output_directory"]
         contract["claim_boundary"] = raw_contract["claim_boundary"]
-    elif contract.get("schema_version") == (
-        "sim2claw.canonical_wrist_path_stroke_temporal.v4"
-    ):
+    elif contract.get("schema_version") in {
+        "sim2claw.canonical_wrist_path_stroke_temporal.v4",
+        "sim2claw.canonical_wrist_path_selected_temporal.v5",
+    }:
         expected_fields = {
             "schema_version",
             "contract_id",
@@ -709,10 +710,21 @@ def replay(
         and static_receipt.get("dynamic_replay_executed") is False
         and static_receipt.get("physical_motion") is False
     )
+    selector_static_admitted = (
+        static_receipt.get("status") == "four_family_static_selector_pass"
+        and static_receipt.get("passed") is True
+        and len(static_receipt.get("selected", [])) == 4
+        and static_receipt.get("direction_counts")
+        == {"REAL_TO_SIM": 2, "SIM_TO_REAL": 2}
+        and static_receipt.get("dynamic_outcomes_used") is False
+        and static_receipt.get("dynamic_simulation") is False
+        and static_receipt.get("physical_motion") is False
+    )
     if not (
         seeded_static_admitted
         or wrist_path_static_admitted
         or stroke_static_admitted
+        or selector_static_admitted
     ):
         raise CanonicalSeededActionTemporalError(
             "canonical static admission changed"

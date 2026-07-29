@@ -1,0 +1,114 @@
+{
+  "authority": {
+    "camera": false,
+    "dynamic_simulation": false,
+    "gateway": false,
+    "mapping_approval": false,
+    "model_loading": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "static_selection": true,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospectively frozen static-only selection over exactly the canonical single-lane stroke V5 and two-lane V6 action candidates. Per family, only statically eligible candidates compete; the lowest absolute first-contact vertical-normal component wins and ties prefer the canonical path. Dynamic outcomes are not read or used. A pass materializes four exact selected tensors only and cannot authorize dynamic replay, mapping, evaluator V2, hardware, or transfer.",
+  "contract_path": "configs/evaluations/canonical_wrist_path_static_selector_v1.json",
+  "contract_sha256": "cdd2d7ced436b789d2c90fddece2d29d0c9725ec95a70e205b0227b063c53e8b",
+  "direction_counts": {
+    "REAL_TO_SIM": 2,
+    "SIM_TO_REAL": 2
+  },
+  "dynamic_outcomes_used": false,
+  "dynamic_simulation": false,
+  "passed": true,
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "proof_class": "static_only_frozen_action_candidate_selection",
+  "schema_version": "sim2claw.canonical_wrist_path_static_selector_receipt.v1",
+  "selected": [
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/actions/00.f64le",
+      "action_sha256": "c7fe9e844a39769ba13c566b7947bdb6c66d72bc0e6b87f430bb5ced5646a993",
+      "action_shape": [
+        1083,
+        6
+      ],
+      "candidate_metrics": {
+        "canonical_single_lane_stroke_v5": 0.26335294777099755
+      },
+      "case_id": "tan_pawn_h7__h7_h8",
+      "destination_square": "h8",
+      "direction": "REAL_TO_SIM",
+      "selected_candidate": "canonical_single_lane_stroke_v5",
+      "selected_piece_id": "tan_pawn_h7",
+      "selection_metric": {
+        "absolute_first_contact_vertical_normal_component": 0.26335294777099755
+      },
+      "source_square": "h7"
+    },
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/actions/01.f64le",
+      "action_sha256": "a36f056a279de3aa106b8bacb42527bd65e53415f3ac22cfafb1987aae798b40",
+      "action_shape": [
+        1191,
+        6
+      ],
+      "candidate_metrics": {
+        "canonical_single_lane_stroke_v5": 0.3128409237414511
+      },
+      "case_id": "tan_pawn_d7__d7_c7",
+      "destination_square": "c7",
+      "direction": "SIM_TO_REAL",
+      "selected_candidate": "canonical_single_lane_stroke_v5",
+      "selected_piece_id": "tan_pawn_d7",
+      "selection_metric": {
+        "absolute_first_contact_vertical_normal_component": 0.3128409237414511
+      },
+      "source_square": "d7"
+    },
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/actions/02.f64le",
+      "action_sha256": "e9f128e0e3497039e1267ea84523a260ab4f0a8eb6df515fc5242ce089c15cae",
+      "action_shape": [
+        1038,
+        6
+      ],
+      "candidate_metrics": {
+        "canonical_single_lane_stroke_v5": 0.31567455548870504,
+        "two_lane_v6": 0.3452827705488799
+      },
+      "case_id": "tan_pawn_f7__f7_e7",
+      "destination_square": "e7",
+      "direction": "REAL_TO_SIM",
+      "selected_candidate": "canonical_single_lane_stroke_v5",
+      "selected_piece_id": "tan_pawn_f7",
+      "selection_metric": {
+        "absolute_first_contact_vertical_normal_component": 0.31567455548870504
+      },
+      "source_square": "f7"
+    },
+    {
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/actions/03.f64le",
+      "action_sha256": "dcd5edef44f2dc5f5603c46534409a68d3462a15048c29381447a5cce2d0407d",
+      "action_shape": [
+        3405,
+        6
+      ],
+      "candidate_metrics": {
+        "canonical_single_lane_stroke_v5": 0.3464479557847158,
+        "two_lane_v6": 9.026934944876178e-05
+      },
+      "case_id": "tan_pawn_d7__d7_e7",
+      "destination_square": "e7",
+      "direction": "SIM_TO_REAL",
+      "selected_candidate": "two_lane_v6",
+      "selected_piece_id": "tan_pawn_d7",
+      "selection_metric": {
+        "absolute_first_contact_vertical_normal_component": 9.026934944876178e-05
+      },
+      "source_square": "d7"
+    }
+  ],
+  "status": "four_family_static_selector_pass"
+}

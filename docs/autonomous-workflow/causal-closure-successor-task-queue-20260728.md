@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC02_STATIC_SELECTOR`
+Status: `ACTIVE_CC02_SELECTED_DYNAMIC_REPLAY`
 
 Created: `2026-07-28`
 
@@ -445,6 +445,14 @@ Current state:
   It reads only the two static receipts and selects the eligible candidate
   with the lowest absolute vertical contact normal, tie-breaking canonical;
   dynamic outcomes are excluded.
+- Static selector V1 passed `2/2` directions and chose three canonical
+  single-lane actions plus the two-lane `d7->e7` action. Receipt SHA-256
+  `18921a5d066c0e8e41f84850cc01a59bf44a6f3de64b62df8b9496d908ddeec9`;
+  closeout SHA-256
+  `0ca11fb87d1357034b82f37b7ab689ee1a259254c805e8e69c14a627c20cb661`.
+- Selected temporal V5 is frozen before dynamic opening at contract SHA-256
+  `a303b12eaf959186fc0b904023552ab8a4898ac691ec933d60b4cd00ae6b09a5`.
+  Candidate fallback is forbidden after execution begins.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -486,5 +494,5 @@ This authorization:
 
 Next step:
 
-- Execute static selector V1 exactly once and bind its four selected tensors.
-  Dynamic replay remains closed until the selector passes `2/2` directions.
+- Execute selected temporal V5 exactly once under both plants and five reset
+  variants. Move to CC03 only on a strict `2/2` pass in both directions.
