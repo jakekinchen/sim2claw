@@ -1,0 +1,158 @@
+{
+  "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
+  "campaign_id": "observable_registration_contact_causality_v1",
+  "generated_at": "2026-07-29",
+  "status": "active_or0_retained_evidence_audit",
+  "node_types": [
+    "workcell",
+    "session",
+    "evidence",
+    "observation_channel",
+    "mapping_candidate",
+    "residual_channel",
+    "mechanism",
+    "intervention",
+    "evaluator_verdict",
+    "counterexample",
+    "external_boundary"
+  ],
+  "edge_types": [
+    "observed-by",
+    "generated-from",
+    "constrained-by",
+    "fitted-on",
+    "validated-on",
+    "evaluated-on",
+    "invalidates",
+    "predicts",
+    "admitted-to",
+    "counterexample-to"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "source_bindings": {
+    "queue": {
+      "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
+      "sha256": "032430102095c020207fb0fc17d21ca4b6e45cf1c1b7973f2e0342694607c14a",
+      "proof_class": "campaign_control_state"
+    },
+    "predecessor_graph": {
+      "path": "configs/sail/realized_action_outcome_current_graph_v1.json",
+      "sha256": "60d7ed2d919dcba804bb66ddbb394338e3b0f33069ed37f9b6581d7e5bd58cd3",
+      "proof_class": "immutable_predecessor_campaign"
+    },
+    "c6": {
+      "path": "configs/decisions/realized_action_outcome_mission_v1_closeout.json",
+      "sha256": "6b38a2b2498dba32db71828e518bdb8610542a89d7227c111d44387530060447",
+      "proof_class": "immutable_action_outcome_counterexample"
+    },
+    "rp04n": {
+      "path": "configs/decisions/rp04n_c922_crown_track_v1_closeout.json",
+      "sha256": "c18496b4d9ab279b0ca3f8eb26b504528b7d345f9657e1afca3bbee495dafde5",
+      "proof_class": "occluded_crown_diagnostic"
+    },
+    "img5349": {
+      "path": "configs/evaluations/img5349_3dgs_board_registration_v1.json",
+      "sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4",
+      "proof_class": "board_conditioned_visual_3dgs_registration"
+    }
+  },
+  "nodes": [
+    {
+      "id": "workcell:current-so101-chessboard",
+      "type": "workcell",
+      "label": "Current SO-101 chessboard workspace",
+      "status": "physical_motion_service_gated"
+    },
+    {
+      "id": "session:observable-registration-v1",
+      "type": "session",
+      "label": "Observable registration and contact causality",
+      "status": "active_or0",
+      "source_binding": "queue"
+    },
+    {
+      "id": "evidence:immutable-c6",
+      "type": "counterexample",
+      "label": "Immutable exact-action replay",
+      "status": "terminal_negative_0_of_1",
+      "source_binding": "c6",
+      "data": {
+        "first_simulated_pawn_motion_sample": 386,
+        "catastrophic_launch_sample": 388,
+        "selected_jaw_contact_steps": 0
+      }
+    },
+    {
+      "id": "evidence:rp04n",
+      "type": "counterexample",
+      "label": "C922 pawn-crown carry visibility",
+      "status": "terminal_negative_3_of_18_visible_last_tercile_only",
+      "source_binding": "rp04n"
+    },
+    {
+      "id": "observation:c922",
+      "type": "observation_channel",
+      "label": "Fixed overhead C922 RGB",
+      "status": "retained_1029_frames_30_fps_intrinsics_unapproved"
+    },
+    {
+      "id": "observation:d405-rgb",
+      "type": "observation_channel",
+      "label": "Wrist D405 RGB",
+      "status": "retained_171_frames_5_fps_metric_depth_absent"
+    },
+    {
+      "id": "observation:img5349-3dgs",
+      "type": "observation_channel",
+      "label": "Board-conditioned IMG_5349 3DGS",
+      "status": "accepted_visual_registration_diagnostic_relative_scale",
+      "source_binding": "img5349"
+    },
+    {
+      "id": "boundary:follower-elbow-service",
+      "type": "external_boundary",
+      "label": "Follower elbow ID-3 service",
+      "status": "blocks_physical_motion_not_offline_observability"
+    }
+  ],
+  "edges": [
+    {
+      "source": "session:observable-registration-v1",
+      "target": "evidence:immutable-c6",
+      "type": "generated-from"
+    },
+    {
+      "source": "observation:c922",
+      "target": "session:observable-registration-v1",
+      "type": "observed-by"
+    },
+    {
+      "source": "observation:d405-rgb",
+      "target": "session:observable-registration-v1",
+      "type": "observed-by"
+    },
+    {
+      "source": "observation:img5349-3dgs",
+      "target": "session:observable-registration-v1",
+      "type": "constrained-by"
+    },
+    {
+      "source": "boundary:follower-elbow-service",
+      "target": "workcell:current-so101-chessboard",
+      "type": "constrained-by"
+    }
+  ],
+  "active_card": "OR0",
+  "next_transition": "or0_retained_observability_inventory"
+}

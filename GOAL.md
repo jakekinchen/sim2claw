@@ -1,6 +1,22 @@
 # sim2claw Goal
 
-Status: `REALIZED-ACTION LOOP SAFE SCOPE COMPLETE; ACTION→OUTCOME 0/1; PHYSICAL PATH AT SERVICE BOUNDARY`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR0 RETAINED-EVIDENCE AUDIT`
+
+## Active long-horizon alignment successor
+
+The active queue is
+`docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md`.
+It preserves the immutable C6 `0/1` action-to-outcome result and now targets
+the missing causal evidence directly: held-out camera/world registration,
+separate robot/jaw/support residuals, bounded physical pawn-and-jaw tracks,
+measured first contact divergence, one prospectively justified simulator
+correction, and a new exact-action replay.
+
+OR0 is active. Physical motion remains closed at the follower-elbow service
+boundary, but the retained `1029`-frame C922 and `171`-frame wrist RGB streams
+leave substantial safe offline observability work. The crown-only RP04N
+negative is retained as an occlusion counterexample rather than treated as a
+terminal statement about the full episode.
 
 ## Latest realized-action outcome result
 
