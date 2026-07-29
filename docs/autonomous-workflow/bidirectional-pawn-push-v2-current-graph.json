@@ -7573,13 +7573,20 @@
     "counted_task_attempts_authorized": false,
     "physical_resume_gate": "fresh_canonical_task_plane_registration_lte_25_mm",
     "registration_revalidation": {
-      "status": "preregistered_pending_one_motion_free_execution",
+      "status": "accepted_registration_prerequisite_satisfied",
       "contract": "configs/evaluations/canonical_task_plane_registration_v1.json",
+      "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json",
+      "receipt_sha256": "566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5",
       "maximum_task_plane_rms_mm_exclusive": 25.0,
       "maximum_task_plane_max_mm_exclusive": 25.0,
+      "task_plane_rms_mm": 4.741722953437291,
+      "task_plane_max_mm": 7.104332681776422,
+      "registration_prerequisite_satisfied": true,
       "raw_image_reopen": false,
       "physical_recapture": false,
-      "physical_authority": false
+      "physical_authority": false,
+      "physical_packet_authorized": false,
+      "next_action": "freeze_new_canonical_runtime_native_transfer_campaign"
     }
   }
 }

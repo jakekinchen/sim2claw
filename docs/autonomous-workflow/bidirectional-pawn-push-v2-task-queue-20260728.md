@@ -3575,3 +3575,23 @@ Focused pre-execution tests pass `10/10`. Exactly one receipt execution is
 authorized after this freeze is committed and pushed. Camera, gateway,
 serial, physical recapture, motion, task-attempt, and transfer authority
 remain false.
+
+### HC-R02 canonical task-plane registration result — 2026-07-28
+
+The exactly-once motion-free execution produced
+`runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json`,
+SHA-256 `566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5`,
+with status `canonical_task_plane_registration_pass`.
+
+All 15 preregistered checks passed. Task-plane RMS/max are
+`4.741722953/7.104332681 mm`; reprojection RMS/max are
+`4.684082912/6.471232275 px`. Standard `a8, h8, h1, a1` corner alignment is
+within `3.384e-10 m`; all 16 reset pawns align within `6.411e-10 m`; all 64
+centers are unique. The historical sealed result reproduced exactly without
+refit or raw-image reopen.
+
+The canonical `<=25 mm` registration prerequisite is satisfied. No camera,
+gateway, serial, recapture, physical motion, or task attempt occurred. A
+physical packet remains unauthorized until a new canonical-runtime-native
+action/evaluator campaign is prospectively frozen and passes its simulator
+gates.

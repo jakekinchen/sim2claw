@@ -1,0 +1,42 @@
+{
+  "schema_version": "sim2claw.canonical_task_plane_registration_closeout.v1",
+  "decision_id": "canonical-task-plane-registration-closeout-20260728-v1",
+  "status": "accepted_registration_prerequisite_satisfied",
+  "contract": {
+    "path": "configs/evaluations/canonical_task_plane_registration_v1.json",
+    "sha256": "cf4a89d10b450b124dd67623de705bdf03fc7c5624ba88363c2a597a6f9a8fa2"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json",
+    "sha256": "566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5",
+    "status": "canonical_task_plane_registration_pass",
+    "proof_class": "motion_free_canonical_runtime_registration_revalidation"
+  },
+  "result": {
+    "task_plane_rms_mm": 4.741722953437291,
+    "task_plane_max_mm": 7.104332681776422,
+    "reprojection_rms_px": 4.684082912224784,
+    "reprojection_max_px": 6.471232275449458,
+    "corner_alignment_max_m": 3.383818204587549e-10,
+    "piece_alignment_max_m": 6.410649979520463e-10,
+    "registration_gate_mm": 25.0,
+    "registration_prerequisite_satisfied": true
+  },
+  "evidence_hygiene": {
+    "candidate_refit": false,
+    "raw_heldout_images_reopened": false,
+    "physical_recapture": false,
+    "camera_open": false,
+    "gateway_or_serial": false,
+    "physical_motion": false
+  },
+  "authority": {
+    "registration_prerequisite_satisfied": true,
+    "task_action_authorized": false,
+    "physical_packet_authorized": false,
+    "physical_motion_authorized": false,
+    "transfer_claim_authorized": false
+  },
+  "next_action": "freeze_a_new_canonical_runtime_native_transfer_campaign_without_resuming_the_legacy_successor_chain",
+  "claim_boundary": "The current canonical camera/robot/board task plane is registered below 25 mm. Contact physics, pawn displacement, task success, and transfer remain unproven."
+}
