@@ -175,6 +175,8 @@ Confirmed:
   `+/-3 mm` reset uncertainty; no per-case outcome tuning is allowed.
 - Stroke static V5 is frozen at `7df69f21...` with exactly four cells and
   false dynamic, mapping, and physical authority.
+- Stroke static V5 passed at receipt `f4b97af0...`, closeout `100bf81f...`.
+- Exact-action stroke temporal V4 is frozen at `7f385088...`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -219,9 +221,9 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card: CC02 bounded 66 mm stroke-only static successor across four low-contact families.
+Active card: CC02 exact 66 mm stroke dynamic replay across four low-contact families.
 Completed: CC00, CC00A, CC01.
-Evidence: low-contact V3 receipt 9a907fd1...; stroke V5 freeze 7df69f21....
+Evidence: stroke static pass f4b97af0...; temporal V4 freeze 7f385088....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -229,7 +231,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: V3 is only 1/1 dynamically; physical/model mapping remains unapproved.
-Next step: execute the four-case 66 mm stroke static successor exactly once; keep dynamics and hardware closed.
+Next step: execute the four-case 66 mm stroke temporal replay exactly once under both plants and five deltas; keep hardware closed.
 ```
 
 ## Physical Authority Boundaries

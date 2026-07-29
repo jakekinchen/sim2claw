@@ -18,7 +18,7 @@ from sim2claw.paths import REPO_ROOT
 
 CONTRACT = (
     REPO_ROOT
-    / "configs/evaluations/canonical_wrist_path_low_contact_temporal_v3.json"
+    / "configs/evaluations/canonical_wrist_path_stroke_temporal_v4.json"
 )
 
 
@@ -41,7 +41,7 @@ def test_temporal_contract_preserves_strict_proof_gates() -> None:
     }
     assert contract["authority"]["physical_motion"] is False
     assert successor["status"] == (
-        "frozen_after_four_low_contact_action_completion_before_isolated_reset_dynamic_replay"
+        "frozen_after_four_family_66mm_stroke_static_pass_before_isolated_reset_dynamic_replay"
     )
     assert all(successor["unchanged_from_base"].values())
     assert successor["reset_layout"]["mode"] == (

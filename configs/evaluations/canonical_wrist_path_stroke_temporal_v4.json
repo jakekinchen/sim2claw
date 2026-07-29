@@ -1,0 +1,120 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_stroke_temporal.v4",
+  "contract_id": "canonical-wrist-path-stroke-temporal-20260729-v4",
+  "status": "frozen_after_four_family_66mm_stroke_static_pass_before_isolated_reset_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_exact_66mm_stroke_action_isolated_reset_direct_target_and_diagnostic_zoh_causal_replay",
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-static-v5/receipt.json",
+    "sha256": "f4b97af0f219b21cb7ee59bc39b123f85f6e3d66a943d6245ffe3cd9af9c2815"
+  },
+  "static_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_stroke_static_v5_closeout.json",
+    "sha256": "100bf81f5c77b1e1fdbb8a3b0d3c798e940a8f114ef912276cbaffb56ffc96c3"
+  },
+  "temporal_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_low_contact_temporal_v3_closeout.json",
+    "sha256": "ccedd64fc67bc88553be5a4944d314fde46c09b67243a30377448cf36c7362e2"
+  },
+  "temporal_implementation": {
+    "path": "src/sim2claw/canonical_seeded_action_temporal.py",
+    "sha256": "a3a743677b074138270e82c1b79d2998a9783cb618336fe0f4a5e645fa4fb1da"
+  },
+  "cases": [
+    {
+      "case_id": "tan_pawn_h7__h7_h8",
+      "direction": "REAL_TO_SIM",
+      "source_square": "h7",
+      "destination_square": "h8",
+      "selected_piece_id": "tan_pawn_h7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-static-v5/actions/00.f64le",
+      "action_sha256": "c7fe9e844a39769ba13c566b7947bdb6c66d72bc0e6b87f430bb5ced5646a993",
+      "action_shape": [
+        1083,
+        6
+      ],
+      "prior_dynamic_status": "unopened_66mm_stroke_tensor"
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_c7",
+      "direction": "SIM_TO_REAL",
+      "source_square": "d7",
+      "destination_square": "c7",
+      "selected_piece_id": "tan_pawn_d7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-static-v5/actions/01.f64le",
+      "action_sha256": "a36f056a279de3aa106b8bacb42527bd65e53415f3ac22cfafb1987aae798b40",
+      "action_shape": [
+        1191,
+        6
+      ],
+      "prior_dynamic_status": "unopened_66mm_stroke_tensor"
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_e7",
+      "direction": "REAL_TO_SIM",
+      "source_square": "f7",
+      "destination_square": "e7",
+      "selected_piece_id": "tan_pawn_f7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-static-v5/actions/02.f64le",
+      "action_sha256": "e9f128e0e3497039e1267ea84523a260ab4f0a8eb6df515fc5242ce089c15cae",
+      "action_shape": [
+        1038,
+        6
+      ],
+      "prior_dynamic_status": "unopened_66mm_stroke_tensor"
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_e7",
+      "direction": "SIM_TO_REAL",
+      "source_square": "d7",
+      "destination_square": "e7",
+      "selected_piece_id": "tan_pawn_d7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-static-v5/actions/03.f64le",
+      "action_sha256": "759fb3f86346dc7f059e14cba587dd662bcaa7d4b5a6cd3b2f2578c64a4aab83",
+      "action_shape": [
+        1377,
+        6
+      ],
+      "prior_dynamic_status": "unopened_66mm_stroke_tensor"
+    }
+  ],
+  "live_seed": {
+    "source": "canonical_wrist_path_stroke_static_v5_gateway_mapping_of_exact_row_zero",
+    "follower_position_degrees": [
+      6.5054945054945055,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.3752969121140137
+    ],
+    "torque_enabled": false
+  },
+  "reset_layout": {
+    "mode": "isolated_selected_pawn_offboard_parking",
+    "parking_origin_xyz_m": [
+      0.8,
+      0.1,
+      0.800883941
+    ],
+    "parking_spacing_m": 0.05,
+    "selected_pawn_pose_unchanged": true,
+    "nonselected_pawn_dynamics_unchanged": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-temporal-v4",
+  "unchanged_from_base": {
+    "all_four_requested_action_hashes_and_shapes_frozen": true,
+    "forty_hz_row_order_and_timing": true,
+    "direct_target_baseline_and_uncalibrated_0p11s_zoh_challenger": true,
+    "isolated_reset_and_five_selected_pawn_deltas": true,
+    "cpu_fp64_mujoco_physics_and_substeps": true,
+    "observable_episode_v2_min_and_first_divergence": true,
+    "progress_contact_exclusion_no_lift_collision_and_camera_gates": true,
+    "two_cases_per_direction_both_plant_paths": true,
+    "dynamic_only_authority": true
+  },
+  "claim_boundary": "Prospectively frozen CPU/fp64 replay of four exact 66 mm stroke actions admitted by static V5. The only changed action mechanism from dynamic V3 is the globally fixed stroke; requested bytes, direction assignment, MuJoCo physics, isolated reset, direct-target baseline, diagnostic 0.11 second ZOH challenger, five reset deltas, ObservableEpisode.v2-min traces, and all gates are frozen. A pass can close the CC02 simulator screen for this isolated slice only; it cannot approve mapping, evaluator V2, hardware, or transfer."
+}

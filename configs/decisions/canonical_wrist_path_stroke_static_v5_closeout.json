@@ -1,0 +1,42 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_stroke_static_closeout.v1",
+  "decision_id": "canonical-wrist-path-stroke-static-20260729-v5-closeout",
+  "status": "four_family_66mm_stroke_static_pass",
+  "proof_class": "cpu_fp64_four_family_66mm_stroke_static_action_freeze",
+  "contract": {
+    "path": "configs/evaluations/canonical_wrist_path_stroke_static_v5.json",
+    "sha256": "7df69f21911ef2631ef911fcbfe20c1fc7df6aeeac8473147e5706715d0c0b05"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-static-v5/receipt.json",
+    "sha256": "f4b97af0f219b21cb7ee59bc39b123f85f6e3d66a943d6245ffe3cd9af9c2815"
+  },
+  "result": {
+    "case_count": 4,
+    "statically_eligible_family_count": 4,
+    "grid_result_count": 4,
+    "direction_counts": {
+      "REAL_TO_SIM": 2,
+      "SIM_TO_REAL": 2
+    },
+    "stroke_m": 0.066,
+    "all_ik_collision_camera_contact_and_gateway_checks_passed": true,
+    "dynamic_replay_executed": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Admit all four exact 66 mm stroke action tensors to one prospectively frozen dynamic replay under the unchanged isolated-selected-pawn reset, canonical direct-target baseline, diagnostic 0.11 second ZOH challenger, and five reset deltas. Preserve the V3 direction assignment, 36.025 mm progress gate, two-family-per-direction requirement, exact requested bytes, ObservableEpisode.v2-min traces, and false mapping and physical authority.",
+  "authority": {
+    "dynamic_replay_freeze": true,
+    "dynamic_replay": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

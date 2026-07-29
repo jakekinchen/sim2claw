@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC02_BOUNDED_STROKE_STATIC_REPLAY`
+Status: `ACTIVE_CC02_BOUNDED_STROKE_DYNAMIC_REPLAY`
 
 Created: `2026-07-28`
 
@@ -414,6 +414,15 @@ Current state:
   `7df69f21911ef2631ef911fcbfe20c1fc7df6aeeac8473147e5706715d0c0b05`.
   It contains exactly one cell per complete V3 family, two per assigned
   direction, and no dynamic or physical authority.
+- Stroke static V5 passed all four cells. Receipt SHA-256
+  `f4b97af0f219b21cb7ee59bc39b123f85f6e3d66a943d6245ffe3cd9af9c2815`;
+  closeout SHA-256
+  `100bf81f5c77b1e1fdbb8a3b0d3c798e940a8f114ef912276cbaffb56ffc96c3`.
+- Exact-action stroke temporal V4 is frozen before dynamic execution at
+  contract SHA-256
+  `7f385088702537cf0867dd4b83ea5a449a872cb3c095f53efd23b66c80239fa4`.
+  It preserves the V3 direction split, isolated reset, two plant paths, five
+  deltas, 40 Hz bytes, causal traces, and every acceptance gate.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -455,6 +464,6 @@ This authorization:
 
 Next step:
 
-- Execute stroke static V5 exactly once. Dynamic replay may be frozen only if
-  all four pass the unchanged IK, collision, camera, contact, and gateway
-  gates.
+- Execute stroke temporal V4 exactly once. Preserve its immutable result and
+  move to CC03 only if both directions pass `2/2` under both plants and all
+  five reset variants.

@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC02"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:canonical-wrist-path-stroke-static-v5-frozen",
+        "node_id": "checkpoint:canonical-wrist-path-stroke-temporal-v4-frozen",
         "milestone_id": "CC02",
-        "status": "preregistered_before_exactly_once_bounded_stroke_static_replay",
-        "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_STATIC_REPLAY",
+        "status": "preregistered_before_exactly_once_66mm_stroke_dynamic_replay",
+        "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_DYNAMIC_REPLAY",
         "resume_action": (
-            "execute_canonical_wrist_path_stroke_static_v5_exactly_once"
+            "execute_canonical_wrist_path_stroke_temporal_v4_exactly_once"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(134)
+        range(136)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CANONICAL_WRIST_PATH_STROKE_STATIC_V5_FROZEN"
+        "CANONICAL_WRIST_PATH_STROKE_TEMPORAL_V4_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:canonical-wrist-path-stroke-static-v5-frozen"
+        "checkpoint:canonical-wrist-path-stroke-temporal-v4-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True
