@@ -1,0 +1,20 @@
+{
+  "bounded_slew_reviewed": true,
+  "camera_inspection_between_stages_acknowledged": true,
+  "clear_workcell_acknowledged": true,
+  "decision_id": "cc03-downstream-rotation-heldout-20260729-v1",
+  "final_hold_capture_reviewed": true,
+  "fresh_anchor_and_identity_checks_reviewed": true,
+  "frozen_float64_actions_reviewed": true,
+  "packet_path": "/Users/kelly/Developer/sim2claw/runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/packet.json",
+  "packet_sha256": "431a6d513bae769fcd21d6497e34023cf018c8d25b1d51384529fe94a43c590b",
+  "physical_authority": false,
+  "plan_sha256": "fb17887d05ab8250e408f7bf89601f2379ba5ae9c09699c8ebfbebe5d794e695",
+  "recovery_source_contact_admission_reviewed": false,
+  "reviewer": "codex-cc03-downstream-rotation-review",
+  "schema_version": "sim2claw.wrist_view_reposition_review.v2",
+  "simulation_contact_preview_reviewed": true,
+  "stage_excursions_reviewed": true,
+  "status": "admitted_for_one_execution_per_stage",
+  "torque_off_close_reviewed": true
+}

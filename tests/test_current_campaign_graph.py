@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC03"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:calibration-graph-downstream-rotation-route-frozen",
+        "node_id": "verdict:calibration-graph-downstream-rotation-review-admit",
         "milestone_id": "CC03",
-        "status": "preregistered_before_packet_compile",
-        "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_PACKET_COMPILE",
+        "status": "reviewed_for_stage_1_execution",
+        "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_STAGE_1_EXECUTE",
         "resume_action": (
-            "compile_review_downstream_rotation_packet"
+            "execute_downstream_rotation_stage_1_once"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(154)
+        range(156)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_ROUTE_FROZEN"
+        "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_REVIEW_ADMIT"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:calibration-graph-downstream-rotation-route-frozen"
+        "verdict:calibration-graph-downstream-rotation-review-admit"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True

@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC03",
-    "node_id": "checkpoint:calibration-graph-downstream-rotation-route-frozen",
-    "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_PACKET_COMPILE",
-    "resume_action": "compile_review_downstream_rotation_packet",
+    "node_id": "verdict:calibration-graph-downstream-rotation-review-admit",
+    "queue_status": "ACTIVE_CC03_DOWNSTREAM_ROTATION_STAGE_1_EXECUTE",
+    "resume_action": "execute_downstream_rotation_stage_1_once",
     "resume_authorized": true,
-    "status": "preregistered_before_packet_compile"
+    "status": "reviewed_for_stage_1_execution"
   },
   "authority": {
     "camera_open": false,
@@ -82,27 +82,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 179,
+    "edges": 181,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 49,
+      "evaluated-on": 50,
       "fitted-on": 4,
-      "generated-from": 110,
+      "generated-from": 111,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 173,
+    "nodes": 175,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 112,
+      "checkpoint": 113,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 34,
+      "evaluator_verdict": 35,
       "evidence": 6,
       "intervention": 1,
       "mechanism": 3,
@@ -281,6 +281,16 @@
       },
       "source": "checkpoint:calibration-graph-composite-probe-v2-route-frozen",
       "target": "verdict:calibration-graph-composite-probe-v1-compile-reject",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "fresh_torque_off_anchor": true,
+        "no_modeled_contacts": true,
+        "physical_motion": false
+      },
+      "source": "checkpoint:calibration-graph-downstream-rotation-packet-compiled",
+      "target": "checkpoint:calibration-graph-downstream-rotation-route-frozen",
       "type": "generated-from"
     },
     {
@@ -1723,6 +1733,16 @@
     },
     {
       "metadata": {
+        "no_contact_calibration_only": true,
+        "one_execution_per_stage": true,
+        "physical_motion_at_review": false
+      },
+      "source": "verdict:calibration-graph-downstream-rotation-review-admit",
+      "target": "checkpoint:calibration-graph-downstream-rotation-packet-compiled",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "full_active_rank": true,
         "physical_model_mapping_approved": false,
         "physical_motion": false
@@ -2106,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "26e819cdea2e99b642997522bb3bd1ce3c39d1d82da051720dac3777911d6321",
+  "graph_digest": "81731f65e4e5c418f3f7ae349d2e785e6283cd48e4d7b80b6a0533ffe11da1ed",
   "node_types": [
     "workcell",
     "session",
@@ -2327,6 +2347,32 @@
         "sha256": "5cf70e332236729dbf5cd1562c8992947f59592e0590b33148654b24b47e69df"
       },
       "status": "preregistered_before_packet_compile",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "no_modeled_contacts": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "plan_sha256": "fb17887d05ab8250e408f7bf89601f2379ba5ae9c09699c8ebfbebe5d794e695",
+        "source_binding_id": "calibration_graph_downstream_rotation_packet",
+        "stage_count": 2
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-downstream-rotation-packet-compiled",
+      "label": "Downstream rotation two-stage packet compiled from fresh anchor",
+      "proof_class": "reviewable_follower_only_no_contact_downstream_rotation_packet",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/packet.json",
+        "payload_contract": {
+          "physical_motion_commanded": false,
+          "plan_sha256": "fb17887d05ab8250e408f7bf89601f2379ba5ae9c09699c8ebfbebe5d794e695",
+          "schema_version": "sim2claw.wrist_view_reposition_packet.v2"
+        },
+        "proof_class": "reviewable_follower_only_no_contact_downstream_rotation_packet",
+        "sha256": "431a6d513bae769fcd21d6497e34023cf018c8d25b1d51384529fe94a43c590b"
+      },
+      "status": "compiled_no_motion",
       "type": "checkpoint"
     },
     {
@@ -3227,7 +3273,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "9d9b2fec96ea901f0549a22d40c04633bbb5feb6840f781b67fd3c1bc9405407"
+        "sha256": "fda760eb18160e76eafef24419bdda4169fb58bc93a3363a75094d581bcee49a"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6320,6 +6366,32 @@
     },
     {
       "data": {
+        "no_contact_calibration_only": true,
+        "packet_source_binding": "calibration_graph_downstream_rotation_packet",
+        "physical_motion_at_review": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "calibration_graph_downstream_rotation_review",
+        "stage_count": 2
+      },
+      "evaluator_identity": "431a6d513bae769fcd21d6497e34023cf018c8d25b1d51384529fe94a43c590b",
+      "id": "verdict:calibration-graph-downstream-rotation-review-admit",
+      "label": "Independent review admits one execution of each downstream rotation stage",
+      "proof_class": "independent_two_stage_no_contact_downstream_rotation_packet_review",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/review.json",
+        "payload_contract": {
+          "physical_authority": false,
+          "schema_version": "sim2claw.wrist_view_reposition_review.v2",
+          "status": "admitted_for_one_execution_per_stage"
+        },
+        "proof_class": "independent_two_stage_no_contact_downstream_rotation_packet_review",
+        "sha256": "67c41e55b15571f22a9497a1e84dd6545d7f8ffc834b8d12fed3afeacd30d788"
+      },
+      "status": "admitted_for_one_execution_per_stage",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "active_jacobian_rank": 4,
         "condition_number": 5.6936633786994335,
         "physical_model_mapping_approved": false,
@@ -8453,7 +8525,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "9d9b2fec96ea901f0549a22d40c04633bbb5feb6840f781b67fd3c1bc9405407",
+      "source_sha256": "fda760eb18160e76eafef24419bdda4169fb58bc93a3363a75094d581bcee49a",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -8955,6 +9027,26 @@
       "source_binding": "calibration_graph_downstream_rotation_route",
       "source_sha256": "370b3daba18a1022b4cc2911f15591c889fe3917a35e5b8ace92bfbc795c1380",
       "status": "preregistered_before_packet_compile"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_PACKET_COMPILED",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-downstream-rotation-packet-compiled"
+      ],
+      "revision": 154,
+      "source_binding": "calibration_graph_downstream_rotation_packet",
+      "source_sha256": "431a6d513bae769fcd21d6497e34023cf018c8d25b1d51384529fe94a43c590b",
+      "status": "compiled_no_motion"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_DOWNSTREAM_ROTATION_REVIEW_ADMIT",
+      "node_ids_added": [
+        "verdict:calibration-graph-downstream-rotation-review-admit"
+      ],
+      "revision": 155,
+      "source_binding": "calibration_graph_downstream_rotation_review",
+      "source_sha256": "67c41e55b15571f22a9497a1e84dd6545d7f8ffc834b8d12fed3afeacd30d788",
+      "status": "admitted_for_one_execution_per_stage"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -9062,6 +9154,28 @@
       "path": "tools/evaluate_calibration_graph_d405_rotation_heldout_v1.py",
       "proof_class": "prospective_gauge_free_d405_fixed_tag_relative_rotation_evaluator",
       "sha256": "a7628f277c502e6f8ed3113f953ef0b554778322ed1ee983705e4c08c00f85c6"
+    },
+    {
+      "id": "calibration_graph_downstream_rotation_packet",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/packet.json",
+      "payload_contract": {
+        "physical_motion_commanded": false,
+        "plan_sha256": "fb17887d05ab8250e408f7bf89601f2379ba5ae9c09699c8ebfbebe5d794e695",
+        "schema_version": "sim2claw.wrist_view_reposition_packet.v2"
+      },
+      "proof_class": "reviewable_follower_only_no_contact_downstream_rotation_packet",
+      "sha256": "431a6d513bae769fcd21d6497e34023cf018c8d25b1d51384529fe94a43c590b"
+    },
+    {
+      "id": "calibration_graph_downstream_rotation_review",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-downstream-rotation-v1/review.json",
+      "payload_contract": {
+        "physical_authority": false,
+        "schema_version": "sim2claw.wrist_view_reposition_review.v2",
+        "status": "admitted_for_one_execution_per_stage"
+      },
+      "proof_class": "independent_two_stage_no_contact_downstream_rotation_packet_review",
+      "sha256": "67c41e55b15571f22a9497a1e84dd6545d7f8ffc834b8d12fed3afeacd30d788"
     },
     {
       "id": "calibration_graph_downstream_rotation_route",
@@ -9738,7 +9852,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "9d9b2fec96ea901f0549a22d40c04633bbb5feb6840f781b67fd3c1bc9405407"
+      "sha256": "fda760eb18160e76eafef24419bdda4169fb58bc93a3363a75094d581bcee49a"
     },
     {
       "id": "current_task_scene_labels",

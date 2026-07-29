@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_DOWNSTREAM_ROTATION_PACKET_COMPILE`
+Status: `ACTIVE_CC03_DOWNSTREAM_ROTATION_STAGE_1_EXECUTE`
 
 Created: `2026-07-28`
 
@@ -527,6 +527,14 @@ Current state:
   `afda88ae...` and `d5d1aaff...`. The gauge-free D405 fixed-tag relative
   rotation evaluator implementation is frozen at SHA-256
   `a7628f277c502e6f8ed3113f953ef0b554778322ed1ee983705e4c08c00f85c6`.
+- The downstream route compiled from the fresh torque-off anchor with plan
+  SHA-256
+  `fb17887d05ab8250e408f7bf89601f2379ba5ae9c09699c8ebfbebe5d794e695`
+  and packet SHA-256
+  `431a6d513bae769fcd21d6497e34023cf018c8d25b1d51384529fe94a43c590b`.
+  Independent review admitted one execution per stage at review SHA-256
+  `67c41e55b15571f22a9497a1e84dd6545d7f8ffc834b8d12fed3afeacd30d788`.
+  Compilation and review used no physical motion.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -568,7 +576,7 @@ This authorization:
 
 Next step:
 
-- Compile and independently review the downstream rotation route. If admitted,
-  execute its two stages once each with exact-return and torque-off receipts,
-  then freeze the evaluator contract before opening either new D405 stream.
-  Do not touch a pawn or count a task attempt.
+- Execute downstream rotation stage 1 exactly once, verify tricam enclosure,
+  exact action, return, and torque-off, then execute stage 2 once using the
+  bound stage-1 receipt. Do not open either new D405 stream for evaluation,
+  touch a pawn, or count a task attempt.

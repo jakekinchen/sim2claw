@@ -207,6 +207,8 @@ Confirmed:
 - A distinct elbow-only/wrist-only exact-return tricam route is frozen at
   `370b3dab...`; gauge-free D405 rotation evaluator implementation
   `a7628f27...` is frozen before its new captures exist.
+- Downstream packet `431a6d51...` and independent review `67c41e55...`
+  admit exactly one execution of each stage.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -253,7 +255,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: calibration reject 718cedd9...; composite negative 5b10d59d...; localized closeout 8bb6f4c0...; downstream route 370b3dab....
+Evidence: composite negative 5b10d59d...; localized closeout 8bb6f4c0...; downstream packet 431a6d51...; review 67c41e55....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -261,7 +263,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: compile/review the frozen two-stage downstream rotation route; no pawn contact or task attempt.
+Next step: execute downstream rotation stages 1 and 2 once each; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries
