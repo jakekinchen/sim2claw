@@ -1,0 +1,13 @@
+{
+  "schema_version": "sim2claw.directional_displacement_static_bridge.v1",
+  "status": "frozen_materialized_base_before_static_enumeration",
+  "base_contract": {
+    "path": "configs/evaluations/directional_displacement_static_base_contact_offset_compensated_v4.json",
+    "sha256": "412cb5f16fc38df48826ba9b479c8824d400d60efb999a37cffef1f4733a5445"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_wrist_path_static.py",
+    "sha256": "1726ddaf42820840046f046ef413943cecd7d9c40e07e621ddca9b9264782e0f"
+  },
+  "claim_boundary": "Binding-only bridge for the prospectively frozen 528-cell contact-offset-compensated directional-displacement base. It grants static model loading only."
+}

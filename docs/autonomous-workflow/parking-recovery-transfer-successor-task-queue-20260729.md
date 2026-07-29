@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04I_CONTACT_MECHANISM_DECISION_PENDING`
+Status: `RP04I_CONTACT_OFFSET_COMPENSATED_STATIC_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -52,7 +52,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04F | `DONE_TERMINAL_LOWER_CONTACT_DYNAMIC_NEGATIVE` | Test the one clean unresolved geometry mechanism after the 66 mm causal negative. | Static receipt `6b7d7fa6...` passed; dynamic receipt `e8c5ac49...` ran all 20 exact episodes. | `0/20` passed; lift worsened to `5.99--14.19 mm`. Close permanently under the preregistered stop rule. No hardware. |
 | RP04G | `DONE_POST_CABLE_TRACKING_NEGATIVE_RETURN_INCOMPLETE` | Re-establish physical tracking and task-corridor evidence after the owner-reported wrist-camera cable tension change. | Receipt `a3ab1eee...` completed 501 exact rows and both cameras; camera review found no pawn/board contact and visible cable slack without an obvious snag. | Cable relief improved the reach/error by only `0.879 deg`; the roughly `30 deg` deficit remains. Controlled return did not reach the natural anchor, but postflight torque is off. No retry. |
 | RP04H | `DONE_NATURAL_ANCHOR_RESTORED_PROTOCOL_NEGATIVE` | Restore the arm from the fresh torque-off postflight pose to the natural anchor without contacting the board or pawns. | Receipt `ed4945d5...` executed all 278 rows, restored the natural anchor within `1.759 deg`, completed both cameras, showed no pawn/board contact, and confirmed torque off. | Protocol pass remains false: a stage-deadline bug caused 67 rows to be rate-limited. Do not rerun only to improve the label. |
-| RP04I | `CONTACT_MECHANISM_DECISION_PENDING` | Choose the next simulator mechanism after the preregistered lower-contact target grid failed. | Preserve the RP04F stop rule. Any successor must be a separately named, finite, prospectively frozen mechanism with evaluated families quarantined and unchanged evaluator gates. Candidate evidence: a 35 mm target yielded first contact around 45--47 mm because target height and observed jaw-pawn contact height are not equivalent. | No hardware task packet until a fresh action pair passes 20/20. Fable remains blocker-only. |
+| RP04I | `CONTACT_OFFSET_COMPENSATED_STATIC_FROZEN_PENDING_ONE_RUN` | Test one separately named sustained-contact mechanism after the preregistered lower-contact target grid failed. | Subtract one fixed `12.5 mm` kinematic jaw-to-contact witness offset from the entire predecessor target grid, yielding exactly `[22.5, 25, 27.5, 30] mm`; preserve the observed first-contact `[35,65] mm` gate, `80 deg` lock, `66 mm` stroke, three wrist rolls, physics, evaluator, and all collision/camera/gateway gates. All eight previously selected cases are quarantined; exactly `44 × 12 = 528` static cells may run once. | A static negative closes this exact mechanism. A pass freezes one fresh family per direction for the unchanged direct/ZOH five-reset `20/20` gate. No hardware task packet until that dynamic pair passes. Fable remains blocker-only. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -72,9 +72,33 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-The robot is restored to the natural anchor and torque is off. Choose one
-separately named contact mechanism successor; do not rerun the return or open
-hardware task motion until a fresh action pair passes all 20 simulator gates.
+The robot is restored to the natural anchor and torque is off. Run the frozen
+RP04I contact-offset-compensated static screen exactly once. Do not expand its
+grid, rerun the return, start dynamic replay before a static pair is frozen, or
+open hardware task motion until a fresh action pair passes all 20 simulator
+gates.
+
+## RP04I freeze
+
+- The lower-contact static receipt was analyzed without changing or rerunning
+  it. Across its `35 mm` target cells, observed first contact stayed between
+  `45.425` and `49.547 mm`; the two selected cells contacted at `46.971` and
+  `47.390 mm`.
+- RP04I therefore does not extend RP04F. It defines one new, finite mechanism:
+  a fixed `12.5 mm` compensation applied to every prior target, producing
+  exactly `[22.5, 25, 27.5, 30] mm`.
+- The compensation changes the sustained endpoint height only. The observed
+  first-contact gate remains `[35,65] mm`; any board collision, new robot
+  contact, contact loss, IK defect, camera defect, or gateway defect rejects.
+- The eight previously opened family IDs are quarantined. The remaining
+  universe is `44` families, three byte-identical wrist rolls, four heights,
+  and at most `528` cells.
+- The `80 deg` elbow lock, exact closed jaw, `22 mm` contact offset, `66 mm`
+  stroke, `35 mm` precontact backoff, ranking, physics, evaluator gates, and
+  false dynamic and physical authority are unchanged.
+- One static run is authorized after the contract and focused test pass and
+  the freeze is committed and pushed. A pass may only open an exact-action
+  direct/ZOH simulator gate; it cannot approve mapping or hardware.
 
 ## RP00 immutable result
 
