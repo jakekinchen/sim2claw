@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Goal Loop
 
-Status: `ACTIVE_C7`
+Status: `ACTIVE_C8`
 
 Created: `2026-07-29`
 
@@ -123,12 +123,12 @@ safe alternatives. Do not tune sealed inputs or repeat C6.
 
 ```text
 Current state: ACTIVE
-Active card: C7
-Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative, C3, C3A, C4, C5 terminal negative, C6 terminal negative
-Evidence: C6 artifact df3f6abab728ec6a74a468afeb531b4bec99346c693ec081786c8dd8fb8c2c38
-Remaining: C7, C8, C9 boundary
+Active card: C8
+Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative, C3, C3A, C4, C5 terminal negative, C6 terminal negative, C7
+Evidence: C7 artifact 5224dd435d9cbbd8db36fe4a917edce2d2c1e8a2647a6f202574e5c32c7ab682
+Remaining: C8, C9 boundary
 Blockers: physical pathway closed at elbow service boundary; not needed for C0-C8
-Next step: freeze C7 deterministic challenger robustness without rerunning C6
+Next step: build and verify the read-only C8 Studio causal proof surface
 ```
 
 ## Stop conditions

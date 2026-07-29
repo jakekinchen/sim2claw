@@ -1,0 +1,59 @@
+{
+  "schema_version": "sim2claw.realized_action_robustness_closeout.v1",
+  "decision_id": "realized-action-robustness-v1-closeout",
+  "result": "DETERMINISTIC_ROBUSTNESS_NEGATIVE_0_OF_3",
+  "proof_class": "deterministic_multi_plant_natural_contact_robustness_diagnostic",
+  "freeze_commit": "358eaeb",
+  "contract": {
+    "path": "configs/evaluations/realized_action_robustness_v1.json",
+    "sha256": "d63c515c3c40af0956c9d87d30d225157c5b6faf97d1c88ecd1c1325e03424c2"
+  },
+  "implementation": {
+    "path": "src/sim2claw/realized_action_robustness.py",
+    "sha256": "03087c16ecca8b6a6067947a8bc5f71f200d28c960eab21921080f7eac6908db"
+  },
+  "generated_receipt": {
+    "path": "outputs/realized_action_robustness_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "bdeeffa5e010575b8b3785ef16b7d03751ecbb4f11b49256ae6a9f0859ad9574",
+    "artifact_sha256": "5224dd435d9cbbd8db36fe4a917edce2d2c1e8a2647a6f202574e5c32c7ab682",
+    "deterministic_rebuild_match": true
+  },
+  "paths": {
+    "identified_effective_plant_v1": {
+      "numeric_success": false,
+      "rerun": false,
+      "final_center_error_mm": 69.14757217991721
+    },
+    "direct_target": {
+      "numeric_success": false,
+      "final_center_error_mm": 285.3680514719305,
+      "final_tilt_degrees": 97.76340287228744,
+      "maximum_exclusion_displacement_mm": 217.52467180887572
+    },
+    "diagnostic_zoh_0p11s": {
+      "numeric_success": false,
+      "final_center_error_mm": 293.6725078484693,
+      "final_tilt_degrees": 97.78676721911188,
+      "maximum_exclusion_displacement_mm": 217.52467624611094
+    }
+  },
+  "uncertainty": {
+    "geometry_distribution": null,
+    "contact_distribution": null,
+    "probabilistic_robust_success": null,
+    "unknown_dimensions_randomized": false
+  },
+  "c6_redefined": false,
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replay": true,
+    "paid_compute": false
+  },
+  "next_card": "C8"
+}

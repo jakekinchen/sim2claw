@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Task Queue
 
-Status: `ACTIVE_C7`
+Status: `ACTIVE_C8`
 
 Created: `2026-07-29`
 
@@ -85,8 +85,8 @@ diagnostic, but it is explicitly action-free and cannot satisfy the mission.
 | C4 | `PASS` | Fit one versioned effective SO-101 temporal challenger. | Validation joint RMS improves `55.45%` and provisional EE RMS `58.51%`, with no joint regression; artifact `df50459a4c7f60894690610c8578f67e064c13de3d0a9f7e286aa8c26e736aa6`. | Three-sample hold remains noncausal; alpha `1.0` rejects extra smoothing; global mapping remains false. |
 | C5 | `TERMINAL_NEGATIVE` | Fit only identifiable contact/object mechanisms from retained evidence. | `0/5` candidate dimensions have nonsealed witnesses; no parameter fit; artifact `6a904ef2231f634a65661778afd59ec5e901204386d7dfeee85a05d574961692`. | Current MuJoCo contact remains unvalidated diagnostic baseline and cannot promote C6. |
 | C6 | `TERMINAL_NEGATIVE_0_OF_1` | Freeze and run the physical realized-action trajectory to simulator outcome replay exactly once. | Exact action/plant replay used no later observation or marker; no jaw carry formed; final error `69.148 mm`, tilt `179.992 deg`, height error `31.947 mm`; artifact `df3f6abab728ec6a74a468afeb531b4bec99346c693ec081786c8dd8fb8c2c38`. | Immutable `0/1`; no successor admitted because cross-episode contact evidence is absent. |
-| C7 | `IN_PROGRESS` | Populate measured uncertainty and run robustness checks. | Every distribution bound links to an existing artifact, cross-validation residual, or fit covariance. Evaluate the exact C6 action under direct and diagnostic challenger plants without rerunning the identified mission. Report nominal and challenger success separately; unknown geometry/contact dimensions remain unavailable. | Robustness cannot demote or retroactively redefine the one-run C6 result. |
-| C8 | `PENDING_AFTER_C6` | Package the causal proof in Studio. | Mobile and desktop views synchronize physical video, direct and identified simulations, requested/sent/measured/applied traces, residuals, first divergence, contact witnesses, pawn path, geometry overlay, uncertainty result, task gates, hashes, and proof-class limits. | Missing evidence remains visibly missing; the interface cannot promote a proof class. |
+| C7 | `DETERMINISTIC_NEGATIVE_0_OF_3` | Populate measured uncertainty and run robustness checks. | Identified, direct, and diagnostic ZOH all fail; identified is best; no unknown distribution invented; artifact `5224dd435d9cbbd8db36fe4a917edce2d2c1e8a2647a6f202574e5c32c7ab682`. | C6 remains immutable `0/1`; probabilistic robustness unavailable. |
+| C8 | `IN_PROGRESS` | Package the causal proof in Studio. | Mobile and desktop views synchronize physical video, requested/sent/measured/applied traces, residuals, first divergence, contact gap, pawn path, geometry channels, uncertainty result, task gates, hashes, and proof-class limits. | Missing evidence remains visibly missing; the interface cannot promote a proof class. |
 | C9 | `DEFERRED_UNTIL_SERVICE` | Prepare a future robust SIM-to-REAL packet and policy-ranking pilot. | Only after elbow service, fresh requalification, and a separately reviewed physical authorization. | No execution or counted attempt is allowed from this queue. |
 
 ## C2-RP04N prospective design boundary
