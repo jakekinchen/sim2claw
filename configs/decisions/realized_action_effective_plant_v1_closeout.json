@@ -1,0 +1,75 @@
+{
+  "schema_version": "sim2claw.realized_action_effective_plant_closeout.v1",
+  "decision_id": "realized-action-effective-plant-v1-closeout",
+  "result": "PASS_VALIDATED_EFFECTIVE_JOINT_PLANT",
+  "proof_class": "retrospective_fit_validation_effective_joint_plant",
+  "freeze_commit": "8f4c429",
+  "contract": {
+    "path": "configs/evaluations/realized_action_effective_plant_v1.json",
+    "sha256": "8611c2fb544edff31cc1b340d3ea533fca6adaf32b0d92fd2db452fbea96a792"
+  },
+  "implementation": {
+    "path": "src/sim2claw/realized_action_effective_plant.py",
+    "sha256": "941c7798d9acd8e2a5bb37244244fe1d4bc07aca0cb0f217f4306cc2173f7a86"
+  },
+  "generated_receipt": {
+    "path": "outputs/realized_action_effective_plant_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "5afba2e280e7c34308aa51548b938a6af54bd299e49038d6083043342b353c07",
+    "artifact_sha256": "df50459a4c7f60894690610c8578f67e064c13de3d0a9f7e286aa8c26e736aa6",
+    "deterministic_rebuild_match": true
+  },
+  "model": {
+    "sample_hold": 3,
+    "sample_hold_is_causal_latency": false,
+    "per_joint_alpha": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "additional_first_order_smoothing_supported": false,
+    "direction_conditioned_offsets_fitted": true,
+    "fit_episodes": 4,
+    "fit_samples": 1562
+  },
+  "validation": {
+    "episodes": 3,
+    "samples": 1340,
+    "direct_joint_rms_degrees": 2.3681585334313286,
+    "identified_joint_rms_degrees": 1.0550656887103746,
+    "joint_improvement_fraction": 0.5544784380707639,
+    "direct_provisional_ee_rms_mm": 16.786387557335896,
+    "identified_provisional_ee_rms_mm": 6.964960165054739,
+    "provisional_ee_improvement_fraction": 0.5850828451764805,
+    "all_per_joint_no_regression": true
+  },
+  "sealed_report_only": {
+    "episodes": 1,
+    "samples": 531,
+    "direct_joint_rms_degrees": 2.1047167982855624,
+    "identified_joint_rms_degrees": 0.8936675490378009,
+    "direct_provisional_ee_rms_mm": 16.92543360576588,
+    "identified_provisional_ee_rms_mm": 7.372983641930293
+  },
+  "identifiability": {
+    "diagnostic_0p11_zoh_is_calibrated_plant": false,
+    "causal_latency_identified": false,
+    "sealed_episode_used_for_selection": false,
+    "source_actions_modified": false,
+    "global_mapping_approved": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_task_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "C5"
+}
