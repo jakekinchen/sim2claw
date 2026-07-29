@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.reachable_lock_task_temporal_closeout.v1",
+  "decision_id": "reachable-lock-80-stroke-66-temporal-20260729-v1-closeout",
+  "status": "accepted_immutable_66mm_dynamic_negative_targeted_blocker_review_open",
+  "freeze_commit": "bead910",
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-stroke-66-temporal-v1/receipt.json",
+    "sha256": "ba8bc2edc98ffceb0f1f39248c94700d39bc1c8ff59d5c19c4e97ab576db96a0"
+  },
+  "result": {
+    "episodes": 20,
+    "passes": 0,
+    "passing_cases_per_direction": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "all_identity_camera_collision_exclusion_and_selected_contact_gates_passed": true,
+    "failure_channels": [
+      "progress",
+      "no_lift"
+    ],
+    "real_to_sim_progress_range_mm": [
+      19.700406911109045,
+      36.41623541397154
+    ],
+    "real_to_sim_vertical_rise_range_mm": [
+      1.0433608120397064,
+      4.466850202059058
+    ],
+    "sim_to_real_progress_range_mm": [
+      23.28130158877378,
+      45.28359641478806
+    ],
+    "sim_to_real_vertical_rise_range_mm": [
+      13.907331856669703,
+      14.513021834242966
+    ],
+    "physical_task_attempts": 0
+  },
+  "decision": "Close both exact 80 degree, 66 mm action tensors for hardware. The longer stroke improved progress but did not make either direction robust and the SIM_TO_REAL family lifted severely. Preserve the evaluator and prior receipts. Open only a targeted blocker review among a finite geometry-only successor, a single measured contact-physics mechanism, or task-corridor mapping work; do not authorize hardware or silently reseat these actions."
+}
