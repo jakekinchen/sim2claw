@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "7126061f6d6e486222860bdcefbe219b7cdb5b717cb5eff85647c01b68131f18",
+      "sha256": "5d383dcc74a1d86916569fd4ea8477ca9a7976856d2c7ea125b0983e041de272",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -5892,8 +5892,8 @@
   },
   "canonical_transfer_campaign": {
     "campaign_id": "canonical-transfer-20260728-v1",
-    "status": "readiness_rejected_fresh_static_compiler_authorized",
-    "active_milestone": "HC-R04",
+    "status": "canonical_seeded_static_contract_frozen",
+    "active_milestone": "HC-R05",
     "contract": "configs/evaluations/canonical_transfer_readiness_v1.json",
     "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json",
     "receipt_sha256": "edc8267472c346dde7743f0f7cd8a85bb66fe512aa51f319bea999277c38cdb1",
@@ -5904,10 +5904,14 @@
     ],
     "live_anchor_source": "fresh_configuration_free_physical_gateway_preflight",
     "legacy_candidates_are_diagnostics_only": true,
+    "static_contract": "configs/evaluations/canonical_seeded_action_static_v1.json",
+    "static_contract_sha256": "6740b72ee1bee9e6357e5810a6b5463492a27779843692d9ef2ab8f873da67e4",
+    "row_zero_exact_live_anchor_required": true,
+    "minimum_families_per_direction": 2,
     "physical_authority": false,
     "gateway_or_serial_authority": false,
     "physical_packet_authorized": false,
     "task_attempts": 0,
-    "next_action": "freeze_current_anchor_seeded_canonical_static_compiler"
+    "next_action": "execute_canonical_seeded_static_compiler_once"
   }
 }

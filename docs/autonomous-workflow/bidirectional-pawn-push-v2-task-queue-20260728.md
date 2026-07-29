@@ -3637,3 +3637,26 @@ physical attempt was consumed. HC-R04 authorizes only a fresh
 current-anchor-seeded canonical static compiler; dynamic simulation, camera
 ownership, gateway/serial, physical packets, torque, contact, task motion,
 and transfer claims remain false.
+
+### HC-R05 canonical current-anchor action freeze — 2026-07-28
+
+The prospective contract
+`configs/evaluations/canonical_seeded_action_static_v1.json`, SHA-256
+`6740b72ee1bee9e6357e5810a6b5463492a27779843692d9ef2ab8f873da67e4`,
+is frozen before the official static enumeration.
+
+The compiler uses only `sim2claw.current_workcell`, applies the accepted rigid
+robot/board registration, and binds the fresh torque-off seed. Its complete
+family universe is every reset pawn with an empty orthogonal canonical
+neighbor. The finite grid is one `22 mm` contact offset, two contact heights,
+and two strokes. Every action begins with the exact live seed, closes the jaw
+before approach, uses a fixed live wrist roll, raises to `90 mm` clearance,
+descends, pushes, and retreats.
+
+Admission requires `<=4 mm` IK residual, exact float64/40 Hz identity,
+calibrated limits, gateway rates, selected contact, no new disallowed robot
+contact, C922 margin `>=20 px`, four distinct families, and two lanes per
+direction. Focused tests pass `4/4`; these tmp-directory tests do not grant
+dynamic or physical authority. Exactly one official static output is next.
+Dynamic simulation, cameras, gateway/serial, physical packets, torque,
+contact motion, task attempts, and transfer claims remain false.

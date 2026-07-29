@@ -1,0 +1,157 @@
+{
+  "schema_version": "sim2claw.canonical_seeded_action_static.v1",
+  "contract_id": "canonical-seeded-action-static-20260728-v1",
+  "status": "preregistered_before_static_enumeration",
+  "proof_class": "cpu_fp64_canonical_current_anchor_seeded_static_action_contract",
+  "mission": "Compile a bounded family of canonical pawn-push actions whose exact row zero is the fresh physical torque-off anchor, then admit only actions that pass static IK, joint, collision, camera, and gateway gates.",
+  "inputs": {
+    "hard_cutover": {
+      "path": "configs/migrations/current_workcell_hard_cutover_v1.json",
+      "sha256": "37fb5b02a6f42376cd0dcadf19401f7442cc28f37b71cf297090ae27cf0b9701"
+    },
+    "registration_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-task-plane-registration-v1/receipt.json",
+      "sha256": "566f12b2b939e493e86849d8526e35416ecac3d85e6331b4a71ded241c4dccf5"
+    },
+    "readiness_closeout": {
+      "path": "configs/decisions/canonical_transfer_readiness_closeout_v1.json",
+      "sha256": "a1fd751eade87ac19ffab9ed2904bb6205e2d70f818b55f50c8afdaa7ee1b079"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "registration_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    },
+    "current_workcell_implementation": {
+      "path": "src/sim2claw/current_workcell.py",
+      "sha256": "df6bdf6b4408b7dcaaa1670fc0575f8506e11cef3add37124cc1afa2e8b69fad"
+    },
+    "compiler_implementation": {
+      "path": "src/sim2claw/canonical_seeded_action_static.py",
+      "sha256": "e90763a05df296744946bebf29e3c1459f6f4a891a585ad9c8fee0084a9557a9"
+    },
+    "robot_model": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+      "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+    },
+    "capture_geometry": {
+      "path": "configs/polycam/8873B66C-774C-48B1-B51D-338645867009.json",
+      "sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05"
+    },
+    "mass_profile": {
+      "path": "calibration/so101/follower_mass_profile_v1.json",
+      "sha256": "bc0443d2411e7fa61a59bcde33327d0eb1e505f9224bab98c1ab2d51ed3c1648"
+    }
+  },
+  "live_seed": {
+    "source": "fresh_configuration_free_physical_gateway_preflight",
+    "physical_follower_torque_enabled": false,
+    "follower_position_degrees": [
+      6.5054945054945055,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "follower_calibrated_minimum": [
+      -120.26373626373626,
+      -106.63736263736264,
+      -102.10989010989012,
+      -107.47252747252747,
+      -180.0,
+      0.0
+    ],
+    "follower_calibrated_maximum": [
+      120.26373626373626,
+      106.63736263736264,
+      102.10989010989012,
+      107.47252747252747,
+      180.0,
+      100.0
+    ]
+  },
+  "grid": {
+    "contact_offsets_m": [
+      0.022
+    ],
+    "contact_heights_m": [
+      0.016,
+      0.022
+    ],
+    "stroke_lengths_m": [
+      0.055,
+      0.075
+    ],
+    "family_universe": "all_reset_pawns_to_empty_orthogonal_neighbor_squares_in_canonical_labels",
+    "outcome_informed_selection": false
+  },
+  "action": {
+    "sample_hz": 40.0,
+    "dtype": "float64_little_endian_c_contiguous",
+    "row_zero_exact_live_seed": true,
+    "closed_jaw_rad": -0.1727003294848389,
+    "clearance_height_m": 0.09,
+    "fixed_wrist_roll_from_live_seed": true,
+    "target_rates_per_joint": [
+      8.0,
+      8.0,
+      8.0,
+      8.0,
+      12.0,
+      20.0
+    ],
+    "clipping": false,
+    "retiming_after_freeze": false,
+    "runtime_ik": false,
+    "runtime_offset": false,
+    "corrective_suffix": false
+  },
+  "simulation": {
+    "engine": "mujoco",
+    "precision": "float64",
+    "timestep_s": 0.0025,
+    "canonical_runtime": "sim2claw.current_workcell"
+  },
+  "camera_gate": {
+    "owner": "fixed_c922_rgb",
+    "image_size_px": [
+      1920,
+      1080
+    ],
+    "minimum_margin_px": 20.0,
+    "wrist_depth_required": false
+  },
+  "gates": {
+    "maximum_ik_residual_m": 0.004,
+    "gateway_rate_limits_per_joint": [
+      60.0,
+      60.0,
+      60.0,
+      60.0,
+      90.0,
+      100.0
+    ],
+    "minimum_signed_progress_m_for_later_dynamic_gate": 0.036025,
+    "selected_contact_required": true,
+    "new_disallowed_robot_contact_forbidden": true,
+    "selected_family_count": 4,
+    "minimum_families_per_direction": 2
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v1",
+  "authority": {
+    "static_compilation": true,
+    "dynamic_simulation": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "physical_packet": false,
+    "physical_motion": false,
+    "task_attempt": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "A pass freezes statically eligible current-anchor-seeded action bytes only. The provisional mapping remains unapproved; dynamic consequence, physical safety, task success, and transfer remain unproven."
+}
