@@ -1,0 +1,45 @@
+{
+  "schema_version": "sim2claw.coordinated_unloading_shadow_execution_closeout.v1",
+  "decision_id": "coordinated-unloading-shadow-execution-20260729-v1-closeout",
+  "status": "coordinated_unloading_confirmed_exact_task_mapping_rejected",
+  "packet": {
+    "path": "configs/hardware/coordinated_unloading_shadow_execution_v1.json",
+    "sha256": "b890bd92a366e23fe78182cfa27dbb4087fed24f065f523fa5238a6f3136bc32"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-shadow-execution-v1/receipt.json",
+    "sha256": "1999c73276264269b14dd6319fffdccebdb143d890e19c0c3216b5d51cee771f"
+  },
+  "camera_review": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-shadow-execution-v1/review/camera_review.json",
+    "sha256": "a9e440b27d0f583e59fe2be50f8de3091d16c0c74d5fbd2692c57ace45c7c46a"
+  },
+  "result": {
+    "forward_source_rows_completed": 434,
+    "requested_rows_sent_within_0p25_degrees": 434,
+    "safety_clamped_samples": 0,
+    "elbow_start_actual_degrees": 100.08791208791209,
+    "elbow_terminal_actual_degrees": 50.59340659340659,
+    "elbow_actual_excursion_degrees": 49.4945054945055,
+    "maximum_elbow_requested_observed_error_degrees": 4.840108480853132,
+    "longest_elbow_error_over_3deg_seconds": 10.325,
+    "terminal_elbow_residual_degrees": -3.654885347391971,
+    "terminal_shoulder_lift_residual_degrees": 0.6806637880849815,
+    "boundary_residual_gate_degrees": 2.0,
+    "boundary_gate_passed": false,
+    "camera_review_no_pawn_or_board_contact": true,
+    "controlled_return_completed": true,
+    "maximum_controlled_return_residual_degrees": 1.6703296703296715,
+    "postflight_torque_off": true,
+    "physical_task_attempts": 0
+  },
+  "reconciliation": {
+    "isolated_elbow_nonresponsive_hypothesis": "rejected_for_coordinated_motion",
+    "coordinated_unloading_hypothesis": "confirmed_over_a_49p49_degree_observed_elbow_excursion",
+    "exact_v5_task_corridor_mapping": "rejected_by_sustained_error_and_boundary_residual",
+    "global_mapping_approved": false,
+    "task_bounded_mapping_approved": false,
+    "task_attempt_authorized": false
+  },
+  "decision": "Do not retry this packet and do not promote the mapping. Preserve the unexpected positive mechanism result: coordinated shoulder/lift motion moved the elbow through 49.49 degrees with no clamp, contact, or cleanup fault, disproving the prior broad nonresponsive-channel interpretation. Before any further hardware, freeze one action-identical simulator tracking challenger derived only from this requested-versus-observed no-contact trace. If the untouched V5 task actions fail under that plant, close V5. If they remain robust, separately preregister the minimum mapping-resolution diagnostic; no task packet opens from this closeout alone."
+}

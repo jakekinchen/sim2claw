@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04A_PHYSICAL_DIAGNOSTIC_AUTHORIZED_PENDING_ONE_EXECUTION`
+Status: `RP04A_PHYSICAL_NEGATIVE_TRACKING_CHALLENGER_FREEZE`
 
 Created: `2026-07-29`
 
@@ -45,7 +45,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP03C | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Replace only sparse joint interpolation between the existing 35 mm precontact, contact, and 40 mm pushed Cartesian endpoints with a deterministic chord-error-constrained corridor. | Static receipt `5a9230fa...` passed all 576 cells with one selected family per direction. Dynamic receipt `8b7a889d...` then ran all `20` frozen episodes. | `0/20` passed; every episode still failed progress and no-lift. Cartesian interpolation bow alone is closed. |
 | RP03D | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Static receipt `488bf150...` passed all 576 cells with one selected family per direction. Dynamic receipt `8bb253ef...` ran the exact 20 frozen episodes. | `0/20` passed. The tangent-seat and locked-elbow task route are closed without hardware. |
 | RP04 | `DONE_EXISTING_SIMULATOR_PASS_RECONCILED` | Select the strongest already frozen natural-anchor simulator route without using later outcomes to alter its actions. | Canonical wrist-path V5 predates this successor and has exactly two families per direction across direct/ZOH and five resets, with exact actions and ObservableEpisode traces. | Receipt `cf21bd8c...` passes `40/40`; its four action tensors are immutable transfer candidates. This does not approve mapping or hardware. |
-| RP04A | `AUTHORIZED_PENDING_ONE_EXECUTION` | Approve or reject the coordinated-unloading hypothesis before any task packet. | Static receipt `bfe84b39...` passes. Execution packet `b890bd92...` is tested and frozen. One camera-enclosed execution must preserve exact requested rows and sent/observed traces, ≤`5 deg` maximum elbow error, no `>3 deg` error for `1 s`, ≤`2 deg` boundary/return residual, and torque-off. | Authorization is active only `10:37:29--11:37:29 CDT`, maximum one execution. A pass opens a registered-only extension probe; a fail closes V5. Neither is a pawn-task attempt or global mapping approval. |
+| RP04A | `PHYSICAL_NEGATIVE_TRACKING_CHALLENGER_FREEZE` | Approve or reject the coordinated-unloading hypothesis before any task packet. | The one execution completed `434` source rows with zero clamps and visibly no contact, moving the elbow `49.49 deg`; however, error stayed above `3 deg` for `10.325 s` and the requested boundary missed the `2 deg` gate. Controlled return and torque-off passed. | No retry and no mapping promotion. Freeze one action-identical simulator tracking challenger from requested/observed evidence; close V5 if untouched tasks fail it. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -65,9 +65,11 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Run the exact RP04A physical diagnostic once under authorization
-`owner-standing-rp04a-shadow-20260729-v1`. Do not retry. Finish camera review
-and torque-off verification before choosing the pass or fail branch.
+Freeze one evidence-directed action-identical tracking challenger from the
+immutable RP04A no-contact requested/observed trace. Fit no task outcomes and
+keep the original V5 action bytes untouched. Run the four V5 cases only after
+the plant contract, fit split, heldout thresholds, and exact dynamic
+denominator are committed and pushed.
 
 ## RP00 immutable result
 
@@ -390,6 +392,23 @@ and torque-off verification before choosing the pass or fail branch.
 - Segment maximum body excursions are `73.999345 deg` and `11.385180 deg`,
   both below the frozen `80 deg` limit.
 - Physical motion, task attempts, mapping approval, and transfer remain false.
+
+## RP04A immutable physical result
+
+- Execution receipt SHA-256:
+  `1999c73276264269b14dd6319fffdccebdb143d890e19c0c3216b5d51cee771f`.
+- All `434` forward source rows were requested unchanged and sent within
+  `0.25 deg`; safety clamps: `0`.
+- Observed elbow moved `100.087912 -> 50.593407 deg`, a new
+  `49.494505 deg` coordinated-motion result.
+- Maximum elbow requested/observed error was `4.840108 deg`, but error remained
+  above `3 deg` for `10.325 s`; terminal elbow residual was `3.654885 deg`.
+- The frozen `2 deg` boundary gate failed, so mapping remains unapproved and
+  the second source segment did not run.
+- Pi camera review shows no pawn or board contact. Controlled return completed
+  within `1.670330 deg`; fresh postflight verified torque off.
+- This is a meaningful physical mechanism advance and an exact mapping
+  negative, not a pawn-task attempt or transfer.
 
 ## RP01 freeze
 
