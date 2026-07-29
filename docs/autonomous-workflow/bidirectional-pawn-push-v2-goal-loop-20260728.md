@@ -190,7 +190,11 @@ Confirmed:
 - CalibrationGraph.v1 is frozen at `f80e4e14...`.
 - CalibrationGraph rejected mapping at `718cedd9...`; the graph is rank `4/4`
   with condition `5.69`, so a bounded composite heldout probe is next.
-- The `+/-2 deg` four-joint tricam route is frozen at `0c9e41d7...`.
+- The symmetric `+/-2 deg` four-joint tricam V1 route is frozen at
+  `0c9e41d7...` and failed packet compilation against the frozen self-contact
+  envelope; closeout `ca9b3527...`, no motion.
+- One-sided, exact-return composite V2 is prospectively frozen at
+  `5cf70e33...`; its selected static-safe action hash is `25df23c1...`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -237,7 +241,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: calibration reject 718cedd9...; composite route 0c9e41d7....
+Evidence: calibration reject 718cedd9...; V1 compile reject ca9b3527...; V2 route 5cf70e33....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -245,7 +249,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC03 through CC15.
 Blockers: physical/model mapping remains unapproved.
-Next step: compile/review/execute the calibration-only composite probe; no pawn contact or task attempt.
+Next step: compile/review/execute calibration-only composite probe V2; no pawn contact or task attempt.
 ```
 
 ## Physical Authority Boundaries

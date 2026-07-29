@@ -31,12 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC03"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:calibration-graph-composite-probe-route-frozen",
+        "node_id": "checkpoint:calibration-graph-composite-probe-v2-route-frozen",
         "milestone_id": "CC03",
         "status": "preregistered_before_packet_compile",
-        "queue_status": "ACTIVE_CC03_COMPOSITE_PROBE_COMPILE",
+        "queue_status": "ACTIVE_CC03_COMPOSITE_PROBE_V2_COMPILE",
         "resume_action": (
-            "compile_review_execute_composite_calibration_probe"
+            "compile_review_execute_composite_calibration_probe_v2"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(146)
+        range(148)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CALIBRATION_GRAPH_COMPOSITE_PROBE_ROUTE_FROZEN"
+        "CALIBRATION_GRAPH_COMPOSITE_PROBE_V2_ROUTE_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:calibration-graph-composite-probe-route-frozen"
+        "checkpoint:calibration-graph-composite-probe-v2-route-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True

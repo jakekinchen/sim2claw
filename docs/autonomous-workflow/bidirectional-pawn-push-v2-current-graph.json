@@ -4,9 +4,9 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC03",
-    "node_id": "checkpoint:calibration-graph-composite-probe-route-frozen",
-    "queue_status": "ACTIVE_CC03_COMPOSITE_PROBE_COMPILE",
-    "resume_action": "compile_review_execute_composite_calibration_probe",
+    "node_id": "checkpoint:calibration-graph-composite-probe-v2-route-frozen",
+    "queue_status": "ACTIVE_CC03_COMPOSITE_PROBE_V2_COMPILE",
+    "resume_action": "compile_review_execute_composite_calibration_probe_v2",
     "resume_authorized": true,
     "status": "preregistered_before_packet_compile"
   },
@@ -82,27 +82,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 171,
+    "edges": 173,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 46,
+      "evaluated-on": 47,
       "fitted-on": 4,
-      "generated-from": 105,
+      "generated-from": 106,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 165,
+    "nodes": 167,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 107,
+      "checkpoint": 108,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 31,
+      "evaluator_verdict": 32,
       "evidence": 6,
       "intervention": 1,
       "mechanism": 3,
@@ -239,6 +239,17 @@
       },
       "source": "checkpoint:calibration-graph-composite-probe-route-frozen",
       "target": "verdict:calibration-graph-v1-mapping-reject",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "no_contact": true,
+        "outcome_blind_static_selector": true,
+        "physical_task_attempts": 0,
+        "single_discriminating_probe": true
+      },
+      "source": "checkpoint:calibration-graph-composite-probe-v2-route-frozen",
+      "target": "verdict:calibration-graph-composite-probe-v1-compile-reject",
       "type": "generated-from"
     },
     {
@@ -1640,6 +1651,16 @@
     },
     {
       "metadata": {
+        "packet_written": false,
+        "physical_motion": false,
+        "safety_envelope_preserved": true
+      },
+      "source": "verdict:calibration-graph-composite-probe-v1-compile-reject",
+      "target": "checkpoint:calibration-graph-composite-probe-route-frozen",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "full_active_rank": true,
         "physical_model_mapping_approved": false,
         "physical_motion": false
@@ -2023,7 +2044,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "649681c130840ef89079cc40e9e90967f138dae3cd4de17790a50db6eaf82392",
+  "graph_digest": "a6f1572206e91d0146589f0446ea32b8f421061f8dcd69332d17552082a1cf86",
   "node_types": [
     "workcell",
     "session",
@@ -2133,6 +2154,33 @@
         },
         "proof_class": "prospective_no_contact_composite_mapping_heldout",
         "sha256": "0c9e41d71af945144e782778d5fa4f52f2096f6e2705598b7dad742d3a0069be"
+      },
+      "status": "preregistered_before_packet_compile",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "active_joint_count": 4,
+        "maximum_joint_excursion_degrees": 2.0,
+        "pawn_contact": false,
+        "physical_task_attempts": 0,
+        "returns_to_exact_start": true,
+        "selected_exact_action_sha256": "25df23c1cc7a392e190b2eda42afcc23ea3b523e9ce760dfe607d3be3993502b",
+        "source_binding_id": "calibration_graph_composite_probe_v2_route",
+        "tricam_required": true
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-composite-probe-v2-route-frozen",
+      "label": "Static-safe one-sided four-joint composite tricam V2 route frozen",
+      "proof_class": "prospective_static_safe_no_contact_composite_mapping_heldout",
+      "source": {
+        "path": "configs/hardware/calibration_graph_composite_heldout_tricam_v2.json",
+        "payload_contract": {
+          "route_id": "calibration_graph_composite_heldout_tricam_20260729_v2",
+          "schema_version": "sim2claw.wrist_view_reposition_route.v1"
+        },
+        "proof_class": "prospective_static_safe_no_contact_composite_mapping_heldout",
+        "sha256": "5cf70e332236729dbf5cd1562c8992947f59592e0590b33148654b24b47e69df"
       },
       "status": "preregistered_before_packet_compile",
       "type": "checkpoint"
@@ -3009,7 +3057,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "d61352082f78fcac2ef31f241c93c819717ebebf369ffe71b07d19f07149590b"
+        "sha256": "e175880e0691449059ecdbb8d0befb2f27f583c383c4da3f2265554ebc90071f"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6024,6 +6072,31 @@
     },
     {
       "data": {
+        "packet_written": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "safety_envelope_preserved": true,
+        "source_binding_id": "calibration_graph_composite_probe_v1_compile_closeout"
+      },
+      "evaluator_identity": "d2506d5b1adf3c193142d17cb4ddd6e59fcf4c5cbda19cb802f31e3e38822e6b",
+      "id": "verdict:calibration-graph-composite-probe-v1-compile-reject",
+      "label": "Symmetric composite route rejected by frozen self-contact envelope",
+      "proof_class": "cpu_fp64_static_collision_gateway_compile_negative",
+      "source": {
+        "path": "configs/decisions/calibration_graph_composite_heldout_tricam_v1_compile_closeout.json",
+        "payload_contract": {
+          "proof_class": "cpu_fp64_static_collision_gateway_compile_negative",
+          "schema_version": "sim2claw.wrist_view_route_compile_closeout.v1",
+          "status": "rejected_before_packet_write"
+        },
+        "proof_class": "cpu_fp64_static_collision_gateway_compile_negative",
+        "sha256": "ca9b3527361784649b72d011c17c545ebef59922d755bdfbeac96fcc9ddbddd9"
+      },
+      "status": "rejected_before_packet_write",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "active_jacobian_rank": 4,
         "condition_number": 5.6936633786994335,
         "physical_model_mapping_approved": false,
@@ -8157,7 +8230,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "d61352082f78fcac2ef31f241c93c819717ebebf369ffe71b07d19f07149590b",
+      "source_sha256": "e175880e0691449059ecdbb8d0befb2f27f583c383c4da3f2265554ebc90071f",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -8579,6 +8652,26 @@
       "source_binding": "calibration_graph_composite_probe_route",
       "source_sha256": "0c9e41d71af945144e782778d5fa4f52f2096f6e2705598b7dad742d3a0069be",
       "status": "preregistered_before_packet_compile"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_COMPOSITE_PROBE_V1_COMPILE_REJECT",
+      "node_ids_added": [
+        "verdict:calibration-graph-composite-probe-v1-compile-reject"
+      ],
+      "revision": 146,
+      "source_binding": "calibration_graph_composite_probe_v1_compile_closeout",
+      "source_sha256": "ca9b3527361784649b72d011c17c545ebef59922d755bdfbeac96fcc9ddbddd9",
+      "status": "rejected_before_packet_write"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_COMPOSITE_PROBE_V2_ROUTE_FROZEN",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-composite-probe-v2-route-frozen"
+      ],
+      "revision": 147,
+      "source_binding": "calibration_graph_composite_probe_v2_route",
+      "source_sha256": "5cf70e332236729dbf5cd1562c8992947f59592e0590b33148654b24b47e69df",
+      "status": "preregistered_before_packet_compile"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -8592,6 +8685,27 @@
       },
       "proof_class": "prospective_no_contact_composite_mapping_heldout",
       "sha256": "0c9e41d71af945144e782778d5fa4f52f2096f6e2705598b7dad742d3a0069be"
+    },
+    {
+      "id": "calibration_graph_composite_probe_v1_compile_closeout",
+      "path": "configs/decisions/calibration_graph_composite_heldout_tricam_v1_compile_closeout.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_static_collision_gateway_compile_negative",
+        "schema_version": "sim2claw.wrist_view_route_compile_closeout.v1",
+        "status": "rejected_before_packet_write"
+      },
+      "proof_class": "cpu_fp64_static_collision_gateway_compile_negative",
+      "sha256": "ca9b3527361784649b72d011c17c545ebef59922d755bdfbeac96fcc9ddbddd9"
+    },
+    {
+      "id": "calibration_graph_composite_probe_v2_route",
+      "path": "configs/hardware/calibration_graph_composite_heldout_tricam_v2.json",
+      "payload_contract": {
+        "route_id": "calibration_graph_composite_heldout_tricam_20260729_v2",
+        "schema_version": "sim2claw.wrist_view_reposition_route.v1"
+      },
+      "proof_class": "prospective_static_safe_no_contact_composite_mapping_heldout",
+      "sha256": "5cf70e332236729dbf5cd1562c8992947f59592e0590b33148654b24b47e69df"
     },
     {
       "id": "calibration_graph_v1_closeout",
@@ -9258,7 +9372,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "d61352082f78fcac2ef31f241c93c819717ebebf369ffe71b07d19f07149590b"
+      "sha256": "e175880e0691449059ecdbb8d0befb2f27f583c383c4da3f2265554ebc90071f"
     },
     {
       "id": "current_task_scene_labels",

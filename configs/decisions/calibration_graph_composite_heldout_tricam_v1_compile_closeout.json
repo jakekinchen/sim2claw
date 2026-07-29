@@ -1,0 +1,34 @@
+{
+  "schema_version": "sim2claw.wrist_view_route_compile_closeout.v1",
+  "decision_id": "calibration-graph-composite-heldout-tricam-20260729-v1-compile-closeout",
+  "status": "rejected_before_packet_write",
+  "proof_class": "cpu_fp64_static_collision_gateway_compile_negative",
+  "route": {
+    "path": "configs/hardware/calibration_graph_composite_heldout_tricam_v1.json",
+    "sha256": "0c9e41d71af945144e782778d5fa4f52f2096f6e2705598b7dad742d3a0069be"
+  },
+  "candidate_manifest": {
+    "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+    "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+  },
+  "compile_result": {
+    "command": "uv run sim2claw wrist-view-reposition --phase compile --packet runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v1/packet.json --candidate-manifest runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json --route configs/hardware/calibration_graph_composite_heldout_tricam_v1.json",
+    "exit_code": 1,
+    "error": "staged reposition exceeds a frozen known-safe self-contact penetration envelope",
+    "packet_written": false,
+    "physical_motion": false,
+    "cameras_opened": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Quarantine the symmetric two-sided route. Preserve the same four active joints and two-degree bound, but use a prospectively selected one-sided composite excursion that passes the exact CPU MuJoCo collision envelope and returns to the same anchor. Do not weaken or bypass the frozen contact envelope.",
+  "authority": {
+    "replacement_route_freeze": true,
+    "packet_compile": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false
+  }
+}

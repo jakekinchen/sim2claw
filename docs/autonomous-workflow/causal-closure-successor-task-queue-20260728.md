@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_COMPOSITE_PROBE_COMPILE`
+Status: `ACTIVE_CC03_COMPOSITE_PROBE_V2_COMPILE`
 
 Created: `2026-07-28`
 
@@ -472,10 +472,21 @@ Current state:
   `718cedd9ff0f8cb7389e92051fa288162527415f40d0b4c4f06186c80001908a`;
   closeout SHA-256
   `4bcefbd4595fbdf9698c6d48058ea726c62beffd28f26f2c89bf0158cb9241ea`.
-- One no-contact composite tricam route is frozen at SHA-256
+- The symmetric two-sided no-contact composite tricam V1 route is frozen at
+  SHA-256
   `0c9e41d71af945144e782778d5fa4f52f2096f6e2705598b7dad742d3a0069be`.
-  It jointly excites the four active joints by `+/-2 deg`, returns exactly to
-  the fresh torque-off start, and remains calibration-only.
+  Its packet compile failed closed before writing a packet because the staged
+  path exceeded the frozen known-safe self-contact penetration envelope.
+  Closeout SHA-256
+  `ca9b3527361784649b72d011c17c545ebef59922d755bdfbeac96fcc9ddbddd9`;
+  physical motion and task attempts remained zero.
+- Composite tricam V2 is frozen at SHA-256
+  `5cf70e332236729dbf5cd1562c8992947f59592e0590b33148654b24b47e69df`.
+  It preserves all four active joints and the two-degree bound, uses the
+  prospectively selected static-safe `(-,+,-,+)` one-sided excursion, returns
+  exactly to the fresh torque-off start, and remains calibration-only. Its
+  selected 961-row exact action SHA-256 is
+  `25df23c1cc7a392e190b2eda42afcc23ea3b523e9ce760dfe607d3be3993502b`.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -517,6 +528,6 @@ This authorization:
 
 Next step:
 
-- Compile, independently review, and execute the single no-contact composite
-  calibration probe within the owner authorization window. Do not touch a
-  pawn or count a task attempt.
+- Compile, independently review, and execute composite calibration probe V2
+  within the owner authorization window. Do not weaken the V1 safety reject,
+  touch a pawn, or count a task attempt.
