@@ -9,3 +9,7 @@
 - Five focused tests pass. No model enumeration, dynamic replay, camera,
   gateway, serial, physical motion, task attempt, mapping approval, policy
   ranking, or transfer occurred during this freeze.
+- The one official enumeration then evaluated all `756` cells. Three new
+  families passed robot/static gates, but zero passed the frozen disjoint-pawn
+  and `33.6 mm` corridor gate. The route is terminal at follower elbow ID-3
+  actuator or gear-train service; no dynamic or physical task action opened.

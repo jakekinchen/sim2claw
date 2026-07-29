@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04J_PAWN_DIRECTION_STATIC_FROZEN_PENDING_ONE_RUN`
+Status: `TERMINAL_HARDWARE_SERVICE_BOUNDARY`
 
 Created: `2026-07-29`
 
@@ -53,7 +53,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04G | `DONE_POST_CABLE_TRACKING_NEGATIVE_RETURN_INCOMPLETE` | Re-establish physical tracking and task-corridor evidence after the owner-reported wrist-camera cable tension change. | Receipt `a3ab1eee...` completed 501 exact rows and both cameras; camera review found no pawn/board contact and visible cable slack without an obvious snag. | Cable relief improved the reach/error by only `0.879 deg`; the roughly `30 deg` deficit remains. Controlled return did not reach the natural anchor, but postflight torque is off. No retry. |
 | RP04H | `DONE_NATURAL_ANCHOR_RESTORED_PROTOCOL_NEGATIVE` | Restore the arm from the fresh torque-off postflight pose to the natural anchor without contacting the board or pawns. | Receipt `ed4945d5...` executed all 278 rows, restored the natural anchor within `1.759 deg`, completed both cameras, showed no pawn/board contact, and confirmed torque off. | Protocol pass remains false: a stage-deadline bug caused 67 rows to be rate-limited. Do not rerun only to improve the label. |
 | RP04I | `DONE_TERMINAL_STATIC_NEGATIVE` | Test one separately named sustained-contact mechanism after the preregistered lower-contact target grid failed. | Subtract one fixed `12.5 mm` kinematic jaw-to-contact witness offset from the entire predecessor target grid, yielding exactly `[22.5, 25, 27.5, 30] mm`; preserve the observed first-contact `[35,65] mm` gate, `80 deg` lock, `66 mm` stroke, three wrist rolls, physics, evaluator, and all collision/camera/gateway gates. All eight previously selected cases are quarantined; exactly `44 × 12 = 528` static cells may run once. | Receipt `52ebdc33...` evaluated all `528` cells but admitted only `brown_pawn_f1__f1_f2`: REAL_TO_SIM `1`, SIM_TO_REAL `0`. No dynamics or hardware. The exact compensation mechanism is closed. |
-| RP04J | `PAWN_DIRECTION_STATIC_FROZEN_PENDING_ONE_RUN` | Test the one untouched geometry axis selected by the reserved blocker review: displacement bearing. | Carry the exact `brown_pawn_f1__f1_f2` action unchanged; enumerate eight near-side pawns × eight `45 deg` bearings, excluding that exact carried family, × four compensated heights × three frozen wrist rolls = `756` new cells. Preserve reset layout, `80 deg` lock, `66 mm` stroke, jaw, physics, evaluator, historical quarantines, collision/camera/gateway gates, and false dynamic/physical authority. A pass requires one new family on a pawn and corridor disjoint from the carry. | Run once. Fewer than two disjoint families closes the route at elbow drivetrain service. A pass freezes only the carried REAL_TO_SIM plus fresh SIM_TO_REAL pair for the unchanged direct/ZOH × five-reset `20/20` gate; no post-run reselection. |
+| RP04J | `DONE_TERMINAL_STATIC_NEGATIVE` | Test the one untouched geometry axis selected by the reserved blocker review: displacement bearing. | Carry the exact `brown_pawn_f1__f1_f2` action unchanged; enumerate eight near-side pawns × eight `45 deg` bearings, excluding that exact carried family, × four compensated heights × three frozen wrist rolls = `756` new cells. Preserve reset layout, `80 deg` lock, `66 mm` stroke, jaw, physics, evaluator, historical quarantines, collision/camera/gateway gates, and false dynamic/physical authority. A pass requires one new family on a pawn and corridor disjoint from the carry. | Receipt `c36cebeb...` found three new static families but zero passed the frozen disjoint-corridor gate. REAL_TO_SIM remains the carried family; SIM_TO_REAL remains absent. No dynamics or hardware. The reachable-lock route is closed at elbow drivetrain service. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -73,11 +73,13 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-The robot is restored to the natural anchor and torque is off. Run the frozen
-RP04J pawn-by-direction static screen exactly once after its implementation,
-contract, and focused tests are committed and pushed. Do not expand or reselect
-the grid, rerun the return, or open hardware task motion until the exact carried
-plus fresh pair passes all 20 simulator gates.
+The robot is restored to the natural anchor and torque is off. RP04J is closed
+after its one run produced no sequencing-safe second family. Do not expand,
+reselect, relax the corridor gate, rerun the return, open dynamic replay, or
+open hardware task motion. The next admissible step is inspection or
+replacement of the follower elbow ID-3 STS3215 actuator or gear train, followed
+by fresh no-contact tracking qualification before any simulator or task route
+is reopened.
 
 ## RP04I freeze
 
@@ -144,6 +146,23 @@ plus fresh pair passes all 20 simulator gates.
   terminal for this route. The concrete restart boundary is inspection or
   replacement of the ID-3 STS3215 elbow actuator or gear train, followed by
   reconsideration of the natural-anchor V5 `40/40` simulator route.
+
+## RP04J immutable result
+
+- Freeze commit: `2c03a15`; fail-closed relative-path repair: `b8542d1`.
+- Public receipt SHA-256:
+  `c36cebeb248e039ffb3fb64825accaca256054da51fc88f8f53fe13fe007bb9a`.
+- All `756` frozen new cells ran exactly once. Three new families passed the
+  robot, IK, joint, first-contact, collision, camera, and gateway gates.
+- Two new families reuse the carried `f1` pawn and therefore fail the disjoint
+  pawn gate. The only distinct-pawn survivor, `brown_pawn_g2` at `180 deg`,
+  comes within `21.55 mm` of the carried corridor, below the prospectively
+  frozen `33.6 mm` minimum.
+- No post-outcome reselection or corridor relaxation is allowed. Static pair
+  admission therefore fails REAL_TO_SIM `1`, SIM_TO_REAL `0`.
+- Dynamic replay, physical task motion, mapping approval, policy ranking, and
+  transfer remain unopened. The restart boundary is elbow drivetrain service,
+  not another simulator mechanism.
 
 ## RP00 immutable result
 

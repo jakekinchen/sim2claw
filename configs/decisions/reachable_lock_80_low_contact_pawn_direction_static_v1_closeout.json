@@ -1,0 +1,69 @@
+{
+  "schema_version": "sim2claw.pawn_direction_family_static_closeout.v1",
+  "status": "terminal_static_negative_hardware_service_boundary",
+  "contract": {
+    "path": "configs/evaluations/reachable_lock_80_low_contact_pawn_direction_static_v1.json",
+    "sha256": "b6ebadd8ead1a0a5577d2f6d1d1af9ae0d83701670402bda4956337a4f9cceeb"
+  },
+  "freeze_commits": [
+    "2c03a15",
+    "b8542d1"
+  ],
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-low-contact-pawn-direction-static-v1/receipt.json",
+    "sha256": "c36cebeb248e039ffb3fb64825accaca256054da51fc88f8f53fe13fe007bb9a"
+  },
+  "enumeration_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-low-contact-pawn-direction-static-v1/enumeration/receipt.json",
+    "sha256": "1d7ac446db2182d1e0dd9ad74843c3970cb42f62f16e1a539d42a4b5b14cb883"
+  },
+  "result": {
+    "passed": false,
+    "new_grid_cells_evaluated": 756,
+    "new_statically_eligible_family_count": 3,
+    "new_corridor_eligible_family_count": 0,
+    "direction_counts": {
+      "REAL_TO_SIM": 1,
+      "SIM_TO_REAL": 0
+    },
+    "carried_case_id": "brown_pawn_f1__f1_f2",
+    "carried_action_sha256": "e446f5698758db55641e502b990f772eee7514506fb323eee7a4b0da1b419d43",
+    "rejected_new_family_witnesses": [
+      {
+        "case_id": "brown_pawn_f1__f1_bearing_270",
+        "reason": "same pawn as carried family and endpoint outside board",
+        "carry_corridor_separation_m": 0.0
+      },
+      {
+        "case_id": "brown_pawn_f1__f1_bearing_045",
+        "reason": "same pawn as carried family",
+        "carry_corridor_separation_m": 0.0
+      },
+      {
+        "case_id": "brown_pawn_g2__g2_bearing_180",
+        "reason": "distinct pawn but corridor separation is below the frozen 33.6 mm gate",
+        "carry_corridor_separation_m": 0.021549999999999972
+      }
+    ]
+  },
+  "decision": "Close the reachable-lock low-contact simulator route. Do not relax the 33.6 mm sequencing gate, reassign directions, select a different post-outcome cell, expand bearings, or open dynamics/hardware. The exact restart boundary is inspection or replacement of the follower elbow ID-3 STS3215 actuator or gear train, followed by fresh tracking qualification and reconsideration of the natural-anchor V5 40/40 simulator route.",
+  "metric_ledger": {
+    "real_to_sim_transfer_successes_attempts": "0/0",
+    "sim_to_real_transfer_successes_attempts": "0/0",
+    "physical_pawn_task_attempts": "0/10",
+    "global_mapping_approved": false,
+    "predictive_policy_ranking": "INSUFFICIENT_PHYSICAL_SAMPLE"
+  },
+  "authority": {
+    "dynamic_replay": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Immutable static terminal negative for the final bounded reachable-lock geometry successor. It strengthens the causal closure but does not change any transfer, task-attempt, mapping, or policy-ranking metric."
+}
