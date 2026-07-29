@@ -1,0 +1,84 @@
+{
+  "schema_version": "sim2claw.realized_action_sage_lite_closeout.v1",
+  "decision_id": "realized-action-sage-lite-v1-closeout",
+  "result": "PASS_RETROSPECTIVE_ACTUATOR_ATTRIBUTION",
+  "proof_class": "retrospective_whole_episode_sample_domain_actuator_attribution",
+  "freeze_commit": "0ff8bdc",
+  "contract": {
+    "path": "configs/evaluations/realized_action_sage_lite_v1.json",
+    "sha256": "9cd0b2923fcd4af6a38709d740a5a297c978baefba2d6f0c71743c710787c3bb"
+  },
+  "implementation": {
+    "path": "src/sim2claw/realized_action_sage_lite.py",
+    "sha256": "1b5cc8f51e37f3ffc55d9bf34239fae883f627cfd5affed13d55c184c2459c75"
+  },
+  "generated_receipt": {
+    "path": "outputs/realized_action_sage_lite_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "41e1d8853cc5d6c10e7e1da3dab48fe409f9728d2089c4f9cd0076c7721d86a0",
+    "artifact_sha256": "f03dbd13d2fdd85d1893e2ed03923dcdc4b15fa6deeb9bb9f95845b367c6054f",
+    "deterministic_rebuild_match": true
+  },
+  "denominators": {
+    "episodes": 8,
+    "samples": 3433,
+    "fit_episodes": 4,
+    "fit_samples": 1562,
+    "validation_episodes": 3,
+    "validation_samples": 1340,
+    "sealed_episodes": 1,
+    "sealed_samples": 531
+  },
+  "cross_cohort_findings": {
+    "best_sample_domain_shift_samples": {
+      "fit": 3,
+      "validation": 3,
+      "sealed": 3
+    },
+    "best_aligned_overall_joint_rms_degrees": {
+      "fit": 1.3473760597335118,
+      "validation": 1.4413442095035056,
+      "sealed": 1.2354660584406403
+    },
+    "unshifted_sent_to_measured_overall_joint_rms_degrees": {
+      "fit": 2.4285438032884525,
+      "validation": 2.3681585334313286,
+      "sealed": 2.1047167982855624
+    },
+    "provisional_ee_joint_ranking_fit_and_validation": [
+      "elbow_flex",
+      "shoulder_lift",
+      "wrist_flex",
+      "shoulder_pan",
+      "wrist_roll",
+      "gripper"
+    ],
+    "provisional_ee_rms_mm": {
+      "fit": 18.049743356403383,
+      "validation": 16.786387557335896,
+      "sealed": 16.92543360576588
+    },
+    "qualified_return_episodes": 0,
+    "direction_conditioned_residual_repeats_across_fit_and_validation": true,
+    "uncalibrated_current_association_repeats_across_fit_and_validation": true
+  },
+  "identifiability": {
+    "sample_domain_alignment_only": true,
+    "causal_command_latency_identified": false,
+    "current_register_calibrated_as_torque_or_force": false,
+    "actuator_application_timestamp_available": false,
+    "global_physical_model_mapping_approved": false,
+    "sealed_episode_used_for_selection": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "parameter_fit": false,
+    "paid_compute": false
+  },
+  "next_card": "C3A"
+}

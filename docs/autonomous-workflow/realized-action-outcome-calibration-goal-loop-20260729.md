@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Goal Loop
 
-Status: `ACTIVE_C3`
+Status: `ACTIVE_C3A`
 
 Created: `2026-07-29`
 
@@ -123,12 +123,12 @@ safe alternatives. Do not tune sealed inputs or repeat C6.
 
 ```text
 Current state: ACTIVE
-Active card: C3
-Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative
-Evidence: RP04N artifact cf1fbfff5d914b2a5fedff7825bcb3f89ef60a8001ab653e97bbc5f33a35bf0b
-Remaining: C3, C3A, C4, C5, C6, C7, C8, C9 boundary
+Active card: C3A
+Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative, C3
+Evidence: C3 artifact f03dbd13d2fdd85d1893e2ed03923dcdc4b15fa6deeb9bb9f95845b367c6054f
+Remaining: C3A, C4, C5, C6, C7, C8, C9 boundary
 Blockers: physical pathway closed at elbow service boundary; not needed for C0-C8
-Next step: freeze C3 SAGE-lite actuator analysis over the existing whole-episode cohorts
+Next step: freeze the ordered C3A first-divergence and sensitivity evaluator
 ```
 
 ## Stop conditions
