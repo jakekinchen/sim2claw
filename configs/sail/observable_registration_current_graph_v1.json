@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or2_robot_jaw_mapping",
+  "status": "active_or3_physical_observation",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "79319e32144d705a85eed84e97cb73b629c3800a904dca7407dcb9be73c93a4e",
+      "sha256": "7ba56c5f73d9a205667c86f39ef36b6441138e425836195c99873028d5bd8deb",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -75,6 +75,11 @@
       "path": "configs/decisions/observable_c922_camera_world_v1_closeout.json",
       "sha256": "42fb05f07184dcf3d0fc71de85d8c47771d932692c54096895fc5f43c4faeb36",
       "proof_class": "bounded_board_gauge_camera_world_projection"
+    },
+    "or2": {
+      "path": "configs/decisions/observable_robot_jaw_mapping_v1_closeout.json",
+      "sha256": "28461906ca0b3cb8e67e5e68471f434c3498ea425bb8b6f93f4512baf6cf5da1",
+      "proof_class": "frozen_camera_bounded_robot_board_rigid_fit_negative"
     }
   },
   "nodes": [
@@ -88,7 +93,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or2",
+      "status": "active_or3",
       "source_binding": "queue"
     },
     {
@@ -102,6 +107,33 @@
         "board_reprojection_max_px": 5.652360377112204,
         "exact_intrinsics_approved": false,
         "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "mapping:or2-robot-jaw-rigid",
+      "type": "mapping_candidate",
+      "label": "Frozen-camera robot-to-board rigid correction",
+      "status": "terminal_negative",
+      "source_binding": "or2",
+      "data": {
+        "fit_tip_rms_px": 16.324430040121502,
+        "validation_tip_rms_px": 16.302259316459754,
+        "mean_jaw_separation_underprediction_px": 21.21954727821677,
+        "task_bounded_accepted": false,
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "residual:jaw-aperture-underprediction",
+      "type": "residual_channel",
+      "label": "Observed versus modeled jaw aperture",
+      "status": "localized_not_yet_authorized_as_mechanism",
+      "source_binding": "or2",
+      "data": {
+        "fit_observed_separation_px": 32.27857893787832,
+        "fit_projected_separation_px": 11.070739202088228,
+        "validation_observed_separation_px": 32.37087238623927,
+        "validation_projected_separation_px": 11.139617565595817
       }
     },
     {
@@ -183,11 +215,21 @@
       "type": "constrained-by"
     },
     {
+      "source": "mapping:or2-robot-jaw-rigid",
+      "target": "residual:jaw-aperture-underprediction",
+      "type": "generated-from"
+    },
+    {
+      "source": "residual:jaw-aperture-underprediction",
+      "target": "mapping:or2-robot-jaw-rigid",
+      "type": "counterexample-to"
+    },
+    {
       "source": "boundary:follower-elbow-service",
       "target": "workcell:current-so101-chessboard",
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR2",
-  "next_transition": "or2_robot_jaw_mapping_under_frozen_camera"
+  "active_card": "OR3",
+  "next_transition": "or3_freeze_timestamp_schedule_then_compile_physical_visual_events"
 }

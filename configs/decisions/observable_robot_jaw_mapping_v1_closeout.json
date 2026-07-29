@@ -1,0 +1,94 @@
+{
+  "schema_version": "sim2claw.observable_robot_jaw_mapping_closeout.v1",
+  "decision_id": "observable-robot-jaw-mapping-v1-closeout",
+  "result": "TERMINAL_JAW_MAPPING_NEGATIVE_GLOBAL_MAPPING_FALSE",
+  "proof_class": "frozen_camera_bounded_robot_board_rigid_fit_negative",
+  "freeze_commit": "54011f2",
+  "contract": {
+    "path": "configs/evaluations/observable_robot_jaw_mapping_v1.json",
+    "sha256": "053089fc8c6def2bfa883fcf3517327a79ca58a4b693969062a4123121aa8a72"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_robot_jaw_mapping.py",
+    "sha256": "e36558b410e891dd230a87100cf7bc21160b90d68cf7a2445b315b6f58c0933c"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_robot_jaw_mapping_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "436cd9f629b780e5f8a08e9f00708659c4fa416a5362fe603bfee6f1f6484c3a",
+    "artifact_sha256": "3151318a6c58ad0d56b8b01376b29e964c1da2df0972e4c5b397ca2fcc9b4292"
+  },
+  "fit": {
+    "count": 6,
+    "accepted": false,
+    "robot_board_yaw_degrees": 1.0248812043056679,
+    "translation_xyz_m": [
+      0.14999999999999997,
+      0.07100943668025553,
+      0.045830974551170765
+    ],
+    "tip_reprojection_rms_px": 16.324430040121502,
+    "tip_reprojection_max_px": 23.514645432124677,
+    "midpoint_reprojection_rms_px": 12.346697024425051,
+    "failed_gates": [
+      "tip_rms",
+      "midpoint_rms",
+      "parameter_bounds"
+    ]
+  },
+  "known_outcome_validation": {
+    "count": 4,
+    "candidate_refit": false,
+    "accepted": false,
+    "tip_reprojection_rms_px": 16.302259316459754,
+    "tip_reprojection_max_px": 22.817471575198887,
+    "midpoint_reprojection_rms_px": 12.317712992452776,
+    "failed_gates": [
+      "tip_rms",
+      "midpoint_rms"
+    ]
+  },
+  "residual_localization": {
+    "fit_fixed_tip_rms_px": 16.58114494404785,
+    "fit_moving_tip_rms_px": 16.06361306226339,
+    "validation_fixed_tip_rms_px": 16.940513030767345,
+    "validation_moving_tip_rms_px": 15.637977359511668,
+    "fit_observed_mean_jaw_separation_px": 32.27857893787832,
+    "fit_projected_mean_jaw_separation_px": 11.070739202088228,
+    "validation_observed_mean_jaw_separation_px": 32.37087238623927,
+    "validation_projected_mean_jaw_separation_px": 11.139617565595817,
+    "mean_separation_underprediction_px": 21.21954727821677,
+    "interpretation": "The fit and validation residuals are nearly identical and opposite-signed across the two tips. A robot-board rigid transform cannot explain the approximately 21.2 px jaw-aperture underprediction. Jaw geometry or gripper mapping is a prospective causal candidate, but this result does not authorize changing it."
+  },
+  "global_channels": {
+    "board_camera": true,
+    "fixed_base_robot": false,
+    "articulated_upper_arm": true,
+    "articulated_wrist": false,
+    "robot_silhouette": false,
+    "jaw_tips": false,
+    "floor_support": false
+  },
+  "task_bounded_jaw_mapping_accepted": false,
+  "global_physical_model_mapping_approved": false,
+  "validation": {
+    "focused_tests": "2 passed",
+    "deterministic_rebuild": true,
+    "fit_validation_overlap": false,
+    "camera_refit": false,
+    "sealed_task_episode_used": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replay": false,
+    "paid_compute": false,
+    "global_mapping_approved": false,
+    "transfer_claim": false
+  },
+  "next_card": "OR3"
+}
