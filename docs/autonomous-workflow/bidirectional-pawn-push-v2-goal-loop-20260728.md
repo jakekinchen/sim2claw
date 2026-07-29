@@ -167,6 +167,12 @@ Confirmed:
 - Four already-static-safe 10 mm contact actions are frozen at `3987ee1b...`.
 - Completion reproduced all four hashes at `ee26fa9d...`.
 - Low-contact isolated-reset dynamic V3 is frozen at `fd00a7c4...`.
+- V3 passed only `1/1` families; receipt `9a907fd1...`, closeout
+  `ccedd64f...`. Every nonprogress gate passed; each failed direction has one
+  lateral reset endpoint below the unchanged `36.025 mm` progress gate.
+- A single bounded `66 mm` stroke-only static successor is authorized across
+  all four families. The added `6 mm` is the full span of the frozen
+  `+/-3 mm` reset uncertainty; no per-case outcome tuning is allowed.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -211,17 +217,17 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card: CC02 finite current-workcell wrist-orientation and precontact-path static successor.
+Active card: CC02 bounded 66 mm stroke-only static successor across four low-contact families.
 Completed: CC00, CC00A, CC01.
-Evidence: reset V2 partial e2986fac...; low-contact completion ee26fa9d...; V3 freeze fd00a7c4....
+Evidence: low-contact V3 receipt 9a907fd1... and closeout ccedd64f....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
 Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
-Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push low-contact completion and V3 freeze, then execute four exact actions under both plants once.
+Blockers: V3 is only 1/1 dynamically; physical/model mapping remains unapproved.
+Next step: freeze and run the four-case 66 mm stroke static successor; keep dynamics and hardware closed.
 ```
 
 ## Physical Authority Boundaries

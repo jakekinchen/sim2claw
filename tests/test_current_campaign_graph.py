@@ -31,12 +31,14 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC02"
     assert tracked["active_pointer"] == {
-        "node_id": "checkpoint:canonical-wrist-path-low-contact-temporal-v3-frozen",
+        "node_id": "verdict:canonical-wrist-path-low-contact-temporal-v3-partial-reject",
         "milestone_id": "CC02",
-        "status": "preregistered_before_exactly_once_low_contact_dynamic_replay",
-        "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
+        "status": (
+            "low_contact_two_family_partial_reject_before_bounded_stroke_static_freeze"
+        ),
+        "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_STATIC_SUCCESSOR",
         "resume_action": (
-            "execute_canonical_wrist_path_low_contact_temporal_v3_exactly_once"
+            "freeze_four_family_66mm_stroke_static_successor"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -44,7 +46,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(132)
+        range(133)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +56,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CANONICAL_WRIST_PATH_LOW_CONTACT_TEMPORAL_V3_FROZEN"
+        "CANONICAL_WRIST_PATH_LOW_CONTACT_TEMPORAL_V3_PARTIAL_REJECT"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:canonical-wrist-path-low-contact-temporal-v3-frozen"
+        "verdict:canonical-wrist-path-low-contact-temporal-v3-partial-reject"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True

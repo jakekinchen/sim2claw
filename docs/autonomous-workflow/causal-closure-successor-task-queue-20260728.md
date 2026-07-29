@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY`
+Status: `ACTIVE_CC02_BOUNDED_STROKE_STATIC_SUCCESSOR`
 
 Created: `2026-07-28`
 
@@ -395,6 +395,21 @@ Current state:
   `fd00a7c4b16ed15d93dea4addf370be9374f4774073e58371c6345ce71ea69b4`.
   It assigns two cases per direction before dynamic opening and preserves the
   isolated reset, both plant paths, five deltas, physics, traces, and gates.
+- Low-contact temporal V3 ran once and passed one family per direction, below
+  the unchanged `2/2` gate. All identity, contact, exclusion, collision,
+  camera, no-lift, and gateway checks passed. The only failures were progress
+  at one lateral reset endpoint for `h7->h8` (`35.318514/35.824712 mm`) and
+  `d7->e7` (`32.565617/34.508641 mm`) under direct/ZOH, respectively.
+  Receipt SHA-256
+  `9a907fd1764ade312173a20a200f63653d677bf4b9b1a1665cb9f7aa86a79634`;
+  closeout SHA-256
+  `ccedd64fc67bc88553be5a4944d314fde46c09b67243a30377448cf36c7362e2`.
+- The next single mechanism is a bounded stroke-only static successor across
+  all four low-contact families. Its sole stroke is `66 mm`: the unchanged
+  `60 mm` stroke plus the full `6 mm` span of the already-frozen
+  `+/-3 mm` reset uncertainty. No failed case receives a private adjustment.
+  Contact height, wrist orientation, precontact path, jaw target, reset,
+  physics, action rate, and every task/robustness gate remain unchanged.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -414,8 +429,7 @@ Completed:
 Blockers:
 
 - No approved physical/model mapping.
-- The admitted V2 action set has an admissible terminal dynamic negative and
-  no case survives the unchanged no-lift/task gates.
+- Low-contact V3 remains below the two-family-per-direction dynamic gate.
 
 ## Time-bounded physical authorization
 
@@ -437,7 +451,6 @@ This authorization:
 
 Next step:
 
-- Commit and push the low-contact completion result plus temporal V3 freeze,
-  then replay the four new exact tensors under both plant paths and five
-  deltas exactly once. Preserve all gates and prior action bytes; no result
-  itself promotes geometry, approves mapping, or opens hardware.
+- Freeze and execute one static-only `66 mm` stroke cell for each of the same
+  four low-contact families. Dynamic replay may be frozen only if all four
+  pass the unchanged IK, collision, camera, contact, and gateway gates.

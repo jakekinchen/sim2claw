@@ -1,0 +1,3007 @@
+{
+  "authority": {
+    "camera": false,
+    "dynamic_simulation": true,
+    "evaluator_v2_freeze": false,
+    "gateway": false,
+    "mapping_approval": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "candidate_refit": false,
+  "claim_boundary": "Prospectively frozen CPU/fp64 replay of four exact 10 mm contact-height V4 actions under the unchanged isolated-selected-pawn reset. These tensors were static-eligible before dynamic opening and are distinct from the preserved 14 mm negative actions. Action bytes, MuJoCo physics, direct-target baseline, diagnostic 0.11 second ZOH challenger, five reset deltas, causal traces, and all task gates are frozen. A pass can close the CC02 simulator screen for this isolated low-contact slice only; it cannot approve mapping, evaluator V2, hardware, or transfer.",
+  "contract_path": "configs/evaluations/canonical_wrist_path_low_contact_temporal_v3.json",
+  "contract_sha256": "fd00a7c4b16ed15d93dea4addf370be9374f4774073e58371c6345ce71ea69b4",
+  "direction_checks": {
+    "REAL_TO_SIM": false,
+    "SIM_TO_REAL": false
+  },
+  "direction_counts": {
+    "REAL_TO_SIM": 1,
+    "SIM_TO_REAL": 1
+  },
+  "minimum_cases_per_direction": 2,
+  "passed": false,
+  "passing_case_ids": [
+    "tan_pawn_d7__d7_c7",
+    "tan_pawn_f7__f7_e7"
+  ],
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+  "resolved_contract_id": "canonical-wrist-path-low-contact-temporal-20260729-v3",
+  "results": [
+    {
+      "action_sha256": "4bddb04b234d54fc9b857785911330e98959b3d24a9c5b8257afd762f1ff371a",
+      "case_id": "tan_pawn_h7__h7_h8",
+      "destination_square": "h8",
+      "direct_vs_zoh_first_divergence": [
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "nominal"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "longitudinal_plus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "longitudinal_minus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "lateral_plus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "lateral_minus_3mm"
+        }
+      ],
+      "direction": "REAL_TO_SIM",
+      "passed_both_paths": false,
+      "plant_paths": [
+        {
+          "delay_seconds": 0.0,
+          "diagnostic_only": false,
+          "gateway_rate_limits_per_joint": [
+            60.0,
+            60.0,
+            60.0,
+            60.0,
+            90.0,
+            100.0
+          ],
+          "identity_checks": {
+            "applied_gateway_rate_compatible_without_modification": true,
+            "applied_trace_hash_matches_observable_episodes": true,
+            "requested_hash_matches_freeze": true,
+            "requested_mapped_byte_identical": true,
+            "requested_sent_byte_identical": true,
+            "row_zero_exact_live_seed": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "direct_target_mujoco",
+          "maximum_applied_physical_rate_per_second": [
+            1.0871572640407123,
+            7.996392573615481,
+            7.998342688877642,
+            6.909585408157,
+            0.0,
+            18.239956989260115
+          ],
+          "passed": false,
+          "path_id": "canonical_direct_target",
+          "robustness": [
+            {
+              "camera_margin_px": 127.47319653361383,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5862966443577053e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/canonical_direct_target/nominal.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "7bc9d17547cc535583f810e9e72f37702375e005f00445b6c5766c45d43fec6b"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2976,
+              "selected_final_xyz_m": [
+                -0.2923936643557375,
+                0.39964650174230126,
+                0.799872908030601
+              ],
+              "selected_initial_xyz_m": [
+                -0.268418841,
+                0.436125158,
+                0.800883941
+              ],
+              "signed_progress_mm": 42.26611172969202,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 127.09234189600859,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.586288365396603e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/canonical_direct_target/longitudinal_plus_3mm.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "328be1288f36600157ef25e3a513edd97874279db1b87660754fc50eb195a8ed"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2573,
+              "selected_final_xyz_m": [
+                -0.2920559775594014,
+                0.3986407405858262,
+                0.7998729200957013
+              ],
+              "selected_initial_xyz_m": [
+                -0.26938754984227514,
+                0.4332858617528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 40.10895629354079,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 128.16949279282647,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.586288365396603e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/canonical_direct_target/longitudinal_minus_3mm.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "08b2081419ccd6292e1a604e751a8b90406cc8d5f2d94236bc546dbd5352f3f2"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2925,
+              "selected_final_xyz_m": [
+                -0.2929268714327678,
+                0.40144854305145566,
+                0.7998728885475865
+              ],
+              "selected_initial_xyz_m": [
+                -0.2674501321577249,
+                0.43896445424711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 43.732776157708464,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 123.52070253262325,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5862966443577053e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/canonical_direct_target/lateral_plus_3mm.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "9e4be7435b6673520ea6ef309d2a25651dbfb911d98a3c7454bd2c7f187c2561"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 4426,
+              "selected_final_xyz_m": [
+                -0.28869556251508055,
+                0.3891776836078483,
+                0.7998729034080724
+              ],
+              "selected_initial_xyz_m": [
+                -0.2655795447528821,
+                0.4351564491577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 50.98000909243676,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 130.09590500932603,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5862966443577053e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/canonical_direct_target/lateral_minus_3mm.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "76f80d07213a5180d28d2115f179182a57f8e8163e97dadae0803bf75c9765b1"
+              },
+              "passed": false,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 3702,
+              "selected_final_xyz_m": [
+                -0.2906242904178556,
+                0.4063836584930956,
+                0.799872911470076
+              ],
+              "selected_initial_xyz_m": [
+                -0.27125813724711795,
+                0.43709386684227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 35.31851437712772,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/canonical_direct_target/applied.f64le",
+              "sha256": "4bddb04b234d54fc9b857785911330e98959b3d24a9c5b8257afd762f1ff371a",
+              "shape": [
+                1053,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/canonical_direct_target/applied_source_indices.i64le",
+              "sha256": "3860639acd5258584d9b40dba17982be6497a364fccfc0bbac0e14e305829cc3",
+              "shape": [
+                1053
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/canonical_direct_target/applied_timestamps.f64le",
+              "sha256": "4d55c219471f6672856aa34426544077c30c3695f1e3dc78a6078de8bcdeecd7",
+              "shape": [
+                1053
+              ]
+            },
+            "mapped": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/canonical_direct_target/mapped.f64le",
+              "sha256": "4bddb04b234d54fc9b857785911330e98959b3d24a9c5b8257afd762f1ff371a",
+              "shape": [
+                1053,
+                6
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/canonical_direct_target/requested.f64le",
+              "sha256": "4bddb04b234d54fc9b857785911330e98959b3d24a9c5b8257afd762f1ff371a",
+              "shape": [
+                1053,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/canonical_direct_target/requested_timestamps.f64le",
+              "sha256": "4d55c219471f6672856aa34426544077c30c3695f1e3dc78a6078de8bcdeecd7",
+              "shape": [
+                1053
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/canonical_direct_target/sent.f64le",
+              "sha256": "4bddb04b234d54fc9b857785911330e98959b3d24a9c5b8257afd762f1ff371a",
+              "shape": [
+                1053,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/canonical_direct_target/sent_timestamps.f64le",
+              "sha256": "4d55c219471f6672856aa34426544077c30c3695f1e3dc78a6078de8bcdeecd7",
+              "shape": [
+                1053
+              ]
+            }
+          }
+        },
+        {
+          "delay_seconds": 0.11,
+          "diagnostic_only": true,
+          "gateway_rate_limits_per_joint": [
+            60.0,
+            60.0,
+            60.0,
+            60.0,
+            90.0,
+            100.0
+          ],
+          "identity_checks": {
+            "applied_gateway_rate_compatible_without_modification": true,
+            "applied_trace_hash_matches_observable_episodes": true,
+            "requested_hash_matches_freeze": true,
+            "requested_mapped_byte_identical": true,
+            "requested_sent_byte_identical": true,
+            "row_zero_exact_live_seed": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "zero_order_hold_command_delay",
+          "maximum_applied_physical_rate_per_second": [
+            1.0871572640407123,
+            7.996392573615481,
+            7.998342688877642,
+            6.909585408157,
+            0.0,
+            18.239956989260115
+          ],
+          "passed": false,
+          "path_id": "diagnostic_zoh_0p11s",
+          "robustness": [
+            {
+              "camera_margin_px": 127.39178271857617,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5862966443577053e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/nominal.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "423a7a7cc0ea089793340dd5b54d9fb130f76599f13865e6d18053e3d7a6aba7"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2902,
+              "selected_final_xyz_m": [
+                -0.29274369020392976,
+                0.3994809863721067,
+                0.7998728965217442
+              ],
+              "selected_initial_xyz_m": [
+                -0.268418841,
+                0.436125158,
+                0.800883941
+              ],
+              "signed_progress_mm": 42.53578516422617,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 127.14828599592092,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5862966443577053e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/longitudinal_plus_3mm.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "ef175edeb38076a143d4b49ace0ea85997a344f506090c64d1a2bf2722de9e8c"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2480,
+              "selected_final_xyz_m": [
+                -0.29233213312549744,
+                0.3988055894363577,
+                0.799872911836916
+              ],
+              "selected_initial_xyz_m": [
+                -0.26938754984227514,
+                0.4332858617528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 40.0421094988958,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 127.91114304955627,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5862966443577053e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/longitudinal_minus_3mm.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "9d7bc24dd8f2842d48a0a6a0d4fedd530fd231d5276d2d80f9d06a867b81b964"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2979,
+              "selected_final_xyz_m": [
+                -0.29400453086064876,
+                0.40099387207962234,
+                0.7998729036397246
+              ],
+              "selected_initial_xyz_m": [
+                -0.2674501321577249,
+                0.43896445424711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 44.51107075795821,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 123.55903026627787,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5862800864834667e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/lateral_plus_3mm.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "b0b23395ce9970d6caa4c54f776b0aaba7ddfdd1a2433490ee232fe3d98b492b"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 4298,
+              "selected_final_xyz_m": [
+                -0.2887775523246285,
+                0.38928744121536757,
+                0.7998729167971583
+              ],
+              "selected_initial_xyz_m": [
+                -0.2655795447528821,
+                0.4351564491577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 50.90260572255793,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 129.95936547522487,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5862966443577053e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/lateral_minus_3mm.json",
+                "sample_count": 1053,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "9a3e7770503119c91d1ea902d9a9b3178eea7626fbe9be889065218b2a5cd4d2"
+              },
+              "passed": false,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 3542,
+              "selected_final_xyz_m": [
+                -0.29370316056983486,
+                0.40689925622514,
+                0.7998728922113528
+              ],
+              "selected_initial_xyz_m": [
+                -0.27125813724711795,
+                0.43709386684227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 35.8247123887354,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/applied.f64le",
+              "sha256": "1518b996a47ec5ae34d9fa7e854c7dcc827ec0e98cca598f21001e112b699820",
+              "shape": [
+                1053,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/applied_source_indices.i64le",
+              "sha256": "ae8ac4cd2b3d230bce8713a997b2595b26eae2e879644f0f2b9a5306aa93db66",
+              "shape": [
+                1053
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/applied_timestamps.f64le",
+              "sha256": "4d55c219471f6672856aa34426544077c30c3695f1e3dc78a6078de8bcdeecd7",
+              "shape": [
+                1053
+              ]
+            },
+            "mapped": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/mapped.f64le",
+              "sha256": "4bddb04b234d54fc9b857785911330e98959b3d24a9c5b8257afd762f1ff371a",
+              "shape": [
+                1053,
+                6
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/requested.f64le",
+              "sha256": "4bddb04b234d54fc9b857785911330e98959b3d24a9c5b8257afd762f1ff371a",
+              "shape": [
+                1053,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/requested_timestamps.f64le",
+              "sha256": "4d55c219471f6672856aa34426544077c30c3695f1e3dc78a6078de8bcdeecd7",
+              "shape": [
+                1053
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/sent.f64le",
+              "sha256": "4bddb04b234d54fc9b857785911330e98959b3d24a9c5b8257afd762f1ff371a",
+              "shape": [
+                1053,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_h7__h7_h8/diagnostic_zoh_0p11s/sent_timestamps.f64le",
+              "sha256": "4d55c219471f6672856aa34426544077c30c3695f1e3dc78a6078de8bcdeecd7",
+              "shape": [
+                1053
+              ]
+            }
+          }
+        }
+      ],
+      "selected_piece_id": "tan_pawn_h7",
+      "source_square": "h7"
+    },
+    {
+      "action_sha256": "5e41c0ff9f1ec28abb19cf23f4be0914ca264517b2c357ab87783c62138468b9",
+      "case_id": "tan_pawn_d7__d7_c7",
+      "destination_square": "c7",
+      "direct_vs_zoh_first_divergence": [
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "nominal"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "longitudinal_plus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "longitudinal_minus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "lateral_plus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "lateral_minus_3mm"
+        }
+      ],
+      "direction": "SIM_TO_REAL",
+      "passed_both_paths": true,
+      "plant_paths": [
+        {
+          "delay_seconds": 0.0,
+          "diagnostic_only": false,
+          "gateway_rate_limits_per_joint": [
+            60.0,
+            60.0,
+            60.0,
+            60.0,
+            90.0,
+            100.0
+          ],
+          "identity_checks": {
+            "applied_gateway_rate_compatible_without_modification": true,
+            "applied_trace_hash_matches_observable_episodes": true,
+            "requested_hash_matches_freeze": true,
+            "requested_mapped_byte_identical": true,
+            "requested_sent_byte_identical": true,
+            "row_zero_exact_live_seed": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "direct_target_mujoco",
+          "maximum_applied_physical_rate_per_second": [
+            5.898379740241708,
+            7.998382073317316,
+            7.986451964249568,
+            7.335576643270656,
+            11.661549683407202,
+            18.239956989260115
+          ],
+          "passed": true,
+          "path_id": "canonical_direct_target",
+          "robustness": [
+            {
+              "camera_margin_px": 130.98196273765637,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.6096557365025496e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/canonical_direct_target/nominal.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "fb103ddaeb87b82404306e5ceb397b4124df4d3912138952af08ea3808e8ddfa"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 3759,
+              "selected_final_xyz_m": [
+                -0.03670769409293247,
+                0.35876089777719794,
+                0.7998731439544213
+              ],
+              "selected_initial_xyz_m": [
+                -0.100143217,
+                0.378713014,
+                0.800883941
+              ],
+              "signed_progress_mm": 66.48001117704332,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 129.16405553439085,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.609664147972211e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/canonical_direct_target/longitudinal_plus_3mm.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "5bb76c8961ed9c46865b3c6b8a291bf77099f15470f95fcec2b9ea10f39b1335"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2874,
+              "selected_final_xyz_m": [
+                -0.036841451445797306,
+                0.3545738682413461,
+                0.7998731537893536
+              ],
+              "selected_initial_xyz_m": [
+                -0.09730392075288206,
+                0.3777443051577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 64.70542310512104,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 129.7225814773391,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.6096473250795764e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/canonical_direct_target/longitudinal_minus_3mm.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "22e4242cdfd88c9565b5df8fbe65194f549db354a01c7d9d84d13e406afd0c09"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2992,
+              "selected_final_xyz_m": [
+                -0.03777986059470352,
+                0.3560276114440599,
+                0.7998731418057385
+              ],
+              "selected_initial_xyz_m": [
+                -0.10298251324711795,
+                0.37968172284227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 69.34786461524881,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 132.8961681445248,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.6096473250795764e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/canonical_direct_target/lateral_plus_3mm.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "bf3760b8bc932aadd129c0e88dcd80d81f9f431ac4508417be902abe6182ebd8"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2779,
+              "selected_final_xyz_m": [
+                -0.0354503120881005,
+                0.36316573019580695,
+                0.7998731514580132
+              ],
+              "selected_initial_xyz_m": [
+                -0.0991745081577249,
+                0.38155231024711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 66.24770447533216,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 126.54173350975067,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.609664147972211e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/canonical_direct_target/lateral_minus_3mm.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "78c668cc80479dbea4b0c21e18e25b2b6b854d8749a0b86ef949670cb726d06d"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 3370,
+              "selected_final_xyz_m": [
+                -0.046854205190401885,
+                0.3505179938525615,
+                0.7998731307147009
+              ],
+              "selected_initial_xyz_m": [
+                -0.10111192584227512,
+                0.3758737177528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 59.5386855228547,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/canonical_direct_target/applied.f64le",
+              "sha256": "5e41c0ff9f1ec28abb19cf23f4be0914ca264517b2c357ab87783c62138468b9",
+              "shape": [
+                1160,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/canonical_direct_target/applied_source_indices.i64le",
+              "sha256": "0b936d421cc4709487704b53954e1b4858e302f44ce3f800b8d943e648afa48e",
+              "shape": [
+                1160
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/canonical_direct_target/applied_timestamps.f64le",
+              "sha256": "0fa838e3da230366a7f42d2e2b744bfa4789dd237c7144265ab7de489dd6fae5",
+              "shape": [
+                1160
+              ]
+            },
+            "mapped": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/canonical_direct_target/mapped.f64le",
+              "sha256": "5e41c0ff9f1ec28abb19cf23f4be0914ca264517b2c357ab87783c62138468b9",
+              "shape": [
+                1160,
+                6
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/canonical_direct_target/requested.f64le",
+              "sha256": "5e41c0ff9f1ec28abb19cf23f4be0914ca264517b2c357ab87783c62138468b9",
+              "shape": [
+                1160,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/canonical_direct_target/requested_timestamps.f64le",
+              "sha256": "0fa838e3da230366a7f42d2e2b744bfa4789dd237c7144265ab7de489dd6fae5",
+              "shape": [
+                1160
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/canonical_direct_target/sent.f64le",
+              "sha256": "5e41c0ff9f1ec28abb19cf23f4be0914ca264517b2c357ab87783c62138468b9",
+              "shape": [
+                1160,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/canonical_direct_target/sent_timestamps.f64le",
+              "sha256": "0fa838e3da230366a7f42d2e2b744bfa4789dd237c7144265ab7de489dd6fae5",
+              "shape": [
+                1160
+              ]
+            }
+          }
+        },
+        {
+          "delay_seconds": 0.11,
+          "diagnostic_only": true,
+          "gateway_rate_limits_per_joint": [
+            60.0,
+            60.0,
+            60.0,
+            60.0,
+            90.0,
+            100.0
+          ],
+          "identity_checks": {
+            "applied_gateway_rate_compatible_without_modification": true,
+            "applied_trace_hash_matches_observable_episodes": true,
+            "requested_hash_matches_freeze": true,
+            "requested_mapped_byte_identical": true,
+            "requested_sent_byte_identical": true,
+            "row_zero_exact_live_seed": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "zero_order_hold_command_delay",
+          "maximum_applied_physical_rate_per_second": [
+            5.898379740241708,
+            7.998382073317316,
+            7.986451964249568,
+            7.335576643270656,
+            11.661549683407202,
+            18.239956989260115
+          ],
+          "passed": true,
+          "path_id": "diagnostic_zoh_0p11s",
+          "robustness": [
+            {
+              "camera_margin_px": 130.69862528311555,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.6096473250795764e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/nominal.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "7d440789ff189f0f3f74eab1e9aa92db7deac14ee41e894cbc256fca5a1a969e"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 3374,
+              "selected_final_xyz_m": [
+                -0.036991962774686846,
+                0.35809538440747335,
+                0.7998731415424108
+              ],
+              "selected_initial_xyz_m": [
+                -0.100143217,
+                0.378713014,
+                0.800883941
+              ],
+              "signed_progress_mm": 66.42586640525205,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 129.4937596471627,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.6096473250795764e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/longitudinal_plus_3mm.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "8833204869283943d3682b0248b05cadac772347e4d5f22985e3e84d22e6a831"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2796,
+              "selected_final_xyz_m": [
+                -0.03872487983932185,
+                0.3557440001124386,
+                0.7998731412070073
+              ],
+              "selected_initial_xyz_m": [
+                -0.09730392075288206,
+                0.3777443051577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 62.5450470185861,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 130.76767556078076,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.609664147972211e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/longitudinal_minus_3mm.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "cb10c76a6b94531ff7ac19b5470b593dc59ec33dad76d45b52f6c5b2d8ab1627"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 3614,
+              "selected_final_xyz_m": [
+                -0.037800560954356716,
+                0.35851873185000616,
+                0.7998731416862277
+              ],
+              "selected_initial_xyz_m": [
+                -0.10298251324711795,
+                0.37968172284227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 68.52388300928568,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 132.95017177058784,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.6096557365025496e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/lateral_plus_3mm.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "e6c8b9f0946cede71856bfc5ae1d2ef0f06930edecfb4cc354ab93eeacf93c5e"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2714,
+              "selected_final_xyz_m": [
+                -0.035246434279972025,
+                0.36334078193461194,
+                0.7998731652323681
+              ],
+              "selected_initial_xyz_m": [
+                -0.0991745081577249,
+                0.38155231024711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 66.38413625141675,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 127.54164128616871,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.6096473250795764e-09,
+              "maximum_selected_vertical_rise_mm": 0.5386943412075684,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/lateral_minus_3mm.json",
+                "sample_count": 1160,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "cf96db2eaf594884a4139240a9f02d719313855e5a38842b56cbfc20179ab698"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 3734,
+              "selected_final_xyz_m": [
+                -0.04405132431263016,
+                0.35243294357604654,
+                0.7998731371010301
+              ],
+              "selected_initial_xyz_m": [
+                -0.10111192584227512,
+                0.3758737177528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 61.57307899876258,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/applied.f64le",
+              "sha256": "b8aa2761b4665b1646763d0b99968979bd6069195f6b4c55a9807c73861db2eb",
+              "shape": [
+                1160,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/applied_source_indices.i64le",
+              "sha256": "02d598b870d8453772a5d6eb92b22cdecdde519dacbb5a926146feb2d5957ce3",
+              "shape": [
+                1160
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/applied_timestamps.f64le",
+              "sha256": "0fa838e3da230366a7f42d2e2b744bfa4789dd237c7144265ab7de489dd6fae5",
+              "shape": [
+                1160
+              ]
+            },
+            "mapped": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/mapped.f64le",
+              "sha256": "5e41c0ff9f1ec28abb19cf23f4be0914ca264517b2c357ab87783c62138468b9",
+              "shape": [
+                1160,
+                6
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/requested.f64le",
+              "sha256": "5e41c0ff9f1ec28abb19cf23f4be0914ca264517b2c357ab87783c62138468b9",
+              "shape": [
+                1160,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/requested_timestamps.f64le",
+              "sha256": "0fa838e3da230366a7f42d2e2b744bfa4789dd237c7144265ab7de489dd6fae5",
+              "shape": [
+                1160
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/sent.f64le",
+              "sha256": "5e41c0ff9f1ec28abb19cf23f4be0914ca264517b2c357ab87783c62138468b9",
+              "shape": [
+                1160,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_c7/diagnostic_zoh_0p11s/sent_timestamps.f64le",
+              "sha256": "0fa838e3da230366a7f42d2e2b744bfa4789dd237c7144265ab7de489dd6fae5",
+              "shape": [
+                1160
+              ]
+            }
+          }
+        }
+      ],
+      "selected_piece_id": "tan_pawn_d7",
+      "source_square": "d7"
+    },
+    {
+      "action_sha256": "6606b3915151acd162c6767ddd44c484928a0640552602997872572990212505",
+      "case_id": "tan_pawn_f7__f7_e7",
+      "destination_square": "e7",
+      "direct_vs_zoh_first_divergence": [
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "nominal"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "longitudinal_plus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "longitudinal_minus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "lateral_plus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "lateral_minus_3mm"
+        }
+      ],
+      "direction": "REAL_TO_SIM",
+      "passed_both_paths": true,
+      "plant_paths": [
+        {
+          "delay_seconds": 0.0,
+          "diagnostic_only": false,
+          "gateway_rate_limits_per_joint": [
+            60.0,
+            60.0,
+            60.0,
+            60.0,
+            90.0,
+            100.0
+          ],
+          "identity_checks": {
+            "applied_gateway_rate_compatible_without_modification": true,
+            "applied_trace_hash_matches_observable_episodes": true,
+            "requested_hash_matches_freeze": true,
+            "requested_mapped_byte_identical": true,
+            "requested_sent_byte_identical": true,
+            "row_zero_exact_live_seed": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "direct_target_mujoco",
+          "maximum_applied_physical_rate_per_second": [
+            7.903471847600123,
+            7.989600208516663,
+            7.80154220389079,
+            4.5781667872366505,
+            11.661549683407202,
+            18.239956989260115
+          ],
+          "passed": true,
+          "path_id": "canonical_direct_target",
+          "robustness": [
+            {
+              "camera_margin_px": 135.0271202594846,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5829806326926204e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/canonical_direct_target/nominal.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "18f50b8080c2023b3f6d2b889e18f0850979cb061df187962acd95a3a7da58d3"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1046,
+              "selected_final_xyz_m": [
+                -0.1202847545669704,
+                0.38419231758507616,
+                0.7998730898130937
+              ],
+              "selected_initial_xyz_m": [
+                -0.184281029,
+                0.407419086,
+                0.800883941
+              ],
+              "signed_progress_mm": 68.06811925608123,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 133.9765509072583,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5829723730025956e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/canonical_direct_target/longitudinal_plus_3mm.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "a1ed91fea7d2e07163ee85713244b87d2c5d9fbb1dd502fc3bd4a0a725806538"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 831,
+              "selected_final_xyz_m": [
+                -0.12178449399156006,
+                0.3824378004023447,
+                0.7998730996415335
+              ],
+              "selected_initial_xyz_m": [
+                -0.18144173275288208,
+                0.40645037715772486,
+                0.800883941
+              ],
+              "signed_progress_mm": 64.21525651906235,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 134.22103350876623,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5829971522171197e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/canonical_direct_target/longitudinal_minus_3mm.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "08c9d96a008ae2301df3d255148d31bbf4561153d894e9d651c432e755799e0c"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1088,
+              "selected_final_xyz_m": [
+                -0.1212053947564365,
+                0.3826373216300081,
+                0.7998731327484818
+              ],
+              "selected_initial_xyz_m": [
+                -0.18712032524711794,
+                0.4083877948422751,
+                0.800883941
+              ],
+              "signed_progress_mm": 70.69890862157436,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 137.60831630031882,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5829806326926204e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/canonical_direct_target/lateral_plus_3mm.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "d4cb31a5e90561b694fe8b66c831fb795aaf2f3fcb3a3aaa92f5ca4fb1e1af41"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1925,
+              "selected_final_xyz_m": [
+                -0.11801295304168273,
+                0.38962386810924254,
+                0.799873100211362
+              ],
+              "selected_initial_xyz_m": [
+                -0.18331232015772492,
+                0.4102583822471179,
+                0.800883941
+              ],
+              "signed_progress_mm": 68.46436143105528,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 130.52276489843945,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5829806326926204e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/canonical_direct_target/lateral_minus_3mm.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "68a4b8f25226be778a3ba5318bfd6ae2e4e6b202a1db9511bf0da6af6f7d330f"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 644,
+              "selected_final_xyz_m": [
+                -0.1432168768046621,
+                0.3782217160400204,
+                0.7998731531520012
+              ],
+              "selected_initial_xyz_m": [
+                -0.1852497378422751,
+                0.40457978975288206,
+                0.800883941
+              ],
+              "signed_progress_mm": 48.29234789023755,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/canonical_direct_target/applied.f64le",
+              "sha256": "6606b3915151acd162c6767ddd44c484928a0640552602997872572990212505",
+              "shape": [
+                1033,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/canonical_direct_target/applied_source_indices.i64le",
+              "sha256": "21c7f9aef205926c0208915462ce79c954952c2fa62af115e8397f1484ced92a",
+              "shape": [
+                1033
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/canonical_direct_target/applied_timestamps.f64le",
+              "sha256": "a44ff6f86ee5307094d8eb4422e1cbdff5adf65696eeadf50de7ce6b6332f16b",
+              "shape": [
+                1033
+              ]
+            },
+            "mapped": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/canonical_direct_target/mapped.f64le",
+              "sha256": "6606b3915151acd162c6767ddd44c484928a0640552602997872572990212505",
+              "shape": [
+                1033,
+                6
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/canonical_direct_target/requested.f64le",
+              "sha256": "6606b3915151acd162c6767ddd44c484928a0640552602997872572990212505",
+              "shape": [
+                1033,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/canonical_direct_target/requested_timestamps.f64le",
+              "sha256": "a44ff6f86ee5307094d8eb4422e1cbdff5adf65696eeadf50de7ce6b6332f16b",
+              "shape": [
+                1033
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/canonical_direct_target/sent.f64le",
+              "sha256": "6606b3915151acd162c6767ddd44c484928a0640552602997872572990212505",
+              "shape": [
+                1033,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/canonical_direct_target/sent_timestamps.f64le",
+              "sha256": "a44ff6f86ee5307094d8eb4422e1cbdff5adf65696eeadf50de7ce6b6332f16b",
+              "shape": [
+                1033
+              ]
+            }
+          }
+        },
+        {
+          "delay_seconds": 0.11,
+          "diagnostic_only": true,
+          "gateway_rate_limits_per_joint": [
+            60.0,
+            60.0,
+            60.0,
+            60.0,
+            90.0,
+            100.0
+          ],
+          "identity_checks": {
+            "applied_gateway_rate_compatible_without_modification": true,
+            "applied_trace_hash_matches_observable_episodes": true,
+            "requested_hash_matches_freeze": true,
+            "requested_mapped_byte_identical": true,
+            "requested_sent_byte_identical": true,
+            "row_zero_exact_live_seed": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "zero_order_hold_command_delay",
+          "maximum_applied_physical_rate_per_second": [
+            7.903471847600123,
+            7.989600208516663,
+            7.80154220389079,
+            4.5781667872366505,
+            11.661549683407202,
+            18.239956989260115
+          ],
+          "passed": true,
+          "path_id": "diagnostic_zoh_0p11s",
+          "robustness": [
+            {
+              "camera_margin_px": 136.3566715382835,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5829888924307953e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/nominal.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "b38fbe5a745d72379cc64da57dc1c05eaa410babf5275b7ee586cc19deb1d274"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1043,
+              "selected_final_xyz_m": [
+                -0.11841829359084108,
+                0.38688099655877656,
+                0.799873101712264
+              ],
+              "selected_initial_xyz_m": [
+                -0.184281029,
+                0.407419086,
+                0.800883941
+              ],
+              "signed_progress_mm": 68.96641543909901,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 134.55732171023212,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5829971522171197e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/longitudinal_plus_3mm.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "c4a640f7fcbbb68d1c8ed53ebca06c66359ce83d844f60131f708307d811e240"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 975,
+              "selected_final_xyz_m": [
+                -0.11949728029365729,
+                0.38336883505669134,
+                0.7998731030768169
+              ],
+              "selected_initial_xyz_m": [
+                -0.18144173275288208,
+                0.40645037715772486,
+                0.800883941
+              ],
+              "signed_progress_mm": 66.07931510795633,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 133.23040778169414,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5829971522171197e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/longitudinal_minus_3mm.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "3fe9e9ab8c4d807e264ff0c4570a7b92438022e2c503e90cc4c7412a4431dd7e"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1195,
+              "selected_final_xyz_m": [
+                -0.12325041152731298,
+                0.3806523728120912,
+                0.7998731016940097
+              ],
+              "selected_initial_xyz_m": [
+                -0.18712032524711794,
+                0.4083877948422751,
+                0.800883941
+              ],
+              "signed_progress_mm": 69.40438496441996,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 138.04407601062672,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5829971522171197e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/lateral_plus_3mm.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "34dae513ebd39bcb13f39d8da6317861f30b8f6181a456be7a2b99ef7019dc87"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2555,
+              "selected_final_xyz_m": [
+                -0.1175027338106853,
+                0.3905252031770674,
+                0.7998731141223882
+              ],
+              "selected_initial_xyz_m": [
+                -0.18331232015772492,
+                0.4102583822471179,
+                0.800883941
+              ],
+              "signed_progress_mm": 68.65620553029657,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 130.52133651597381,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.5830136719342144e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/lateral_minus_3mm.json",
+                "sample_count": 1033,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "2a8a7945d1e8a18f0b16fc3ada0d529be947688a10e140fc86385e6e6d2257bc"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 781,
+              "selected_final_xyz_m": [
+                -0.1394555579244337,
+                0.37769779413135574,
+                0.7998731341339018
+              ],
+              "selected_initial_xyz_m": [
+                -0.1852497378422751,
+                0.40457978975288206,
+                0.800883941
+              ],
+              "signed_progress_mm": 52.02135667904804,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/applied.f64le",
+              "sha256": "40a7dda2753185eeeec0fd8a554dd1b0c744e887992e0761046bf8bd5d70c978",
+              "shape": [
+                1033,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/applied_source_indices.i64le",
+              "sha256": "5911286361ff9d9838f492874c6b213b21552c3edeab3ddb42bc8811f6a4cc1e",
+              "shape": [
+                1033
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/applied_timestamps.f64le",
+              "sha256": "a44ff6f86ee5307094d8eb4422e1cbdff5adf65696eeadf50de7ce6b6332f16b",
+              "shape": [
+                1033
+              ]
+            },
+            "mapped": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/mapped.f64le",
+              "sha256": "6606b3915151acd162c6767ddd44c484928a0640552602997872572990212505",
+              "shape": [
+                1033,
+                6
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/requested.f64le",
+              "sha256": "6606b3915151acd162c6767ddd44c484928a0640552602997872572990212505",
+              "shape": [
+                1033,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/requested_timestamps.f64le",
+              "sha256": "a44ff6f86ee5307094d8eb4422e1cbdff5adf65696eeadf50de7ce6b6332f16b",
+              "shape": [
+                1033
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/sent.f64le",
+              "sha256": "6606b3915151acd162c6767ddd44c484928a0640552602997872572990212505",
+              "shape": [
+                1033,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_f7__f7_e7/diagnostic_zoh_0p11s/sent_timestamps.f64le",
+              "sha256": "a44ff6f86ee5307094d8eb4422e1cbdff5adf65696eeadf50de7ce6b6332f16b",
+              "shape": [
+                1033
+              ]
+            }
+          }
+        }
+      ],
+      "selected_piece_id": "tan_pawn_f7",
+      "source_square": "f7"
+    },
+    {
+      "action_sha256": "2d77116b1b37f20e6da8e535baaa0599a9cc003ef9755db9d60eba6fa2208047",
+      "case_id": "tan_pawn_d7__d7_e7",
+      "destination_square": "e7",
+      "direct_vs_zoh_first_divergence": [
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "nominal"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "longitudinal_plus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "longitudinal_minus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "lateral_plus_3mm"
+        },
+        {
+          "challenger_time": 0.025,
+          "channel": "applied_action",
+          "reference_time": 0.025,
+          "residual": 0.008754540956350199,
+          "sample_index": 1,
+          "status": "diverged",
+          "threshold": 0.0,
+          "variant_id": "lateral_minus_3mm"
+        }
+      ],
+      "direction": "SIM_TO_REAL",
+      "passed_both_paths": false,
+      "plant_paths": [
+        {
+          "delay_seconds": 0.0,
+          "diagnostic_only": false,
+          "gateway_rate_limits_per_joint": [
+            60.0,
+            60.0,
+            60.0,
+            60.0,
+            90.0,
+            100.0
+          ],
+          "identity_checks": {
+            "applied_gateway_rate_compatible_without_modification": true,
+            "applied_trace_hash_matches_observable_episodes": true,
+            "requested_hash_matches_freeze": true,
+            "requested_mapped_byte_identical": true,
+            "requested_sent_byte_identical": true,
+            "row_zero_exact_live_seed": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "direct_target_mujoco",
+          "maximum_applied_physical_rate_per_second": [
+            3.5648710061018107,
+            7.994010306186254,
+            7.982548758839272,
+            7.998277063493049,
+            11.661549683407202,
+            18.239956989260115
+          ],
+          "passed": false,
+          "path_id": "canonical_direct_target",
+          "robustness": [
+            {
+              "camera_margin_px": 131.5735921593325,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/canonical_direct_target/nominal.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "463d2e3d6d2362162d3fc8df685847bffdbe800d39d737df17d32030ed0e6425"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1844,
+              "selected_final_xyz_m": [
+                -0.14264467589423946,
+                0.3805633986849483,
+                0.7998731562558303
+              ],
+              "selected_initial_xyz_m": [
+                -0.100143217,
+                0.378713014,
+                0.800883941
+              ],
+              "signed_progress_mm": 40.82223891379045,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 131.67206583170767,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/canonical_direct_target/longitudinal_plus_3mm.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "57e80ee3f4bdc3846004031c85fe374cce23570c6af8ff1f613cc4fa26e18623"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1645,
+              "selected_final_xyz_m": [
+                -0.14292616514746037,
+                0.38084747062710117,
+                0.7998731395951495
+              ],
+              "selected_initial_xyz_m": [
+                -0.10298251324711795,
+                0.37968172284227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 38.18037704128374,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 131.4380789784089,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/canonical_direct_target/longitudinal_minus_3mm.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "dc62e33a251c8e5035401076ab256e95a4f9b9500e546babf8a92b8433883720"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1983,
+              "selected_final_xyz_m": [
+                -0.14233675529206655,
+                0.38019117272831043,
+                0.799873164326312
+              ],
+              "selected_initial_xyz_m": [
+                -0.09730392075288206,
+                0.3777443051577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 43.41062011856404,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 130.00488666465702,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/canonical_direct_target/lateral_plus_3mm.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "1cb750aebc4a314c05611756fbe9af683fdb5b9b7dac265b4a18c2b2aac55463"
+              },
+              "passed": false,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1640,
+              "selected_final_xyz_m": [
+                -0.1356319955903793,
+                0.37554766078962754,
+                0.7998731278547102
+              ],
+              "selected_initial_xyz_m": [
+                -0.10111192584227512,
+                0.3758737177528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 32.56561674088391,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 133.81589239307672,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/canonical_direct_target/lateral_minus_3mm.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "a47c39c7b67a0f943f7bcfb6449764bfb0dd96d7c2ba896d317608e4f0a04b58"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2551,
+              "selected_final_xyz_m": [
+                -0.14753834136569008,
+                0.3867204377582626,
+                0.7998731378360131
+              ],
+              "selected_initial_xyz_m": [
+                -0.0991745081577249,
+                0.38155231024711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 47.44188698055488,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/canonical_direct_target/applied.f64le",
+              "sha256": "2d77116b1b37f20e6da8e535baaa0599a9cc003ef9755db9d60eba6fa2208047",
+              "shape": [
+                1370,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/canonical_direct_target/applied_source_indices.i64le",
+              "sha256": "617414041c807c3b0f229947a5a0a02891835affe683c0c0d48c23362c4c0689",
+              "shape": [
+                1370
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/canonical_direct_target/applied_timestamps.f64le",
+              "sha256": "5230ca3e2cccd97f4e9f7ef1ddfb1edcc3d60193e8477d62b68da2f22fa5b272",
+              "shape": [
+                1370
+              ]
+            },
+            "mapped": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/canonical_direct_target/mapped.f64le",
+              "sha256": "2d77116b1b37f20e6da8e535baaa0599a9cc003ef9755db9d60eba6fa2208047",
+              "shape": [
+                1370,
+                6
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/canonical_direct_target/requested.f64le",
+              "sha256": "2d77116b1b37f20e6da8e535baaa0599a9cc003ef9755db9d60eba6fa2208047",
+              "shape": [
+                1370,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/canonical_direct_target/requested_timestamps.f64le",
+              "sha256": "5230ca3e2cccd97f4e9f7ef1ddfb1edcc3d60193e8477d62b68da2f22fa5b272",
+              "shape": [
+                1370
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/canonical_direct_target/sent.f64le",
+              "sha256": "2d77116b1b37f20e6da8e535baaa0599a9cc003ef9755db9d60eba6fa2208047",
+              "shape": [
+                1370,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/canonical_direct_target/sent_timestamps.f64le",
+              "sha256": "5230ca3e2cccd97f4e9f7ef1ddfb1edcc3d60193e8477d62b68da2f22fa5b272",
+              "shape": [
+                1370
+              ]
+            }
+          }
+        },
+        {
+          "delay_seconds": 0.11,
+          "diagnostic_only": true,
+          "gateway_rate_limits_per_joint": [
+            60.0,
+            60.0,
+            60.0,
+            60.0,
+            90.0,
+            100.0
+          ],
+          "identity_checks": {
+            "applied_gateway_rate_compatible_without_modification": true,
+            "applied_trace_hash_matches_observable_episodes": true,
+            "requested_hash_matches_freeze": true,
+            "requested_mapped_byte_identical": true,
+            "requested_sent_byte_identical": true,
+            "row_zero_exact_live_seed": true,
+            "timestamps_strictly_monotonic": true
+          },
+          "kind": "zero_order_hold_command_delay",
+          "maximum_applied_physical_rate_per_second": [
+            3.5648710061018107,
+            7.994010306186254,
+            7.982548758839272,
+            7.998277063493049,
+            11.661549683407202,
+            18.239956989260115
+          ],
+          "passed": false,
+          "path_id": "diagnostic_zoh_0p11s",
+          "robustness": [
+            {
+              "camera_margin_px": 131.22833879253045,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/nominal.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "33ba1c1458e3278edfc2af32b5e347b88513992a32c88b31148cf79c61a9c4fa"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1703,
+              "selected_final_xyz_m": [
+                -0.14173385772661504,
+                0.37958636017704334,
+                0.7998731357420267
+              ],
+              "selected_initial_xyz_m": [
+                -0.100143217,
+                0.378713014,
+                0.800883941
+              ],
+              "signed_progress_mm": 39.644722764792554,
+              "variant_id": "nominal"
+            },
+            {
+              "camera_margin_px": 131.83408253852238,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/longitudinal_plus_3mm.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "f4a25cb5c80b0ef3b9445db4db50c2b00e333150727471e256ea696b6b9d5a7f"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1644,
+              "selected_final_xyz_m": [
+                -0.14326185769405614,
+                0.3812897639943074,
+                0.7998731309593484
+              ],
+              "selected_initial_xyz_m": [
+                -0.10298251324711795,
+                0.37968172284227514,
+                0.800883941
+              ],
+              "signed_progress_mm": 38.64090506909279,
+              "variant_id": "longitudinal_plus_3mm"
+            },
+            {
+              "camera_margin_px": 131.37580601728322,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/longitudinal_minus_3mm.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "e207fb16d249a9f5e26c67f680df764b50c30cd52f232115776f6bf49a9cfee9"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2010,
+              "selected_final_xyz_m": [
+                -0.14244280768888434,
+                0.38006201848158916,
+                0.7998731195553934
+              ],
+              "selected_initial_xyz_m": [
+                -0.09730392075288206,
+                0.3777443051577249,
+                0.800883941
+              ],
+              "signed_progress_mm": 43.46928722238615,
+              "variant_id": "longitudinal_minus_3mm"
+            },
+            {
+              "camera_margin_px": 129.8570888151504,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": false,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/lateral_plus_3mm.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "0a6c6595f229e0fe697c975f0468df74af82150b33717410b8d682e5381d8b4d"
+              },
+              "passed": false,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 1645,
+              "selected_final_xyz_m": [
+                -0.13766877730428678,
+                0.37559519480794196,
+                0.799873107360317
+              ],
+              "selected_initial_xyz_m": [
+                -0.10111192584227512,
+                0.3758737177528821,
+                0.800883941
+              ],
+              "signed_progress_mm": 34.508641174332574,
+              "variant_id": "lateral_plus_3mm"
+            },
+            {
+              "camera_margin_px": 133.99290093173494,
+              "checks": {
+                "camera_margin": true,
+                "collision": true,
+                "excluded_contact": true,
+                "excluded_displacement": true,
+                "no_lift": true,
+                "progress": true,
+                "selected_contact": true
+              },
+              "excluded_contact_steps": 0,
+              "maximum_excluded_displacement_mm": 2.616729328054586e-09,
+              "maximum_selected_vertical_rise_mm": 0.0,
+              "new_nonselected_jaw_collision_pairs": [],
+              "observable_episode": {
+                "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/episodes/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/lateral_minus_3mm.json",
+                "sample_count": 1370,
+                "schema_version": "sim2claw.observable_episode.v2-min",
+                "sha256": "1501c4623939a542828f6928393f8a1e1c434a01d8a3f0429c34c3fe4967bddc"
+              },
+              "passed": true,
+              "reset_layout": {
+                "mode": "isolated_selected_pawn_offboard_parking",
+                "nonselected_pawn_dynamics_unchanged": true,
+                "parking_origin_xyz_m": [
+                  0.8,
+                  0.1,
+                  0.800883941
+                ],
+                "parking_spacing_m": 0.05,
+                "selected_pawn_pose_unchanged": true
+              },
+              "selected_contact_steps": 2579,
+              "selected_final_xyz_m": [
+                -0.14785583392688068,
+                0.3871922238329169,
+                0.7998731526556477
+              ],
+              "selected_initial_xyz_m": [
+                -0.0991745081577249,
+                0.38155231024711794,
+                0.800883941
+              ],
+              "signed_progress_mm": 47.89471324044028,
+              "variant_id": "lateral_minus_3mm"
+            }
+          ],
+          "traces": {
+            "applied": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/applied.f64le",
+              "sha256": "766475e757fc1a0eaf91ac63ade9e5ef85df4eeaf397c1c0736232f06e3fa2e8",
+              "shape": [
+                1370,
+                6
+              ]
+            },
+            "applied_source_indices": {
+              "dtype": "little_endian_int64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/applied_source_indices.i64le",
+              "sha256": "7256392429d6caa82f6de8a7eaeb278308b728ee66d8a1662f451969a3035518",
+              "shape": [
+                1370
+              ]
+            },
+            "applied_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/applied_timestamps.f64le",
+              "sha256": "5230ca3e2cccd97f4e9f7ef1ddfb1edcc3d60193e8477d62b68da2f22fa5b272",
+              "shape": [
+                1370
+              ]
+            },
+            "mapped": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/mapped.f64le",
+              "sha256": "2d77116b1b37f20e6da8e535baaa0599a9cc003ef9755db9d60eba6fa2208047",
+              "shape": [
+                1370,
+                6
+              ]
+            },
+            "requested": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/requested.f64le",
+              "sha256": "2d77116b1b37f20e6da8e535baaa0599a9cc003ef9755db9d60eba6fa2208047",
+              "shape": [
+                1370,
+                6
+              ]
+            },
+            "requested_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/requested_timestamps.f64le",
+              "sha256": "5230ca3e2cccd97f4e9f7ef1ddfb1edcc3d60193e8477d62b68da2f22fa5b272",
+              "shape": [
+                1370
+              ]
+            },
+            "sent": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/sent.f64le",
+              "sha256": "2d77116b1b37f20e6da8e535baaa0599a9cc003ef9755db9d60eba6fa2208047",
+              "shape": [
+                1370,
+                6
+              ]
+            },
+            "sent_timestamps": {
+              "dtype": "little_endian_float64",
+              "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-low-contact-temporal-v3/traces/tan_pawn_d7__d7_e7/diagnostic_zoh_0p11s/sent_timestamps.f64le",
+              "sha256": "5230ca3e2cccd97f4e9f7ef1ddfb1edcc3d60193e8477d62b68da2f22fa5b272",
+              "shape": [
+                1370
+              ]
+            }
+          }
+        }
+      ],
+      "selected_piece_id": "tan_pawn_d7",
+      "source_square": "d7"
+    }
+  ],
+  "schema_version": "sim2claw.canonical_seeded_action_temporal_receipt.v1",
+  "source_contract_schema_version": "sim2claw.canonical_wrist_path_low_contact_temporal.v3",
+  "static_receipt_sha256": "b9374eaa326af2bdb063eac577e76293c2a3e45f11001c1d135bdd7258a15e31",
+  "status": "canonical_seeded_action_temporal_reject",
+  "task_outcomes_used_for_action_selection": false
+}
