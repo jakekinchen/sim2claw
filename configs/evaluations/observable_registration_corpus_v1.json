@@ -1,0 +1,205 @@
+{
+  "schema_version": "sim2claw.observable_registration_corpus_contract.v1",
+  "contract_id": "observable-registration-corpus-v1",
+  "frozen_date": "2026-07-29",
+  "recording_id": "20260727T041737Z-89190e53",
+  "sources": [
+    {
+      "id": "sealed_recording_receipt",
+      "role": "sealed_source",
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/recording_receipt.json",
+      "sha256": "74a3da30468922df00dfefd12e38ff346b2fd59fb5752458477be29360b9e0d3"
+    },
+    {
+      "id": "sealed_samples",
+      "role": "sealed_source",
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+      "sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302"
+    },
+    {
+      "id": "sealed_c922_metadata",
+      "role": "sealed_source",
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/overhead_video.json",
+      "sha256": "db8221f43cb22134db24fcb209610b61885e66fefffe5d9b00670c5b4a6ffd31"
+    },
+    {
+      "id": "sealed_c922_video",
+      "role": "sealed_source",
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/overhead_c922.mp4",
+      "sha256": "6c03bd268f0e227879c2c54ff4731d4ee8111d94b136b9bd6cbd81ca93e966bf"
+    },
+    {
+      "id": "sealed_d405_rgb_metadata",
+      "role": "sealed_source",
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_video.json",
+      "sha256": "95f4c29bf1e7eebc4ab46d46d943b3134d142f05eb742165c354533e7088a8cb"
+    },
+    {
+      "id": "sealed_d405_rgb_video",
+      "role": "sealed_source",
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_d405.browser.mp4",
+      "sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c"
+    },
+    {
+      "id": "sealed_camera_callbacks",
+      "role": "sealed_source",
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/native_dual_camera/camera_callback_timestamps.jsonl",
+      "sha256": "8d8f25bdf6293e3291d09f8abed04df9deaa7177aa45c711db4b298fe153e6d7"
+    },
+    {
+      "id": "v04_fit_manifest",
+      "role": "fit",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit_manifest.json",
+      "sha256": "71f704ee95a2c1966f23f1ff96db04d6448bb409a86b209ea54b06e25e9f1f46"
+    },
+    {
+      "id": "v04_reused_validation_manifest",
+      "role": "validation_reuse_outcome_known",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/heldout_sealed_manifest.json",
+      "sha256": "0116025742193193a73c6060335ccfb36f9a7123c43bd82157eb41b58f923bca"
+    },
+    {
+      "id": "v04_reused_validation_receipt",
+      "role": "validation_reuse_outcome_known",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/heldout-rigid-v4/evaluation_receipt.json",
+      "sha256": "5eaf763b7f5beec9be8c38c61693ad0e5cd868cab7984853b54e417a690311f0"
+    },
+    {
+      "id": "v04_projective_candidate",
+      "role": "retrospective_diagnostic",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    },
+    {
+      "id": "static_geometry_receipt",
+      "role": "retrospective_diagnostic",
+      "path": "outputs/realized_action_static_geometry_reconciliation_v1/receipt.json",
+      "sha256": "a2a66a99a7fb4412dc260a61e3cad6b5309565d2a5f02dcc7092d91d92d6089e"
+    },
+    {
+      "id": "first_divergence_receipt",
+      "role": "retrospective_diagnostic",
+      "path": "outputs/realized_action_first_divergence_v1/receipt.json",
+      "sha256": "7939cbb9b61e783502bb1970763a9af37594b538e223f58a89d3be40e4556100"
+    },
+    {
+      "id": "rp04n_crown_receipt",
+      "role": "retrospective_diagnostic",
+      "path": "outputs/rp04n_c922_crown_track_v1/receipt.json",
+      "sha256": "fd85934b5c00c455857232e96f4628d7f34a819058299f4e4f88728cc1cfe7d5"
+    },
+    {
+      "id": "img5349_visual_registration",
+      "role": "retrospective_diagnostic",
+      "path": "configs/evaluations/img5349_3dgs_board_registration_v1.json",
+      "sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4"
+    },
+    {
+      "id": "articulated_cad_diagnostic",
+      "role": "retrospective_diagnostic",
+      "path": "runs/pi-link-tag-calibration/20260727-current-session-articulated-cad-bundle-v4/receipt.json",
+      "sha256": "527476fc7e5db6a7fbb97e4a6ae0f574e4ab6c688329dfb91c76707ad70f4a7d"
+    },
+    {
+      "id": "predecessor_corpus_closeout",
+      "role": "retrospective_diagnostic",
+      "path": "configs/decisions/realized_action_retrospective_corpus_v1_closeout.json",
+      "sha256": "be72a19193af2bbf322cec1057b919bfeaaba76e8564c9daab0b7384f735c3e4"
+    },
+    {
+      "id": "observable_episode_v2_min_closeout",
+      "role": "retrospective_diagnostic",
+      "path": "configs/decisions/observable_episode_v2_min_closeout.json",
+      "sha256": "fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178"
+    },
+    {
+      "id": "immutable_c6_contract",
+      "role": "sealed_outcome",
+      "path": "configs/evaluations/realized_action_outcome_mission_v1.json",
+      "sha256": "f406149f51578b7ecae646c46b35c9237693b4f172c66dbb271cee67b9728b77"
+    },
+    {
+      "id": "immutable_c6_receipt",
+      "role": "sealed_outcome",
+      "path": "outputs/realized_action_outcome_mission_v1/receipt.json",
+      "sha256": "4bcf1f1a6c389c61fb1eb1445afd20ab0be814eb1cbaee13ad2d11e0198587d4"
+    }
+  ],
+  "sealed_action_identity": {
+    "expected_row_count": 531,
+    "requested_float32_sha256": "5d58874c166d2df9b890177ab9f1ef0a6934e53d46242b2346bf3428e5904c79",
+    "gateway_sent_float32_sha256": "3b034bd965d4bf1a71591cc77f033e97f1fe8eb30aa75cb314cc529b4e40e3ef",
+    "measured_float64_sha256": "ec75ad25adf9957311e837744af7340e27b602cfec5a2985db7841b5c3558312",
+    "timestamps_float64_sha256": "68e87c15992123e4415b2a3ec6d1a8e68cffd1ca642ac35002ed255544829f48",
+    "requested_sent_mismatch_rows": 284,
+    "rate_limited_rows": 151,
+    "actuator_application_timestamp_rows": 0
+  },
+  "camera_streams": {
+    "c922": {
+      "metadata_source_id": "sealed_c922_metadata",
+      "video_source_id": "sealed_c922_video",
+      "camera_name": "C922 Pro Stream Webcam",
+      "width": 640,
+      "height": 480,
+      "fps": 30.0,
+      "frame_count": 1029,
+      "rotation_degrees": 180,
+      "metric_depth": false
+    },
+    "d405_rgb": {
+      "metadata_source_id": "sealed_d405_rgb_metadata",
+      "video_source_id": "sealed_d405_rgb_video",
+      "camera_name": "Intel(R) RealSense(TM) Depth Camera 405  Depth",
+      "width": 424,
+      "height": 240,
+      "fps": 5.0,
+      "frame_count": 171,
+      "rotation_degrees": 0,
+      "metric_depth": false
+    }
+  },
+  "observability_matrix": {
+    "c922_rgb": {"status": "available", "source_ids": ["sealed_c922_video"]},
+    "d405_wrist_rgb": {"status": "available", "source_ids": ["sealed_d405_rgb_video"]},
+    "cross_camera_exposure_sync": {"status": "unavailable", "source_ids": ["sealed_camera_callbacks"]},
+    "c922_intrinsics": {"status": "unavailable", "source_ids": ["static_geometry_receipt"]},
+    "c922_distortion": {"status": "unavailable", "source_ids": ["static_geometry_receipt"]},
+    "c922_task_plane_projection": {"status": "bounded", "source_ids": ["v04_reused_validation_receipt"]},
+    "board_task_plane_metric": {"status": "bounded", "source_ids": ["static_geometry_receipt"]},
+    "floor_support_metric": {"status": "unavailable", "source_ids": ["static_geometry_receipt", "img5349_visual_registration"]},
+    "relative_scale_3dgs": {"status": "diagnostic", "source_ids": ["img5349_visual_registration"]},
+    "robot_joint_trajectory": {"status": "available", "source_ids": ["sealed_samples"]},
+    "actuator_application_timestamps": {"status": "unavailable", "source_ids": ["sealed_samples"]},
+    "global_robot_mapping": {"status": "diagnostic", "source_ids": ["static_geometry_receipt", "articulated_cad_diagnostic"]},
+    "jaw_midpoint_projection": {"status": "bounded", "source_ids": ["v04_reused_validation_receipt"]},
+    "full_jaw_pad_geometry": {"status": "unavailable", "source_ids": ["static_geometry_receipt"]},
+    "pawn_metric_endpoints": {"status": "bounded", "source_ids": ["static_geometry_receipt"]},
+    "pawn_carry_path": {"status": "recoverable", "source_ids": ["sealed_c922_video", "sealed_d405_rgb_video", "rp04n_crown_receipt"]},
+    "physical_contact_state": {"status": "unavailable", "source_ids": ["sealed_samples"]},
+    "visual_contact_events": {"status": "recoverable", "source_ids": ["sealed_c922_video", "sealed_d405_rgb_video"]},
+    "physical_task_outcome": {"status": "available", "source_ids": ["sealed_recording_receipt", "immutable_c6_receipt"]},
+    "simulator_contact_and_outcome": {"status": "available", "source_ids": ["immutable_c6_receipt"]}
+  },
+  "proof_boundaries": {
+    "validation_reuse_is_pristine_heldout": false,
+    "single_plane_projection_is_intrinsic_calibration": false,
+    "relative_scale_3dgs_is_metric_geometry": false,
+    "rgb_is_metric_depth": false,
+    "recoverable_channel_is_validated_observation": false,
+    "sealed_outcome_may_enter_fit": false,
+    "immutable_c6_may_be_rewritten_or_rerun": false,
+    "inventory_advances_transfer_numerator": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "training": false,
+    "paid_compute": false
+  }
+}
