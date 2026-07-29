@@ -1,0 +1,96 @@
+{
+  "schema_version": "sim2claw.observable_registration_corpus_closeout.v1",
+  "decision_id": "observable-registration-corpus-v1-closeout",
+  "result": "PASS",
+  "proof_class": "retained_physical_rgb_action_and_calibration_observability_inventory",
+  "freeze_commit": "e72ae0c",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_corpus_v1.json",
+    "sha256": "3987ab4b3b8a501648830f9e3b7077bc7bbb38e94fc6cf2366177e16385e149e"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_corpus.py",
+    "sha256": "2a8d20185ad6ef796f0651c1b4e5d2c27df8a56c81bc44020fd48a56f010c567"
+  },
+  "runner": {
+    "path": "scripts/build_observable_registration_corpus.py",
+    "sha256": "e52a14e3d3183e774ff1ae2e240e6031249eab27b74cc693580300dc35933f0a"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_registration_corpus_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "e4332e483908c4ba465c99bff3a543deb50bacf6c0ae281ea12555fafa52a739",
+    "artifact_sha256": "92402191296f3edcb518434a71ec35f7ea1969bccff091e94433a13790d68397"
+  },
+  "counts": {
+    "bound_sources": 20,
+    "fit_sources": 1,
+    "validation_reuse_outcome_known_sources": 2,
+    "retrospective_diagnostic_sources": 8,
+    "sealed_source_assets": 7,
+    "sealed_outcome_sources": 2,
+    "available_channels": 5,
+    "bounded_channels": 4,
+    "diagnostic_channels": 2,
+    "recoverable_channels": 2,
+    "unavailable_channels": 7
+  },
+  "sealed_episode": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "sample_count": 531,
+    "duration_seconds": 26.50025512499269,
+    "requested_float32_sha256": "5d58874c166d2df9b890177ab9f1ef0a6934e53d46242b2346bf3428e5904c79",
+    "gateway_sent_float32_sha256": "3b034bd965d4bf1a71591cc77f033e97f1fe8eb30aa75cb314cc529b4e40e3ef",
+    "measured_float64_sha256": "ec75ad25adf9957311e837744af7340e27b602cfec5a2985db7841b5c3558312",
+    "timestamps_float64_sha256": "68e87c15992123e4415b2a3ec6d1a8e68cffd1ca642ac35002ed255544829f48"
+  },
+  "camera_streams": {
+    "c922": {
+      "frame_count": 1029,
+      "width": 640,
+      "height": 480,
+      "fps": 30.00003000003,
+      "metric_depth": false
+    },
+    "d405_rgb": {
+      "frame_count": 171,
+      "width": 424,
+      "height": 240,
+      "fps": 5.0,
+      "metric_depth": false
+    },
+    "cross_camera_exposure_synchronized": false
+  },
+  "accepted_boundary": {
+    "pawn_carry_path": "recoverable_not_yet_validated",
+    "visual_contact_events": "recoverable_not_yet_validated",
+    "exact_c922_intrinsics": "unavailable",
+    "metric_wrist_depth": "unavailable",
+    "physical_contact_state": "unavailable",
+    "global_mapping": "unapproved",
+    "transfer_numerator_advanced": false
+  },
+  "rehearsal": {
+    "occurred_before_freeze_commit": true,
+    "authoritative": false,
+    "artifact_sha256": "92402191296f3edcb518434a71ec35f7ea1969bccff091e94433a13790d68397",
+    "note": "The deterministic rehearsal was rebuilt twice byte-identically after freeze commit e72ae0c."
+  },
+  "validation": {
+    "focused_tests": "4 passed",
+    "ruff": "unavailable_in_project_environment",
+    "deterministic_rebuild": true,
+    "workflow_audit": "clean"
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "OR1"
+}

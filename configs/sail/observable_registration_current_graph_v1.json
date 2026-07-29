@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or0_retained_evidence_audit",
+  "status": "active_or1_camera_world_model",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "032430102095c020207fb0fc17d21ca4b6e45cf1c1b7973f2e0342694607c14a",
+      "sha256": "88ee83f70b61b7568aa05debb20c99c3de193edee652d455f4e16f51840d4620",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -65,6 +65,11 @@
       "path": "configs/evaluations/img5349_3dgs_board_registration_v1.json",
       "sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4",
       "proof_class": "board_conditioned_visual_3dgs_registration"
+    },
+    "or0": {
+      "path": "configs/decisions/observable_registration_corpus_v1_closeout.json",
+      "sha256": "ee6173c282cd2cae43628cc4886080473284c9b71b0ad289ef1ff0388b5cff04",
+      "proof_class": "retained_observability_inventory"
     }
   },
   "nodes": [
@@ -78,8 +83,20 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or0",
+      "status": "active_or1",
       "source_binding": "queue"
+    },
+    {
+      "id": "evidence:or0-corpus",
+      "type": "evidence",
+      "label": "Observable registration retained corpus",
+      "status": "pass_20_sources_531_actions_1200_rgb_frames",
+      "source_binding": "or0",
+      "data": {
+        "artifact_sha256": "92402191296f3edcb518434a71ec35f7ea1969bccff091e94433a13790d68397",
+        "recoverable_channels": 2,
+        "unavailable_channels": 7
+      }
     },
     {
       "id": "evidence:immutable-c6",
@@ -153,6 +170,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR0",
-  "next_transition": "or0_retained_observability_inventory"
+  "active_card": "OR1",
+  "next_transition": "or1_gauge_fixed_camera_world_model"
 }

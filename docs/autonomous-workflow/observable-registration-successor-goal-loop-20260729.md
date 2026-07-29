@@ -99,12 +99,12 @@ after repository evidence and bounded alternatives have been exhausted.
 
 ```text
 Current state: ACTIVE
-Active card: OR0
-Completed: predecessor evidence audit at 12fb672
-Evidence: authoritative queue and graph transition
-Remaining: OR0-OR8
+Active card: OR1
+Completed: predecessor evidence audit at 12fb672; OR0 corpus at e72ae0c
+Evidence: OR0 artifact 92402191296f3edcb518434a71ec35f7ea1969bccff091e94433a13790d68397
+Remaining: OR1-OR8
 Blockers: no current software blocker; physical motion remains service-gated
-Next step: deterministic retained-evidence and observability inventory
+Next step: gauge-fixed C922 camera/world model and exact-intrinsics identifiability decision
 ```
 
 ## Stop conditions

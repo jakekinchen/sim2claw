@@ -12,11 +12,12 @@ separate robot/jaw/support residuals, bounded physical pawn-and-jaw tracks,
 measured first contact divergence, one prospectively justified simulator
 correction, and a new exact-action replay.
 
-OR0 is active. Physical motion remains closed at the follower-elbow service
-boundary, but the retained `1029`-frame C922 and `171`-frame wrist RGB streams
-leave substantial safe offline observability work. The crown-only RP04N
-negative is retained as an occlusion counterexample rather than treated as a
-terminal statement about the full episode.
+OR0 passes with 20 hash-bound sources and exact identities for the `531` action
+rows, `1029` C922 frames, and `171` wrist RGB frames. OR1 is active: it will
+separate the physically plausible camera/world model from the older projective
+camera that was allowed to absorb robot error. Physical motion remains closed
+at the follower-elbow service boundary. The crown-only RP04N negative remains
+an occlusion counterexample, not a terminal statement about the full episode.
 
 ## Latest realized-action outcome result
 

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `ACTIVE_OR0_RETAINED_EVIDENCE_AUDIT`
+Status: `ACTIVE_OR1_CAMERA_WORLD_MODEL`
 
 Created: `2026-07-29`
 
@@ -82,8 +82,8 @@ task success are accepted only if their frozen evaluator gates pass.
 
 | Card | State | Required outcome | Acceptance gate | Evidence / stop boundary |
 |---|---|---|---|---|
-| OR0 | `ACTIVE` | Freeze and inventory all admissible retained camera, pose, board, tag, 3DGS, action, and outcome evidence. | Deterministic rebuild; every source is hash-bound; fit/validation/sealed roles and unavailable channels are explicit; no hardware is opened. | Receipt, closeout, tests, source hashes, and an observability matrix. |
-| OR1 | `PENDING` | Establish the best gauge-fixed C922 camera/world model supported by retained nonsealed evidence. | Intrinsic assumptions are explicit; board/static constraints fit on declared views; camera validation is untouched; robot/link residuals are reported separately. No global mapping approval from a single-plane homography. | Accepted camera model or a receipt-backed camera-identifiability boundary plus the strongest bounded projection model. |
+| OR0 | `PASS` | Freeze and inventory all admissible retained camera, pose, board, tag, 3DGS, action, and outcome evidence. | Deterministic rebuild; every source is hash-bound; fit/validation/sealed roles and unavailable channels are explicit; no hardware is opened. | Artifact `92402191296f3edcb518434a71ec35f7ea1969bccff091e94433a13790d68397`; 20 sources; 531 exact rows; 1029 C922 and 171 wrist RGB frames. |
+| OR1 | `ACTIVE` | Establish the best gauge-fixed C922 camera/world model supported by retained nonsealed evidence. | Intrinsic assumptions are explicit; board/static constraints fit on declared views; camera validation is untouched; robot/link residuals are reported separately. No global mapping approval from a single-plane homography. | Accepted camera model or a receipt-backed camera-identifiability boundary plus the strongest bounded projection model. |
 | OR2 | `PENDING` | Reconcile robot base, articulated links, wrist, jaws, board, and support plane under the frozen camera model. | Fixed base, articulated links, jaws, board, and support each have separate fit and untouched gates. A global approval requires every mandatory channel to pass. | Versioned mapping candidate, residual report, rejection diagnoses, and approval boolean. |
 | OR3 | `PENDING` | Compile an observable physical episode supplement for the sealed D1-to-D2 source. | C922 and wrist RGB timestamps are bound; jaw/pawn visibility, two-dimensional tracks, board-plane coordinates where valid, grasp/lift/release events, covariance or bounds, and missing depth/contact are explicit. Two-pass or independent validation is required for gating observations. | Deterministic visual-observation artifact compatible with `ObservableEpisode.v2-min`, plus tests and receipt. |
 | OR4 | `PENDING` | Localize the earliest physical/simulator contact-and-object divergence under exact C6 actions. | Camera-projected simulator jaws/pawn and physical observations share a frozen time base; the evaluator distinguishes actuator, jaw projection, candidate contact, object motion, and outcome. Unknown physical metric depth remains unknown. | Ordered first-divergence receipt with exact sample/time bounds and causal-channel classification. |
@@ -147,11 +147,11 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: ACTIVE_OR0_RETAINED_EVIDENCE_AUDIT
-Active card: OR0
-Completed: immutable predecessor C0-C9; camera endpoint REAL-to-SIM 1/1
-Evidence: C922 1029 frames; D405 RGB 171 frames; exact 531-row C6 action; accepted task plane; visual 3DGS registration
-Remaining: OR0-OR8
+Current state: ACTIVE_OR1_CAMERA_WORLD_MODEL
+Active card: OR1
+Completed: immutable predecessor C0-C9; OR0; camera endpoint REAL-to-SIM 1/1
+Evidence: OR0 artifact 92402191296f3edcb518434a71ec35f7ea1969bccff091e94433a13790d68397
+Remaining: OR1-OR8
 Physical boundary: follower elbow service; hardware authority false
-Next step: implement deterministic observability inventory and freeze fit/validation/sealed source roles
+Next step: freeze and evaluate the strongest board-gauge C922 camera family without fitting robot/contact/outcome
 ```
