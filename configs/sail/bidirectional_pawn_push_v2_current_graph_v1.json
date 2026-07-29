@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "25487d211028aaa49d62a301d79db83bd2d1ee8838ff8e9c8e8804f07ee1a82f",
+      "sha256": "026e620c9466665f4f57f0c43aa4232e13ab2308709b22c7d0e6484f72b086c3",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1376,6 +1376,35 @@
         "schema_version": "sim2claw.canonical_proxy_contact_temporal.v3",
         "status": "frozen_after_v2_summary_serialization_abort_before_proxy_only_replay",
         "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger"
+      }
+    },
+    "canonical_proxy_contact_temporal_v3_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-proxy-contact-temporal-v3/receipt.json",
+      "sha256": "5f57802489563ec89ed6acdc57ae3f2d780e4c65629ea33f250060d005d6f9db",
+      "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_proxy_contact_temporal_receipt.v1",
+        "status": "canonical_seeded_action_temporal_reject"
+      }
+    },
+    "canonical_proxy_contact_temporal_v3_closeout": {
+      "path": "configs/decisions/canonical_proxy_contact_temporal_v3_closeout.json",
+      "sha256": "275cba65da93c343dd4a11287aac3b6db793f7d8f7e4b90098723b656deb6503",
+      "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_terminal_negative",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_proxy_contact_temporal_closeout.v1",
+        "status": "proxy_only_collision_challenger_rejected",
+        "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_terminal_negative"
+      }
+    },
+    "canonical_wrist_path_static_v1_contract": {
+      "path": "configs/evaluations/canonical_wrist_path_static_v1.json",
+      "sha256": "4912e8000648f088dd0677189f4a25715e750b59ddfecd7202e2f7b8ff2435cf",
+      "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_static.v1",
+        "status": "frozen_after_proxy_challenger_reject_before_static_enumeration",
+        "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -3902,6 +3931,42 @@
       }
     },
     {
+      "id": "verdict:canonical-proxy-contact-temporal-v3-reject",
+      "type": "evaluator_verdict",
+      "label": "Canonical proxy-only jaw collision challenger rejected",
+      "status": "proxy_only_collision_challenger_rejected",
+      "source_binding": "canonical_proxy_contact_temporal_v3_closeout",
+      "evaluator_identity": "7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156",
+      "data": {
+        "receipt_source_binding": "canonical_proxy_contact_temporal_v3_receipt",
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "passing_outcomes": 0,
+        "progress_pass_count": 18,
+        "no_lift_pass_count": 1,
+        "proxy_mechanism_promoted": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:canonical-wrist-path-static-v1-frozen",
+      "type": "checkpoint",
+      "label": "Canonical wrist/path contact-normal static successor frozen",
+      "status": "preregistered_before_exactly_once_wrist_path_static_enumeration",
+      "source_binding": "canonical_wrist_path_static_v1_contract",
+      "data": {
+        "postquarantine_family_count": 48,
+        "maximum_total_cells": 288,
+        "required_families_per_direction": 2,
+        "dynamic_replay_authorized": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -5377,6 +5442,27 @@
       }
     },
     {
+      "source": "verdict:canonical-proxy-contact-temporal-v3-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:canonical-proxy-contact-temporal-v3-frozen",
+      "metadata": {
+        "passing_outcomes": 0,
+        "proxy_mechanism_promoted": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:canonical-wrist-path-static-v1-frozen",
+      "type": "generated-from",
+      "target": "verdict:canonical-proxy-contact-temporal-v3-reject",
+      "metadata": {
+        "finite_static_only": true,
+        "known_outcome_cases_quarantined": true,
+        "dynamic_replay_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -6447,14 +6533,32 @@
       "node_ids_added": [
         "checkpoint:canonical-proxy-contact-temporal-v3-frozen"
       ]
+    },
+    {
+      "revision": 114,
+      "event_id": "CANONICAL_PROXY_CONTACT_TEMPORAL_V3_REJECTED",
+      "status": "proxy_only_collision_challenger_rejected",
+      "source_binding": "canonical_proxy_contact_temporal_v3_closeout",
+      "node_ids_added": [
+        "verdict:canonical-proxy-contact-temporal-v3-reject"
+      ]
+    },
+    {
+      "revision": 115,
+      "event_id": "CANONICAL_WRIST_PATH_STATIC_V1_FROZEN",
+      "status": "preregistered_before_exactly_once_wrist_path_static_enumeration",
+      "source_binding": "canonical_wrist_path_static_v1_contract",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-static-v1-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-proxy-contact-temporal-v3-frozen",
+    "node_id": "checkpoint:canonical-wrist-path-static-v1-frozen",
     "milestone_id": "CC02",
-    "status": "preregistered_before_exactly_once_proxy_contact_v3_replay",
+    "status": "preregistered_before_exactly_once_wrist_path_static_enumeration",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_proxy_contact_temporal_v3_exactly_once",
+    "resume_action": "execute_canonical_wrist_path_static_v1_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

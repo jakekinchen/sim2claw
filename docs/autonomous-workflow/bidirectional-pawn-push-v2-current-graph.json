@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC02",
-    "node_id": "checkpoint:canonical-proxy-contact-temporal-v3-frozen",
+    "node_id": "checkpoint:canonical-wrist-path-static-v1-frozen",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_proxy_contact_temporal_v3_exactly_once",
+    "resume_action": "execute_canonical_wrist_path_static_v1_exactly_once",
     "resume_authorized": true,
-    "status": "preregistered_before_exactly_once_proxy_contact_v3_replay"
+    "status": "preregistered_before_exactly_once_wrist_path_static_enumeration"
   },
   "authority": {
     "camera_open": false,
@@ -82,27 +82,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 139,
+    "edges": 141,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 30,
+      "evaluated-on": 31,
       "fitted-on": 4,
-      "generated-from": 89,
+      "generated-from": 90,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 133,
+    "nodes": 135,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 85,
+      "checkpoint": 86,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 21,
+      "evaluator_verdict": 22,
       "evidence": 6,
       "intervention": 1,
       "mechanism": 3,
@@ -312,6 +312,17 @@
       },
       "source": "checkpoint:canonical-temporal-v2-frozen",
       "target": "checkpoint:canonical-temporal-v1-dry-validation-closed",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "dynamic_replay_authorized": false,
+        "finite_static_only": true,
+        "known_outcome_cases_quarantined": true,
+        "physical_motion": false
+      },
+      "source": "checkpoint:canonical-wrist-path-static-v1-frozen",
+      "target": "verdict:canonical-proxy-contact-temporal-v3-reject",
       "type": "generated-from"
     },
     {
@@ -1414,6 +1425,16 @@
     },
     {
       "metadata": {
+        "passing_outcomes": 0,
+        "physical_motion": false,
+        "proxy_mechanism_promoted": false
+      },
+      "source": "verdict:canonical-proxy-contact-temporal-v3-reject",
+      "target": "checkpoint:canonical-proxy-contact-temporal-v3-frozen",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "dynamic_replay_executed": false,
         "physical_motion": false,
         "real_to_sim_lanes": 2,
@@ -1692,7 +1713,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "7dc4efb026751cc11d13c940f6f3cdf05624a4028a01b4dac1074f1b3255c322",
+  "graph_digest": "eaf77fa353b26f4b6ac5605e6504b40b0fe3630709de838d998ec8acc799afd6",
   "node_types": [
     "workcell",
     "session",
@@ -2019,6 +2040,34 @@
     },
     {
       "data": {
+        "dynamic_replay_authorized": false,
+        "mapping_calibration_approved": false,
+        "maximum_total_cells": 288,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "postquarantine_family_count": 48,
+        "required_families_per_direction": 2,
+        "source_binding_id": "canonical_wrist_path_static_v1_contract"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-wrist-path-static-v1-frozen",
+      "label": "Canonical wrist/path contact-normal static successor frozen",
+      "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze",
+      "source": {
+        "path": "configs/evaluations/canonical_wrist_path_static_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze",
+          "schema_version": "sim2claw.canonical_wrist_path_static.v1",
+          "status": "frozen_after_proxy_challenger_reject_before_static_enumeration"
+        },
+        "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze",
+        "sha256": "4912e8000648f088dd0677189f4a25715e750b59ddfecd7202e2f7b8ff2435cf"
+      },
+      "status": "preregistered_before_exactly_once_wrist_path_static_enumeration",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "baseline_plant": "canonical_cpu_fp64_mujoco_direct_target",
         "camera_authorized": false,
         "canonical_action_count": 4,
@@ -2038,7 +2087,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "25487d211028aaa49d62a301d79db83bd2d1ee8838ff8e9c8e8804f07ee1a82f"
+        "sha256": "026e620c9466665f4f57f0c43aa4232e13ab2308709b22c7d0e6484f72b086c3"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -5053,6 +5102,37 @@
     },
     {
       "data": {
+        "mapping_calibration_approved": false,
+        "no_lift_pass_count": 1,
+        "passing_outcomes": 0,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "progress_pass_count": 18,
+        "proxy_mechanism_promoted": false,
+        "real_to_sim_lanes": 0,
+        "receipt_source_binding": "canonical_proxy_contact_temporal_v3_receipt",
+        "sim_to_real_lanes": 0,
+        "source_binding_id": "canonical_proxy_contact_temporal_v3_closeout"
+      },
+      "evaluator_identity": "7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156",
+      "id": "verdict:canonical-proxy-contact-temporal-v3-reject",
+      "label": "Canonical proxy-only jaw collision challenger rejected",
+      "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_terminal_negative",
+      "source": {
+        "path": "configs/decisions/canonical_proxy_contact_temporal_v3_closeout.json",
+        "payload_contract": {
+          "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_terminal_negative",
+          "schema_version": "sim2claw.canonical_proxy_contact_temporal_closeout.v1",
+          "status": "proxy_only_collision_challenger_rejected"
+        },
+        "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_terminal_negative",
+        "sha256": "275cba65da93c343dd4a11287aac3b6db793f7d8f7e4b90098723b656deb6503"
+      },
+      "status": "proxy_only_collision_challenger_rejected",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "dynamic_replay_executed": false,
         "mapping_calibration_approved": false,
         "minimum_model_joint_margin_rad": 0.001829670515161086,
@@ -6874,7 +6954,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "25487d211028aaa49d62a301d79db83bd2d1ee8838ff8e9c8e8804f07ee1a82f",
+      "source_sha256": "026e620c9466665f4f57f0c43aa4232e13ab2308709b22c7d0e6484f72b086c3",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -6976,6 +7056,26 @@
       "source_binding": "canonical_proxy_contact_temporal_v3_contract",
       "source_sha256": "7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156",
       "status": "preregistered_before_exactly_once_proxy_contact_v3_replay"
+    },
+    {
+      "event_id": "CANONICAL_PROXY_CONTACT_TEMPORAL_V3_REJECTED",
+      "node_ids_added": [
+        "verdict:canonical-proxy-contact-temporal-v3-reject"
+      ],
+      "revision": 114,
+      "source_binding": "canonical_proxy_contact_temporal_v3_closeout",
+      "source_sha256": "275cba65da93c343dd4a11287aac3b6db793f7d8f7e4b90098723b656deb6503",
+      "status": "proxy_only_collision_challenger_rejected"
+    },
+    {
+      "event_id": "CANONICAL_WRIST_PATH_STATIC_V1_FROZEN",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-static-v1-frozen"
+      ],
+      "revision": 115,
+      "source_binding": "canonical_wrist_path_static_v1_contract",
+      "source_sha256": "4912e8000648f088dd0677189f4a25715e750b59ddfecd7202e2f7b8ff2435cf",
+      "status": "preregistered_before_exactly_once_wrist_path_static_enumeration"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -7080,6 +7180,17 @@
       "sha256": "24e9eb55c93734e8bdde0c06b2fd2a11462e92236dc53be48c521b2aae89c5ef"
     },
     {
+      "id": "canonical_proxy_contact_temporal_v3_closeout",
+      "path": "configs/decisions/canonical_proxy_contact_temporal_v3_closeout.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_terminal_negative",
+        "schema_version": "sim2claw.canonical_proxy_contact_temporal_closeout.v1",
+        "status": "proxy_only_collision_challenger_rejected"
+      },
+      "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_terminal_negative",
+      "sha256": "275cba65da93c343dd4a11287aac3b6db793f7d8f7e4b90098723b656deb6503"
+    },
+    {
       "id": "canonical_proxy_contact_temporal_v3_contract",
       "path": "configs/evaluations/canonical_proxy_contact_temporal_v3.json",
       "payload_contract": {
@@ -7089,6 +7200,16 @@
       },
       "proof_class": "prospective_cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
       "sha256": "7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156"
+    },
+    {
+      "id": "canonical_proxy_contact_temporal_v3_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-proxy-contact-temporal-v3/receipt.json",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_proxy_contact_temporal_receipt.v1",
+        "status": "canonical_seeded_action_temporal_reject"
+      },
+      "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_challenger",
+      "sha256": "5f57802489563ec89ed6acdc57ae3f2d780e4c65629ea33f250060d005d6f9db"
     },
     {
       "id": "canonical_seeded_static_v2_closeout",
@@ -7158,10 +7279,21 @@
       "sha256": "727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff"
     },
     {
+      "id": "canonical_wrist_path_static_v1_contract",
+      "path": "configs/evaluations/canonical_wrist_path_static_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze",
+        "schema_version": "sim2claw.canonical_wrist_path_static.v1",
+        "status": "frozen_after_proxy_challenger_reject_before_static_enumeration"
+      },
+      "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze",
+      "sha256": "4912e8000648f088dd0677189f4a25715e750b59ddfecd7202e2f7b8ff2435cf"
+    },
+    {
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "25487d211028aaa49d62a301d79db83bd2d1ee8838ff8e9c8e8804f07ee1a82f"
+      "sha256": "026e620c9466665f4f57f0c43aa4232e13ab2308709b22c7d0e6484f72b086c3"
     },
     {
       "id": "current_task_scene_labels",

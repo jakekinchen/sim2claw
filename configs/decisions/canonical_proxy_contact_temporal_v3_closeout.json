@@ -1,0 +1,72 @@
+{
+  "schema_version": "sim2claw.canonical_proxy_contact_temporal_closeout.v1",
+  "decision_id": "canonical-proxy-contact-temporal-20260728-v3-closeout",
+  "status": "proxy_only_collision_challenger_rejected",
+  "proof_class": "cpu_fp64_exact_action_proxy_only_jaw_collision_direct_target_and_diagnostic_zoh_terminal_negative",
+  "contract": {
+    "path": "configs/evaluations/canonical_proxy_contact_temporal_v3.json",
+    "sha256": "7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-proxy-contact-temporal-v3/receipt.json",
+    "sha256": "5f57802489563ec89ed6acdc57ae3f2d780e4c65629ea33f250060d005d6f9db"
+  },
+  "result": {
+    "observable_episode_count": 40,
+    "direction_counts": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "passing_case_ids": [],
+    "task_outcome_check_pass_counts_of_40": {
+      "progress": 18,
+      "selected_contact": 40,
+      "excluded_contact": 40,
+      "excluded_displacement": 37,
+      "no_lift": 1,
+      "collision": 40,
+      "camera_margin": 40
+    },
+    "signed_progress_mm_range": [
+      -5.2725527015307625,
+      209.68071343501472
+    ],
+    "maximum_selected_vertical_rise_mm_range": [
+      0.05487623342337322,
+      47.64089268407312
+    ],
+    "maximum_excluded_displacement_mm": 20.35121172292769,
+    "disabled_collision_mesh_count": 3
+  },
+  "action_integrity": {
+    "requested_hash_matches_freeze_paths": "8/8",
+    "requested_mapped_byte_identical_paths": "8/8",
+    "requested_sent_byte_identical_paths": "8/8",
+    "applied_trace_matches_episode_paths": "8/8",
+    "applied_gateway_rate_compatible_paths": "8/8",
+    "timestamps_monotonic_paths": "8/8",
+    "row_zero_exact_textual_equality_paths": "0/8",
+    "row_zero_defect_scope": "same sub-ulp textual float comparison as baseline; reject remains independent"
+  },
+  "comparison_to_baseline": {
+    "baseline_progress_passes_of_40": 23,
+    "challenger_progress_passes_of_40": 18,
+    "baseline_no_lift_passes_of_40": 0,
+    "challenger_no_lift_passes_of_40": 1,
+    "baseline_excluded_displacement_passes_of_40": 33,
+    "challenger_excluded_displacement_passes_of_40": 37,
+    "decision": "proxy-only jaw collision representation is not sufficient and is rejected as the primary no-lift mechanism"
+  },
+  "next_mechanism": "prospectively frozen finite static wrist-orientation and pre-contact path-shape successor using modeled joint, jaw, contact-normal, collision, camera, and gateway margins before any dynamic replay",
+  "authority": {
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

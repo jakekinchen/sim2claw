@@ -136,6 +136,12 @@ Confirmed:
   `24e9eb55c93734e8bdde0c06b2fd2a11462e92236dc53be48c521b2aae89c5ef`.
 - V3 adds only the serializer pass-through and is frozen at
   `7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156`.
+- V3 rejected proxy-only collision geometry at `0/2` per direction. Receipt
+  `5f578024...`; closeout `275cba65...`.
+- A finite current-layout wrist/path static successor is frozen at
+  `4912e8000648f088dd0677189f4a25715e750b59ddfecd7202e2f7b8ff2435cf`.
+  It excludes the four outcome-informed cases and admits no dynamic or
+  physical execution.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -180,9 +186,9 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card: CC02 exact-action proxy-only jaw collision challenger after preserved temporal rejection and witness.
+Active card: CC02 finite current-workcell wrist-orientation and precontact-path static successor.
 Completed: CC00, CC00A, CC01.
-Evidence: temporal negative 727ecd64...; contact witness 89ecb1d2...; V2 quarantine 24e9eb55...; V3 proxy freeze 7edc2866....
+Evidence: temporal negative 727ecd64...; witness 89ecb1d2...; proxy negative 5f578024...; wrist/path freeze 4912e800....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -190,7 +196,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push the V2 quarantine and V3 proxy-only freeze, then execute V3 exactly once.
+Next step: commit/push the proxy negative and wrist/path freeze, then execute its 288-cell static enumeration exactly once.
 ```
 
 ## Physical Authority Boundaries

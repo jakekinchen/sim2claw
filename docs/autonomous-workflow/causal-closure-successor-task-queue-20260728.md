@@ -299,6 +299,21 @@ Current state:
 - V3 adds only the missing JSON serialization pass-through and is frozen at
   `7edc2866728d6787548cb911c4d4c168973e7acf6e28800fdc19596e5cb03156`.
   No V2 outcome was parsed or used.
+- V3 executed once and rejected the proxy-only collision mechanism:
+  REAL->SIM `0/2`, SIM->REAL `0/2`, and no passing family. Progress passed
+  `18/40`, no-lift `1/40`, and exclusion displacement `37/40`; all selected
+  contact, excluded-contact, collision, camera, and exact-action checks
+  otherwise preserve their stated gates. Receipt SHA-256
+  `5f57802489563ec89ed6acdc57ae3f2d780e4c65629ea33f250060d005d6f9db`;
+  closeout SHA-256
+  `275cba65da93c343dd4a11287aac3b6db793f7d8f7e4b90098723b656deb6503`.
+- The next one-mechanism successor is a static-only finite wrist-orientation
+  and precontact-path grid frozen at
+  `4912e8000648f088dd0677189f4a25715e750b59ddfecd7202e2f7b8ff2435cf`.
+  It quarantines the four outcome-informed cases, enumerates `288` cells over
+  the remaining `48` current-layout families, and gates first-contact height
+  and vertical normal using kinematic `mj_forward` witnesses. Dynamic replay
+  and physical authority remain false.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -341,7 +356,8 @@ This authorization:
 
 Next step:
 
-- Commit and push the V2 post-execution quarantine plus V3 proxy-only
-  challenger freeze, then execute the V3 immutable challenger exactly once.
+- Commit and push the V3 proxy negative plus the finite wrist/path static
+  freeze, then execute the static enumeration exactly once. Do not dynamically
+  replay unless four distinct safe families freeze `2/2` per direction.
   Preserve both baseline and challenger outcomes; a challenger pass does not
   itself promote geometry, approve mapping, or open hardware.
