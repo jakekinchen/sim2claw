@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `ACTIVE_OR6_JAW_APERTURE_FIT`
+Status: `ACTIVE_OR7_EXACT_ACTION_REPLAY`
 
 Created: `2026-07-29`
 
@@ -88,8 +88,8 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR3 | `PASS` | Compile an observable physical episode supplement for the sealed D1-to-D2 source. | C922 and wrist RGB timestamps are bound; jaw/pawn visibility, two-dimensional tracks, board-plane coordinates where valid, grasp/lift/release events, covariance or bounds, and missing depth/contact are explicit. Two-pass or independent validation is required for gating observations. | Artifact `0913aee74cfc08a491a6e17184fb9ecfbf7265208dcb354801ed8010d7c059b2`; physical contact bounded to samples `228–232`, carried motion `260–390`, release `400–407`; endpoint upright at D2. |
 | OR4 | `PASS` | Localize the earliest physical/simulator contact-and-object divergence under exact C6 actions. | Camera-projected simulator jaws/pawn and physical observations share a frozen time base; the evaluator distinguishes actuator, jaw projection, candidate contact, object motion, and outcome. Unknown physical metric depth remains unknown. | Artifact `e6a44d7c1791fcae8a5403b10ed6d580874bafc91d6cb4bb3d10e1f4564f1745`; physical enclosure by sample `232`, simulator selected-jaw contact absent, and first simulated pawn motion at `386`: `154` samples / `7.697 s` later. |
 | OR5 | `PASS` | Prospectively declare one smallest simulator mechanism supported by OR4 and nonsealed evidence. | One mechanism family only; parameters and fit/validation/sealed splits freeze before evaluation; identifiability and regression gates are explicit. | V1 artifact `d3f784d9ee6865b5ec831ea0f4049112a1fbd5d570a31105b1d9c8ebeababd15` remains negative. V2 artifact `74845f8e2553a1a9dfd8c6ae9bf82399111d7caf865feea68d7e408936b7a902` accepts the unchanged single zero-offset family with aggregate singular value `204.972 px/rad`, rank `1`, condition `1.0`; visual validation remained unopened. |
-| OR6 | `ACTIVE` | Fit and validate the declared mechanism without touching C6 or held-out outcomes. | Fit improvement and untouched validation pass; camera, action bytes, actuator plant, and unrelated mechanisms remain unchanged. Reject non-identifiable or outcome-tuned candidates. | Versioned simulator candidate, parameter provenance, fit/validation residuals, and promotion decision. |
-| OR7 | `PENDING` | Freeze and run one successor exact-action replay. | New experiment ID; exact C6 gateway-sent bytes and row order; frozen initialization and evaluator; no later observations; natural contact only. Report selected-jaw contact, first object motion, progress, final pose, collisions, and change versus immutable C6. | Immutable successor receipt. Material advancement requires a later first causal divergence, selected-jaw contact, or improved task gates; task success is claimed only if every frozen gate passes. |
+| OR6 | `PASS` | Fit and validate the declared mechanism without touching C6 or held-out outcomes. | Fit improvement and untouched validation pass; camera, action bytes, actuator plant, and unrelated mechanisms remain unchanged. Reject non-identifiable or outcome-tuned candidates. | Artifact `a9347475ae827fc650430ce8c728a59ab16bd3bd4acc5e53b5284b7ed33c8565`; offset `0.049482 rad`; aperture RMS `21.259→1.848 px` fit and `24.045→3.828 px` no-refit validation; all gates pass; global mapping false. |
+| OR7 | `ACTIVE` | Freeze and run one successor exact-action replay. | New experiment ID; exact C6 gateway-sent bytes and row order; frozen initialization and evaluator; no later observations; natural contact only. Report selected-jaw contact, first object motion, progress, final pose, collisions, and change versus immutable C6. | Immutable successor receipt. Material advancement requires a later first causal divergence, selected-jaw contact, or improved task gates; task success is claimed only if every frozen gate passes. |
 | OR8 | `PENDING` | Publish and close the evidence chain. | Studio exposes physical/simulator camera alignment, tracks, missingness, residuals, first divergence, mechanism change, C6-versus-successor outcome, proof limits, and mobile/desktop acceptance. Focused and broad relevant tests pass; queue/graph/GOAL agree; `HEAD == origin/main`; worktree clean. | Closeout commits, screenshots or acceptance receipt, exact ledger, and next physical/service boundary if any. |
 
 ## Milestone invariants
@@ -147,11 +147,11 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: ACTIVE_OR6_JAW_APERTURE_FIT
-Active card: OR6
-Completed: immutable predecessor C0-C9; OR0; OR1 bounded camera; OR2 rigid-mapping negative; OR3 observable physical episode; OR4 first contact divergence; OR5 single-parameter mechanism; camera endpoint REAL-to-SIM 1/1
-Evidence: OR5 v2 artifact 74845f8e2553a1a9dfd8c6ae9bf82399111d7caf865feea68d7e408936b7a902; zero-offset aperture Jacobian rank 1, singular value 204.972 px/rad, validation visual values unopened
-Remaining: OR6-OR8
+Current state: ACTIVE_OR7_EXACT_ACTION_REPLAY
+Active card: OR7
+Completed: immutable predecessor C0-C9; OR0; OR1 bounded camera; OR2 rigid-mapping negative; OR3 observable physical episode; OR4 first contact divergence; OR5 single-parameter mechanism; OR6 no-refit aperture candidate; camera endpoint REAL-to-SIM 1/1
+Evidence: OR6 artifact a9347475ae827fc650430ce8c728a59ab16bd3bd4acc5e53b5284b7ed33c8565; offset 0.049482 rad; fit 91.3% and validation 84.1% aperture improvement; all exact C6 gripper positions in range
+Remaining: OR7-OR8
 Physical boundary: follower elbow service; hardware authority false
-Next step: freeze the scalar fit/validation evaluator, fit on six v4 separations, then open and score four v3 separations exactly once with no refit
+Next step: freeze and run one exact C6-action successor with only the promoted gripper zero-offset mapping changed
 ```

@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR6 JAW APERTURE FIT`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR7 EXACT-ACTION REPLAY`
 
 ## Active long-horizon alignment successor
 
@@ -26,10 +26,12 @@ definite by sample `232`, while the simulator has zero selected-jaw contact and
 does not move the pawn by more than `1 mm` until sample `386`, `7.697 s` later.
 OR5 v1 preserves a narrow preregistered negative; OR5 v2 accepts the unchanged
 single zero-offset aperture family under an aggregate rank gate: singular
-value `204.972 px/rad`, rank `1`, condition number `1.0`. The v3 validation
-annotations remained unopened. OR6 is active to fit the scalar on six v4
-static views and score the fixed candidate once on four v3 views. Physical
-motion remains closed at the follower-elbow service boundary.
+value `204.972 px/rad`, rank `1`, condition number `1.0`. OR6 fits
+`gripper_zero_offset_rad=0.0494823931`; aperture RMS improves by `91.3%` on
+six fit views and `84.1%` on four no-refit validation views while every frozen
+gate passes. OR7 is active to run one new natural-contact replay with exact C6
+actions and only that scalar changed. Physical motion remains closed at the
+follower-elbow service boundary.
 
 ## Latest realized-action outcome result
 

@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or6_jaw_aperture_fit",
+  "status": "active_or7_exact_action_replay",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "14afdffcaa680445e0fd346272432fb42df1a8e96868a52a70df36c0835f0d65",
+      "sha256": "b3d939bda2dfb1f03977cbddf96ff3ff09934bf9a7d168aedc5fe9ba4b482ae3",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -100,6 +100,11 @@
       "path": "configs/decisions/observable_jaw_aperture_mechanism_v2_closeout.json",
       "sha256": "605e4def5c1156d7b4f6aaf9b80e440b4484d65e84bd4251db83d8a5e0bf8466",
       "proof_class": "telemetry_and_simulator_geometry_only_aggregate_rank_jaw_aperture_identifiability"
+    },
+    "or6": {
+      "path": "configs/decisions/observable_jaw_aperture_fit_v1_closeout.json",
+      "sha256": "f8ea72cad4cd8dda9c244dd074b1e6b6019ab62baeed5eb6572d11f791c2eba7",
+      "proof_class": "static_six_fit_four_no_refit_validation_single_gripper_zero_offset_candidate"
     }
   },
   "nodes": [
@@ -113,7 +118,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or6",
+      "status": "active_or7",
       "source_binding": "queue"
     },
     {
@@ -204,7 +209,21 @@
       "id": "intervention:or6-fit-gripper-zero-offset",
       "type": "intervention",
       "label": "Fit and validate gripper zero offset",
-      "status": "active_freeze_before_validation_open",
+      "status": "accepted_task_bounded_global_mapping_false",
+      "source_binding": "or6",
+      "data": {
+        "fitted_offset_rad": 0.04948239306868429,
+        "fit_aperture_rms_px": 1.848181009986101,
+        "validation_aperture_rms_px": 3.8281441735811805,
+        "validation_candidate_refit": false,
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "intervention:or7-exact-action-replay",
+      "type": "intervention",
+      "label": "Exact C6 action replay with OR6 aperture mapping",
+      "status": "active_freeze_before_one_run",
       "source_binding": "queue"
     },
     {
@@ -330,6 +349,11 @@
       "type": "predicts"
     },
     {
+      "source": "intervention:or6-fit-gripper-zero-offset",
+      "target": "intervention:or7-exact-action-replay",
+      "type": "admitted-to"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -345,6 +369,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR6",
-  "next_transition": "or6_freeze_fit_and_no_refit_validation_then_open_v3_annotations_once"
+  "active_card": "OR7",
+  "next_transition": "or7_freeze_and_run_one_exact_c6_action_natural_contact_replay_with_only_zero_offset_changed"
 }

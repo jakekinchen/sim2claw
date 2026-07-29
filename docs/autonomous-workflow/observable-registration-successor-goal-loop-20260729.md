@@ -99,12 +99,12 @@ after repository evidence and bounded alternatives have been exhausted.
 
 ```text
 Current state: ACTIVE
-Active card: OR6
-Completed: predecessor evidence; OR0 corpus; OR1 bounded camera model; OR2 rigid mapping negative; OR3 physical event episode; OR4 first contact divergence; OR5 single zero-offset aperture mechanism
-Evidence: OR5 v2 artifact 74845f8e2553a1a9dfd8c6ae9bf82399111d7caf865feea68d7e408936b7a902; aggregate Jacobian singular value 204.972 px/rad; rank 1; validation visual values unopened
-Remaining: OR6-OR8
+Active card: OR7
+Completed: predecessor evidence; OR0 corpus; OR1 bounded camera model; OR2 rigid mapping negative; OR3 physical event episode; OR4 first contact divergence; OR5 single zero-offset aperture mechanism; OR6 fit and no-refit validation
+Evidence: OR6 artifact a9347475ae827fc650430ce8c728a59ab16bd3bd4acc5e53b5284b7ed33c8565; aperture RMS 1.848 px fit and 3.828 px validation; only zero offset changes
+Remaining: OR7-OR8
 Blockers: no current software blocker; physical motion remains service-gated
-Next step: fit one scalar on six v4 views and open the four-view v3 no-refit validation exactly once
+Next step: freeze and run one exact-action natural-contact successor replay
 ```
 
 ## Stop conditions

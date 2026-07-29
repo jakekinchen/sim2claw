@@ -1,0 +1,85 @@
+{
+  "schema_version": "sim2claw.observable_jaw_aperture_fit_closeout.v1",
+  "decision_id": "observable-jaw-aperture-fit-v1-closeout",
+  "result": "TASK_BOUNDED_JAW_APERTURE_CANDIDATE_PROMOTED_GLOBAL_MAPPING_FALSE",
+  "proof_class": "static_six_fit_four_no_refit_validation_single_gripper_zero_offset_candidate",
+  "freeze_commit": "be3cd87",
+  "contract": {
+    "path": "configs/evaluations/observable_jaw_aperture_fit_v1.json",
+    "sha256": "23a45fd913e528df1282eca116be7100d073e5a7eeae4118b42ad1409441e016"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_jaw_aperture_fit.py",
+    "sha256": "99356504d85861f5872a05f7be929740455a81360e459c0d48b8cbddd5150627"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_jaw_aperture_fit_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "e22b346bdd3e3a8a749eaea3f703f8016b36e050bf7221fe9caf8e1faad9d4e1",
+    "artifact_sha256": "a9347475ae827fc650430ce8c728a59ab16bd3bd4acc5e53b5284b7ed33c8565"
+  },
+  "candidate_manifest": {
+    "path": "outputs/observable_jaw_aperture_fit_v1/candidate_manifest.json",
+    "git_ignored": true,
+    "sha256": "e8c27ef3118c3383d2d2312371a54b6c40d749880b5ab73aa9a14e0305dd17e5",
+    "canonical_sha256": "1fabcee8116fd3673d5a68da02f939538850aa208448c0445547200812209b5f"
+  },
+  "parameter": {
+    "name": "gripper_zero_offset_rad",
+    "baseline_value": -0.17453,
+    "fitted_value": 0.04948239306868429,
+    "bound_margin_rad": 0.1250506069313157,
+    "fit_from_task_outcome": false
+  },
+  "fit": {
+    "pose_count": 6,
+    "baseline_aperture_rms_px": 21.259295702706172,
+    "candidate_aperture_rms_px": 1.848181009986101,
+    "relative_improvement": 0.9130648053523788,
+    "baseline_midpoint_rms_px": 12.346697024425051,
+    "candidate_midpoint_rms_px": 17.01053612714947
+  },
+  "validation": {
+    "pose_count": 4,
+    "opened_after_candidate_fit": true,
+    "candidate_refit": false,
+    "baseline_aperture_rms_px": 24.04450549107187,
+    "candidate_aperture_rms_px": 3.8281441735811805,
+    "relative_improvement": 0.840789232492112,
+    "baseline_midpoint_rms_px": 13.7040572534365,
+    "candidate_midpoint_rms_px": 17.83308417071927
+  },
+  "joint_range": {
+    "fit_passed": true,
+    "validation_passed": true,
+    "c6_passed": true,
+    "c6_candidate_minimum_model_rad": 0.07000346195229473,
+    "c6_candidate_maximum_model_rad": 0.5917218380914827
+  },
+  "identity": {
+    "only_gripper_zero_offset_changed": true,
+    "camera_changed": false,
+    "robot_board_transform_changed": false,
+    "jaw_mesh_or_collision_geometry_changed": false,
+    "actuator_plant_changed": false,
+    "contact_or_object_parameters_changed": false,
+    "actions_or_timing_changed": false
+  },
+  "proof_boundaries": {
+    "global_mapping_approved": false,
+    "contact_proved": false,
+    "task_outcome_proved": false,
+    "transfer_proved": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "OR7"
+}
