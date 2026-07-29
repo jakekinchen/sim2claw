@@ -314,6 +314,13 @@ Current state:
   the remaining `48` current-layout families, and gates first-contact height
   and vertical normal using kinematic `mj_forward` witnesses. Dynamic replay
   and physical authority remain false.
+- V1 failed closed during module import before contract read, model loading,
+  output creation, or static evaluation because the canonical square helper
+  was referenced from the wrong module. Closeout SHA-256
+  `2fe53c07c7d60aca6d343124809903f7a0af5bb0dbbd4ba928f22867628e4999`.
+- V2 changes only that import source and is frozen at
+  `e73b07b6a73eb60471949d18329e7ab2a4d5042c0e54d2c92f510e1f18021935`.
+  Every grid, quarantine, gate, and authority field remains unchanged.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -356,8 +363,8 @@ This authorization:
 
 Next step:
 
-- Commit and push the V3 proxy negative plus the finite wrist/path static
-  freeze, then execute the static enumeration exactly once. Do not dynamically
+- Commit and push the V1 import-abort closeout plus the V2 finite wrist/path
+  static freeze, then execute V2 exactly once. Do not dynamically
   replay unless four distinct safe families freeze `2/2` per direction.
   Preserve both baseline and challenger outcomes; a challenger pass does not
   itself promote geometry, approve mapping, or open hardware.

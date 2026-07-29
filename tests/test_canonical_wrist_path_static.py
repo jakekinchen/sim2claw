@@ -6,15 +6,28 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT = Path("configs/evaluations/canonical_wrist_path_static_v1.json")
+CONTRACT = Path("configs/evaluations/canonical_wrist_path_static_v2.json")
 
 
 def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _resolved_contract() -> tuple[dict, dict]:
+    successor = json.loads((ROOT / CONTRACT).read_text(encoding="utf-8"))
+    predecessor = successor["predecessor_contract"]
+    assert _sha(ROOT / predecessor["path"]) == predecessor["sha256"]
+    assert all(successor["unchanged_from_v1"].values())
+    for key in ("preexecution_closeout", "implementation"):
+        binding = successor[key]
+        assert _sha(ROOT / binding["path"]) == binding["sha256"]
+    return successor, json.loads(
+        (ROOT / predecessor["path"]).read_text(encoding="utf-8")
+    )
+
+
 def test_canonical_wrist_path_contract_is_bounded_and_current() -> None:
-    contract = json.loads((ROOT / CONTRACT).read_text(encoding="utf-8"))
+    _, contract = _resolved_contract()
     assert contract["family_universe"]["prequarantine_count"] == 52
     assert contract["family_universe"]["expected_postquarantine_count"] == 48
     assert contract["grid"]["maximum_total_cells"] == 288
@@ -25,12 +38,14 @@ def test_canonical_wrist_path_contract_is_bounded_and_current() -> None:
     assert (
         contract["gates"]["future_maximum_selected_vertical_rise_mm"] == 2.0
     )
-    for binding in contract["inputs"].values():
+    for name, binding in contract["inputs"].items():
+        if name == "implementation":
+            continue
         assert _sha(ROOT / binding["path"]) == binding["sha256"]
 
 
 def test_canonical_wrist_path_contract_has_no_physical_authority() -> None:
-    contract = json.loads((ROOT / CONTRACT).read_text(encoding="utf-8"))
+    _, contract = _resolved_contract()
     assert contract["authority"]["model_loading"]
     assert contract["authority"]["static_simulation"]
     assert not any(

@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "026e620c9466665f4f57f0c43aa4232e13ab2308709b22c7d0e6484f72b086c3",
+      "sha256": "a2d511159588b4f7919af9cf472110e4aad8cb90105ec575a69288f3479ff437",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1404,6 +1404,26 @@
       "payload_contract": {
         "schema_version": "sim2claw.canonical_wrist_path_static.v1",
         "status": "frozen_after_proxy_challenger_reject_before_static_enumeration",
+        "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze"
+      }
+    },
+    "canonical_wrist_path_static_v1_preexecution_closeout": {
+      "path": "configs/decisions/canonical_wrist_path_static_v1_preexecution_closeout.json",
+      "sha256": "2fe53c07c7d60aca6d343124809903f7a0af5bb0dbbd4ba928f22867628e4999",
+      "proof_class": "preexecution_import_wiring_failure_without_simulator_or_physical_execution",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_static_preexecution_closeout.v1",
+        "status": "closed_preexecution_import_abort_no_model_or_output",
+        "proof_class": "preexecution_import_wiring_failure_without_simulator_or_physical_execution"
+      }
+    },
+    "canonical_wrist_path_static_v2_contract": {
+      "path": "configs/evaluations/canonical_wrist_path_static_v2.json",
+      "sha256": "e73b07b6a73eb60471949d18329e7ab2a4d5042c0e54d2c92f510e1f18021935",
+      "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_static_successor.v2",
+        "status": "frozen_after_v1_preexecution_import_abort_before_static_enumeration",
         "proof_class": "prospective_cpu_fp64_current_workcell_wrist_path_contact_normal_static_action_freeze"
       }
     },
@@ -3967,6 +3987,36 @@
       }
     },
     {
+      "id": "checkpoint:canonical-wrist-path-static-v1-preexecution-abort",
+      "type": "checkpoint",
+      "label": "Canonical wrist/path static V1 import abort",
+      "status": "closed_preexecution_import_abort_no_model_or_output",
+      "source_binding": "canonical_wrist_path_static_v1_preexecution_closeout",
+      "data": {
+        "output_directory_created": false,
+        "model_loaded": false,
+        "static_cells_evaluated": 0,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:canonical-wrist-path-static-v2-frozen",
+      "type": "checkpoint",
+      "label": "Canonical wrist/path static V2 successor frozen",
+      "status": "preregistered_before_exactly_once_wrist_path_static_v2_enumeration",
+      "source_binding": "canonical_wrist_path_static_v2_contract",
+      "data": {
+        "import_only_change_from_v1": true,
+        "grid_and_gates_unchanged": true,
+        "maximum_total_cells": 288,
+        "dynamic_replay_authorized": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -5463,6 +5513,26 @@
       }
     },
     {
+      "source": "checkpoint:canonical-wrist-path-static-v1-preexecution-abort",
+      "type": "evaluated-on",
+      "target": "checkpoint:canonical-wrist-path-static-v1-frozen",
+      "metadata": {
+        "model_loaded": false,
+        "static_cells_evaluated": 0,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:canonical-wrist-path-static-v2-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:canonical-wrist-path-static-v1-preexecution-abort",
+      "metadata": {
+        "import_only_successor": true,
+        "outcome_relevant_change": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -6551,14 +6621,32 @@
       "node_ids_added": [
         "checkpoint:canonical-wrist-path-static-v1-frozen"
       ]
+    },
+    {
+      "revision": 116,
+      "event_id": "CANONICAL_WRIST_PATH_STATIC_V1_PREEXECUTION_ABORT",
+      "status": "closed_preexecution_import_abort_no_model_or_output",
+      "source_binding": "canonical_wrist_path_static_v1_preexecution_closeout",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-static-v1-preexecution-abort"
+      ]
+    },
+    {
+      "revision": 117,
+      "event_id": "CANONICAL_WRIST_PATH_STATIC_V2_FROZEN",
+      "status": "preregistered_before_exactly_once_wrist_path_static_v2_enumeration",
+      "source_binding": "canonical_wrist_path_static_v2_contract",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-static-v2-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-wrist-path-static-v1-frozen",
+    "node_id": "checkpoint:canonical-wrist-path-static-v2-frozen",
     "milestone_id": "CC02",
-    "status": "preregistered_before_exactly_once_wrist_path_static_enumeration",
+    "status": "preregistered_before_exactly_once_wrist_path_static_v2_enumeration",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_wrist_path_static_v1_exactly_once",
+    "resume_action": "execute_canonical_wrist_path_static_v2_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

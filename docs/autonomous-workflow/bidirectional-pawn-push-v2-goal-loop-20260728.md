@@ -142,6 +142,8 @@ Confirmed:
   `4912e8000648f088dd0677189f4a25715e750b59ddfecd7202e2f7b8ff2435cf`.
   It excludes the four outcome-informed cases and admits no dynamic or
   physical execution.
+- V1 failed at import before execution; closeout `2fe53c07...`. V2 fixes only
+  the helper import and is frozen at `e73b07b6...`.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -188,7 +190,7 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC02 finite current-workcell wrist-orientation and precontact-path static successor.
 Completed: CC00, CC00A, CC01.
-Evidence: temporal negative 727ecd64...; witness 89ecb1d2...; proxy negative 5f578024...; wrist/path freeze 4912e800....
+Evidence: temporal negative 727ecd64...; proxy negative 5f578024...; wrist/path V1 abort 2fe53c07...; V2 freeze e73b07b6....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
@@ -196,7 +198,7 @@ Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
-Next step: commit/push the proxy negative and wrist/path freeze, then execute its 288-cell static enumeration exactly once.
+Next step: commit/push the V1 import closeout and V2 freeze, then execute V2's 288-cell static enumeration once.
 ```
 
 ## Physical Authority Boundaries

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -12,7 +13,7 @@ import numpy as np
 
 from . import canonical_seeded_action_static as _static
 from . import canonical_seeded_action_static_v2 as _static_v2
-from .current_task_scene import current_square_center
+from .current_workcell import current_square_center
 from .paths import REPO_ROOT
 
 
@@ -175,8 +176,41 @@ def enumerate_and_freeze(
         raise CanonicalWristPathStaticError(
             "immutable canonical wrist/path output already exists"
         )
-    contract = json.loads(contract_path.read_text(encoding="utf-8"))
-    if contract.get("schema_version") != (
+    raw_contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    contract = raw_contract
+    if raw_contract.get("schema_version") == (
+        "sim2claw.canonical_wrist_path_static_successor.v2"
+    ):
+        expected = {
+            "schema_version",
+            "contract_id",
+            "status",
+            "proof_class",
+            "predecessor_contract",
+            "preexecution_closeout",
+            "implementation",
+            "output_directory",
+            "unchanged_from_v1",
+            "claim_boundary",
+        }
+        if (
+            set(raw_contract) != expected
+            or not all(raw_contract["unchanged_from_v1"].values())
+        ):
+            raise CanonicalWristPathStaticError(
+                "canonical wrist/path V2 widened its change surface"
+            )
+        contract = copy.deepcopy(
+            _json(raw_contract["predecessor_contract"])
+        )
+        _bound(raw_contract["preexecution_closeout"])
+        _bound(raw_contract["implementation"])
+        contract["inputs"]["implementation"] = raw_contract[
+            "implementation"
+        ]
+        contract["output_directory"] = raw_contract["output_directory"]
+        contract["claim_boundary"] = raw_contract["claim_boundary"]
+    elif raw_contract.get("schema_version") != (
         "sim2claw.canonical_wrist_path_static.v1"
     ):
         raise CanonicalWristPathStaticError(

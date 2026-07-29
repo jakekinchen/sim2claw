@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_static_preexecution_closeout.v1",
+  "decision_id": "canonical-wrist-path-static-20260729-v1-preexecution-closeout",
+  "status": "closed_preexecution_import_abort_no_model_or_output",
+  "proof_class": "preexecution_import_wiring_failure_without_simulator_or_physical_execution",
+  "contract": {
+    "path": "configs/evaluations/canonical_wrist_path_static_v1.json",
+    "sha256": "4912e8000648f088dd0677189f4a25715e750b59ddfecd7202e2f7b8ff2435cf"
+  },
+  "failure": {
+    "stage": "module_import_before_contract_read_or_output_creation",
+    "error": "canonical square helper imported from nonexistent current_task_scene module instead of current_workcell",
+    "output_directory_created": false,
+    "model_loaded": false,
+    "static_cells_evaluated": 0,
+    "outcomes_observed": 0,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "successor_rule": "V2 may change only the helper import source. The family universe, quarantine, grid, action shape, static gates, selection, and authority remain unchanged.",
+  "authority": {
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}
