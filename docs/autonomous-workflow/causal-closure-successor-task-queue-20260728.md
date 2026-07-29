@@ -411,7 +411,7 @@ Current state:
   Contact height, wrist orientation, precontact path, jaw target, reset,
   physics, action rate, and every task/robustness gate remain unchanged.
 - Stroke static V5 is frozen before execution at contract SHA-256
-  `8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f`.
+  `7df69f21911ef2631ef911fcbfe20c1fc7df6aeeac8473147e5706715d0c0b05`.
   It contains exactly one cell per complete V3 family, two per assigned
   direction, and no dynamic or physical authority.
 - Physical/model mapping remains unapproved.

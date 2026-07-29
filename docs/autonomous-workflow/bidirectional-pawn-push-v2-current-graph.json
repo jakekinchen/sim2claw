@@ -1901,7 +1901,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "33fd4e32024caf495cf8b03d7e5e99f1c8c87c41266faa96ce34985773877ab4",
+  "graph_digest": "3cd5e7cc7e014dbe8a5fdbb63994ae4dc62e449feaa7982504af81aaa23cd038",
   "node_types": [
     "workcell",
     "session",
@@ -2594,7 +2594,7 @@
           "status": "frozen_after_low_contact_dynamic_partial_before_bounded_stroke_static_replay"
         },
         "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
-        "sha256": "8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f"
+        "sha256": "7df69f21911ef2631ef911fcbfe20c1fc7df6aeeac8473147e5706715d0c0b05"
       },
       "status": "preregistered_before_exactly_once_bounded_stroke_static_replay",
       "type": "checkpoint"
@@ -2651,7 +2651,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "3dd27ac6ccfb7eba56e42b871e3f18ba6f8794d769c6211df639479608b66102"
+        "sha256": "a5027a4f7bde22d572e6c10b86ad6cf4efba58acbd490695a35ce552bdf1ab73"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -7678,7 +7678,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "3dd27ac6ccfb7eba56e42b871e3f18ba6f8794d769c6211df639479608b66102",
+      "source_sha256": "a5027a4f7bde22d572e6c10b86ad6cf4efba58acbd490695a35ce552bdf1ab73",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -7978,7 +7978,7 @@
       ],
       "revision": 133,
       "source_binding": "canonical_wrist_path_stroke_static_v5_contract",
-      "source_sha256": "8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f",
+      "source_sha256": "7df69f21911ef2631ef911fcbfe20c1fc7df6aeeac8473147e5706715d0c0b05",
       "status": "preregistered_before_exactly_once_bounded_stroke_static_replay"
     }
   ],
@@ -8423,7 +8423,7 @@
         "status": "frozen_after_low_contact_dynamic_partial_before_bounded_stroke_static_replay"
       },
       "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
-      "sha256": "8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f"
+      "sha256": "7df69f21911ef2631ef911fcbfe20c1fc7df6aeeac8473147e5706715d0c0b05"
     },
     {
       "id": "canonical_wrist_path_temporal_v1_closeout",
@@ -8462,7 +8462,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "3dd27ac6ccfb7eba56e42b871e3f18ba6f8794d769c6211df639479608b66102"
+      "sha256": "a5027a4f7bde22d572e6c10b86ad6cf4efba58acbd490695a35ce552bdf1ab73"
     },
     {
       "id": "current_task_scene_labels",

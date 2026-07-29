@@ -13,7 +13,7 @@
   },
   "implementation": {
     "path": "src/sim2claw/canonical_wrist_path_stroke_static.py",
-    "sha256": "5ef7dd2009bcf2fda7ba1bcbb0b2e2c2713ea18cd865eb42b7ac4f83027ee540"
+    "sha256": "57af65a7bb1640080222e8a1ed07254050cfff782b7f4ddf74dc3aeeb5fb7f5d"
   },
   "stroke_override": {
     "from_m": 0.06,

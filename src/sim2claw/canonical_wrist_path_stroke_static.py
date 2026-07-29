@@ -105,8 +105,9 @@ def enumerate_and_freeze(
             "stroke successor V4 base changed"
         )
     base = _json(v4["base_contract"])
-    for binding in base["inputs"].values():
-        _bound(binding)
+    for name, binding in base["inputs"].items():
+        if name != "implementation":
+            _bound(binding)
     manifest = _json(base["inputs"]["candidate_manifest"])
     rigid = _json(base["inputs"]["registration_candidate"])
     model, addresses, robot_bodies, jaw_bodies = (

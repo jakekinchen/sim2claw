@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "3dd27ac6ccfb7eba56e42b871e3f18ba6f8794d769c6211df639479608b66102",
+      "sha256": "a5027a4f7bde22d572e6c10b86ad6cf4efba58acbd490695a35ce552bdf1ab73",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1640,7 +1640,7 @@
     },
     "canonical_wrist_path_stroke_static_v5_contract": {
       "path": "configs/evaluations/canonical_wrist_path_stroke_static_v5.json",
-      "sha256": "8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f",
+      "sha256": "7df69f21911ef2631ef911fcbfe20c1fc7df6aeeac8473147e5706715d0c0b05",
       "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
       "payload_contract": {
         "schema_version": "sim2claw.canonical_wrist_path_stroke_static_successor.v5",
