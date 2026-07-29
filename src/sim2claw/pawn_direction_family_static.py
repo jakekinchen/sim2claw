@@ -212,6 +212,8 @@ def enumerate_and_freeze(
 ) -> dict[str, Any]:
     """Run the prospectively frozen pawn-by-direction grid exactly once."""
 
+    contract_path = contract_path.resolve()
+    output_directory = output_directory.resolve()
     if output_directory.exists():
         raise PawnDirectionFamilyStaticError(
             "immutable pawn-direction output already exists"

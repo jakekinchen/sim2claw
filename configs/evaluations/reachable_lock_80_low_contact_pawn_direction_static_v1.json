@@ -17,7 +17,7 @@
   },
   "implementation": {
     "path": "src/sim2claw/pawn_direction_family_static.py",
-    "sha256": "8172bd66edde4486e9ae8acffd7a362d326e18331a9b08b453a2bc4e3deb1b2f"
+    "sha256": "73ec983dfdbadc7092e1fe4b20685ebc082e6a028ba48db17c7d842daa095d2d"
   },
   "grid": {
     "near_side_squares": [
