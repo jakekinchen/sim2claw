@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Goal Loop
 
-Status: `ACTIVE_C5`
+Status: `ACTIVE_C6_FREEZE`
 
 Created: `2026-07-29`
 
@@ -123,12 +123,12 @@ safe alternatives. Do not tune sealed inputs or repeat C6.
 
 ```text
 Current state: ACTIVE
-Active card: C5
-Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative, C3, C3A, C4
-Evidence: C4 artifact df50459a4c7f60894690610c8578f67e064c13de3d0a9f7e286aa8c26e736aa6
-Remaining: C5, C6, C7, C8, C9 boundary
+Active card: C6
+Completed: C0, C1, C2 partial reconciliation, C2-RP04N terminal negative, C3, C3A, C4, C5 terminal negative
+Evidence: C5 artifact 6a904ef2231f634a65661778afd59ec5e901204386d7dfeee85a05d574961692
+Remaining: C6, C7, C8, C9 boundary
 Blockers: physical pathway closed at elbow service boundary; not needed for C0-C8
-Next step: freeze the C5 contact/object identifiability gate
+Next step: bind and freeze the one-run C6 mission replay before execution
 ```
 
 ## Stop conditions

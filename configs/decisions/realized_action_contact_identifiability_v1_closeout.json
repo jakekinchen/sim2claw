@@ -1,0 +1,57 @@
+{
+  "schema_version": "sim2claw.realized_action_contact_identifiability_closeout.v1",
+  "decision_id": "realized-action-contact-identifiability-v1-closeout",
+  "result": "TERMINAL_CONTACT_MODEL_NEGATIVE_INSUFFICIENT_NONSEALED_WITNESSES",
+  "proof_class": "retrospective_contact_object_identifiability_audit",
+  "freeze_commit": "2f046f7",
+  "contract": {
+    "path": "configs/evaluations/realized_action_contact_identifiability_v1.json",
+    "sha256": "3c63438dc79c4a6d239529d4d486336aaa9b39eff7394ff802fe0cef12fd5a90"
+  },
+  "implementation": {
+    "path": "src/sim2claw/realized_action_contact_identifiability.py",
+    "sha256": "5f6e0a43d246252cac850b255692b02a8ab568971ad03dd8a14de3b29b3fcf68"
+  },
+  "generated_receipt": {
+    "path": "outputs/realized_action_contact_identifiability_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "e676ab052a00ae30009d22c6f842a1ed7c71b99cd1a4987fb683fa4503c5d1c9",
+    "artifact_sha256": "6a904ef2231f634a65661778afd59ec5e901204386d7dfeee85a05d574961692",
+    "deterministic_rebuild_match": true
+  },
+  "denominators": {
+    "fit_episodes": 4,
+    "validation_episodes": 3,
+    "sealed_episodes": 1,
+    "candidate_dimensions": 5,
+    "eligible_dimensions": 0
+  },
+  "nonsealed_observable_episode_counts": {
+    "per_sample_contact_state": 0,
+    "metric_object_pose_path": 0,
+    "metric_robot_or_jaw_pose_path": 0,
+    "known_contact_or_applied_force": 0,
+    "metric_contact_deformation": 0,
+    "metric_object_orientation_path": 0
+  },
+  "parameter_fit_performed": false,
+  "selected_contact_model": null,
+  "baseline": {
+    "name": "current_mujoco_contact_defaults",
+    "status": "unvalidated_baseline_not_parameter_authority",
+    "may_run_as_c6_diagnostic": true,
+    "may_promote_c6_outcome": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "parameter_fit": false,
+    "simulator_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "C6"
+}
