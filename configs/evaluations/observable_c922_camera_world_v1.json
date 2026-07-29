@@ -1,0 +1,122 @@
+{
+  "schema_version": "sim2claw.observable_c922_camera_world_contract.v1",
+  "experiment_id": "observable-c922-camera-world-v1",
+  "frozen_date": "2026-07-29",
+  "sources": {
+    "or0_closeout": {
+      "path": "configs/decisions/observable_registration_corpus_v1_closeout.json",
+      "sha256": "ee6173c282cd2cae43628cc4886080473284c9b71b0ad289ef1ff0388b5cff04"
+    },
+    "fit_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+      "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "projective_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    },
+    "projective_fit_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/fit_receipt.json",
+      "sha256": "eef26fd6ea349070fc7d40094b6ec09753464be467071ff3c66fed3c870848ca"
+    },
+    "known_outcome_validation_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/heldout-rigid-v4/evaluation_receipt.json",
+      "sha256": "5eaf763b7f5beec9be8c38c61693ad0e5cd868cab7984853b54e417a690311f0"
+    },
+    "prior_visual_focal_diagnostic": {
+      "path": "configs/experiments/pawn_bg_c922_angle_transfer_v1.json",
+      "sha256": "4179694f20bc1e5aa6270bb20f0b2a616d99845d15cdb00773bac9f1aec24f71"
+    },
+    "current_workcell": {
+      "path": "src/sim2claw/current_workcell.py",
+      "sha256": "df6bdf6b4408b7dcaaa1670fc0575f8506e11cef3add37124cc1afa2e8b69fad"
+    }
+  },
+  "camera_identity": {
+    "name": "C922 Pro Stream Webcam",
+    "unique_id": "0x8310000046d085c",
+    "width": 640,
+    "height": 480,
+    "pixel_format": "420v",
+    "fps": 30.00003000003
+  },
+  "board_gauge": {
+    "playing_side_m": 0.3556,
+    "lattice_side_points": 9,
+    "fit_intersection_count": 25,
+    "world_source": "current_workcell_candidate_manifest",
+    "image_source": "frozen_v04_fit_board_lattice",
+    "orientation_changes_allowed": false
+  },
+  "physical_pinhole_family": {
+    "family_id": "single_planar_board_square_pixel_centered_zero_distortion_pinhole",
+    "principal_point_px": [320.0, 240.0],
+    "square_pixels": true,
+    "skew_px": 0.0,
+    "distortion_coefficients": [0.0, 0.0, 0.0, 0.0, 0.0],
+    "distortion_policy": "excluded_unidentified_not_calibrated_zero",
+    "minimum_focal_px": 250.0,
+    "maximum_focal_px": 1500.0,
+    "initial_focal_px": 635.3212940802823,
+    "initial_focal_source": "prior_visual_diagnostic_optimizer_start_only",
+    "fit_fields": ["focal_px", "board_to_camera_rotation", "board_to_camera_translation"],
+    "forbidden_fit_fields": [
+      "principal_point",
+      "skew",
+      "aspect_ratio",
+      "distortion",
+      "robot_board_transform",
+      "joint_offsets",
+      "jaw_geometry",
+      "pawn_state",
+      "contact_parameters",
+      "task_outcome"
+    ]
+  },
+  "projective_plausibility_gates": {
+    "maximum_absolute_skew_px": 10.0,
+    "minimum_focal_aspect_ratio": 0.9,
+    "maximum_focal_aspect_ratio": 1.1,
+    "maximum_principal_point_center_distance_px": 80.0,
+    "proper_rotation_tolerance": 1e-6
+  },
+  "physical_model_gates": {
+    "maximum_board_reprojection_rms_px": 3.0,
+    "maximum_board_reprojection_max_px": 6.0,
+    "minimum_positive_depth_fraction": 1.0,
+    "proper_rotation_tolerance": 1e-6,
+    "minimum_jacobian_rank": 7,
+    "maximum_jacobian_condition_number": 1000000000.0,
+    "focal_bound_margin_px": 5.0
+  },
+  "validation_policy": {
+    "pristine_heldout_available": false,
+    "known_outcome_validation_reuse_allowed_for_camera_promotion": false,
+    "known_outcome_validation_use": "lineage_and_downstream_OR2_diagnostic_only",
+    "exact_intrinsic_calibration_possible": false,
+    "reason": "one planar board view with fixed principal, square-pixel, and zero-distortion assumptions; no diverse exact-mode target corpus"
+  },
+  "proof_boundaries": {
+    "bounded_board_camera_is_exact_intrinsic_calibration": false,
+    "zero_distortion_assumption_is_measured_distortion": false,
+    "known_outcome_validation_reuse_is_pristine": false,
+    "projective_camera_may_approve_robot_mapping": false,
+    "camera_fit_may_consume_robot_jaw_or_outcome_residuals": false,
+    "camera_model_may_approve_contact_or_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "training": false,
+    "paid_compute": false
+  }
+}
