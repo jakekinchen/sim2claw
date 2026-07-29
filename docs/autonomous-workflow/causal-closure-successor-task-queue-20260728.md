@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_WRIST_EVALUATOR_FROZEN`
+Status: `ACTIVE_CC03_WRIST_COPY_FIX_DIAGNOSTIC`
 
 Created: `2026-07-28`
 
@@ -637,6 +637,23 @@ Current state:
   It binds the packet, review, execution, candidate model, evaluator and
   dependency hashes; fits no parameter; requires no depth; and grants no
   automatic mapping or task authority.
+- V3 executed once and rejected, but the result cannot be interpreted as a
+  mapping negative. The inherited helper appended live MuJoCo `xmat` views
+  without copying, collapsing every simulated trajectory sample to the final
+  pose. The immutable receipt SHA-256 is
+  `87850780c2a298016601d062d231238ed1df6158e97cadf2d8761cf34919c28f`;
+  closeout SHA-256
+  `59d34e6e29bd6047fbcb1939ec53d559b698bee9976ef14bf8f14590e0c1f628`
+  preserves the reject while withholding a mapping verdict.
+- Copy-safe V4 changes only matrix ownership during simulated trajectory
+  accumulation. The implementation SHA-256 is
+  `1ff1b08569560c455577541abf06d8422fda383718bc2de165af4089e88c07f1`;
+  actions, alignment, observed corner extraction, normalization, gates,
+  model, mapping, and authority are unchanged. A diagnostic-only contract
+  over the now-open V3 capture is frozen at SHA-256
+  `7b214e47d82e0d8630b31b4350184e979528d4f8f2a37832d8f370340b883baa`.
+  It cannot approve mapping even if it passes; a fresh prospective capture is
+  still required.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -678,7 +695,7 @@ This authorization:
 
 Next step:
 
-- Execute the frozen wrist-only V3 evaluator exactly once, preserve its
-  immutable receipt, and either approve the elbow-locked task-scope mapping
-  through a separate bounded decision or retain the negative and select one
-  evidence-directed factor. Do not touch a pawn or count a task attempt.
+- Run the copy-safe V4 implementation on the already-opened V3 capture as a
+  diagnostic only. If it proves the bounded fix, freeze and execute a fresh
+  no-contact wrist capture before any new frame is opened. Do not touch a pawn
+  or count a task attempt.

@@ -1,0 +1,49 @@
+{
+  "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_v3_evaluator_closeout.v1",
+  "status": "terminal_invalid_evaluator_view_aliasing_no_mapping_verdict",
+  "proof_class": "immutable_heldout_execution_with_deterministic_evaluator_implementation_defect",
+  "sources": {
+    "contract": {
+      "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_heldout_v3.json",
+      "sha256": "862acd451e684c680b69467bb596d5dcfbf4ff28c686dada2de6b35dc62e0733"
+    },
+    "receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v3/evaluation/receipt.json",
+      "sha256": "87850780c2a298016601d062d231238ed1df6158e97cadf2d8761cf34919c28f"
+    },
+    "implementation_dependency": {
+      "path": "tools/evaluate_calibration_graph_d405_corner_shape_heldout_v2.py",
+      "sha256": "fc9fd098525eae3c65de8a63d92a7602c5178a1e0a3ee793eea857226c1c9bf0"
+    }
+  },
+  "observed_result": {
+    "heldout_passed": false,
+    "measured_wrist_excursion_degrees": 2.813186813186812,
+    "simulated_rotation_peak_degrees": 1.0549450549450516,
+    "normalized_shape_correlation": 0.0
+  },
+  "implementation_defect": {
+    "location": "stage_shape simulated body-rotation accumulation",
+    "cause": "MuJoCo data.xmat views were appended without copying, so all accumulated matrices aliased the final live buffer value.",
+    "why_the_result_is_invalid_for_mapping": "The simulated trajectory collapsed to the final measured pose and therefore did not represent the matched joint trajectory required by the frozen method.",
+    "bounded_correction": "Copy each body-rotation matrix at accumulation time. Do not change the action, physical capture, alignment, observed corner extraction, normalization, gates, model, mapping, or authority."
+  },
+  "decision": {
+    "v3_receipt_is_immutable": true,
+    "v3_mapping_negative_promoted": false,
+    "physical_model_mapping_approved": false,
+    "model_changed": false,
+    "gate_changed": false,
+    "next_action": "freeze_copy_only_v4_evaluator_and_validate_on_opened_v3_capture_as_diagnostic_before_a_fresh_prospective_capture"
+  },
+  "authority": {
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

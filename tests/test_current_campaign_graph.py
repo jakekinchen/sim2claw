@@ -32,19 +32,19 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert tracked["active_pointer"]["milestone_id"] == "CC03"
     assert tracked["active_pointer"] == {
         "node_id": (
-            "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v3-frozen"
+            "checkpoint:calibration-graph-d405-wrist-corner-shape-copy-fix-diagnostic-v4-frozen"
         ),
         "milestone_id": "CC03",
-        "status": "heldout_contract_frozen_before_v3_capture_open",
-        "queue_status": "ACTIVE_CC03_WRIST_EVALUATOR_FROZEN",
-        "resume_action": "execute_wrist_only_v3_evaluator_once",
+        "status": "copy_fix_diagnostic_frozen_on_opened_v3_capture",
+        "queue_status": "ACTIVE_CC03_WRIST_COPY_FIX_DIAGNOSTIC",
+        "resume_action": "execute_copy_safe_v4_diagnostic_once",
         "resume_authorized": True,
-        "heldout_open_count": 2,
-        "cumulative_manifest_read_count": 2,
+        "heldout_open_count": 3,
+        "cumulative_manifest_read_count": 3,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(173)
+        range(176)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -54,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_CONTRACT_V3_FROZEN"
+        "CALIBRATION_GRAPH_D405_WRIST_CORNER_SHAPE_COPY_FIX_DIAGNOSTIC_V4_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "checkpoint:calibration-graph-d405-wrist-corner-shape-contract-v3-frozen"
+        "checkpoint:calibration-graph-d405-wrist-corner-shape-copy-fix-diagnostic-v4-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True
