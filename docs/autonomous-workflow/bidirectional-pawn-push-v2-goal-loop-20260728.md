@@ -185,6 +185,8 @@ Confirmed:
 - Static-only contact-normal selector V1 is frozen at `cdd2d7ce...`.
 - Selector V1 passed at `18921a5d...`; selected temporal V5 is frozen at
   `a303b12e...`.
+- Selected temporal V5 passed `2/2` in both directions over all 40 episodes;
+  receipt `cf21bd8c...`, closeout `2c7f8483...`. CC02 is complete.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -229,17 +231,17 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card: CC02 exact statically selected dynamic replay.
-Completed: CC00, CC00A, CC01.
-Evidence: selector pass 18921a5d...; temporal V5 freeze a303b12e....
+Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
+Completed: CC00, CC00A, CC01, CC02.
+Evidence: simulator screen pass cf21bd8c...; CC02 closeout 2c7f8483....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 1
 Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
-Remaining: CC02 through CC15.
-Blockers: V3 is only 1/1 dynamically; physical/model mapping remains unapproved.
-Next step: execute selected temporal V5 exactly once; keep hardware closed.
+Remaining: CC03 through CC15.
+Blockers: physical/model mapping remains unapproved.
+Next step: implement and audit CalibrationGraph.v1; keep evaluator freeze and hardware closed.
 ```
 
 ## Physical Authority Boundaries
