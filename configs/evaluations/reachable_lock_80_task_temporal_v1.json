@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.achieved_lock_task_temporal.v1",
+  "contract_id": "reachable-lock-80-task-temporal-20260729-v1",
+  "status": "frozen_after_exact_achieved_lock_static_pass_before_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_predeclared_reachable_80deg_action_direct_target_and_diagnostic_zoh_replay",
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "static_receipt": {
+    "path": "configs/decisions/reachable_lock_80_static_projection_v1.json",
+    "sha256": "b5f3f4bf0ca11c93508e4ccc2dd4eeff46af426198ffe82db8238de014f4809b"
+  },
+  "static_closeout": {
+    "path": "configs/decisions/reachable_lock_80_static_projection_v1.json",
+    "sha256": "b5f3f4bf0ca11c93508e4ccc2dd4eeff46af426198ffe82db8238de014f4809b"
+  },
+  "temporal_implementation": {
+    "path": "src/sim2claw/achieved_lock_task_temporal.py",
+    "sha256": "49e80b36a9dc71e07e68e0bffaf6df47e3e97a1088a74415309cd87c2fcb45f1"
+  },
+  "cases": [
+    {
+      "case_id": "brown_pawn_e2__e2_d2",
+      "direction": "REAL_TO_SIM",
+      "source_square": "e2",
+      "destination_square": "d2",
+      "selected_piece_id": "brown_pawn_e2",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-task-certificate-v1/elbow_80p0_degrees/actions/00.f64le",
+      "action_sha256": "fd9fcd487ede52b40dbea30eeb7e830d99d96c21179dfe586484eef93c92c2bc",
+      "action_shape": [
+        661,
+        6
+      ]
+    },
+    {
+      "case_id": "brown_pawn_h1__h1_g1",
+      "direction": "SIM_TO_REAL",
+      "source_square": "h1",
+      "destination_square": "g1",
+      "selected_piece_id": "brown_pawn_h1",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-task-certificate-v1/elbow_80p0_degrees/actions/01.f64le",
+      "action_sha256": "b96e7bfb7b9d4f7a84c3acfedfb326ef7eb7dc5d645a672cd1d966e39482f477",
+      "action_shape": [
+        693,
+        6
+      ]
+    }
+  ],
+  "live_seed": {
+    "source": "rp04d_predeclared_reachable_80deg_static_lock",
+    "follower_position_degrees": [
+      6.5054945054945055,
+      -85.53846153846153,
+      80.0,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.3752969121140137
+    ],
+    "torque_enabled": false
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-task-temporal-v1",
+  "unchanged_from_base": {
+    "requested_mapped_sent_action_identity": true,
+    "forty_hz_row_order_and_timing": true,
+    "direct_target_baseline_and_uncalibrated_0p11s_zoh_challenger": true,
+    "five_frozen_reset_variants": true,
+    "cpu_fp64_mujoco_and_substeps": true,
+    "observable_episode_v2_min_and_first_divergence": true,
+    "progress_gate_36p025mm": true,
+    "contact_exclusion_no_lift_collision_and_camera_gates": true,
+    "one_case_per_direction_both_plant_paths_required": true,
+    "dynamic_only_authority": true
+  },
+  "claim_boundary": "Prospectively frozen CPU/float64 replay of the two exact predeclared 80 degree actions. Both direct target and diagnostic uncalibrated 0.11 second ZOH, five reset deltas, exact action bytes, 40 Hz timing, ObservableEpisode.v2-min traces, first-divergence channels, and the unchanged 36.025 mm consequence gate remain required. A pass opens task-packet design only; it cannot approve mapping, hardware, a physical attempt, simulator promotion, or transfer."
+}

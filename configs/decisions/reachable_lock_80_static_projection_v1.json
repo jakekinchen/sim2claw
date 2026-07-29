@@ -1,0 +1,33 @@
+{
+  "schema_version": "sim2claw.reachable_lock_static_projection.v1",
+  "projection_id": "reachable-lock-80-static-projection-20260729-v1",
+  "status": "achieved_lock_task_freeze_pass",
+  "source_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-task-certificate-v1/receipt.json",
+    "sha256": "065e75e903fd18c60d619f4885d86cf6530d7e0edee5de7bc735d653ef15c5c5"
+  },
+  "lock_degrees": 80.0,
+  "passed": true,
+  "direction_counts": {
+    "REAL_TO_SIM": 1,
+    "SIM_TO_REAL": 1
+  },
+  "statically_eligible_family_count": 2,
+  "selected": [
+    {
+      "case_id": "brown_pawn_e2__e2_d2",
+      "direction": "REAL_TO_SIM",
+      "action_sha256": "fd9fcd487ede52b40dbea30eeb7e830d99d96c21179dfe586484eef93c92c2bc"
+    },
+    {
+      "case_id": "brown_pawn_h1__h1_g1",
+      "direction": "SIM_TO_REAL",
+      "action_sha256": "b96e7bfb7b9d4f7a84c3acfedfb326ef7eb7dc5d645a672cd1d966e39482f477"
+    }
+  ],
+  "dynamic_replay_executed": false,
+  "physical_motion": false,
+  "physical_task_attempts": 0,
+  "mapping_approved": false,
+  "claim_boundary": "Read-only exact projection of the two predeclared preferred 80 degree selected actions from the three-lock static receipt into the already reviewed achieved-lock temporal adapter. It does not alter actions, gates, direction counts, or authority."
+}
