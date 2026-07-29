@@ -1,0 +1,74 @@
+{
+  "authority": {
+    "camera": false,
+    "evaluate_wrist_trajectory_shape": true,
+    "fit_parameters": false,
+    "gateway": false,
+    "mapping_approval": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "read_bound_physical_capture": true,
+    "serial": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "This one-shot prospective heldout evaluates only whether the fresh wrist-flex trajectory shape agrees with the copy-safe current MuJoCo camera-mount rotation channel under the frozen gates. It fits no parameter and cannot by itself approve a global six-joint mapping, camera extrinsics, task motion, simulator promotion, or transfer.",
+  "contract_path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_heldout_v6.json",
+  "contract_sha256": "607a4b8c8a2eecc086bfa08b65e1d1c19012e1546aa0e4ecb2dca930ea8735e6",
+  "diagnostic_passed": true,
+  "evidence_class": "fresh_prospective_capture",
+  "heldout_passed": true,
+  "physical_follower_torque_enabled_at_close": false,
+  "physical_model_mapping_approved": false,
+  "physical_task_attempts": 0,
+  "proof_class": "prospective_exact_action_physical_d405_fixed_tag_wrist_corner_shape_mapping_heldout",
+  "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_heldout_receipt.v4",
+  "stage_result": {
+    "checks": {
+      "measured_joint_signal": true,
+      "normalized_shape_correlation": true,
+      "normalized_shape_max": true,
+      "normalized_shape_rmse": true,
+      "observed_image_signal": true,
+      "return_residual": true,
+      "simulated_rotation_signal": true
+    },
+    "detected_frame_count": 90,
+    "final_residual_degrees": [
+      0.0,
+      0.0,
+      0.0,
+      1.3186813186813175,
+      0.0,
+      0.0
+    ],
+    "frame_to_joint_delta_ms": {
+      "maximum": 11.740208,
+      "median": 2.8153125
+    },
+    "joint_index": 3,
+    "joint_name": "wrist_flex",
+    "measured_active_joint_excursion_degrees": 2.7252747252747245,
+    "metrics": {
+      "normalized_shape_correlation": 0.9855229236497789,
+      "normalized_shape_max_error": 0.14465886369871886,
+      "normalized_shape_rmse": 0.0730903920791329,
+      "observed_corner_displacement_peak_px": 9.96510578635939,
+      "sample_count": 90,
+      "simulated_rotation_peak_degrees": 2.7252747252747334
+    },
+    "passed": true,
+    "reference_frame_count": 15,
+    "sources": {
+      "callback_path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/stage-1/final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+      "callback_sha256": "a4f9c928a91fc3d43cb8099c2d9132e31a7a869f48507ffd3ec300f3800e5416",
+      "joint_samples_path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/stage-1/joint_samples.jsonl",
+      "joint_samples_sha256": "1e540536c87fdab3f037c1b46271cfffdfc89987f5cf5b22e2b06d962f4dd5e4",
+      "video_path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/stage-1/final_hold_camera/native_dual_camera/wrist_d405.native.mov",
+      "video_sha256": "4f30855163f73556a1200657810d3784c87c03ad8ed53ccf8d6da07114a6e099"
+    },
+    "tag_detection_fraction": 0.9183673469387755,
+    "total_d405_frame_count": 98
+  },
+  "status": "wrist_corner_shape_v4_passed_no_automatic_promotion"
+}

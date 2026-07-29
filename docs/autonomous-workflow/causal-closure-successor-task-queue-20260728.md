@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_WRIST_FRESH_V4_EVALUATE`
+Status: `ACTIVE_CC03_ELBOW_LOCKED_STATIC_V1_RUN`
 
 Created: `2026-07-28`
 
@@ -686,6 +686,29 @@ Current state:
   It reuses the copy-safe V5 implementation and every unchanged V5 diagnostic
   gate, binds exact action `6872ca20...`, requires no depth, fits no parameter,
   and grants no automatic mapping, task, simulator, or transfer authority.
+- The fresh prospective heldout passed every frozen gate at receipt SHA-256
+  `16b7896c45904c7563d00f8b8386cddf3892de9deec70c77c0a2c9ff087294c6`:
+  normalized correlation `0.985523`, RMSE `0.073090`, maximum error
+  `0.144659`, `90` detected frames, measured wrist excursion `2.725275 deg`,
+  and simulated excursion `2.725275 deg`. It fits no parameter and the receipt
+  itself does not promote mapping.
+- Closeout SHA-256
+  `78c4f24d7722004e0808ed3f5cbfbc84b63b643ecdd8c6f00641c5759daac545`
+  accepts the current wrist-flex channel only for a bounded elbow-locked task
+  scope, alongside the prior passing shoulder-pan/lift and fixed
+  registration/jaw factors. It rejects the original four task actions because
+  their elbow spans are `109.881072--173.297076 deg`, while repeated physical
+  probes established the elbow as a nonresponsive actuated channel. Global
+  six-joint mapping, camera refit, the original task actions, evaluator V2,
+  hardware, and transfer remain unapproved.
+- A prospective elbow-locked static successor is frozen at SHA-256
+  `52b836d4df577258ef3f9549e44c2135bf6202a37ac989439302423a7f1084fa`.
+  It uses the fresh torque-off V4 anchor, retains the quarantined four cases
+  and the same finite `48`-family/`288`-cell maximum grid, geometry, jaw,
+  stroke, collision, camera, gateway, contact, and two-per-direction gates,
+  reads no dynamic outcome, and changes only the IK active set so elbow flex
+  must remain bitwise constant. Static simulation is its only execution
+  authority.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -727,6 +750,9 @@ This authorization:
 
 Next step:
 
-- Run the frozen fresh wrist V4 heldout evaluator exactly once, then bind its
-  immutable result and make the narrow elbow-locked task-scope mapping
-  decision. Do not touch a pawn or count a task attempt.
+- Run the frozen elbow-locked static successor exactly once. If at least two
+  statically safe families per direction survive with bitwise-constant elbow,
+  freeze their exact baseline/ZOH dynamic screen before opening dynamics.
+  Otherwise preserve the terminal static result and select one bounded,
+  geometry-derived action-family change. Do not touch a pawn or count a task
+  attempt.

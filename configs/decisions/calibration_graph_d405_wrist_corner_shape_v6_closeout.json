@@ -1,0 +1,93 @@
+{
+  "schema_version": "sim2claw.calibration_graph_d405_wrist_corner_shape_v6_closeout.v1",
+  "decision_id": "calibration-graph-d405-wrist-corner-shape-20260729-v6-closeout",
+  "status": "wrist_channel_accepted_original_task_actions_rejected_elbow_locked_successor_required",
+  "proof_class": "prospective_wrist_mapping_heldout_pass_with_task_action_scope_rejection",
+  "contract": {
+    "path": "configs/evaluations/calibration_graph_d405_wrist_corner_shape_heldout_v6.json",
+    "sha256": "607a4b8c8a2eecc086bfa08b65e1d1c19012e1546aa0e4ecb2dca930ea8735e6"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/evaluation/receipt.json",
+    "sha256": "16b7896c45904c7563d00f8b8386cddf3892de9deec70c77c0a2c9ff087294c6"
+  },
+  "prior_calibration_graph_closeout": {
+    "path": "configs/decisions/calibration_graph_v1_closeout.json",
+    "sha256": "4bcefbd4595fbdf9698c6d48058ea726c62beffd28f26f2c89bf0158cb9241ea"
+  },
+  "elbow_stall_closeout": {
+    "path": "configs/decisions/calibration_graph_d405_corner_shape_v2_elbow_stall_closeout.json",
+    "sha256": "65f71a1bbf418e43632ebf834d2aaffab7e5f3b0dd6cdb45f8f3d4d0caacfbef"
+  },
+  "simulator_screen_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_selected_temporal_v5_closeout.json",
+    "sha256": "2c7f8483663a619c25c6aece2c041a7327aa440b8d961857a101bbc0590a5ed5"
+  },
+  "heldout_result": {
+    "heldout_passed": true,
+    "normalized_shape_correlation": 0.9855229236497789,
+    "normalized_shape_rmse": 0.0730903920791329,
+    "normalized_shape_max_error": 0.14465886369871886,
+    "observed_corner_displacement_peak_px": 9.96510578635939,
+    "measured_wrist_excursion_degrees": 2.7252747252747245,
+    "simulated_wrist_excursion_degrees": 2.7252747252747334,
+    "detected_frame_count": 90,
+    "all_frozen_gates_passed": true,
+    "parameter_fit": false
+  },
+  "channel_decision": {
+    "accepted_for_bounded_task_scope": [
+      "fixed_camera_board_and_robot_board_registration",
+      "shoulder_pan_current_gateway_mapping",
+      "shoulder_lift_current_gateway_mapping",
+      "wrist_flex_current_gateway_mapping",
+      "fixed_jaw_reference"
+    ],
+    "elbow_flex": "constant_encoder_anchor_only_not_an_approved_actuated_mapping_channel",
+    "global_six_joint_mapping_approved": false,
+    "camera_extrinsics_refit_approved": false,
+    "original_four_task_actions_approved": false,
+    "task_scope_mapping_approved": false
+  },
+  "original_task_action_audit": [
+    {
+      "case_id": "tan_pawn_h7__h7_h8",
+      "direction": "REAL_TO_SIM",
+      "action_sha256": "c7fe9e844a39769ba13c566b7947bdb6c66d72bc0e6b87f430bb5ced5646a993",
+      "elbow_span_degrees": 124.372985
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_c7",
+      "direction": "SIM_TO_REAL",
+      "action_sha256": "a36f056a279de3aa106b8bacb42527bd65e53415f3ac22cfafb1987aae798b40",
+      "elbow_span_degrees": 147.080109
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_e7",
+      "direction": "REAL_TO_SIM",
+      "action_sha256": "e9f128e0e3497039e1267ea84523a260ab4f0a8eb6df515fc5242ce089c15cae",
+      "elbow_span_degrees": 109.881072
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_e7",
+      "direction": "SIM_TO_REAL",
+      "action_sha256": "dcd5edef44f2dc5f5603c46534409a68d3462a15048c29381447a5cce2d0407d",
+      "elbow_span_degrees": 173.297076
+    }
+  ],
+  "decision": "Accept the fresh heldout as evidence that the current wrist-flex mapping produces the correct gauge-free D405 trajectory shape under the frozen local probe. Preserve prior shoulder-pan and shoulder-lift factor acceptance and the fixed registration/jaw gauge. Do not approve the original four task actions: all command large elbow excursions while the repeated bounded physical elbow probes established a nonresponsive actuator channel. Freeze one static-only successor over the same quarantined 48-family finite grid, current fresh anchor, path geometry, collision/camera/gateway/contact gates, and two-family-per-direction requirement, changing only the IK active set so elbow flex is bitwise constant. No dynamic replay, evaluator freeze, pawn contact, task packet, or transfer is authorized by this closeout.",
+  "authority": {
+    "wrist_channel_bounded_acceptance": true,
+    "freeze_elbow_locked_static_successor": true,
+    "task_scope_mapping_approval": false,
+    "dynamic_simulation": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}
