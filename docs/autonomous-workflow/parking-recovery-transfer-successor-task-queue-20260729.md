@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04C_V2_REACHABLE_PAN_STATIC_FREEZE`
+Status: `RP04C_V2_PHYSICAL_PACKET_FROZEN_PENDING_TESTS_COMMIT_AUTHORIZATION`
 
 Created: `2026-07-29`
 
@@ -46,7 +46,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP03D | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Static receipt `488bf150...` passed all 576 cells with one selected family per direction. Dynamic receipt `8bb253ef...` ran the exact 20 frozen episodes. | `0/20` passed. The tangent-seat and locked-elbow task route are closed without hardware. |
 | RP04 | `DONE_EXISTING_SIMULATOR_PASS_RECONCILED` | Select the strongest already frozen natural-anchor simulator route without using later outcomes to alter its actions. | Canonical wrist-path V5 predates this successor and has exactly two families per direction across direct/ZOH and five resets, with exact actions and ObservableEpisode traces. | Receipt `cf21bd8c...` passes `40/40`; its four action tensors are immutable transfer candidates. This does not approve mapping or hardware. |
 | RP04A | `DONE_TERMINAL_V5_TRACKING_NEGATIVE` | Approve or reject the coordinated-unloading hypothesis before any task packet. | The elbow-only fit passed its untouched tail, then the exact 20-episode challenger preserved all V5 requested bytes and the canonical evaluator. | `0/20` task episodes passed. All four V5 actions are closed for hardware; no retry, task-conditioned refit, action repair, or gate relaxation. |
-| RP04C | `V1_SAFE_PAN_RANGE_NEGATIVE_V2_REACHABLE_PAN_STATIC_FREEZE` | Extend execution evidence toward the smallest V5 contact-angle corridor without pawn or board contact. | V1 stopped before elbow motion because shoulder pan saturated near `-64 deg` against a `-115 deg` request. Cameras, controlled return, and torque-off passed with no pawn/board contact. V2 may change only pan target to reachable `-60 deg` plus derived prefix length/boundaries; retain lift cap, full elbow profile, geometry, cameras, and false task authority. | No V1 retry. V2 must pass both scene hypotheses with at least `70 mm` clearance before a new one-shot packet can freeze. |
+| RP04C | `V2_PHYSICAL_PACKET_FROZEN_PENDING_TESTS_COMMIT_AUTHORIZATION` | Extend execution evidence toward the smallest V5 contact-angle corridor without pawn or board contact. | V2 static receipt `accd098e...` passes: `1105` rows, reachable `-60 deg` pan, `-10.409 deg` elbow, `75.874 mm` worst-case clearance, both scenes contact-free, and all route gates. The packet changes only the pan target and derived prefix/boundaries from V1. | No V1 retry. Complete focused tests, commit/push, and bind one new authorization before motion. Any live defect stops safely; still zero task attempts. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -66,11 +66,10 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Freeze and run one V2 static compile with shoulder pan `-60 deg`, the observed
-reachable side of the V1 `-64 deg` saturation. Preserve the `0 deg` lift cap,
-full coordinated elbow profile, exact reverse, both geometry hypotheses,
-calibrated ranges/rates, and zero task authority. Require at least `70 mm`
-clearance before authoring a new one-shot physical packet.
+Complete focused V2 packet tests, commit and push the exact `1105`-row packet,
+then bind one new time-bounded owner authorization. Recheck the returned
+torque-off start envelope and run at most once with cameras, exact reverse,
+controlled failure return, and torque-off cleanup.
 
 ## RP00 immutable result
 

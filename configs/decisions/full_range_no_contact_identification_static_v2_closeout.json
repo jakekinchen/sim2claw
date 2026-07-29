@@ -1,0 +1,27 @@
+{
+  "schema_version": "sim2claw.full_range_no_contact_identification_static_closeout.v2",
+  "decision_id": "full-range-no-contact-identification-static-20260729-v2-closeout",
+  "status": "reachable_pan_static_pass_physical_packet_admitted",
+  "freeze_commit": "690f401",
+  "contract": {
+    "path": "configs/evaluations/full_range_no_contact_identification_v2.json",
+    "sha256": "0c7a7731575c7f842ac950d07eb14b9e15a218a4777207af87a4f639b312ce1a"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-identification-static-v2/receipt.json",
+    "sha256": "accd098ee7e6f77b08a9a8549b3759a45b03d323e3f8807071c640a15bb15d69"
+  },
+  "result": {
+    "route_rows": 1105,
+    "route_sha256": "94381e4260cd638351e7eace26997826189e8952b2d297bcb199c0abe8cdbd92",
+    "shoulder_pan_target_degrees": -60.0,
+    "minimum_elbow_degrees": -10.408544612674717,
+    "registered_minimum_clearance_m": 0.11370755761088908,
+    "stress_minimum_clearance_m": 0.07587399672181439,
+    "registered_scene_contact_free": true,
+    "stress_scene_contact_free": true,
+    "all_gateway_and_segment_gates_passed": true,
+    "physical_task_attempts": 0
+  },
+  "decision": "Admit one separately authorized, camera-enclosed physical execution of the exact 1105-row reachable-pan route plus exact reverse. Preserve the V2 route bytes, five frozen boundaries, controlled return, postflight torque-off, false pawn contact and task authority, and one-execution latch. The result may support a frozen-split plant fit; it cannot reopen V5, approve mapping, or claim transfer."
+}

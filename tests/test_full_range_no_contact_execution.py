@@ -9,10 +9,17 @@ from typing import Any
 import numpy as np
 
 from sim2claw.full_range_no_contact_execution import _load_packet, execute
+from sim2claw.full_range_no_contact_execution_v2 import (
+    _load_packet as _load_packet_v2,
+    execute as execute_v2,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "configs/hardware/full_range_no_contact_execution_v1.json"
+PACKET_V2 = (
+    ROOT / "configs/hardware/full_range_no_contact_execution_v2.json"
+)
 
 
 class FakeClock:
@@ -166,6 +173,67 @@ def test_synthetic_execution_runs_forward_reverse_and_torque_off(
     )
     assert receipt["telemetry_acceptance_passed"] is True
     assert receipt["forward_source_sample_count"] == 1160
+    assert receipt["minimum_observed_elbow_degrees"] <= -10.4
+    assert len(receipt["boundary_reports"]) == 9
+    assert receipt["physical_task_attempts"] == 0
+    assert gateway.closed is True
+
+
+def test_reachable_pan_packet_runs_exact_v2_denominator(
+    tmp_path: Path,
+) -> None:
+    packet = json.loads(PACKET_V2.read_text(encoding="utf-8"))
+    output = tmp_path / "execution-v2"
+    packet["output_directory"] = str(output)
+    packet_path = tmp_path / "packet-v2.json"
+    packet_path.write_text(json.dumps(packet), encoding="utf-8")
+    now = datetime.now(UTC)
+    authorization = {
+        "schema_version": "sim2claw.owner_physical_authorization.v1",
+        "authorization_id": "test-rp04c-v2",
+        "operation_id": packet["operation_id"],
+        "packet_sha256": _sha(packet_path),
+        "issued_at": (now - timedelta(minutes=1)).isoformat(),
+        "expires_at": (now + timedelta(minutes=10)).isoformat(),
+        "maximum_executions": 1,
+        "physical_no_contact_diagnostic": True,
+        "physical_task_attempt": False,
+        "pawn_contact": False,
+        "autonomous_agent_supervision": True,
+        "power_down_supply_on_torque_cleanup_error": True,
+    }
+    authorization_path = tmp_path / "authorization-v2.json"
+    authorization_path.write_text(json.dumps(authorization), encoding="utf-8")
+    _, route = _load_packet_v2(packet_path)
+    assert route.shape == (1105, 6)
+    start = route[0]
+    preflight = {
+        "passed": True,
+        "physical_follower_torque_enabled": False,
+        "device_configuration_rewritten": False,
+        "leader_port": "/dev/test-leader",
+        "follower_port": packet["hardware"]["follower_port"],
+        "leader_calibration_sha256": "leader",
+        "follower_calibration_sha256": packet["hardware"][
+            "follower_calibration_sha256"
+        ],
+        "follower_start_degrees": start.tolist(),
+    }
+    clock = FakeClock()
+    gateway = FakeGateway(start)
+    receipt = execute_v2(
+        packet_path=packet_path,
+        authorization_path=authorization_path,
+        output_root=output,
+        operator_acknowledged=True,
+        preflight_fn=lambda: preflight,
+        gateway_factory=lambda _identity: gateway,
+        camera_factory=lambda _root, _packet: FakeCamera(),
+        clock=clock,
+        sleep=clock.sleep,
+    )
+    assert receipt["telemetry_acceptance_passed"] is True
+    assert receipt["forward_source_sample_count"] == 1105
     assert receipt["minimum_observed_elbow_degrees"] <= -10.4
     assert len(receipt["boundary_reports"]) == 9
     assert receipt["physical_task_attempts"] == 0
