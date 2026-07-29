@@ -138,7 +138,9 @@ def test_terminal_closeout_is_preserved_after_successor_activation() -> None:
     for graph_path in (GRAPH_CONFIG, GRAPH):
         graph = json.loads(graph_path.read_text(encoding="utf-8"))
         pointer = graph["active_pointer"]
-        assert pointer["status"] == "contract_design_active_before_dynamic_execution"
+        assert pointer["status"] == (
+            "preregistered_before_exactly_once_official_dynamic_replay"
+        )
         assert pointer["milestone_id"] == "CC02"
         assert pointer["resume_authorized"] is True
         closeout_node = next(

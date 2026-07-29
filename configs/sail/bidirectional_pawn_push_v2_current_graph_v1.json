@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "e661e6208a1dca01095397d2495034115dffca7159f17e62abaa4385126b5e37",
+      "sha256": "99377a6feb44cd91db82e3da30199bd6f93b2ab35597b83ea28c93344a0bccfd",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1256,6 +1256,26 @@
         "schema_version": "sim2claw.observable_episode_closeout.v1",
         "status": "observable_episode_v2_min_accepted",
         "proof_class": "tested_causal_episode_contract_and_adapters_without_dynamic_or_physical_execution"
+      }
+    },
+    "canonical_temporal_v1_dry_closeout": {
+      "path": "configs/decisions/canonical_seeded_action_temporal_v1_dry_validation_closeout.json",
+      "sha256": "1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d",
+      "proof_class": "nonadmissible_temporary_directory_dynamic_implementation_validation",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_dry_validation_closeout.v1",
+        "status": "closed_nonadmissible_prefreeze_implementation_validation",
+        "proof_class": "nonadmissible_temporary_directory_dynamic_implementation_validation"
+      }
+    },
+    "canonical_temporal_v2_contract": {
+      "path": "configs/evaluations/canonical_seeded_action_temporal_v2.json",
+      "sha256": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870",
+      "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_successor.v2",
+        "status": "frozen_after_nonadmissible_dry_validation_before_official_replay",
+        "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay"
       }
     },
     "simulator_candidate": {
@@ -3598,6 +3618,42 @@
       }
     },
     {
+      "id": "checkpoint:canonical-temporal-v1-dry-validation-closed",
+      "type": "checkpoint",
+      "label": "Canonical temporal V1 temporary validation quarantined",
+      "status": "nonadmissible_prefreeze_implementation_validation_closed",
+      "source_binding": "canonical_temporal_v1_dry_closeout",
+      "data": {
+        "temporary_runs": 2,
+        "official_attempts": 0,
+        "temporary_outputs_authoritative": false,
+        "outcomes_used_for_change": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:canonical-temporal-v2-frozen",
+      "type": "checkpoint",
+      "label": "Canonical temporal V2 official replay frozen",
+      "status": "preregistered_before_exactly_once_official_dynamic_replay",
+      "source_binding": "canonical_temporal_v2_contract",
+      "data": {
+        "action_count": 4,
+        "plant_path_count": 2,
+        "reset_variant_count": 5,
+        "expected_observable_episode_count": 40,
+        "outcome_relevant_change_from_v1": false,
+        "official_dynamic_replay_executed": false,
+        "mapping_calibration_approved": false,
+        "camera_authorized": false,
+        "gateway_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -4969,6 +5025,26 @@
       }
     },
     {
+      "source": "checkpoint:canonical-temporal-v1-dry-validation-closed",
+      "type": "generated-from",
+      "target": "checkpoint:cc02-canonical-dynamic-replay-active",
+      "metadata": {
+        "official_result_authority": false,
+        "outcome_informed_change": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:canonical-temporal-v2-frozen",
+      "type": "generated-from",
+      "target": "checkpoint:canonical-temporal-v1-dry-validation-closed",
+      "metadata": {
+        "actions_plants_variants_gates_and_channels_unchanged": true,
+        "official_execution_pending": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -5949,14 +6025,32 @@
       "node_ids_added": [
         "checkpoint:cc02-canonical-dynamic-replay-active"
       ]
+    },
+    {
+      "revision": 104,
+      "event_id": "CANONICAL_TEMPORAL_V1_DRY_VALIDATION_CLOSED",
+      "status": "nonadmissible_prefreeze_implementation_validation_closed",
+      "source_binding": "canonical_temporal_v1_dry_closeout",
+      "node_ids_added": [
+        "checkpoint:canonical-temporal-v1-dry-validation-closed"
+      ]
+    },
+    {
+      "revision": 105,
+      "event_id": "CANONICAL_TEMPORAL_V2_FROZEN",
+      "status": "preregistered_before_exactly_once_official_dynamic_replay",
+      "source_binding": "canonical_temporal_v2_contract",
+      "node_ids_added": [
+        "checkpoint:canonical-temporal-v2-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:cc02-canonical-dynamic-replay-active",
+    "node_id": "checkpoint:canonical-temporal-v2-frozen",
     "milestone_id": "CC02",
-    "status": "contract_design_active_before_dynamic_execution",
+    "status": "preregistered_before_exactly_once_official_dynamic_replay",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "freeze_and_execute_exact_action_direct_target_and_diagnostic_zoh_replay",
+    "resume_action": "execute_canonical_temporal_v2_official_output_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
@@ -6086,6 +6180,10 @@
     "gateway_or_serial_authority": false,
     "physical_packet_authorized": false,
     "task_attempts": 0,
-    "next_action": "freeze_and_execute_cc02_canonical_dynamic_replay"
+    "temporal_v1_dry_validation_closeout_sha256": "1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d",
+    "temporal_v2_contract": "configs/evaluations/canonical_seeded_action_temporal_v2.json",
+    "temporal_v2_contract_sha256": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870",
+    "official_temporal_result": "not_executed",
+    "next_action": "execute_canonical_temporal_v2_official_output_exactly_once"
   }
 }

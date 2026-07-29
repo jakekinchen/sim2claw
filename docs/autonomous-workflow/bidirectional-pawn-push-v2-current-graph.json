@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC02",
-    "node_id": "checkpoint:cc02-canonical-dynamic-replay-active",
+    "node_id": "checkpoint:canonical-temporal-v2-frozen",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "freeze_and_execute_exact_action_direct_target_and_diagnostic_zoh_replay",
+    "resume_action": "execute_canonical_temporal_v2_official_output_exactly_once",
     "resume_authorized": true,
-    "status": "contract_design_active_before_dynamic_execution"
+    "status": "preregistered_before_exactly_once_official_dynamic_replay"
   },
   "authority": {
     "camera_open": false,
@@ -34,9 +34,10 @@
     "legacy_candidates_are_diagnostics_only": true,
     "live_anchor_source": "fresh_configuration_free_physical_gateway_preflight",
     "minimum_families_per_direction": 2,
-    "next_action": "freeze_and_execute_cc02_canonical_dynamic_replay",
+    "next_action": "execute_canonical_temporal_v2_official_output_exactly_once",
     "observable_episode_closeout_sha256": "fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178",
     "observable_episode_contract": "configs/evaluations/observable_episode_v2_min_v1.json",
+    "official_temporal_result": "not_executed",
     "physical_authority": false,
     "physical_packet_authorized": false,
     "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json",
@@ -46,6 +47,9 @@
     "static_contract_sha256": "6740b72ee1bee9e6357e5810a6b5463492a27779843692d9ef2ab8f873da67e4",
     "status": "v2_static_pass_observable_episode_accepted_cc02_active",
     "task_attempts": 0,
+    "temporal_v1_dry_validation_closeout_sha256": "1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d",
+    "temporal_v2_contract": "configs/evaluations/canonical_seeded_action_temporal_v2.json",
+    "temporal_v2_contract_sha256": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870",
     "v1_defect": "live_elbow_seed_outside_stock_model_range_by_0.04612311967611782_rad",
     "v1_static_actions_admitted": false,
     "v1_static_receipt_sha256": "30ea3327a1f33fc1fd07ff53e43e735f572c67015c431452f966d7d9a0c54b45",
@@ -78,23 +82,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 129,
+    "edges": 131,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
       "evaluated-on": 26,
       "fitted-on": 4,
-      "generated-from": 83,
+      "generated-from": 85,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 123,
+    "nodes": 125,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 77,
+      "checkpoint": 79,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
@@ -225,6 +229,26 @@
       },
       "source": "certificate:bidirectional-transfer",
       "target": "checkpoint:v04-owner-integration-barrier",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "official_result_authority": false,
+        "outcome_informed_change": false,
+        "physical_motion": false
+      },
+      "source": "checkpoint:canonical-temporal-v1-dry-validation-closed",
+      "target": "checkpoint:cc02-canonical-dynamic-replay-active",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "actions_plants_variants_gates_and_channels_unchanged": true,
+        "official_execution_pending": true,
+        "physical_motion": false
+      },
+      "source": "checkpoint:canonical-temporal-v2-frozen",
+      "target": "checkpoint:canonical-temporal-v1-dry-validation-closed",
       "type": "generated-from"
     },
     {
@@ -1584,7 +1608,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "218fcd04d3db7022fd6df0f3a7b6c8988aa52df72bfcd0f136faa6d186a51c00",
+  "graph_digest": "6d79d82feff163d8db1f209d50750147eb30acc6746f43ccdd109b6bab00f7a8",
   "node_types": [
     "workcell",
     "session",
@@ -1674,6 +1698,66 @@
     },
     {
       "data": {
+        "mapping_calibration_approved": false,
+        "official_attempts": 0,
+        "outcomes_used_for_change": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "canonical_temporal_v1_dry_closeout",
+        "temporary_outputs_authoritative": false,
+        "temporary_runs": 2
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-temporal-v1-dry-validation-closed",
+      "label": "Canonical temporal V1 temporary validation quarantined",
+      "proof_class": "nonadmissible_temporary_directory_dynamic_implementation_validation",
+      "source": {
+        "path": "configs/decisions/canonical_seeded_action_temporal_v1_dry_validation_closeout.json",
+        "payload_contract": {
+          "proof_class": "nonadmissible_temporary_directory_dynamic_implementation_validation",
+          "schema_version": "sim2claw.canonical_seeded_action_temporal_dry_validation_closeout.v1",
+          "status": "closed_nonadmissible_prefreeze_implementation_validation"
+        },
+        "proof_class": "nonadmissible_temporary_directory_dynamic_implementation_validation",
+        "sha256": "1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d"
+      },
+      "status": "nonadmissible_prefreeze_implementation_validation_closed",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "action_count": 4,
+        "camera_authorized": false,
+        "expected_observable_episode_count": 40,
+        "gateway_authorized": false,
+        "mapping_calibration_approved": false,
+        "official_dynamic_replay_executed": false,
+        "outcome_relevant_change_from_v1": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "plant_path_count": 2,
+        "reset_variant_count": 5,
+        "source_binding_id": "canonical_temporal_v2_contract"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-temporal-v2-frozen",
+      "label": "Canonical temporal V2 official replay frozen",
+      "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay",
+      "source": {
+        "path": "configs/evaluations/canonical_seeded_action_temporal_v2.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay",
+          "schema_version": "sim2claw.canonical_seeded_action_temporal_successor.v2",
+          "status": "frozen_after_nonadmissible_dry_validation_before_official_replay"
+        },
+        "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay",
+        "sha256": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870"
+      },
+      "status": "preregistered_before_exactly_once_official_dynamic_replay",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "baseline_plant": "canonical_cpu_fp64_mujoco_direct_target",
         "camera_authorized": false,
         "canonical_action_count": 4,
@@ -1693,7 +1777,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "e661e6208a1dca01095397d2495034115dffca7159f17e62abaa4385126b5e37"
+        "sha256": "99377a6feb44cd91db82e3da30199bd6f93b2ab35597b83ea28c93344a0bccfd"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6463,8 +6547,28 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "e661e6208a1dca01095397d2495034115dffca7159f17e62abaa4385126b5e37",
+      "source_sha256": "99377a6feb44cd91db82e3da30199bd6f93b2ab35597b83ea28c93344a0bccfd",
       "status": "contract_design_active_before_dynamic_execution"
+    },
+    {
+      "event_id": "CANONICAL_TEMPORAL_V1_DRY_VALIDATION_CLOSED",
+      "node_ids_added": [
+        "checkpoint:canonical-temporal-v1-dry-validation-closed"
+      ],
+      "revision": 104,
+      "source_binding": "canonical_temporal_v1_dry_closeout",
+      "source_sha256": "1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d",
+      "status": "nonadmissible_prefreeze_implementation_validation_closed"
+    },
+    {
+      "event_id": "CANONICAL_TEMPORAL_V2_FROZEN",
+      "node_ids_added": [
+        "checkpoint:canonical-temporal-v2-frozen"
+      ],
+      "revision": 105,
+      "source_binding": "canonical_temporal_v2_contract",
+      "source_sha256": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870",
+      "status": "preregistered_before_exactly_once_official_dynamic_replay"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -6515,10 +6619,32 @@
       "sha256": "c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977"
     },
     {
+      "id": "canonical_temporal_v1_dry_closeout",
+      "path": "configs/decisions/canonical_seeded_action_temporal_v1_dry_validation_closeout.json",
+      "payload_contract": {
+        "proof_class": "nonadmissible_temporary_directory_dynamic_implementation_validation",
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_dry_validation_closeout.v1",
+        "status": "closed_nonadmissible_prefreeze_implementation_validation"
+      },
+      "proof_class": "nonadmissible_temporary_directory_dynamic_implementation_validation",
+      "sha256": "1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d"
+    },
+    {
+      "id": "canonical_temporal_v2_contract",
+      "path": "configs/evaluations/canonical_seeded_action_temporal_v2.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay",
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_successor.v2",
+        "status": "frozen_after_nonadmissible_dry_validation_before_official_replay"
+      },
+      "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay",
+      "sha256": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870"
+    },
+    {
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "e661e6208a1dca01095397d2495034115dffca7159f17e62abaa4385126b5e37"
+      "sha256": "99377a6feb44cd91db82e3da30199bd6f93b2ab35597b83ea28c93344a0bccfd"
     },
     {
       "id": "current_task_scene_labels",

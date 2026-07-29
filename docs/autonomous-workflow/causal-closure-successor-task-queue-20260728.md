@@ -237,7 +237,15 @@ Current state:
   Requested, mapped, sent, and applied rows are independently hash-bound;
   physical-source missingness and causal first-divergence extraction are
   tested.
-- Dynamic simulation has not executed for the v2-admitted action set.
+- A focused test mistakenly executed the full V1 temporal implementation twice
+  into temporary directories before a freeze commit. Closeout
+  `1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d`
+  quarantines both as non-admissible implementation validation; no temporary
+  result or path is bound and no outcome informed a change.
+- The outcome-identical V2 temporal successor is frozen at
+  `ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870`.
+  Its four actions, two plant paths, five variants, gates, and causal channels
+  are exactly inherited from V1. Its official immutable output has not run.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -257,7 +265,8 @@ Completed:
 Blockers:
 
 - No approved physical/model mapping.
-- No dynamic consequence pass for a v2-admitted action set.
+- No admissible official dynamic consequence result for the V2-admitted
+  action set.
 
 ## Time-bounded physical authorization
 
@@ -279,6 +288,5 @@ This authorization:
 
 Next step:
 
-- Freeze the CC02 direct-target plus diagnostic `0.11 s` ZOH contract, then
-  replay only the four v2-admitted actions and emit the accepted causal
-  episodes.
+- Commit and push the V2 CC02 freeze, then execute its official immutable
+  direct-target plus diagnostic `0.11 s` ZOH replay exactly once.

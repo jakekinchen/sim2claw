@@ -1,0 +1,253 @@
+{
+  "schema_version": "sim2claw.canonical_seeded_action_temporal.v1",
+  "contract_id": "canonical-seeded-action-temporal-20260728-v1",
+  "status": "frozen_after_cc01_before_canonical_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay",
+  "inputs": {
+    "static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/receipt.json",
+      "sha256": "c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977"
+    },
+    "static_closeout": {
+      "path": "configs/decisions/canonical_seeded_action_static_v2_closeout.json",
+      "sha256": "ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "registration_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    },
+    "observable_episode_contract": {
+      "path": "configs/evaluations/observable_episode_v2_min_v1.json",
+      "sha256": "66bb7f0c653e973e68efa247d113a5f79730b0c9063ad5ec3998c3dd62f114fe"
+    },
+    "observable_episode_closeout": {
+      "path": "configs/decisions/observable_episode_v2_min_closeout.json",
+      "sha256": "fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178"
+    },
+    "observable_episode_implementation": {
+      "path": "src/sim2claw/observable_episode.py",
+      "sha256": "d280d20d5ba847fe8ae713c63800f54e3b043a2b1d561202f99eb813550c1f29"
+    },
+    "temporal_implementation": {
+      "path": "src/sim2claw/canonical_seeded_action_temporal.py",
+      "sha256": "d327e135e552f428061c8b73ba9ec1d226c8f889b532fc3470879ee26f0805dc"
+    }
+  },
+  "live_seed": {
+    "source": "fresh_configuration_free_physical_gateway_preflight",
+    "follower_position_degrees": [
+      6.5054945054945055,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "torque_enabled": false
+  },
+  "action_identity": {
+    "dtype": "little_endian_float64",
+    "sample_hz": 40.0,
+    "row_order_preserved": true,
+    "requested_mapped_sent_byte_identical": true,
+    "requested_action_sha256_immutable": true,
+    "no_clipping_smoothing_retiming_offset_repair_or_rate_limit": true,
+    "gateway_rate_limits_per_joint": [
+      60.0,
+      60.0,
+      60.0,
+      60.0,
+      90.0,
+      100.0
+    ],
+    "fail_closed_on_applied_rate_incompatibility": true
+  },
+  "cases": [
+    {
+      "case_id": "tan_pawn_h7__h7_h6",
+      "direction": "REAL_TO_SIM",
+      "source_square": "h7",
+      "destination_square": "h6",
+      "selected_piece_id": "tan_pawn_h7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/actions/00.f64le",
+      "action_sha256": "73b681e2581ea1477f4deec90d1f48d78e8cce2b7c42923dd5c5b612415dbf42",
+      "action_shape": [
+        1017,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_h7__h7_g7",
+      "direction": "SIM_TO_REAL",
+      "source_square": "h7",
+      "destination_square": "g7",
+      "selected_piece_id": "tan_pawn_h7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/actions/01.f64le",
+      "action_sha256": "8526b423206ea88fe8d6edd5fb0ab5cf0d0a0333c68aa0489cd28430bebadfaf",
+      "action_shape": [
+        948,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_f6",
+      "direction": "REAL_TO_SIM",
+      "source_square": "f7",
+      "destination_square": "f6",
+      "selected_piece_id": "tan_pawn_f7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/actions/02.f64le",
+      "action_sha256": "52c89c2f51e190ae0cd94512405e98b20fd6e630e139144503a0a68a3c3ddd87",
+      "action_shape": [
+        1033,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_g7",
+      "direction": "SIM_TO_REAL",
+      "source_square": "f7",
+      "destination_square": "g7",
+      "selected_piece_id": "tan_pawn_f7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/actions/03.f64le",
+      "action_sha256": "57e9192b8ec0a13331b1bfc6bf911c528f5dbe7df89055c89baa02465edab296",
+      "action_shape": [
+        965,
+        6
+      ]
+    }
+  ],
+  "plant_paths": [
+    {
+      "path_id": "canonical_direct_target",
+      "kind": "direct_target_mujoco",
+      "delay_seconds": 0.0,
+      "diagnostic_only": false,
+      "calibrated_physical_latency": false
+    },
+    {
+      "path_id": "diagnostic_zoh_0p11s",
+      "kind": "zero_order_hold_command_delay",
+      "delay_seconds": 0.11,
+      "diagnostic_only": true,
+      "calibrated_physical_latency": false
+    }
+  ],
+  "robustness_variants": [
+    {
+      "variant_id": "nominal",
+      "delta_m": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "variant_id": "longitudinal_plus_3mm",
+      "delta_m": [
+        0.003,
+        0.0
+      ]
+    },
+    {
+      "variant_id": "longitudinal_minus_3mm",
+      "delta_m": [
+        -0.003,
+        0.0
+      ]
+    },
+    {
+      "variant_id": "lateral_plus_3mm",
+      "delta_m": [
+        0.0,
+        0.003
+      ]
+    },
+    {
+      "variant_id": "lateral_minus_3mm",
+      "delta_m": [
+        0.0,
+        -0.003
+      ]
+    }
+  ],
+  "simulation": {
+    "engine": "mujoco",
+    "numeric_mode": "cpu_float64",
+    "canonical_runtime": "sim2claw.current_workcell",
+    "timestep_s": 0.0025,
+    "substeps_per_row": 10
+  },
+  "observable_episode": {
+    "schema_version": "sim2claw.observable_episode.v2-min",
+    "expected_episode_count": 40,
+    "object_frame": "canonical_board_plane_a1_origin_file_rank_axes",
+    "simulator_object_covariance": "zero_deterministic_state",
+    "key_link_bodies": [
+      "left_shoulder",
+      "left_upper_arm",
+      "left_lower_arm",
+      "left_wrist",
+      "left_gripper"
+    ],
+    "first_object_motion_threshold_m": 0.001
+  },
+  "first_divergence": {
+    "precedence": [
+      "requested_action",
+      "applied_action",
+      "joint_state",
+      "link_pose",
+      "contact_state",
+      "object_position",
+      "object_yaw",
+      "task_outcome"
+    ],
+    "joint_threshold_rad": 0.01,
+    "link_position_threshold_m": 0.002,
+    "object_position_threshold_m": 0.002,
+    "object_yaw_threshold_rad": 0.03490658503988659
+  },
+  "gates": {
+    "minimum_signed_progress_mm": 36.025,
+    "selected_contact_required": true,
+    "maximum_excluded_displacement_mm": 1.0,
+    "maximum_selected_vertical_rise_mm": 2.0,
+    "zero_excluded_jaw_contact_required": true,
+    "zero_new_nonselected_jaw_collision_pairs_required": true,
+    "minimum_camera_margin_px": 20.0,
+    "all_five_robustness_variants_required": true
+  },
+  "camera_gate": {
+    "owner": "accepted_fixed_c922_projection",
+    "image_size_px": [
+      1920,
+      1080
+    ],
+    "minimum_margin_px": 20.0,
+    "whole_selected_object_trajectory_checked": true,
+    "wrist_depth_required": false
+  },
+  "acceptance": {
+    "each_case_must_pass_both_plant_paths": true,
+    "minimum_cases_per_direction": 2,
+    "gate_may_not_be_weakened_after_outcomes": true,
+    "terminal_negative_preserved_if_direction_gate_fails": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-temporal-v1",
+  "authority": {
+    "dynamic_simulation": true,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospective CPU/fp64 simulator-only replay of the four calibrated-range V2 actions under canonical direct-target MuJoCo and a diagnostic uncalibrated 0.11 second ZOH delay. It emits causal observation episodes but does not approve the physical/model mapping, freeze evaluator V2, open hardware, count a task attempt, promote a plant, or support transfer."
+}

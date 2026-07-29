@@ -97,6 +97,12 @@ Confirmed:
   accepts strict causal serialization and adapters without dynamic or
   physical authority.
 - CC02 in the successor queue is the sole active card.
+- V1 full-action temporary test outputs are explicitly non-admissible and
+  closed by SHA-256 `1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d`.
+  No outcome was used to change the action set, paths, variants, or gates.
+- The V2 temporal successor is frozen at SHA-256
+  `ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870`
+  and awaits its exactly-once official immutable replay.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -151,7 +157,7 @@ Physical task attempts:
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
 Blockers: dynamic consequence and physical/model mapping remain unapproved.
-Next step: freeze and execute CC02 with one ObservableEpisode per exact action and plant path.
+Next step: commit/push the V2 freeze, then execute CC02 exactly once with one ObservableEpisode per exact action, plant path, and reset variant.
 ```
 
 ## Physical Authority Boundaries

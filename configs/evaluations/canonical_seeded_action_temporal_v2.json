@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.canonical_seeded_action_temporal_successor.v2",
+  "contract_id": "canonical-seeded-action-temporal-20260728-v2",
+  "status": "frozen_after_nonadmissible_dry_validation_before_official_replay",
+  "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay",
+  "frozen_v1_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "v1_dry_validation_closeout": {
+    "path": "configs/decisions/canonical_seeded_action_temporal_v1_dry_validation_closeout.json",
+    "sha256": "1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d"
+  },
+  "temporal_implementation": {
+    "path": "src/sim2claw/canonical_seeded_action_temporal.py",
+    "sha256": "a6321b32553b37492bef01ae0e4ed0d8fafae7b8f86f74246b1c4f1feee5f697"
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-temporal-v2",
+  "unchanged_from_v1": {
+    "four_action_paths_and_sha256s": true,
+    "direction_labels": true,
+    "direct_target_plant": true,
+    "diagnostic_uncalibrated_0p11_second_zoh_plant": true,
+    "five_reset_variants": true,
+    "minimum_36p025_mm_progress": true,
+    "contact_exclusion_collision_no_lift_and_camera_gates": true,
+    "two_families_per_direction": true,
+    "observable_episode_channels_and_thresholds": true,
+    "physical_authority_false": true
+  },
+  "claim_boundary": "Prospectively frozen V2 official replay inheriting the exact V1 actions, plant paths, reset variants, gates, and causal channels after V1 temporary test outputs were quarantined. The official V2 output may be executed exactly once after this contract is committed and pushed. It cannot approve mapping, freeze evaluator V2, open hardware, count a task attempt, promote the delay challenger, or support transfer."
+}

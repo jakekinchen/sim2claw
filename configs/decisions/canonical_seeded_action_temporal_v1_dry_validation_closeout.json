@@ -1,0 +1,36 @@
+{
+  "schema_version": "sim2claw.canonical_seeded_action_temporal_dry_validation_closeout.v1",
+  "decision_id": "canonical-seeded-action-temporal-v1-dry-validation-closeout",
+  "status": "closed_nonadmissible_prefreeze_implementation_validation",
+  "proof_class": "nonadmissible_temporary_directory_dynamic_implementation_validation",
+  "contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_seeded_action_temporal.py",
+    "sha256": "d327e135e552f428061c8b73ba9ec1d226c8f889b532fc3470879ee26f0805dc"
+  },
+  "disclosure": {
+    "trigger": "focused deterministic pytest invoked the full replay twice into separate temporary directories before a contract-freeze commit",
+    "temporary_outputs_are_authoritative": false,
+    "temporary_output_paths_are_bound": false,
+    "case_outcomes_inspected_or_used_for_change": false,
+    "action_gate_plant_or_variant_changes_after_validation": false,
+    "official_attempt_count": 0,
+    "official_receipt_exists": false
+  },
+  "decision": "V1 is retained only as implementation-validation evidence. Freeze a V2 successor that inherits the exact V1 actions, plant paths, variants, gates, and causal channels without outcome-informed changes, binds the finalized implementation, and execute its immutable official output exactly once.",
+  "authority": {
+    "official_dynamic_result": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}
