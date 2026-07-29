@@ -29,29 +29,23 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     )
 
     assert rebuilt == tracked
-    assert tracked["active_pointer"]["milestone_id"] == (
-        "POST-FABLE-MILESTONE-B-CLOSEOUT"
-    )
+    assert tracked["active_pointer"]["milestone_id"] == "CC02"
     assert tracked["active_pointer"] == {
-        "node_id": (
-            "verdict:post-fable-low-planar-static-v2-terminal-negative"
-        ),
-        "milestone_id": "POST-FABLE-MILESTONE-B-CLOSEOUT",
-        "status": "terminal_static_negative_no_temporal_or_successor",
-        "queue_status": (
-            "COMPLETE_TERMINAL_STATIC_NEGATIVE_NO_TRANSFER_AUTHORITY"
-        ),
+        "node_id": "checkpoint:cc02-canonical-dynamic-replay-active",
+        "milestone_id": "CC02",
+        "status": "contract_design_active_before_dynamic_execution",
+        "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
         "resume_action": (
-            "prepare_application_claim_from_existing_evidence_without_"
-            "bidirectional_transfer_claim"
+            "freeze_and_execute_exact_action_direct_target_and_diagnostic_"
+            "zoh_replay"
         ),
-        "resume_authorized": False,
+        "resume_authorized": True,
         "heldout_open_count": 1,
         "cumulative_manifest_read_count": 2,
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(101)
+        range(104)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -60,15 +54,14 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V03",
         "V04",
     ]
-    assert (
-        tracked["revision_timeline"][-1]["event_id"]
-        == "POST_FABLE_LOW_PLANAR_STATIC_V2_TERMINAL_NEGATIVE"
+    assert tracked["revision_timeline"][-1]["event_id"] == (
+        "CC02_CANONICAL_DYNAMIC_REPLAY_ACTIVATED"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:post-fable-low-planar-static-v2-terminal-negative"
+        "checkpoint:cc02-canonical-dynamic-replay-active"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
-    assert tracked["active_pointer"]["resume_authorized"] is False
+    assert tracked["active_pointer"]["resume_authorized"] is True
     closeout = next(
         row
         for row in tracked["nodes"]

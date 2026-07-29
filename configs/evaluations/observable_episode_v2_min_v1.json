@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.observable_episode_contract.v1",
+  "contract_id": "observable-episode-v2-min-20260728-v1",
+  "status": "frozen_before_dynamic_canonical_action_replay",
+  "proof_class": "causal_observation_contract_without_physical_or_transfer_authority",
+  "episode_schema_version": "sim2claw.observable_episode.v2-min",
+  "sample_contract": {
+    "action_width": 6,
+    "action_dtype": "little_endian_float64",
+    "required_channels": [
+      "host_monotonic_time",
+      "device_timestamp_by_camera",
+      "clock_mapping_status",
+      "command_requested",
+      "command_mapped",
+      "command_sent",
+      "command_applied_or_missing",
+      "command_applied_time_or_missing",
+      "measured_joint_state",
+      "estimated_link_poses",
+      "object_state_board_se2",
+      "object_state_covariance",
+      "object_observation_available",
+      "contact_state_or_probability",
+      "first_object_motion_event",
+      "task_outcome"
+    ],
+    "missingness_policy": "explicit_null_or_unavailable_only",
+    "timestamp_policy": "host_strictly_increasing_device_and_applied_nondecreasing_when_available",
+    "object_frame": "canonical_board_plane_se2",
+    "object_covariance": "finite_symmetric_positive_semidefinite_3x3"
+  },
+  "channel_ownership": {
+    "physical_object_and_outcome": "fixed_c922_rgb",
+    "physical_joint_and_command": "reviewed_gateway_record",
+    "simulator_object_contact_and_link": "canonical_cpu_fp64_mujoco",
+    "wrist_depth_required": false
+  },
+  "action_integrity": {
+    "requested_rows_bound_by_sha256": true,
+    "mapped_rows_bound_when_available": true,
+    "sent_rows_bound_when_available": true,
+    "applied_rows_bound_when_available": true,
+    "interpolation_to_authority": false,
+    "retiming_to_authority": false
+  },
+  "first_divergence_precedence": [
+    "requested_action",
+    "applied_action",
+    "joint_state",
+    "link_pose",
+    "contact_state",
+    "object_position",
+    "object_yaw",
+    "task_outcome"
+  ],
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "task_attempt": false,
+    "dynamic_simulation_execution": false,
+    "mapping_approval": false,
+    "transfer_claim": false
+  }
+}

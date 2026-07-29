@@ -1,0 +1,43 @@
+{
+  "schema_version": "sim2claw.observable_episode_closeout.v1",
+  "decision_id": "observable-episode-v2-min-20260728-closeout-v1",
+  "status": "observable_episode_v2_min_accepted",
+  "proof_class": "tested_causal_episode_contract_and_adapters_without_dynamic_or_physical_execution",
+  "contract": {
+    "path": "configs/evaluations/observable_episode_v2_min_v1.json",
+    "sha256": "66bb7f0c653e973e68efa247d113a5f79730b0c9063ad5ec3998c3dd62f114fe"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_episode.py",
+    "sha256": "d280d20d5ba847fe8ae713c63800f54e3b043a2b1d561202f99eb813550c1f29"
+  },
+  "tests": {
+    "path": "tests/test_observable_episode.py",
+    "sha256": "bee55cad7c0e02788e888e2591ced775d04f21be202852a67d6a861f0b00c435",
+    "focused_result": "9 passed",
+    "bounded_regression_result": "14 passed",
+    "campaign_graph_result": "2 passed"
+  },
+  "accepted_capabilities": [
+    "strict exact requested mapped sent and applied action row hashing",
+    "strict host device and applied timestamp monotonicity",
+    "joint and link pose observations",
+    "canonical board-plane object se2 and positive-semidefinite covariance",
+    "contact first-motion and final-outcome events",
+    "explicit physical-source missingness",
+    "deterministic simulator and physical-source adapters",
+    "causal first-divergence extraction"
+  ],
+  "claim_boundary": "This accepts the episode contract and deterministic adapters only. It does not report a canonical dynamic replay, approve the physical/model mapping, open hardware, count a task attempt, or support a transfer claim.",
+  "authority": {
+    "dynamic_simulation_execution": false,
+    "mapping_approval": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "task_attempt": false,
+    "transfer_claim": false
+  },
+  "next_gate": "freeze and execute CC02 canonical CPU/fp64 direct-target plus 0.11-second ZOH replay with ObservableEpisode.v2-min outputs"
+}

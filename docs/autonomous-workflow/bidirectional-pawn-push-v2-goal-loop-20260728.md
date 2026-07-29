@@ -92,15 +92,19 @@ Confirmed:
   closeout decision SHA-256
   `ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929`
   preserves false dynamic, mapping, and physical authority.
-- CC01 in the successor queue is the sole active card.
+- CC01 is complete. `ObservableEpisode.v2-min` closeout SHA-256
+  `fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178`
+  accepts strict causal serialization and adapters without dynamic or
+  physical authority.
+- CC02 in the successor queue is the sole active card.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
 
 Recommended default:
 
-- Implement the minimum object/contact episode contract and replay only the
-  calibrated-range v2-admitted exact actions.
+- Replay only the calibrated-range v2-admitted exact actions through the
+  accepted object/contact episode contract.
 - Implement only the gauge-fixed calibration-graph factors required to
   approve or reject the current physical/model mapping.
 - Fit only the simulation mechanism identified by first divergence, preserving
@@ -137,17 +141,17 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card:
-Completed:
-Evidence:
+Active card: CC02 canonical CPU/fp64 direct-target plus 0.11 s ZOH replay.
+Completed: CC00, CC00A, CC01.
+Evidence: V2 static receipt c68599e9...; V2 closeout ced92042...; ObservableEpisode closeout fe586670....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count:
 Physical task attempts:
-Physical/camera/torque state:
-Remaining:
-Blockers:
-Next step:
+Physical/camera/torque state: closed/no motion; latest recorded torque state false.
+Remaining: CC02 through CC15.
+Blockers: dynamic consequence and physical/model mapping remain unapproved.
+Next step: freeze and execute CC02 with one ObservableEpisode per exact action and plant path.
 ```
 
 ## Physical Authority Boundaries

@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC01_OBSERVABLE_EPISODE_MINIMUM`
+Status: `ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY`
 
 Created: `2026-07-28`
 
@@ -177,8 +177,8 @@ Requirements:
 |---|---|---|---|---|
 | CC00 | `DONE` | Preserve the terminal predecessor campaign and bind the canonical hard cutover, accepted registration, and rejected legacy readiness audit. | All cited receipts resolve; old denominators remain `0/0`, task attempts `0/10`; no legacy action is promoted. | Any hash/provenance mismatch reopens CC00 before successor execution. |
 | CC00A | `DONE` | Reconcile the concurrent seeded-static v1 defect and finish the calibrated-range v2 rerun before using any action hash downstream. | V1 is explicitly closed as non-authoritative; v2 contract/code hashes predate its one run; calibrated model and gateway ranges are both named; every selected row has nonnegative model-limit and gateway margin; focused tests, workflow audit, receipt, reviewer decision, graph, queue, commit, and push agree. | A v2 reject remains a static negative and routes to one evidence-backed compiler/model correction. It never silently restores v1 or opens dynamics/hardware. |
-| CC01 | `IN_PROGRESS` | Implement `ObservableEpisode.v2-min` plus deterministic simulator and physical-source adapters without opening hardware. | Schema validates exact actions, monotonic timestamps, joint/link state, board-plane object SE(2)+covariance, contact/motion events, task outcome, and explicit missingness; synthetic fixtures prove serialization and first-divergence extraction. | Do not add a learned residual, generic data lake, or broad editor. Missing physical timing is represented, not guessed. |
-| CC02 | `PENDING` | Replay every v2-admitted current-anchor action in canonical CPU/fp64 MuJoCo and emit `ObservableEpisode.v2-min` traces. | Requested/applied action hashes remain exact; at least two distinct cases per direction report link, contact, object trajectory, exclusions, and outcome under direct-target and the frozen timing-stress plant; `2/2` per direction pass the unchanged task and robustness gates before case freeze. | If fewer than `2/2` pass in either direction, freeze first-divergence receipts. Change one prospectively declared simulation mechanism at a time, rerun untouched validation/held-out cases, and retain the old result. Do not resume unbounded action-family enumeration. |
+| CC01 | `DONE` | Implement `ObservableEpisode.v2-min` plus deterministic simulator and physical-source adapters without opening hardware. | Schema validates exact actions, monotonic timestamps, joint/link state, board-plane object SE(2)+covariance, contact/motion events, task outcome, and explicit missingness; synthetic fixtures prove serialization and first-divergence extraction. | Accepted closeout `fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178`; no dynamic, mapping, or physical authority. |
+| CC02 | `IN_PROGRESS` | Replay every v2-admitted current-anchor action in canonical CPU/fp64 MuJoCo and emit `ObservableEpisode.v2-min` traces. | Requested/applied action hashes remain exact; at least two distinct cases per direction report link, contact, object trajectory, exclusions, and outcome under direct-target and the frozen timing-stress plant; `2/2` per direction pass the unchanged task and robustness gates before case freeze. | If fewer than `2/2` pass in either direction, freeze first-divergence receipts. Change one prospectively declared simulation mechanism at a time, rerun untouched validation/held-out cases, and retain the old result. Do not resume unbounded action-family enumeration. |
 | CC03 | `PENDING` | Implement the minimum gauge-fixed `CalibrationGraph.v1` required to approve or reject the current physical/model mapping. | Shared variables cover fixed camera/board, robot-to-board rigid transform, physical-degree-to-MuJoCo sign/zero/scale, and declared jaw reference. Factors reuse accepted board/endpoint data, fixed-base evidence, one-joint sweeps, exact encoder holds, and an untouched composite held-out. Receipt reports factor residuals, Jacobian rank/spectrum, correlations, bounds, condition, and held-out result. | Keep the accepted camera/board solution fixed unless a factor falsifies it. Add z-buffered body masks only if observability requires them. No broad graph rewrite. |
 | CC04 | `PENDING` | Approve the mapping and freeze evaluator v2 plus at least two feasible distinct cases per direction. | `physical_model_mapping_approved:true`; canonical registration remains admitted; dynamic CC02 cases pass; evaluator, object tracker, camera thresholds, clocks/missingness, exclusions, mapping, scene, setup, task hashes, one-attempt rule, and maximum-ten ledger freeze prospectively. | Mapping reject routes back to one discriminating calibration factor/probe. Dynamic reject routes to one mechanism-specific simulator intervention. No physical packet. |
 | CC05 | `PENDING` | Execute one admitted REAL->SIM case: physical task and object consequence first, then byte-identical replay in simulation. | C922-enclosed physical success; requested=mapped=sent identity; torque-off cleanup; exact simulator replay with no clipping/retiming/repair/state forcing; simulator outcome passes; full first-divergence trace includes links, contact, pawn state, and outcome. | A failure stays in the REAL->SIM denominator. If links agree but pawn response diverges, activate CC07; otherwise diagnose the earliest upstream channel before another case. |
@@ -226,11 +226,17 @@ Current state:
 
 - CC00 is complete.
 - CC00A is complete.
-- CC01 is the only active card.
+- CC01 is complete.
+- CC02 is the only active card.
 - The v1 seeded-action apparent pass is quarantined.
 - The calibrated-range v2 static run passed `2/2` actions per direction with
   the exact hashes listed above.
 - V2 receipt `c68599e9...` and closeout decision `ced92042...` are bound.
+- `ObservableEpisode.v2-min` is accepted by closeout
+  `fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178`.
+  Requested, mapped, sent, and applied rows are independently hash-bound;
+  physical-source missingness and causal first-divergence extraction are
+  tested.
 - Dynamic simulation has not executed for the v2-admitted action set.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
@@ -245,11 +251,12 @@ Completed:
 - Fresh current-anchor v1 static compilation, followed by a fail-closed
   calibrated-range defect finding.
 - Calibrated-range v2 static freeze and pass at `fc23364`.
+- Strict causal episode contract, simulator adapter, physical-source adapter,
+  serialization, immutability, and first-divergence tests.
 
 Blockers:
 
 - No approved physical/model mapping.
-- No time-indexed object/contact episode contract.
 - No dynamic consequence pass for a v2-admitted action set.
 
 ## Time-bounded physical authorization
@@ -272,5 +279,6 @@ This authorization:
 
 Next step:
 
-- Implement `ObservableEpisode.v2-min`, then replay only the v2-admitted
-  actions in simulation.
+- Freeze the CC02 direct-target plus diagnostic `0.11 s` ZOH contract, then
+  replay only the four v2-admitted actions and emit the accepted causal
+  episodes.

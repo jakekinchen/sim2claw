@@ -1212,6 +1212,52 @@
         "proof_class": "paused_unexecuted_static_draft_with_canonical_semantics_and_raw_grid_adapter"
       }
     },
+    "causal_closure_successor_queue": {
+      "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
+      "sha256": "e661e6208a1dca01095397d2495034115dffca7159f17e62abaa4385126b5e37",
+      "proof_class": "active_causal_closure_campaign_control_state"
+    },
+    "canonical_seeded_static_v2_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/receipt.json",
+      "sha256": "c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977",
+      "proof_class": "cpu_fp64_canonical_current_anchor_seeded_calibrated_range_static_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_seeded_action_static_receipt.v2",
+        "status": "canonical_seeded_action_static_v2_pass",
+        "proof_class": "cpu_fp64_canonical_current_anchor_seeded_calibrated_range_static_action_freeze",
+        "passed": true,
+        "mapping_calibration_approved": false
+      }
+    },
+    "canonical_seeded_static_v2_closeout": {
+      "path": "configs/decisions/canonical_seeded_action_static_v2_closeout.json",
+      "sha256": "ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929",
+      "proof_class": "accepted_static_action_freeze_without_dynamic_mapping_or_physical_authority",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_seeded_action_static_closeout.v2",
+        "status": "accepted_static_action_freeze_dynamic_replay_next"
+      }
+    },
+    "observable_episode_v2_min_contract": {
+      "path": "configs/evaluations/observable_episode_v2_min_v1.json",
+      "sha256": "66bb7f0c653e973e68efa247d113a5f79730b0c9063ad5ec3998c3dd62f114fe",
+      "proof_class": "causal_observation_contract_without_physical_or_transfer_authority",
+      "payload_contract": {
+        "schema_version": "sim2claw.observable_episode_contract.v1",
+        "status": "frozen_before_dynamic_canonical_action_replay",
+        "proof_class": "causal_observation_contract_without_physical_or_transfer_authority"
+      }
+    },
+    "observable_episode_v2_min_closeout": {
+      "path": "configs/decisions/observable_episode_v2_min_closeout.json",
+      "sha256": "fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178",
+      "proof_class": "tested_causal_episode_contract_and_adapters_without_dynamic_or_physical_execution",
+      "payload_contract": {
+        "schema_version": "sim2claw.observable_episode_closeout.v1",
+        "status": "observable_episode_v2_min_accepted",
+        "proof_class": "tested_causal_episode_contract_and_adapters_without_dynamic_or_physical_execution"
+      }
+    },
     "simulator_candidate": {
       "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
       "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
@@ -3496,6 +3542,62 @@
       }
     },
     {
+      "id": "verdict:canonical-seeded-static-v2-pass",
+      "type": "evaluator_verdict",
+      "label": "Canonical current-anchor calibrated-range static V2 pass",
+      "status": "static_action_freeze_pass_two_families_per_direction",
+      "source_binding": "canonical_seeded_static_v2_closeout",
+      "evaluator_identity": "f79ad5dc65895affe13796199bd5ab682c12acf80c0134a995fdeb95ba2fef2c",
+      "data": {
+        "receipt_source_binding": "canonical_seeded_static_v2_receipt",
+        "selected_action_count": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "row_zero_exact_live_anchor": true,
+        "minimum_model_joint_margin_rad": 0.001829670515161086,
+        "mapping_calibration_approved": false,
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:observable-episode-v2-min-accepted",
+      "type": "checkpoint",
+      "label": "ObservableEpisode.v2-min causal contract accepted",
+      "status": "cc01_complete_without_dynamic_or_physical_authority",
+      "source_binding": "observable_episode_v2_min_closeout",
+      "data": {
+        "contract_source_binding": "observable_episode_v2_min_contract",
+        "requested_mapped_sent_applied_rows_hash_bound": true,
+        "explicit_physical_missingness": true,
+        "first_divergence_extraction_tested": true,
+        "dynamic_replay_executed": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:cc02-canonical-dynamic-replay-active",
+      "type": "checkpoint",
+      "label": "CC02 canonical dynamic consequence replay active",
+      "status": "contract_design_active_before_dynamic_execution",
+      "source_binding": "causal_closure_successor_queue",
+      "data": {
+        "canonical_action_count": 4,
+        "required_families_per_direction": 2,
+        "baseline_plant": "canonical_cpu_fp64_mujoco_direct_target",
+        "challenger_plant": "diagnostic_0.11_second_zoh",
+        "observable_episode_required": true,
+        "mapping_calibration_approved": false,
+        "camera_authorized": false,
+        "gateway_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -4836,6 +4938,37 @@
       }
     },
     {
+      "source": "verdict:canonical-seeded-static-v2-pass",
+      "type": "evaluated-on",
+      "target": "context:canonical-board-orientation",
+      "metadata": {
+        "selected_action_count": 4,
+        "real_to_sim_lanes": 2,
+        "sim_to_real_lanes": 2,
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:observable-episode-v2-min-accepted",
+      "type": "generated-from",
+      "target": "verdict:canonical-seeded-static-v2-pass",
+      "metadata": {
+        "scope": "causal_observation_contract_only",
+        "dynamic_replay_executed": false,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:cc02-canonical-dynamic-replay-active",
+      "type": "generated-from",
+      "target": "checkpoint:observable-episode-v2-min-accepted",
+      "metadata": {
+        "contract_freeze_required_before_execution": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -5789,15 +5922,42 @@
       "node_ids_added": [
         "verdict:post-fable-low-planar-static-v2-terminal-negative"
       ]
+    },
+    {
+      "revision": 101,
+      "event_id": "CANONICAL_SEEDED_STATIC_V2_ACCEPTED",
+      "status": "static_action_freeze_pass_two_families_per_direction",
+      "source_binding": "canonical_seeded_static_v2_closeout",
+      "node_ids_added": [
+        "verdict:canonical-seeded-static-v2-pass"
+      ]
+    },
+    {
+      "revision": 102,
+      "event_id": "OBSERVABLE_EPISODE_V2_MIN_ACCEPTED",
+      "status": "cc01_complete_without_dynamic_or_physical_authority",
+      "source_binding": "observable_episode_v2_min_closeout",
+      "node_ids_added": [
+        "checkpoint:observable-episode-v2-min-accepted"
+      ]
+    },
+    {
+      "revision": 103,
+      "event_id": "CC02_CANONICAL_DYNAMIC_REPLAY_ACTIVATED",
+      "status": "contract_design_active_before_dynamic_execution",
+      "source_binding": "causal_closure_successor_queue",
+      "node_ids_added": [
+        "checkpoint:cc02-canonical-dynamic-replay-active"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:post-fable-low-planar-static-v2-terminal-negative",
-    "milestone_id": "POST-FABLE-MILESTONE-B-CLOSEOUT",
-    "status": "terminal_static_negative_no_temporal_or_successor",
-    "queue_status": "COMPLETE_TERMINAL_STATIC_NEGATIVE_NO_TRANSFER_AUTHORITY",
-    "resume_action": "prepare_application_claim_from_existing_evidence_without_bidirectional_transfer_claim",
-    "resume_authorized": false,
+    "node_id": "checkpoint:cc02-canonical-dynamic-replay-active",
+    "milestone_id": "CC02",
+    "status": "contract_design_active_before_dynamic_execution",
+    "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
+    "resume_action": "freeze_and_execute_exact_action_direct_target_and_diagnostic_zoh_replay",
+    "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,
     "counted_task_attempts": 0
@@ -5892,8 +6052,8 @@
   },
   "canonical_transfer_campaign": {
     "campaign_id": "canonical-transfer-20260728-v1",
-    "status": "v1_static_defect_closed_v2_calibrated_range_contract_frozen",
-    "active_milestone": "HC-R06",
+    "status": "v2_static_pass_observable_episode_accepted_cc02_active",
+    "active_milestone": "CC02",
     "contract": "configs/evaluations/canonical_transfer_readiness_v1.json",
     "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json",
     "receipt_sha256": "edc8267472c346dde7743f0f7cd8a85bb66fe512aa51f319bea999277c38cdb1",
@@ -5911,6 +6071,14 @@
     "v1_defect": "live_elbow_seed_outside_stock_model_range_by_0.04612311967611782_rad",
     "v2_static_contract": "configs/evaluations/canonical_seeded_action_static_v2.json",
     "v2_static_contract_sha256": "f79ad5dc65895affe13796199bd5ab682c12acf80c0134a995fdeb95ba2fef2c",
+    "v2_static_receipt_sha256": "c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977",
+    "v2_static_closeout_sha256": "ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929",
+    "v2_static_direction_counts": {
+      "REAL_TO_SIM": 2,
+      "SIM_TO_REAL": 2
+    },
+    "observable_episode_contract": "configs/evaluations/observable_episode_v2_min_v1.json",
+    "observable_episode_closeout_sha256": "fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178",
     "calibrated_model_ranges_required": true,
     "row_zero_exact_live_anchor_required": true,
     "minimum_families_per_direction": 2,
@@ -5918,6 +6086,6 @@
     "gateway_or_serial_authority": false,
     "physical_packet_authorized": false,
     "task_attempts": 0,
-    "next_action": "execute_canonical_seeded_static_v2_once"
+    "next_action": "freeze_and_execute_cc02_canonical_dynamic_replay"
   }
 }

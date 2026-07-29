@@ -3,12 +3,12 @@
     "counted_task_attempts": 0,
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
-    "milestone_id": "POST-FABLE-MILESTONE-B-CLOSEOUT",
-    "node_id": "verdict:post-fable-low-planar-static-v2-terminal-negative",
-    "queue_status": "COMPLETE_TERMINAL_STATIC_NEGATIVE_NO_TRANSFER_AUTHORITY",
-    "resume_action": "prepare_application_claim_from_existing_evidence_without_bidirectional_transfer_claim",
-    "resume_authorized": false,
-    "status": "terminal_static_negative_no_temporal_or_successor"
+    "milestone_id": "CC02",
+    "node_id": "checkpoint:cc02-canonical-dynamic-replay-active",
+    "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
+    "resume_action": "freeze_and_execute_exact_action_direct_target_and_diagnostic_zoh_replay",
+    "resume_authorized": true,
+    "status": "contract_design_active_before_dynamic_execution"
   },
   "authority": {
     "camera_open": false,
@@ -21,7 +21,7 @@
   },
   "campaign_id": "bidirectional_pawn_push_v2",
   "canonical_transfer_campaign": {
-    "active_milestone": "HC-R06",
+    "active_milestone": "CC02",
     "blockers": [
       "physical_model_mapping_approved",
       "sim_to_real_start_matches_live_anchor",
@@ -34,7 +34,9 @@
     "legacy_candidates_are_diagnostics_only": true,
     "live_anchor_source": "fresh_configuration_free_physical_gateway_preflight",
     "minimum_families_per_direction": 2,
-    "next_action": "execute_canonical_seeded_static_v2_once",
+    "next_action": "freeze_and_execute_cc02_canonical_dynamic_replay",
+    "observable_episode_closeout_sha256": "fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178",
+    "observable_episode_contract": "configs/evaluations/observable_episode_v2_min_v1.json",
     "physical_authority": false,
     "physical_packet_authorized": false,
     "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json",
@@ -42,13 +44,19 @@
     "row_zero_exact_live_anchor_required": true,
     "static_contract": "configs/evaluations/canonical_seeded_action_static_v1.json",
     "static_contract_sha256": "6740b72ee1bee9e6357e5810a6b5463492a27779843692d9ef2ab8f873da67e4",
-    "status": "v1_static_defect_closed_v2_calibrated_range_contract_frozen",
+    "status": "v2_static_pass_observable_episode_accepted_cc02_active",
     "task_attempts": 0,
     "v1_defect": "live_elbow_seed_outside_stock_model_range_by_0.04612311967611782_rad",
     "v1_static_actions_admitted": false,
     "v1_static_receipt_sha256": "30ea3327a1f33fc1fd07ff53e43e735f572c67015c431452f966d7d9a0c54b45",
+    "v2_static_closeout_sha256": "ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929",
     "v2_static_contract": "configs/evaluations/canonical_seeded_action_static_v2.json",
-    "v2_static_contract_sha256": "f79ad5dc65895affe13796199bd5ab682c12acf80c0134a995fdeb95ba2fef2c"
+    "v2_static_contract_sha256": "f79ad5dc65895affe13796199bd5ab682c12acf80c0134a995fdeb95ba2fef2c",
+    "v2_static_direction_counts": {
+      "REAL_TO_SIM": 2,
+      "SIM_TO_REAL": 2
+    },
+    "v2_static_receipt_sha256": "c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977"
   },
   "claim_boundary": "This graph preserves declared lineage and influence scope. Connectivity, similarity, and chronology are not causal identification, simulator promotion, training admission, policy selection, or physical-transfer evidence.",
   "configuration_context": {
@@ -70,27 +78,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 126,
+    "edges": 129,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 25,
+      "evaluated-on": 26,
       "fitted-on": 4,
-      "generated-from": 81,
+      "generated-from": 83,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 120,
+    "nodes": 123,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 75,
+      "checkpoint": 77,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 19,
+      "evaluator_verdict": 20,
       "evidence": 5,
       "intervention": 1,
       "mechanism": 3,
@@ -217,6 +225,25 @@
       },
       "source": "certificate:bidirectional-transfer",
       "target": "checkpoint:v04-owner-integration-barrier",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "contract_freeze_required_before_execution": true,
+        "physical_motion": false
+      },
+      "source": "checkpoint:cc02-canonical-dynamic-replay-active",
+      "target": "checkpoint:observable-episode-v2-min-accepted",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "scope": "causal_observation_contract_only"
+      },
+      "source": "checkpoint:observable-episode-v2-min-accepted",
+      "target": "verdict:canonical-seeded-static-v2-pass",
       "type": "generated-from"
     },
     {
@@ -1290,6 +1317,18 @@
     },
     {
       "metadata": {
+        "dynamic_replay_executed": false,
+        "physical_motion": false,
+        "real_to_sim_lanes": 2,
+        "selected_action_count": 4,
+        "sim_to_real_lanes": 2
+      },
+      "source": "verdict:canonical-seeded-static-v2-pass",
+      "target": "context:canonical-board-orientation",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "dynamic_prerequisite_passed": false,
         "dynamic_replay_executed": false,
         "physical_motion": false,
@@ -1545,7 +1584,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "83a98eab94460711cbbee735c1bb7e5d0e609eec2965bd92a06a29575698b89f",
+  "graph_digest": "218fcd04d3db7022fd6df0f3a7b6c8988aa52df72bfcd0f136faa6d186a51c00",
   "node_types": [
     "workcell",
     "session",
@@ -1632,6 +1671,61 @@
       },
       "status": "unissued_closed",
       "type": "twin_worthiness_certificate"
+    },
+    {
+      "data": {
+        "baseline_plant": "canonical_cpu_fp64_mujoco_direct_target",
+        "camera_authorized": false,
+        "canonical_action_count": 4,
+        "challenger_plant": "diagnostic_0.11_second_zoh",
+        "gateway_authorized": false,
+        "mapping_calibration_approved": false,
+        "observable_episode_required": true,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "required_families_per_direction": 2,
+        "source_binding_id": "causal_closure_successor_queue"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:cc02-canonical-dynamic-replay-active",
+      "label": "CC02 canonical dynamic consequence replay active",
+      "proof_class": "active_causal_closure_campaign_control_state",
+      "source": {
+        "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
+        "proof_class": "active_causal_closure_campaign_control_state",
+        "sha256": "e661e6208a1dca01095397d2495034115dffca7159f17e62abaa4385126b5e37"
+      },
+      "status": "contract_design_active_before_dynamic_execution",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "contract_source_binding": "observable_episode_v2_min_contract",
+        "dynamic_replay_executed": false,
+        "explicit_physical_missingness": true,
+        "first_divergence_extraction_tested": true,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "requested_mapped_sent_applied_rows_hash_bound": true,
+        "source_binding_id": "observable_episode_v2_min_closeout"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:observable-episode-v2-min-accepted",
+      "label": "ObservableEpisode.v2-min causal contract accepted",
+      "proof_class": "tested_causal_episode_contract_and_adapters_without_dynamic_or_physical_execution",
+      "source": {
+        "path": "configs/decisions/observable_episode_v2_min_closeout.json",
+        "payload_contract": {
+          "proof_class": "tested_causal_episode_contract_and_adapters_without_dynamic_or_physical_execution",
+          "schema_version": "sim2claw.observable_episode_closeout.v1",
+          "status": "observable_episode_v2_min_accepted"
+        },
+        "proof_class": "tested_causal_episode_contract_and_adapters_without_dynamic_or_physical_execution",
+        "sha256": "fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178"
+      },
+      "status": "cc01_complete_without_dynamic_or_physical_authority",
+      "type": "checkpoint"
     },
     {
       "data": {
@@ -4584,6 +4678,36 @@
     },
     {
       "data": {
+        "dynamic_replay_executed": false,
+        "mapping_calibration_approved": false,
+        "minimum_model_joint_margin_rad": 0.001829670515161086,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "real_to_sim_lanes": 2,
+        "receipt_source_binding": "canonical_seeded_static_v2_receipt",
+        "row_zero_exact_live_anchor": true,
+        "selected_action_count": 4,
+        "sim_to_real_lanes": 2,
+        "source_binding_id": "canonical_seeded_static_v2_closeout"
+      },
+      "evaluator_identity": "f79ad5dc65895affe13796199bd5ab682c12acf80c0134a995fdeb95ba2fef2c",
+      "id": "verdict:canonical-seeded-static-v2-pass",
+      "label": "Canonical current-anchor calibrated-range static V2 pass",
+      "proof_class": "accepted_static_action_freeze_without_dynamic_mapping_or_physical_authority",
+      "source": {
+        "path": "configs/decisions/canonical_seeded_action_static_v2_closeout.json",
+        "payload_contract": {
+          "schema_version": "sim2claw.canonical_seeded_action_static_closeout.v2",
+          "status": "accepted_static_action_freeze_dynamic_replay_next"
+        },
+        "proof_class": "accepted_static_action_freeze_without_dynamic_mapping_or_physical_authority",
+        "sha256": "ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929"
+      },
+      "status": "static_action_freeze_pass_two_families_per_direction",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "camera_authorized": false,
         "dominant_failure": "multi_start_ik_residual_exceeded_gate",
         "dynamic_replay_executed": false,
@@ -6311,6 +6435,36 @@
       "source_binding": "post_fable_static_closeout_v2",
       "source_sha256": "473ebfec2fddcb7119a749aab3ebf3d0278226805062e4c48bdd2fc4de631d50",
       "status": "terminal_static_negative_no_temporal_or_successor"
+    },
+    {
+      "event_id": "CANONICAL_SEEDED_STATIC_V2_ACCEPTED",
+      "node_ids_added": [
+        "verdict:canonical-seeded-static-v2-pass"
+      ],
+      "revision": 101,
+      "source_binding": "canonical_seeded_static_v2_closeout",
+      "source_sha256": "ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929",
+      "status": "static_action_freeze_pass_two_families_per_direction"
+    },
+    {
+      "event_id": "OBSERVABLE_EPISODE_V2_MIN_ACCEPTED",
+      "node_ids_added": [
+        "checkpoint:observable-episode-v2-min-accepted"
+      ],
+      "revision": 102,
+      "source_binding": "observable_episode_v2_min_closeout",
+      "source_sha256": "fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178",
+      "status": "cc01_complete_without_dynamic_or_physical_authority"
+    },
+    {
+      "event_id": "CC02_CANONICAL_DYNAMIC_REPLAY_ACTIVATED",
+      "node_ids_added": [
+        "checkpoint:cc02-canonical-dynamic-replay-active"
+      ],
+      "revision": 103,
+      "source_binding": "causal_closure_successor_queue",
+      "source_sha256": "e661e6208a1dca01095397d2495034115dffca7159f17e62abaa4385126b5e37",
+      "status": "contract_design_active_before_dynamic_execution"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -6338,6 +6492,35 @@
       "sha256": "e638c538b276d78c4d9dd438a1902b23d5df52953e05a83024a3ae5c5bce2c3f"
     },
     {
+      "id": "canonical_seeded_static_v2_closeout",
+      "path": "configs/decisions/canonical_seeded_action_static_v2_closeout.json",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_seeded_action_static_closeout.v2",
+        "status": "accepted_static_action_freeze_dynamic_replay_next"
+      },
+      "proof_class": "accepted_static_action_freeze_without_dynamic_mapping_or_physical_authority",
+      "sha256": "ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929"
+    },
+    {
+      "id": "canonical_seeded_static_v2_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/receipt.json",
+      "payload_contract": {
+        "mapping_calibration_approved": false,
+        "passed": true,
+        "proof_class": "cpu_fp64_canonical_current_anchor_seeded_calibrated_range_static_action_freeze",
+        "schema_version": "sim2claw.canonical_seeded_action_static_receipt.v2",
+        "status": "canonical_seeded_action_static_v2_pass"
+      },
+      "proof_class": "cpu_fp64_canonical_current_anchor_seeded_calibrated_range_static_action_freeze",
+      "sha256": "c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977"
+    },
+    {
+      "id": "causal_closure_successor_queue",
+      "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
+      "proof_class": "active_causal_closure_campaign_control_state",
+      "sha256": "e661e6208a1dca01095397d2495034115dffca7159f17e62abaa4385126b5e37"
+    },
+    {
       "id": "current_task_scene_labels",
       "path": "configs/scenes/bidirectional_pawn_push_v2_current_task_scene_labels_v1.json",
       "payload_contract": {
@@ -6347,6 +6530,28 @@
       },
       "proof_class": "deterministic_scene_label_contract_only",
       "sha256": "187b91a51fe3a51adda64c7dd682025e2143edaae16ad3fdd1c1a9d9c43550ed"
+    },
+    {
+      "id": "observable_episode_v2_min_closeout",
+      "path": "configs/decisions/observable_episode_v2_min_closeout.json",
+      "payload_contract": {
+        "proof_class": "tested_causal_episode_contract_and_adapters_without_dynamic_or_physical_execution",
+        "schema_version": "sim2claw.observable_episode_closeout.v1",
+        "status": "observable_episode_v2_min_accepted"
+      },
+      "proof_class": "tested_causal_episode_contract_and_adapters_without_dynamic_or_physical_execution",
+      "sha256": "fe586670e539d9047acac3f84167883f5fc50a6fac39c98cf0e2b47b16c52178"
+    },
+    {
+      "id": "observable_episode_v2_min_contract",
+      "path": "configs/evaluations/observable_episode_v2_min_v1.json",
+      "payload_contract": {
+        "proof_class": "causal_observation_contract_without_physical_or_transfer_authority",
+        "schema_version": "sim2claw.observable_episode_contract.v1",
+        "status": "frozen_before_dynamic_canonical_action_replay"
+      },
+      "proof_class": "causal_observation_contract_without_physical_or_transfer_authority",
+      "sha256": "66bb7f0c653e973e68efa247d113a5f79730b0c9063ad5ec3998c3dd62f114fe"
     },
     {
       "id": "post_fable_low_planar_authorization_v2",

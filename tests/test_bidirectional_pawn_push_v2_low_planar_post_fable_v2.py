@@ -123,7 +123,7 @@ def test_ranking_is_static_only_and_optional_hedge_is_prospectively_zero() -> No
         assert authorization["authority"][key] is False
 
 
-def test_terminal_closeout_and_both_graph_pointers_fail_closed() -> None:
+def test_terminal_closeout_is_preserved_after_successor_activation() -> None:
     closeout = json.loads(CLOSEOUT.read_text(encoding="utf-8"))
     receipt = closeout["static_receipt"]
     assert _sha(ROOT / receipt["path"]) == receipt["sha256"]
@@ -136,8 +136,18 @@ def test_terminal_closeout_and_both_graph_pointers_fail_closed() -> None:
     assert closeout["receipt_field_clarification"]["actual_substitution_observed"] is False
     assert not any(closeout["authority"].values())
     for graph_path in (GRAPH_CONFIG, GRAPH):
-        pointer = json.loads(graph_path.read_text(encoding="utf-8"))[
-            "active_pointer"
-        ]
-        assert pointer["status"] == "terminal_static_negative_no_temporal_or_successor"
-        assert pointer["resume_authorized"] is False
+        graph = json.loads(graph_path.read_text(encoding="utf-8"))
+        pointer = graph["active_pointer"]
+        assert pointer["status"] == "contract_design_active_before_dynamic_execution"
+        assert pointer["milestone_id"] == "CC02"
+        assert pointer["resume_authorized"] is True
+        closeout_node = next(
+            node
+            for node in graph["nodes"]
+            if node["id"]
+            == "verdict:post-fable-low-planar-static-v2-terminal-negative"
+        )
+        assert closeout_node["status"] == (
+            "terminal_static_negative_no_temporal_or_successor"
+        )
+        assert closeout_node["data"]["physical_motion"] is False
