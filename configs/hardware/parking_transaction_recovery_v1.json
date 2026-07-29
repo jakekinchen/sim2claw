@@ -1,0 +1,150 @@
+{
+  "schema_version": "sim2claw.parking_transaction_preview.v1",
+  "contract_id": "parking-transaction-recovery-20260729-v1",
+  "status": "frozen_for_one_motion_free_cpu_fp64_preview",
+  "proof_class": "prospective_setup_recovery_transaction_excluded_from_task_evidence",
+  "inputs": {
+    "fable_rp01_review": {
+      "path": "docs/advisory/fable-rp00-result-and-rp01-review-20260729.md",
+      "sha256": "249acecfd5e90ead7aa05156e1068db7f2fcb1d49f88ad3f162cd9a979806c90"
+    },
+    "rp00_closeout": {
+      "path": "configs/decisions/parking_target_certificate_v1_closeout.json",
+      "sha256": "5364b2f808474c53aac66106958da0c5c8bdab69817c5dbeaf8d19858e51ced0"
+    },
+    "rp00_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-parking-target-certificate-v1/receipt.json",
+      "sha256": "e1bc7d8e1bbeeaa4b1e08f26d7e609e2714c33800d22899bd876f7298c75db7b"
+    },
+    "fresh_preflight": {
+      "path": "configs/decisions/parking_recovery_fresh_preflight_v1.json",
+      "sha256": "ed5d32b88483b14ffb98271662f9b587c8e10b9607df12b98d525a558a7f56de"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "registration_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    },
+    "implementation": {
+      "path": "src/sim2claw/parking_transaction_preview.py",
+      "sha256": "7725cb904f88ab99da45cb36d8de0a12d826c09bfdc922f0265901729d945a09"
+    }
+  },
+  "fresh_anchor": {
+    "source": "configuration_free_follower_only_torque_off_preflight",
+    "expected_degrees_percent": [
+      5.802197802197802,
+      -85.01098901098901,
+      99.47252747252747,
+      -15.164835164835164,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "maximum_absolute_rebase_degrees": 1.0,
+    "follower_port": "/dev/cu.usbmodem5B3D0406411",
+    "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+    "torque_off_required": true,
+    "device_configuration_rewrite_forbidden": true,
+    "expected_inventory": {
+      "moving_chain_geoms": 28,
+      "environment_geoms": {
+        "table": 5,
+        "board": 1,
+        "pawns": 224
+      }
+    }
+  },
+  "setup": {
+    "mode": "no_op_current_anchor",
+    "setup_action_rows": 0,
+    "moving_chain_root_body": "left_upper_arm",
+    "minimum_dynamic_clearance_m": 0.12,
+    "dynamic_clearance_targets": [
+      "table",
+      "board",
+      "pawns"
+    ],
+    "all_robot_contact_free_required": true,
+    "fixed_base_and_shoulder_excluded_from_120mm_distance_gate": true,
+    "fixed_base_and_shoulder_remain_in_contact_gate": true
+  },
+  "parking_control_law": {
+    "joint_name": "elbow_flex",
+    "joint_index": 2,
+    "target_degrees": 91.0,
+    "maximum_request_step_degrees": 5.0,
+    "maximum_iterations": 12,
+    "wait_after_request_seconds": 2.0,
+    "request_formula": "max(91.0, previous_read_degrees - 5.0)",
+    "primary_success_maximum_degrees": 92.0,
+    "marginal_success_maximum_degrees": 93.0,
+    "stall_minimum_progress_degrees": 0.3,
+    "stall_consecutive_iterations": 2,
+    "pure_frozen_row_tensor": false,
+    "one_execution_no_retry_without_new_preregistration": true
+  },
+  "telemetry": {
+    "sample_hz": 5.0,
+    "all_six_servos_required": true,
+    "channels": [
+      "goal_position_echo",
+      "torque_enable",
+      "present_position",
+      "present_current",
+      "present_load",
+      "present_temperature",
+      "hardware_error_status"
+    ],
+    "hold_seconds": 15.0,
+    "maximum_elbow_hold_drift_degrees": 0.5
+  },
+  "cameras": {
+    "required": [
+      "c922",
+      "pi"
+    ],
+    "optional": [
+      "d405"
+    ],
+    "enclose_setup_through_cleanup": true
+  },
+  "cleanup": {
+    "disable_torque_required": true,
+    "configuration_free_read_after_seconds": 60.0,
+    "post_torque_off_sag_over_1deg_is_informational": true,
+    "return_route": false,
+    "parked_posture_becomes_new_anchor": true,
+    "later_task_start_must_reverify_and_trim": true,
+    "final_above_93deg_is_terminal": true
+  },
+  "static_preview": {
+    "engine": "mujoco",
+    "numeric_mode": "cpu_float64",
+    "elbow_interval_degrees": [
+      88.0,
+      99.6
+    ],
+    "sample_increment_degrees": 0.1,
+    "expected_sample_count": 117,
+    "minimum_dynamic_clearance_m": 0.12,
+    "no_new_robot_contact_required": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-parking-transaction-preview-v1",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "torque": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "One motion-free CPU/fp64 safety preview of a read-conditioned elbow parking transaction. The fixed base and shoulder remain subject to the all-robot contact gate but are excluded from the 120 mm moving-chain clearance gate because they do not move during this transaction. The preview cannot open cameras, gateway, serial, torque, physical motion, pawn contact, task attempts, mapping approval, simulator promotion, policy-ranking prediction, or transfer."
+}

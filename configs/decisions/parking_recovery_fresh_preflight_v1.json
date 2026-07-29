@@ -1,0 +1,44 @@
+{
+  "schema_version": "sim2claw.parking_recovery_fresh_preflight.v1",
+  "decision_id": "parking-recovery-fresh-preflight-20260729-v1",
+  "observed_at": "timestamp_not_emitted_by_preflight_surface",
+  "proof_class": "configuration_free_follower_only_torque_off_read",
+  "source": "physical_excitation_follower_preflight",
+  "passed": true,
+  "control_source": "frozen_precompiled_follower_actions",
+  "real_leader_opened": false,
+  "follower_port": "/dev/cu.usbmodem5B3D0406411",
+  "follower_calibration_sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4",
+  "follower_start_degrees": [
+    5.802197802197802,
+    -85.01098901098901,
+    99.47252747252747,
+    -15.164835164835164,
+    -103.34065934065934,
+    2.375296912114014
+  ],
+  "follower_calibrated_minimum": [
+    -120.26373626373626,
+    -106.63736263736264,
+    -102.10989010989012,
+    -107.47252747252747,
+    -180.0,
+    0.0
+  ],
+  "follower_calibrated_maximum": [
+    120.26373626373626,
+    106.63736263736264,
+    102.10989010989012,
+    107.47252747252747,
+    180.0,
+    100.0
+  ],
+  "physical_follower_torque_enabled": false,
+  "device_configuration_rewritten": false,
+  "camera_opened": false,
+  "gateway_motion_opened": false,
+  "serial_write_performed": false,
+  "physical_motion": false,
+  "physical_task_attempt": false,
+  "claim_boundary": "Fresh read-only anchor and identity evidence for the RP01 freeze. This snapshot opened the reviewed follower gateway with motion disabled, observed torque off, rewrote no configuration, and performed no camera, motion, or task action."
+}

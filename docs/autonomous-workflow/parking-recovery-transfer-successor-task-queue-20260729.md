@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `ACTIVE_RP01_PARKING_TRANSACTION_FREEZE`
+Status: `ACTIVE_RP01_FROZEN_PENDING_SINGLE_PREVIEW`
 
 Created: `2026-07-29`
 
@@ -30,7 +30,7 @@ does not rewrite that result.
 | ID | Status | Required outcome | Acceptance gate | Stop / redirect |
 |---|---|---|---|---|
 | RP00 | `DONE_PASS` | Prospectively freeze and run one route-level parking-target certificate across elbow locks `{97,95,93,91,90,88} deg`. | Existing CC03K family universe, compiler, collision/contact/camera/gateway gates, and false physical authority remain unchanged. At least one distinct family per direction passes at a maximum viable angle and again at a passing target at least `2 deg` lower. Code, contract, tests, and advisory predate the single run. | Receipt `e1bc7d8e...` passes: `97/95 deg` reject, `93/91/90/88 deg` pass with `1` family per direction. Threshold `93 deg`; target `91 deg`. No motion or task attempt. |
-| RP01 | `IN_PROGRESS_FREEZE` | Freeze a high-clearance, contact-impossible elbow parking transaction to the RP00 target. | CPU preview clean; at most `5 deg` requested per step; read/verify each step; abort after two consecutive steps with less than `0.3 deg` progress; `10 s` hold drift below `0.5 deg`; torque-off cleanup; no task/pawn contact reachable. | Any unsafe preview or missing fresh anchor closes physical authority. |
+| RP01 | `FROZEN_PENDING_SINGLE_PREVIEW` | Freeze a high-clearance, contact-impossible elbow parking transaction to the RP00 target. | Fresh torque-off anchor bound; no-op setup; full `[88, 99.6] deg` corridor previewed every `0.1 deg`; moving chain stays at least `120 mm` from table, board, and pawns; all robot contacts remain absent; at most `5 deg` requested per step; read/verify each step; abort after two consecutive steps with less than `0.3 deg` progress; `15 s` hold drift below `0.5 deg`; torque-off cleanup; no task/pawn contact reachable. | Any unsafe preview or missing fresh anchor closes physical authority. |
 | RP02 | `PENDING` | Execute parking once under separately reopened physical authority. | Cameras enclose; reviewed gateway only; target reached; hold gate passes; exact receipt; torque off. One retry may be separately admitted only for monotonic-but-short progress. | Stall above the RP00 maximum viable angle is a terminal external hardware boundary. |
 | RP03 | `PENDING` | Freeze fresh task actions at the achieved lock. | Strict unchanged gates; fresh C922 scene admission; at least one distinct family per direction; exact bytes and evaluator freeze predate outcomes. | Zero eligible families ends the successor without a task attempt. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
@@ -52,10 +52,10 @@ does not rewrite that result.
 
 ## Current next step
 
-Freeze RP01 against a fresh torque-off read without moving the robot. The
-parking packet must preview collision-free and contact-impossible before any
-request to reopen physical authority. RP00 does not itself authorize cameras,
-gateway, serial, torque, or motion.
+Run the frozen RP01 motion-free CPU/fp64 preview exactly once and bind its
+immutable result. The current anchor is the setup posture, so setup action
+rows are exactly zero. No camera, gateway, serial, torque, motion, pawn
+contact, or task-attempt authority is open.
 
 ## RP00 immutable result
 
@@ -74,4 +74,32 @@ gateway, serial, torque, or motion.
 - Recommended parking target: `91 deg`, a passing `2 deg` margin.
 - Physical task ledgers remain REAL->SIM `0/0`, SIM->REAL `0/0`, task
   attempts `0/10`.
+- Physical authority remains false.
+
+## RP01 freeze
+
+- Fable independently returned `CONTINUE_RP01_FREEZE` after auditing RP00.
+- Fresh configuration-free follower read passed with torque off, no device
+  rewrite, follower
+  `/dev/cu.usbmodem5B3D0406411`, and calibration SHA-256
+  `192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4`.
+- Fresh elbow anchor: `99.47252747252747 deg`.
+- Target: `91 deg`; primary success at or below `92 deg`; marginal success at
+  or below `93 deg`; above `93 deg` terminal.
+- Frozen control law:
+  `request_i = max(91 deg, read_(i-1) - 5 deg)`, then wait `2 s` and reread.
+- Abort after two consecutive iterations below `0.3 deg` progress; maximum
+  twelve requests.
+- Setup is a no-op at the current anchor. The complete `[88, 99.6] deg`
+  corridor, sampled every `0.1 deg`, must prove at least `120 mm` moving-chain
+  clearance to table, board, and pawns plus zero robot contact.
+- Telemetry is `5 Hz` on all six servos; hold is `15 s` with at most
+  `0.5 deg` elbow drift.
+- C922 and Pi cameras enclose any later execution; D405 remains optional.
+- Cleanup disables torque and takes a configuration-free read after `60 s`;
+  there is no return route.
+- RP01 is setup/recovery evidence, not task evidence, and cannot change the
+  `0/10` task-attempt ledger.
+- Contract:
+  `configs/hardware/parking_transaction_recovery_v1.json`.
 - Physical authority remains false.
