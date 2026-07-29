@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_ELBOW_LOCKED_STATIC_V1_RUN`
+Status: `ACTIVE_CC03_ELBOW_LOCKED_STATIC_V2_RUN`
 
 Created: `2026-07-28`
 
@@ -709,6 +709,17 @@ Current state:
   reads no dynamic outcome, and changes only the IK active set so elbow flex
   must remain bitwise constant. Static simulation is its only execution
   authority.
+- V1 stopped before model loading, grid enumeration, or output creation
+  because its resolved V1 base retained a stale historical implementation
+  binding instead of applying the already-frozen V4 binding. Runner closeout
+  SHA-256 is
+  `83e46134ea45b121fce5a86674fdd305d15ac8954ff3b712a28597525c20a144`.
+  It contains no static result and cannot be interpreted as a family failure.
+- Wiring-only V2 is frozen at SHA-256
+  `8b1393209494b3b8f6a4630f5a1b7dd9e510178745e51a1e229f446b6b7858c6`.
+  It changes only resolved-contract implementation binding; live seed, elbow
+  lock, family universe, grid, gates, selection, model, outcome blindness, and
+  authority are unchanged.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -750,7 +761,7 @@ This authorization:
 
 Next step:
 
-- Run the frozen elbow-locked static successor exactly once. If at least two
+- Run the frozen elbow-locked static V2 successor exactly once. If at least two
   statically safe families per direction survive with bitwise-constant elbow,
   freeze their exact baseline/ZOH dynamic screen before opening dynamics.
   Otherwise preserve the terminal static result and select one bounded,

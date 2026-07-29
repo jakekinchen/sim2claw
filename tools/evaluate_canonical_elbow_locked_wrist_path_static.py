@@ -7,7 +7,7 @@ import argparse
 import json
 from pathlib import Path
 
-from sim2claw.canonical_elbow_locked_wrist_path_static import (
+from sim2claw.canonical_elbow_locked_wrist_path_static_v2 import (
     enumerate_and_freeze,
 )
 from sim2claw.paths import REPO_ROOT

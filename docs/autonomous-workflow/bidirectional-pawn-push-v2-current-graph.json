@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 4,
     "heldout_open_count": 4,
     "milestone_id": "CC03",
-    "node_id": "checkpoint:canonical-elbow-locked-wrist-path-static-v1-frozen",
-    "queue_status": "ACTIVE_CC03_ELBOW_LOCKED_STATIC_V1_RUN",
-    "resume_action": "run_elbow_locked_static_v1_once",
+    "node_id": "checkpoint:canonical-elbow-locked-wrist-path-static-v2-frozen",
+    "queue_status": "ACTIVE_CC03_ELBOW_LOCKED_STATIC_V2_RUN",
+    "resume_action": "run_elbow_locked_static_v2_once",
     "resume_authorized": true,
-    "status": "elbow_locked_static_successor_frozen"
+    "status": "elbow_locked_static_v2_successor_frozen"
   },
   "authority": {
     "camera_open": false,
@@ -95,14 +95,14 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 207,
+    "nodes": 209,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 132,
+      "checkpoint": 133,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 46,
+      "evaluator_verdict": 47,
       "evidence": 8,
       "intervention": 1,
       "mechanism": 3,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "5f66906d48b9236f951895297b223e656187a26487222ef940d6dfd17c0b47fb",
+  "graph_digest": "83efc63a605af12c318799641f84a5fbdd3d1ef33952867511e4e303938a699d",
   "node_types": [
     "workcell",
     "session",
@@ -2929,6 +2929,35 @@
         "sha256": "52b836d4df577258ef3f9549e44c2135bf6202a37ac989439302423a7f1084fa"
       },
       "status": "frozen_before_static_only_elbow_locked_enumeration",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "dynamic_simulation": false,
+        "family_universe": 48,
+        "implementation_source_binding": "canonical_elbow_locked_wrist_path_static_implementation_v2",
+        "locked_joint_name": "elbow_flex",
+        "maximum_grid_cells": 288,
+        "physical_task_attempts": 0,
+        "predecessor_closeout_source_binding": "canonical_elbow_locked_wrist_path_static_runner_closeout_v1",
+        "source_binding_id": "canonical_elbow_locked_wrist_path_static_contract_v2",
+        "wiring_only_change": true
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-elbow-locked-wrist-path-static-v2-frozen",
+      "label": "Wiring-only elbow-locked static V2 frozen",
+      "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_static_action_search",
+      "source": {
+        "path": "configs/evaluations/canonical_elbow_locked_wrist_path_static_v2.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_static_action_search",
+          "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v2",
+          "status": "frozen_after_v1_pre_model_failure_before_static_enumeration"
+        },
+        "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_static_action_search",
+        "sha256": "8b1393209494b3b8f6a4630f5a1b7dd9e510178745e51a1e229f446b6b7858c6"
+      },
+      "status": "frozen_after_v1_pre_model_failure_before_static_enumeration",
       "type": "checkpoint"
     },
     {
@@ -3741,7 +3770,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "aa67438eb303aaf7411c93f316cc2a4a4ec0a34080cc795d0525705494a51963"
+        "sha256": "877ce9dbc14a068dc17e11ee7bbf0b34a25ad2a2eb2ada6e1168a815931f8426"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -7236,6 +7265,32 @@
     },
     {
       "data": {
+        "grid_cells_opened": 0,
+        "model_loaded": false,
+        "output_created": false,
+        "physical_task_attempts": 0,
+        "source_binding_id": "canonical_elbow_locked_wrist_path_static_runner_closeout_v1",
+        "static_result_created": false
+      },
+      "evaluator_identity": "cf5d5261b0c8045b8509cd3694fc790d69fc44afe4d6fc5c9d3c80f99ca4b4d4",
+      "id": "verdict:canonical-elbow-locked-wrist-path-static-v1-pre-model-closeout",
+      "label": "Elbow-locked static V1 stops before model loading",
+      "proof_class": "deterministic_runner_failure_before_model_or_static_enumeration",
+      "source": {
+        "path": "configs/decisions/canonical_elbow_locked_wrist_path_static_v1_runner_closeout.json",
+        "payload_contract": {
+          "proof_class": "deterministic_runner_failure_before_model_or_static_enumeration",
+          "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_runner_closeout.v1",
+          "status": "terminal_pre_model_stale_inherited_implementation_binding_no_static_result"
+        },
+        "proof_class": "deterministic_runner_failure_before_model_or_static_enumeration",
+        "sha256": "83e46134ea45b121fce5a86674fdd305d15ac8954ff3b712a28597525c20a144"
+      },
+      "status": "terminal_pre_model_stale_inherited_implementation_binding_no_static_result",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "mapping_calibration_approved": false,
         "no_lift_pass_count": 1,
         "passing_outcomes": 0,
@@ -9341,7 +9396,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "aa67438eb303aaf7411c93f316cc2a4a4ec0a34080cc795d0525705494a51963",
+      "source_sha256": "877ce9dbc14a068dc17e11ee7bbf0b34a25ad2a2eb2ada6e1168a815931f8426",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -10183,6 +10238,26 @@
       "source_binding": "canonical_elbow_locked_wrist_path_static_contract_v1",
       "source_sha256": "52b836d4df577258ef3f9549e44c2135bf6202a37ac989439302423a7f1084fa",
       "status": "frozen_before_static_only_elbow_locked_enumeration"
+    },
+    {
+      "event_id": "CANONICAL_ELBOW_LOCKED_WRIST_PATH_STATIC_V1_PRE_MODEL_CLOSEOUT",
+      "node_ids_added": [
+        "verdict:canonical-elbow-locked-wrist-path-static-v1-pre-model-closeout"
+      ],
+      "revision": 188,
+      "source_binding": "canonical_elbow_locked_wrist_path_static_runner_closeout_v1",
+      "source_sha256": "83e46134ea45b121fce5a86674fdd305d15ac8954ff3b712a28597525c20a144",
+      "status": "terminal_pre_model_stale_inherited_implementation_binding_no_static_result"
+    },
+    {
+      "event_id": "CANONICAL_ELBOW_LOCKED_WRIST_PATH_STATIC_V2_FROZEN",
+      "node_ids_added": [
+        "checkpoint:canonical-elbow-locked-wrist-path-static-v2-frozen"
+      ],
+      "revision": 189,
+      "source_binding": "canonical_elbow_locked_wrist_path_static_contract_v2",
+      "source_sha256": "8b1393209494b3b8f6a4630f5a1b7dd9e510178745e51a1e229f446b6b7858c6",
+      "status": "frozen_after_v1_pre_model_failure_before_static_enumeration"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -10758,10 +10833,38 @@
       "sha256": "52b836d4df577258ef3f9549e44c2135bf6202a37ac989439302423a7f1084fa"
     },
     {
+      "id": "canonical_elbow_locked_wrist_path_static_contract_v2",
+      "path": "configs/evaluations/canonical_elbow_locked_wrist_path_static_v2.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_static_action_search",
+        "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v2",
+        "status": "frozen_after_v1_pre_model_failure_before_static_enumeration"
+      },
+      "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_static_action_search",
+      "sha256": "8b1393209494b3b8f6a4630f5a1b7dd9e510178745e51a1e229f446b6b7858c6"
+    },
+    {
       "id": "canonical_elbow_locked_wrist_path_static_implementation_v1",
       "path": "src/sim2claw/canonical_elbow_locked_wrist_path_static.py",
       "proof_class": "elbow_locked_static_only_action_search_implementation",
       "sha256": "cf5d5261b0c8045b8509cd3694fc790d69fc44afe4d6fc5c9d3c80f99ca4b4d4"
+    },
+    {
+      "id": "canonical_elbow_locked_wrist_path_static_implementation_v2",
+      "path": "src/sim2claw/canonical_elbow_locked_wrist_path_static_v2.py",
+      "proof_class": "wiring_only_elbow_locked_static_action_search_implementation",
+      "sha256": "6d9d02fec6d1c6072d60e4087a6d1461c5f6f3693c442a80d3e8ba48537de303"
+    },
+    {
+      "id": "canonical_elbow_locked_wrist_path_static_runner_closeout_v1",
+      "path": "configs/decisions/canonical_elbow_locked_wrist_path_static_v1_runner_closeout.json",
+      "payload_contract": {
+        "proof_class": "deterministic_runner_failure_before_model_or_static_enumeration",
+        "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_runner_closeout.v1",
+        "status": "terminal_pre_model_stale_inherited_implementation_binding_no_static_result"
+      },
+      "proof_class": "deterministic_runner_failure_before_model_or_static_enumeration",
+      "sha256": "83e46134ea45b121fce5a86674fdd305d15ac8954ff3b712a28597525c20a144"
     },
     {
       "id": "canonical_orientation_migration",
@@ -11351,7 +11454,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "aa67438eb303aaf7411c93f316cc2a4a4ec0a34080cc795d0525705494a51963"
+      "sha256": "877ce9dbc14a068dc17e11ee7bbf0b34a25ad2a2eb2ada6e1168a815931f8426"
     },
     {
       "id": "current_task_scene_labels",

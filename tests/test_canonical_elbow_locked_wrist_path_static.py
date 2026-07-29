@@ -14,7 +14,7 @@ from sim2claw.canonical_elbow_locked_wrist_path_static import (
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = (
     ROOT
-    / "configs/evaluations/canonical_elbow_locked_wrist_path_static_v1.json"
+    / "configs/evaluations/canonical_elbow_locked_wrist_path_static_v2.json"
 )
 
 
@@ -45,10 +45,12 @@ def test_exact_elbow_audit_is_bitwise_not_tolerance_based() -> None:
 def test_contract_is_bounded_outcome_blind_and_has_no_motion_authority() -> None:
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
     for key in (
+        "predecessor_contract",
         "base_contract",
         "mapping_closeout",
         "fresh_wrist_heldout_receipt",
         "elbow_stall_closeout",
+        "predecessor_runner_closeout",
         "implementation",
     ):
         binding = contract[key]

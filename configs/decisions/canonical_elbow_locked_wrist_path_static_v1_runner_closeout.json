@@ -1,0 +1,35 @@
+{
+  "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_runner_closeout.v1",
+  "decision_id": "canonical-elbow-locked-wrist-path-static-20260729-v1-runner-closeout",
+  "status": "terminal_pre_model_stale_inherited_implementation_binding_no_static_result",
+  "proof_class": "deterministic_runner_failure_before_model_or_static_enumeration",
+  "contract": {
+    "path": "configs/evaluations/canonical_elbow_locked_wrist_path_static_v1.json",
+    "sha256": "52b836d4df577258ef3f9549e44c2135bf6202a37ac989439302423a7f1084fa"
+  },
+  "result": {
+    "failure": "resolved V1 base contract retained historical canonical_wrist_path_static.py SHA-256 9839e493... instead of applying V4 binding 1726ddaf...",
+    "output_directory_created": false,
+    "model_loaded": false,
+    "grid_cells_opened": 0,
+    "static_outcomes_created": false,
+    "dynamic_outcomes_opened": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Preserve V1 as a pre-result wiring failure. Freeze a V2 implementation that changes only resolved-contract binding: copy the already-frozen V4 implementation binding into the resolved V1 inputs before invoking the unchanged elbow-locked static enumerator. Do not change the live seed, elbow lock, family universe, grid, gates, selection, model, or authority.",
+  "authority": {
+    "freeze_wiring_only_v2": true,
+    "model_loading": false,
+    "static_simulation": false,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}
