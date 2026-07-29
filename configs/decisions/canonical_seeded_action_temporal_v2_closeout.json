@@ -1,0 +1,71 @@
+{
+  "schema_version": "sim2claw.canonical_seeded_action_temporal_closeout.v2",
+  "decision_id": "canonical-seeded-action-temporal-20260728-v2-closeout",
+  "status": "canonical_seeded_action_temporal_v2_reject_preserved",
+  "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative",
+  "contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v2.json",
+    "sha256": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-temporal-v2/receipt.json",
+    "sha256": "727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff"
+  },
+  "result": {
+    "official_execution_count": 1,
+    "observable_episode_count": 40,
+    "direction_counts": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "minimum_required_per_direction": 2,
+    "passing_case_ids": [],
+    "task_outcome_check_pass_counts_of_40": {
+      "progress": 23,
+      "selected_contact": 40,
+      "excluded_contact": 40,
+      "excluded_displacement": 33,
+      "no_lift": 0,
+      "collision": 40,
+      "camera_margin": 40
+    },
+    "signed_progress_mm_range": [
+      -13.69167864300155,
+      194.12104214465438
+    ],
+    "maximum_selected_vertical_rise_mm_range": [
+      4.162642681156625,
+      71.18046400229939
+    ],
+    "maximum_excluded_displacement_mm": 29.923533501601895,
+    "direct_vs_zoh_first_divergence": {
+      "channel": "applied_action",
+      "count": 20,
+      "first_sample_index": 1
+    }
+  },
+  "action_integrity": {
+    "requested_hash_matches_freeze_paths": "8/8",
+    "requested_mapped_byte_identical_paths": "8/8",
+    "requested_sent_byte_identical_paths": "8/8",
+    "applied_trace_matches_episode_paths": "8/8",
+    "applied_gateway_rate_compatible_paths": "8/8",
+    "timestamps_monotonic_paths": "8/8",
+    "row_zero_exact_textual_equality_paths": "0/8",
+    "row_zero_maximum_absolute_roundtrip_delta_degrees": 4.440892098500626e-16,
+    "row_zero_defect_scope": "textual_float_equality_only_result_remains_reject_independent_of_this_defect"
+  },
+  "decision": "Do not admit a case, freeze evaluator V2, or open hardware. Preserve all exact action bytes and the full negative. Activate one simulator-only contact-witness probe to identify the jaw/pawn geometry and vertical contact signature before declaring any mechanism intervention.",
+  "authority": {
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "next_gate": "prospectively freeze exact-action contact witness extraction without changing dynamics or outcomes"
+}

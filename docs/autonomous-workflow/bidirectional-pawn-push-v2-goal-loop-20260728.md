@@ -102,7 +102,20 @@ Confirmed:
   No outcome was used to change the action set, paths, variants, or gates.
 - The V2 temporal successor is frozen at SHA-256
   `ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870`
-  and awaits its exactly-once official immutable replay.
+  and its official immutable replay ran exactly once.
+- The official temporal receipt SHA-256 is
+  `727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff`.
+  It is an admissible action-frozen negative: REAL->SIM `0/2`, SIM->REAL
+  `0/2`, and `0/40` outcomes passed. Selected contact passed `40/40`, no-lift
+  passed `0/40`, progress passed `23/40`, and exclusion displacement passed
+  `33/40`. Closeout SHA-256
+  `98e3154e65a778c5f77e52cfc84b12e6886030a0bff7a4d66ac43fb8f184bfaf`
+  preserves false mapping, evaluator-freeze, and hardware authority.
+- A nominal-only exact-action contact-witness diagnostic is prospectively
+  frozen at SHA-256
+  `fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482`.
+  It may localize modeled contact geometry and timing but cannot tune an
+  outcome, calibrate physical parameters, change actions, or authorize motion.
 - Wrist depth is omitted and unnecessary for this campaign.
 - One writer uses
   `codex/bidirectional-transfer-goal-loop-20260728`.
@@ -147,17 +160,17 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 
 ```text
 Current state:
-Active card: CC02 canonical CPU/fp64 direct-target plus 0.11 s ZOH replay.
+Active card: CC02 exact-action nominal contact-witness diagnostic after preserved temporal rejection.
 Completed: CC00, CC00A, CC01.
-Evidence: V2 static receipt c68599e9...; V2 closeout ced92042...; ObservableEpisode closeout fe586670....
+Evidence: V2 static receipt c68599e9...; ObservableEpisode closeout fe586670...; temporal receipt 727ecd64... and closeout 98e3154e....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
-Heldout open count:
-Physical task attempts:
+Heldout open count: 1
+Physical task attempts: 0/10
 Physical/camera/torque state: closed/no motion; latest recorded torque state false.
 Remaining: CC02 through CC15.
-Blockers: dynamic consequence and physical/model mapping remain unapproved.
-Next step: commit/push the V2 freeze, then execute CC02 exactly once with one ObservableEpisode per exact action, plant path, and reset variant.
+Blockers: the frozen action set is dynamically rejected; physical/model mapping remains unapproved.
+Next step: commit/push the preserved negative and witness freeze, then execute the nominal direct/ZOH witness exactly once and select or reject one bounded mechanism.
 ```
 
 ## Physical Authority Boundaries

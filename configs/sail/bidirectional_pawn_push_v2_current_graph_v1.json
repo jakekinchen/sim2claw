@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "99377a6feb44cd91db82e3da30199bd6f93b2ab35597b83ea28c93344a0bccfd",
+      "sha256": "11bd84c0914c044e32e33176a696b2d3e7855da2ec7c1ee10d5ce6cb9e0ae4df",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1276,6 +1276,36 @@
         "schema_version": "sim2claw.canonical_seeded_action_temporal_successor.v2",
         "status": "frozen_after_nonadmissible_dry_validation_before_official_replay",
         "proof_class": "prospective_cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay"
+      }
+    },
+    "canonical_temporal_v2_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-temporal-v2/receipt.json",
+      "sha256": "727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff",
+      "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_receipt.v1",
+        "status": "canonical_seeded_action_temporal_reject",
+        "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay"
+      }
+    },
+    "canonical_temporal_v2_closeout": {
+      "path": "configs/decisions/canonical_seeded_action_temporal_v2_closeout.json",
+      "sha256": "98e3154e65a778c5f77e52cfc84b12e6886030a0bff7a4d66ac43fb8f184bfaf",
+      "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_closeout.v2",
+        "status": "canonical_seeded_action_temporal_v2_reject_preserved",
+        "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative"
+      }
+    },
+    "canonical_contact_witness_v1_contract": {
+      "path": "configs/evaluations/canonical_contact_witness_v1.json",
+      "sha256": "fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482",
+      "proof_class": "prospective_cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_contact_witness.v1",
+        "status": "frozen_after_temporal_v2_reject_before_contact_witness_replay",
+        "proof_class": "prospective_cpu_fp64_exact_action_nominal_contact_witness_diagnostic"
       }
     },
     "simulator_candidate": {
@@ -3654,14 +3684,59 @@
       }
     },
     {
+      "id": "verdict:canonical-temporal-v2-reject",
+      "type": "evaluator_verdict",
+      "label": "Canonical temporal V2 terminal action-set negative",
+      "status": "dynamic_two_family_gate_reject_preserved",
+      "source_binding": "canonical_temporal_v2_closeout",
+      "evaluator_identity": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870",
+      "data": {
+        "receipt_source_binding": "canonical_temporal_v2_receipt",
+        "observable_episode_count": 40,
+        "passing_outcomes": 0,
+        "real_to_sim_lanes": 0,
+        "sim_to_real_lanes": 0,
+        "selected_contact_pass_count": 40,
+        "no_lift_pass_count": 0,
+        "progress_pass_count": 23,
+        "excluded_displacement_pass_count": 33,
+        "mapping_calibration_approved": false,
+        "evaluator_v2_freeze_authorized": false,
+        "camera_authorized": false,
+        "gateway_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:canonical-contact-witness-v1-frozen",
+      "type": "checkpoint",
+      "label": "Canonical exact-action contact witness V1 frozen",
+      "status": "preregistered_before_exactly_once_contact_witness_replay",
+      "source_binding": "canonical_contact_witness_v1_contract",
+      "data": {
+        "action_count": 4,
+        "plant_path_count": 2,
+        "reset_variant": "nominal_only",
+        "action_change": false,
+        "dynamics_change": false,
+        "mapping_calibration_approved": false,
+        "evaluator_v2_freeze_authorized": false,
+        "camera_authorized": false,
+        "gateway_authorized": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
-      "status": "one_static_action_no_dynamic_or_transfer_admission",
+      "status": "four_static_actions_dynamic_rejected_no_transfer_admission",
       "source_binding": "queue",
       "data": {
-        "real_to_sim": "1_static_0_dynamic",
-        "sim_to_real": "0_static_0_dynamic"
+        "real_to_sim": "2_static_0_dynamic",
+        "sim_to_real": "2_static_0_dynamic"
       }
     },
     {
@@ -5045,6 +5120,28 @@
       }
     },
     {
+      "source": "verdict:canonical-temporal-v2-reject",
+      "type": "evaluated-on",
+      "target": "checkpoint:canonical-temporal-v2-frozen",
+      "metadata": {
+        "official_execution_count": 1,
+        "passing_outcomes": 0,
+        "observable_episode_count": 40,
+        "physical_motion": false
+      }
+    },
+    {
+      "source": "checkpoint:canonical-contact-witness-v1-frozen",
+      "type": "generated-from",
+      "target": "verdict:canonical-temporal-v2-reject",
+      "metadata": {
+        "actions_and_plants_unchanged": true,
+        "nominal_only": true,
+        "mechanism_fit_authorized": false,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -6043,14 +6140,32 @@
       "node_ids_added": [
         "checkpoint:canonical-temporal-v2-frozen"
       ]
+    },
+    {
+      "revision": 106,
+      "event_id": "CANONICAL_TEMPORAL_V2_REJECT_PRESERVED",
+      "status": "dynamic_two_family_gate_reject_preserved",
+      "source_binding": "canonical_temporal_v2_closeout",
+      "node_ids_added": [
+        "verdict:canonical-temporal-v2-reject"
+      ]
+    },
+    {
+      "revision": 107,
+      "event_id": "CANONICAL_CONTACT_WITNESS_V1_FROZEN",
+      "status": "preregistered_before_exactly_once_contact_witness_replay",
+      "source_binding": "canonical_contact_witness_v1_contract",
+      "node_ids_added": [
+        "checkpoint:canonical-contact-witness-v1-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-temporal-v2-frozen",
+    "node_id": "checkpoint:canonical-contact-witness-v1-frozen",
     "milestone_id": "CC02",
-    "status": "preregistered_before_exactly_once_official_dynamic_replay",
+    "status": "preregistered_before_exactly_once_contact_witness_replay",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_temporal_v2_official_output_exactly_once",
+    "resume_action": "execute_canonical_contact_witness_v1_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

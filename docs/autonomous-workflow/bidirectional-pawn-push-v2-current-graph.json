@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC02",
-    "node_id": "checkpoint:canonical-temporal-v2-frozen",
+    "node_id": "checkpoint:canonical-contact-witness-v1-frozen",
     "queue_status": "ACTIVE_CC02_CANONICAL_DYNAMIC_REPLAY",
-    "resume_action": "execute_canonical_temporal_v2_official_output_exactly_once",
+    "resume_action": "execute_canonical_contact_witness_v1_exactly_once",
     "resume_authorized": true,
-    "status": "preregistered_before_exactly_once_official_dynamic_replay"
+    "status": "preregistered_before_exactly_once_contact_witness_replay"
   },
   "authority": {
     "camera_open": false,
@@ -82,27 +82,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 131,
+    "edges": 133,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 26,
+      "evaluated-on": 27,
       "fitted-on": 4,
-      "generated-from": 85,
+      "generated-from": 86,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 125,
+    "nodes": 127,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 79,
+      "checkpoint": 80,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 20,
+      "evaluator_verdict": 21,
       "evidence": 5,
       "intervention": 1,
       "mechanism": 3,
@@ -229,6 +229,17 @@
       },
       "source": "certificate:bidirectional-transfer",
       "target": "checkpoint:v04-owner-integration-barrier",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "actions_and_plants_unchanged": true,
+        "mechanism_fit_authorized": false,
+        "nominal_only": true,
+        "physical_motion": false
+      },
+      "source": "checkpoint:canonical-contact-witness-v1-frozen",
+      "target": "verdict:canonical-temporal-v2-reject",
       "type": "generated-from"
     },
     {
@@ -1353,6 +1364,17 @@
     },
     {
       "metadata": {
+        "observable_episode_count": 40,
+        "official_execution_count": 1,
+        "passing_outcomes": 0,
+        "physical_motion": false
+      },
+      "source": "verdict:canonical-temporal-v2-reject",
+      "target": "checkpoint:canonical-temporal-v2-frozen",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "dynamic_prerequisite_passed": false,
         "dynamic_replay_executed": false,
         "physical_motion": false,
@@ -1608,7 +1630,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "6d79d82feff163d8db1f209d50750147eb30acc6746f43ccdd109b6bab00f7a8",
+  "graph_digest": "ffe49b4ab36ce5af2cded25bbffdc2b4388d36e3879f1c3aa00d459511176a6a",
   "node_types": [
     "workcell",
     "session",
@@ -1698,6 +1720,38 @@
     },
     {
       "data": {
+        "action_change": false,
+        "action_count": 4,
+        "camera_authorized": false,
+        "dynamics_change": false,
+        "evaluator_v2_freeze_authorized": false,
+        "gateway_authorized": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "plant_path_count": 2,
+        "reset_variant": "nominal_only",
+        "source_binding_id": "canonical_contact_witness_v1_contract"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-contact-witness-v1-frozen",
+      "label": "Canonical exact-action contact witness V1 frozen",
+      "proof_class": "prospective_cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+      "source": {
+        "path": "configs/evaluations/canonical_contact_witness_v1.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+          "schema_version": "sim2claw.canonical_contact_witness.v1",
+          "status": "frozen_after_temporal_v2_reject_before_contact_witness_replay"
+        },
+        "proof_class": "prospective_cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+        "sha256": "fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482"
+      },
+      "status": "preregistered_before_exactly_once_contact_witness_replay",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "mapping_calibration_approved": false,
         "official_attempts": 0,
         "outcomes_used_for_change": false,
@@ -1777,7 +1831,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "99377a6feb44cd91db82e3da30199bd6f93b2ab35597b83ea28c93344a0bccfd"
+        "sha256": "11bd84c0914c044e32e33176a696b2d3e7855da2ec7c1ee10d5ce6cb9e0ae4df"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -4637,8 +4691,8 @@
     },
     {
       "data": {
-        "real_to_sim": "1_static_0_dynamic",
-        "sim_to_real": "0_static_0_dynamic",
+        "real_to_sim": "2_static_0_dynamic",
+        "sim_to_real": "2_static_0_dynamic",
         "source_binding_id": "queue"
       },
       "evaluator_identity": null,
@@ -4650,7 +4704,7 @@
         "proof_class": "campaign_control_state",
         "sha256": "93a696578134fb1a5e71676da8d2b1e08b57dac860baac383f53fc233dc4a1d8"
       },
-      "status": "one_static_action_no_dynamic_or_transfer_admission",
+      "status": "four_static_actions_dynamic_rejected_no_transfer_admission",
       "type": "policy"
     },
     {
@@ -4788,6 +4842,42 @@
         "sha256": "ced92042e73ed53a5ccf27810ddce9d36f9a50f8f6a71110ca517bf116669929"
       },
       "status": "static_action_freeze_pass_two_families_per_direction",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
+        "camera_authorized": false,
+        "evaluator_v2_freeze_authorized": false,
+        "excluded_displacement_pass_count": 33,
+        "gateway_authorized": false,
+        "mapping_calibration_approved": false,
+        "no_lift_pass_count": 0,
+        "observable_episode_count": 40,
+        "passing_outcomes": 0,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "progress_pass_count": 23,
+        "real_to_sim_lanes": 0,
+        "receipt_source_binding": "canonical_temporal_v2_receipt",
+        "selected_contact_pass_count": 40,
+        "sim_to_real_lanes": 0,
+        "source_binding_id": "canonical_temporal_v2_closeout"
+      },
+      "evaluator_identity": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870",
+      "id": "verdict:canonical-temporal-v2-reject",
+      "label": "Canonical temporal V2 terminal action-set negative",
+      "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative",
+      "source": {
+        "path": "configs/decisions/canonical_seeded_action_temporal_v2_closeout.json",
+        "payload_contract": {
+          "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative",
+          "schema_version": "sim2claw.canonical_seeded_action_temporal_closeout.v2",
+          "status": "canonical_seeded_action_temporal_v2_reject_preserved"
+        },
+        "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative",
+        "sha256": "98e3154e65a778c5f77e52cfc84b12e6886030a0bff7a4d66ac43fb8f184bfaf"
+      },
+      "status": "dynamic_two_family_gate_reject_preserved",
       "type": "evaluator_verdict"
     },
     {
@@ -6547,7 +6637,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "99377a6feb44cd91db82e3da30199bd6f93b2ab35597b83ea28c93344a0bccfd",
+      "source_sha256": "11bd84c0914c044e32e33176a696b2d3e7855da2ec7c1ee10d5ce6cb9e0ae4df",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -6569,6 +6659,26 @@
       "source_binding": "canonical_temporal_v2_contract",
       "source_sha256": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870",
       "status": "preregistered_before_exactly_once_official_dynamic_replay"
+    },
+    {
+      "event_id": "CANONICAL_TEMPORAL_V2_REJECT_PRESERVED",
+      "node_ids_added": [
+        "verdict:canonical-temporal-v2-reject"
+      ],
+      "revision": 106,
+      "source_binding": "canonical_temporal_v2_closeout",
+      "source_sha256": "98e3154e65a778c5f77e52cfc84b12e6886030a0bff7a4d66ac43fb8f184bfaf",
+      "status": "dynamic_two_family_gate_reject_preserved"
+    },
+    {
+      "event_id": "CANONICAL_CONTACT_WITNESS_V1_FROZEN",
+      "node_ids_added": [
+        "checkpoint:canonical-contact-witness-v1-frozen"
+      ],
+      "revision": 107,
+      "source_binding": "canonical_contact_witness_v1_contract",
+      "source_sha256": "fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482",
+      "status": "preregistered_before_exactly_once_contact_witness_replay"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -6583,6 +6693,17 @@
       },
       "proof_class": "operator_defined_coordinate_convention_bound_to_existing_metric_scene",
       "sha256": "d67168f6f1163a1bc67dfe977fa00e69d27b07148b807c3f953f1874e112d129"
+    },
+    {
+      "id": "canonical_contact_witness_v1_contract",
+      "path": "configs/evaluations/canonical_contact_witness_v1.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+        "schema_version": "sim2claw.canonical_contact_witness.v1",
+        "status": "frozen_after_temporal_v2_reject_before_contact_witness_replay"
+      },
+      "proof_class": "prospective_cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+      "sha256": "fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482"
     },
     {
       "id": "canonical_orientation_migration",
@@ -6630,6 +6751,17 @@
       "sha256": "1693f5c68af7298d27d6125340f48bd87b713f5fa3cd8639848b772eb5fc5f8d"
     },
     {
+      "id": "canonical_temporal_v2_closeout",
+      "path": "configs/decisions/canonical_seeded_action_temporal_v2_closeout.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative",
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_closeout.v2",
+        "status": "canonical_seeded_action_temporal_v2_reject_preserved"
+      },
+      "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative",
+      "sha256": "98e3154e65a778c5f77e52cfc84b12e6886030a0bff7a4d66ac43fb8f184bfaf"
+    },
+    {
       "id": "canonical_temporal_v2_contract",
       "path": "configs/evaluations/canonical_seeded_action_temporal_v2.json",
       "payload_contract": {
@@ -6641,10 +6773,21 @@
       "sha256": "ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870"
     },
     {
+      "id": "canonical_temporal_v2_receipt",
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-temporal-v2/receipt.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_consequence_replay",
+        "schema_version": "sim2claw.canonical_seeded_action_temporal_receipt.v1",
+        "status": "canonical_seeded_action_temporal_reject"
+      },
+      "proof_class": "cpu_fp64_canonical_action_frozen_direct_target_and_diagnostic_zoh_causal_replay_terminal_negative",
+      "sha256": "727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff"
+    },
+    {
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "99377a6feb44cd91db82e3da30199bd6f93b2ab35597b83ea28c93344a0bccfd"
+      "sha256": "11bd84c0914c044e32e33176a696b2d3e7855da2ec7c1ee10d5ce6cb9e0ae4df"
     },
     {
       "id": "current_task_scene_labels",

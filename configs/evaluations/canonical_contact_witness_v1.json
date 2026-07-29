@@ -1,0 +1,126 @@
+{
+  "schema_version": "sim2claw.canonical_contact_witness.v1",
+  "contract_id": "canonical-contact-witness-20260728-v1",
+  "status": "frozen_after_temporal_v2_reject_before_contact_witness_replay",
+  "proof_class": "prospective_cpu_fp64_exact_action_nominal_contact_witness_diagnostic",
+  "inputs": {
+    "temporal_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-temporal-v2/receipt.json",
+      "sha256": "727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff"
+    },
+    "temporal_closeout": {
+      "path": "configs/decisions/canonical_seeded_action_temporal_v2_closeout.json",
+      "sha256": "98e3154e65a778c5f77e52cfc84b12e6886030a0bff7a4d66ac43fb8f184bfaf"
+    },
+    "static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/receipt.json",
+      "sha256": "c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "registration_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    },
+    "implementation": {
+      "path": "src/sim2claw/canonical_contact_witness.py",
+      "sha256": "a64349e5af58b7ed895766084ba2313923b7b40bbb00f888d08352bb4fa3201a"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "tan_pawn_h7__h7_h6",
+      "direction": "REAL_TO_SIM",
+      "selected_piece_id": "tan_pawn_h7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/actions/00.f64le",
+      "action_sha256": "73b681e2581ea1477f4deec90d1f48d78e8cce2b7c42923dd5c5b612415dbf42",
+      "action_shape": [
+        1017,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_h7__h7_g7",
+      "direction": "SIM_TO_REAL",
+      "selected_piece_id": "tan_pawn_h7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/actions/01.f64le",
+      "action_sha256": "8526b423206ea88fe8d6edd5fb0ab5cf0d0a0333c68aa0489cd28430bebadfaf",
+      "action_shape": [
+        948,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_f6",
+      "direction": "REAL_TO_SIM",
+      "selected_piece_id": "tan_pawn_f7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/actions/02.f64le",
+      "action_sha256": "52c89c2f51e190ae0cd94512405e98b20fd6e630e139144503a0a68a3c3ddd87",
+      "action_shape": [
+        1033,
+        6
+      ]
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_g7",
+      "direction": "SIM_TO_REAL",
+      "selected_piece_id": "tan_pawn_f7",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/actions/03.f64le",
+      "action_sha256": "57e9192b8ec0a13331b1bfc6bf911c528f5dbe7df89055c89baa02465edab296",
+      "action_shape": [
+        965,
+        6
+      ]
+    }
+  ],
+  "plant_paths": [
+    "canonical_direct_target",
+    "diagnostic_zoh_0p11s"
+  ],
+  "action_identity": {
+    "sample_hz": 40.0,
+    "exact_requested_actions_unchanged": true,
+    "applied_plant_paths_unchanged": true,
+    "reset_variant": "nominal_only",
+    "dynamics_changed": false
+  },
+  "simulation": {
+    "engine": "mujoco",
+    "numeric_mode": "cpu_float64",
+    "timestep_s": 0.0025,
+    "substeps_per_row": 10
+  },
+  "thresholds": {
+    "planar_motion_threshold_m": 0.001,
+    "rise_threshold_m": 0.002
+  },
+  "observables": [
+    "first_jaw_contact_row_and_witness",
+    "first_planar_motion_row",
+    "first_vertical_rise_above_2mm_row",
+    "peak_vertical_rise_and_row",
+    "jaw_and_pawn_geom_pair_counts",
+    "contact_height_relative_to_initial_pawn_root",
+    "absolute_vertical_contact_normal_component",
+    "maximum_normal_force",
+    "board_support_contact_steps"
+  ],
+  "decision_rule": "Use the witness only to select or reject one prospectively declared contact-geometry mechanism. Do not fit an outcome, change an action, weaken a task gate, or treat simulator contact as physical calibration.",
+  "output_path": "runs/bidirectional-pawn-push-v2/20260728-canonical-contact-witness-v1/receipt.json",
+  "authority": {
+    "dynamics_change": false,
+    "action_change": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Simulator-only exact-action contact witness for the already rejected nominal direct and diagnostic ZOH replays. It can localize modeled contact geometry but cannot identify physical contact, calibrate a parameter, alter the rejected result, approve mapping, or authorize hardware."
+}

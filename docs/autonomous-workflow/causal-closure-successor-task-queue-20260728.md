@@ -245,7 +245,23 @@ Current state:
 - The outcome-identical V2 temporal successor is frozen at
   `ae31376f2707ed3c4e6372313dc21ad7734e51e0a19392967df3c444e27e2870`.
   Its four actions, two plant paths, five variants, gates, and causal channels
-  are exactly inherited from V1. Its official immutable output has not run.
+  are exactly inherited from V1.
+- The official V2 temporal replay executed exactly once after its freeze. It
+  rejected all four actions under the required two-plant/five-variant screen:
+  REAL->SIM `0/2`, SIM->REAL `0/2`, and `0/40` passing outcomes. All `40/40`
+  outcomes made selected contact, but `0/40` passed the no-lift gate; progress
+  passed `23/40` and exclusion displacement passed `33/40`. The exact-action
+  and trace checks pass on all eight case/plant paths. Receipt SHA-256:
+  `727ecd642681a6cb4a85327ccd95e4637df60e3ebdf4e2acd49e26e8f2e526ff`.
+  Closeout SHA-256:
+  `98e3154e65a778c5f77e52cfc84b12e6886030a0bff7a4d66ac43fb8f184bfaf`.
+- The result is preserved without action repair, gate weakening, mapping
+  approval, or hardware authority. A bounded nominal-only contact-witness
+  diagnostic is prospectively frozen at
+  `fa1524a2e27c4666c2185303ecddaa1014876f70ac8560d13e4073ed00730482`.
+  It replays the same four exact actions under the unchanged direct and ZOH
+  paths only to localize modeled jaw/pawn contact height, normal, force, and
+  timing before one mechanism is selected or rejected.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -265,8 +281,8 @@ Completed:
 Blockers:
 
 - No approved physical/model mapping.
-- No admissible official dynamic consequence result for the V2-admitted
-  action set.
+- The admitted V2 action set has an admissible terminal dynamic negative and
+  no case survives the unchanged no-lift/task gates.
 
 ## Time-bounded physical authorization
 
@@ -288,5 +304,7 @@ This authorization:
 
 Next step:
 
-- Commit and push the V2 CC02 freeze, then execute its official immutable
-  direct-target plus diagnostic `0.11 s` ZOH replay exactly once.
+- Commit and push the official V2 negative plus the prospectively frozen
+  nominal contact-witness diagnostic, then execute that immutable diagnostic
+  exactly once. Use its result only to declare or reject one bounded simulator
+  contact-geometry mechanism; retain exact actions, gates, and heldouts.
