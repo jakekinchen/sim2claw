@@ -2,13 +2,29 @@
 
 Status: `TWIN FIDELITY 0/6; MULTILEVEL HIL TERMINAL PARTIAL; TASK SCORE 0/11`
 
-## Latest hardware-free REAL→SIM advancement
+## Latest camera-endpoint REAL→SIM advancement
+
+The frozen RP04M evaluator now transfers the retained physical C922 D1→D2
+episode into the current simulator as a metric endpoint-observation episode.
+It passes `1/1` episodes and `2/2` endpoint states: the independent initial D1
+frame validates the accepted task-plane mapping at `3.101 mm`, the terminal D2
+frame maps at `3.357 mm`, and the simulator remains at `3.357 mm` after one
+second of free physics with `0.00423 deg` tilt and only `0.000085 mm` maximum
+exclusion movement. Contract and implementation were frozen and pushed at
+`cf49286` before the single outcome run.
+
+This is 100 percent success only for
+`physical_c922_metric_endpoint_observation_to_current_simulator_free_settle`.
+The terminal XY comes from the physical frame; the current simulator supplies
+support height and upright board-yaw orientation. It is not action replay,
+trajectory or contact-dynamics reproduction, policy success, global mapping
+approval, SIM→REAL, or new physical motion.
 
 The owner redirected work away from SIM→REAL while the follower elbow remains
 at a human-service boundary. The existing camera-verified physical D1→D2
 episode still cannot support strict action-only replay: it contains gateway
 rate limiting/clamping, requested-versus-sent differences, and no actuator
-application timestamps. Strict REAL→SIM therefore remains `0/0`.
+application timestamps. Strict action-only REAL→SIM therefore remains `0/0`.
 
 Two prospectively frozen software-only replays were completed without opening
 cameras, serial, torque, or hardware. RP04K's free-release hybrid was negative:

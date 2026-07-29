@@ -1,0 +1,59 @@
+{
+  "schema_version": "sim2claw.retrospective_c922_endpoint_to_sim_closeout.v1",
+  "status": "accepted_camera_endpoint_real_to_sim_transfer_1_of_1",
+  "proof_class": "physical_c922_metric_endpoint_observation_to_current_simulator_free_settle",
+  "freeze_commit": "cf492865c3ed340fa28468023ef3dc7cfabb146f",
+  "contract": {
+    "path": "configs/evaluations/retrospective_c922_endpoint_to_sim_v1.json",
+    "sha256": "7e16fbd2b7f068b96f2e8888dc812a091885805b6a66bd5ebbd67999d9567538"
+  },
+  "implementation": {
+    "path": "src/sim2claw/retrospective_c922_endpoint_to_sim.py",
+    "sha256_at_freeze": "37c0301bcfb5652b25e1fa3f4edce970269de122075098916c32e3980cd803ca"
+  },
+  "receipt": {
+    "path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+    "file_sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011",
+    "canonical_receipt_sha256": "a6885b310cfe5c26bdc88e46899a9fb71378c20f4221462b042bbb02cef8e60d",
+    "verdict": "C922_ENDPOINT_REAL_TO_SIM_TRANSFER_1_OF_1"
+  },
+  "ledger": {
+    "camera_endpoint_states_real_to_sim": {
+      "successes": 2,
+      "attempts": 2
+    },
+    "camera_endpoint_episodes_real_to_sim": {
+      "successes": 1,
+      "attempts": 1
+    },
+    "strict_pure_action_only_real_to_sim": {
+      "successes": 0,
+      "attempts": 0
+    },
+    "physical_task_attempts_added": 0,
+    "sim_to_real_added": 0
+  },
+  "observations": {
+    "initial_d1_square_center_error_m": 0.003100600525428267,
+    "terminal_d2_square_center_error_m": 0.003357132897493623,
+    "initial_two_pass_disagreement_px": 0.7071067811865476,
+    "terminal_two_pass_disagreement_px": 0.7071067811865476
+  },
+  "simulation": {
+    "final_d2_square_center_error_m": 0.00335713199813177,
+    "final_upright_tilt_degrees": 0.0042305645504362235,
+    "final_linear_speed_m_s": 0.00001652909530092489,
+    "final_angular_speed_rad_s": 0.006771713280909457,
+    "maximum_other_piece_displacement_m": 8.477069055694978e-8,
+    "free_settle_seconds": 1.0,
+    "all_gates_passed": true
+  },
+  "accepted_claim": "The retained physical C922 D1-to-D2 episode transfers into the current simulator as one metric endpoint-observation episode. The independently frozen initial frame validates D1 registration, the frozen terminal frame maps within the D2 endpoint gate, and the simulator preserves that observed terminal state upright through one second of free physics. This establishes 1/1 camera-endpoint REAL-to-SIM episodes and 2/2 camera endpoint states.",
+  "limitations": [
+    "The terminal pawn XY is observed from the physical camera frame rather than reproduced from an action or joint trajectory.",
+    "Simulator support height and upright board-yaw orientation are supplied because the monocular C922 endpoint does not restore metric depth or full object pose.",
+    "The result is not action replay, trajectory or contact-dynamics reproduction, policy success, global physical/model mapping approval, SIM-to-REAL evidence, or new physical motion.",
+    "No physical task attempt was added."
+  ],
+  "next_decision": "Preserve the 100 percent camera-endpoint result without broadening it. Strict action-only REAL-to-SIM and any SIM-to-REAL pawn transfer require a new exact source or physical route after follower elbow service."
+}

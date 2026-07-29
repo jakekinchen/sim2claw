@@ -2,7 +2,8 @@
 
 ## Mission
 
-Goal-loop through RP00--RP08 plus the owner-authorized RP04K/RP04L REAL->SIM
+Goal-loop through RP00--RP08 plus the owner-authorized RP04K/RP04L/RP04M
+REAL->SIM
 hard-cutover in
 `parking-recovery-transfer-successor-task-queue-20260729.md` until genuine
 bidirectional task transfer is evidenced or a new receipt-backed terminal
@@ -43,22 +44,25 @@ in that queue are exhausted.
 - RP04K: complete negative; command+mode `0/1`, observed-state+mode `0/1`.
 - RP04L: complete timing-sensitive narrow advancement; observed-state plus
   camera-observed upright-support mode `1/3`.
-- Active card: RP04M frozen C922 metric-endpoint REAL->SIM transfer.
+- RP04M: complete camera-endpoint REAL->SIM transfer; endpoint states `2/2`
+  and endpoint episode `1/1`.
+- Active card: none; the safe hardware-free endpoint successor is complete.
 - Certified threshold: `93 deg`.
 - Certified parking target: `91 deg`.
 - Strict pure-action REAL->SIM: `0/0`.
 - Observation-conditioned support-handoff REAL->SIM: `1/3`.
+- Camera-endpoint observation REAL->SIM: `1/1` episodes, `2/2` states.
 - SIM->REAL: `0/0`.
 - Physical task attempts: `0/10`.
 - Physical authority: false.
 
 The follower elbow mechanical-resistance signature closes further hardware
-task motion until human service. RP04M must not open a camera, gateway, serial
-bus, torque, or robot action. It may consume only the two frozen frames and
-annotations from the retained C922 episode. RP04L's `1/3` remains distinct
-from strict pure-action and free-release-physics ledgers. RP04M must likewise
-remain an endpoint-observation proof; do not convert it into action, trajectory,
-contact-dynamics, policy, mapping-approval, or physical authority.
+task motion until human service. RP04M consumed only the two frozen frames and
+annotations from the retained C922 episode and opened no camera, gateway,
+serial bus, torque, or robot action. RP04L's `1/3` and RP04M's `1/1` remain
+distinct from strict pure-action and free-release-physics ledgers. Do not
+convert the RP04M endpoint result into action, trajectory, contact-dynamics,
+policy, mapping-approval, or physical authority.
 
 Fable is reserved for a genuine blocker where the correct next trajectory is
 unclear. Routine queue transitions and verification do not require Fable.
