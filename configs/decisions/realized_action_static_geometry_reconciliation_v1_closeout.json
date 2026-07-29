@@ -1,0 +1,57 @@
+{
+  "schema_version": "sim2claw.realized_action_static_geometry_reconciliation_closeout.v1",
+  "decision_id": "realized-action-static-geometry-reconciliation-v1-closeout",
+  "result": "PARTIAL_ACCEPTED_WITH_ROBOT_AND_FLOOR_GAPS",
+  "proof_class": "retrospective_channel_separated_static_geometry_reconciliation",
+  "freeze_commit": "2300b10",
+  "contract": {
+    "path": "configs/evaluations/realized_action_static_geometry_reconciliation_v1.json",
+    "sha256": "fafdf9624c474ee7d8330abc4acc6ea49bf5def97581bd139a00a5aac4f15db4"
+  },
+  "implementation": {
+    "path": "src/sim2claw/static_geometry_reconciliation.py",
+    "sha256": "08988a56d9409e54e77b4fee1113ed46803da4afdf9667e5071f2c5c71c47e3a"
+  },
+  "generated_receipt": {
+    "path": "outputs/realized_action_static_geometry_reconciliation_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "a2a66a99a7fb4412dc260a61e3cad6b5309565d2a5f02dcc7092d91d92d6089e",
+    "artifact_sha256": "db3104c720293076eaf4b30bf8ed3744ae35e5de7ce183c1902e8f6a48aa1f44"
+  },
+  "accepted": {
+    "task_plane_rms_mm": 4.741722953437291,
+    "task_plane_max_mm": 7.104332681776422,
+    "initial_d1_pawn_base_error_mm": 3.100600525428267,
+    "terminal_d2_pawn_base_error_mm": 3.357132897493623,
+    "accepted_task_plane_preserved": true
+  },
+  "gaps": {
+    "fixed_base_p90_px": 44.99069595336914,
+    "fixed_base_within_4px_fraction": 0.17314930991217065,
+    "upper_arm_differential_rmse_px": 1.4318145298610043,
+    "upper_arm_differential_passed": true,
+    "wrist_differential_rmse_px": 5.196287679637153,
+    "wrist_differential_passed": false,
+    "silhouette_mid_median_px": 10.67293412160642,
+    "silhouette_mid_p80_px": 21.872622495173793,
+    "silhouette_promotable": false,
+    "physical_floor_or_support_height_residual_m": null
+  },
+  "decisions": {
+    "global_physical_model_mapping_approved": false,
+    "joint_camera_robot_object_refit_performed": false,
+    "rejected_factor_promoted": false,
+    "nominal_3dgs_scale_treated_as_metric": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "parameter_fit": false,
+    "paid_compute": false
+  },
+  "next_card": "C2-RP04N"
+}

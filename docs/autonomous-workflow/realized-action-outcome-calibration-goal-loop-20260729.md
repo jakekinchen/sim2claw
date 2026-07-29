@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Goal Loop
 
-Status: `ACTIVE_C2_STATIC_GEOMETRY_RECONCILIATION`
+Status: `ACTIVE_C2_RP04N_FREEZE`
 
 Created: `2026-07-29`
 
@@ -123,12 +123,12 @@ safe alternatives. Do not tune sealed inputs or repeat C6.
 
 ```text
 Current state: ACTIVE
-Active card: C2
-Completed: C0, C1
-Evidence: C1 artifact 5290ef26caa3fa5a22db8f0bfc4aa1ec8e69c9eca63d431fab73a612e8258914
-Remaining: C2, C2-RP04N, C3, C3A, C4, C5, C6, C7, C8, C9 boundary
+Active card: C2-RP04N
+Completed: C0, C1, C2 partial reconciliation
+Evidence: C2 artifact db3104c720293076eaf4b30bf8ed3744ae35e5de7ce183c1902e8f6a48aa1f44
+Remaining: C2-RP04N, C3, C3A, C4, C5, C6, C7, C8, C9 boundary
 Blockers: physical pathway closed at elbow service boundary; not needed for C0-C8
-Next step: reconcile independent existing static-geometry residual channels
+Next step: freeze RP04N extraction, annotation, and evaluator before viewing frames
 ```
 
 ## Stop conditions
