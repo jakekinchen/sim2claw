@@ -1,0 +1,122 @@
+{
+  "schema_version": "sim2claw.coordinated_unloading_shadow_probe.v1",
+  "contract_id": "coordinated-unloading-shadow-probe-static-20260729-v1",
+  "status": "frozen_before_one_static_compile",
+  "proof_class": "prospective_dual_scene_contact_impossible_segmented_physical_prefix",
+  "inputs": {
+    "implementation": {
+      "path": "src/sim2claw/coordinated_unloading_shadow_probe.py",
+      "sha256": "d716dddff6dccb45b0ea4fb6fa12d5e20544cceccbe7edd643f6bbd37056d28d"
+    },
+    "v5_temporal_closeout": {
+      "path": "configs/decisions/canonical_wrist_path_selected_temporal_v5_closeout.json",
+      "sha256": "2c7f8483663a619c25c6aece2c041a7327aa440b8d961857a101bbc0590a5ed5"
+    },
+    "locked_elbow_terminal_closeout": {
+      "path": "configs/decisions/parking_recovery_rp03d_tangent_seat_temporal_v1_closeout.json",
+      "sha256": "c933fff52b05dc19a3fade980b0e8adf8d1ede26dc3dd7255aceafb61797b048"
+    },
+    "v5_static_selector_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/receipt.json",
+      "sha256": "18921a5d066c0e8e41f84850cc01a59bf44a6f3de64b62df8b9496d908ddeec9"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "registered_rigid_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    }
+  },
+  "action": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-static-selector-v1/actions/02.f64le",
+    "sha256": "e9f128e0e3497039e1267ea84523a260ab4f0a8eb6df515fc5242ce089c15cae",
+    "shape": [
+      1038,
+      6
+    ],
+    "selector_index": 2,
+    "case_id": "tan_pawn_f7__f7_e7",
+    "selected_piece_id": "tan_pawn_f7",
+    "direction": "REAL_TO_SIM",
+    "sample_hz": 40.0,
+    "dtype": "little_endian_float64",
+    "requested_action_bytes_modified": false
+  },
+  "prefix": {
+    "stop_row_inclusive": 490,
+    "registered_first_contact_row": 816,
+    "uncorrected_first_contact_row": 531,
+    "minimum_contact_margin_rows": 40,
+    "minimum_contact_margin_seconds": 1.0,
+    "contact_or_task_rows_included": false
+  },
+  "gateway": {
+    "expected_row_zero": [
+      6.5054945054945055,
+      -85.53846153846153,
+      99.47252747252747,
+      -20.087912087912088,
+      -103.34065934065934,
+      2.3752969121140137
+    ],
+    "follower_calibrated_minimum": [
+      -120.26373626373626,
+      -106.63736263736264,
+      -102.10989010989012,
+      -107.47252747252747,
+      -180.0,
+      0.0
+    ],
+    "follower_calibrated_maximum": [
+      120.26373626373626,
+      106.63736263736264,
+      102.10989010989012,
+      107.47252747252747,
+      180.0,
+      100.0
+    ],
+    "maximum_rates_per_second": [
+      60.0,
+      60.0,
+      60.0,
+      60.0,
+      90.0,
+      100.0
+    ],
+    "segment_boundaries": [
+      0,
+      433,
+      490
+    ],
+    "segment_excursion_limit": 80.0,
+    "rebase_only_after_reached_boundary": true,
+    "boundary_residual_maximum_degrees": 2.0,
+    "return_reuses_exact_reverse_rows": true
+  },
+  "future_physical_acceptance": {
+    "maximum_elbow_requested_observed_error_degrees": 5.0,
+    "sustained_elbow_error_threshold_degrees": 3.0,
+    "sustained_elbow_error_maximum_seconds": 1.0,
+    "per_segment_boundary_residual_maximum_degrees": 2.0,
+    "return_to_anchor_residual_maximum_degrees": 2.0,
+    "zero_camera_observed_contact_required": true,
+    "torque_off_cleanup_required": true,
+    "maximum_executions": 1,
+    "retry_without_new_preregistration": false
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-shadow-probe-static-v1",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Static-only compilation of rows 0 through 490 of the already frozen V5 f7-to-e7 action. The prefix stops at least 1.0 seconds before the first robot contact under both the accepted registered scene and the zero-rigid-transform canonical stress scene. It can freeze one physical no-contact diagnostic packet only; it cannot open hardware, count a task attempt, approve mapping, or support transfer."
+}

@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04A_NATURAL_ANCHOR_V5_MAPPING_PROBE_DESIGN`
+Status: `RP04A_COORDINATED_UNLOADING_STATIC_FROZEN_PENDING_ONE_COMPILE`
 
 Created: `2026-07-29`
 
@@ -45,7 +45,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP03C | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Replace only sparse joint interpolation between the existing 35 mm precontact, contact, and 40 mm pushed Cartesian endpoints with a deterministic chord-error-constrained corridor. | Static receipt `5a9230fa...` passed all 576 cells with one selected family per direction. Dynamic receipt `8b7a889d...` then ran all `20` frozen episodes. | `0/20` passed; every episode still failed progress and no-lift. Cartesian interpolation bow alone is closed. |
 | RP03D | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Static receipt `488bf150...` passed all 576 cells with one selected family per direction. Dynamic receipt `8bb253ef...` ran the exact 20 frozen episodes. | `0/20` passed. The tangent-seat and locked-elbow task route are closed without hardware. |
 | RP04 | `DONE_EXISTING_SIMULATOR_PASS_RECONCILED` | Select the strongest already frozen natural-anchor simulator route without using later outcomes to alter its actions. | Canonical wrist-path V5 predates this successor and has exactly two families per direction across direct/ZOH and five resets, with exact actions and ObservableEpisode traces. | Receipt `cf21bd8c...` passes `40/40`; its four action tensors are immutable transfer candidates. This does not approve mapping or hardware. |
-| RP04A | `ACTIVE` | Approve or reject a task-bounded physical/model mapping for the V5 natural-anchor corridor using a contact-impossible physical probe. | Freeze exact prefixes of three single-lane V5 actions before their static first-contact rows; preserve natural row-zero, commands and timing; prove no pawn contact is reachable; camera-enclose execution; record requested/sent/observed traces; require joint direction, range, tracking, return, and cleanup gates. | A pass approves only the exact task corridor, never global mapping. Any unexpected contact, tracking, range, camera, gateway, or cleanup defect stops before a task attempt. |
+| RP04A | `STATIC_FROZEN_PENDING_ONE_COMPILE` | Approve or reject the coordinated-unloading hypothesis before any task packet. | Freeze rows `0..490` of V5 `f7->e7`, stopping at least `40` rows before first contact under registered and uncorrected scenes; two exact segments `[0,433]` and `[433,490]`, each at most `80 deg`; then one camera-enclosed execution with exact requested/sent/observed traces, ≤`5 deg` maximum elbow error, no `>3 deg` error for `1 s`, ≤`2 deg` boundary/return residual, and torque-off. | Static contract now frozen. A physical pass opens one separately frozen registered-only extension probe; a fail closes V5 as physically conclusive. Neither is a pawn-task attempt or global mapping approval. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -65,11 +65,11 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-RP03D is a terminal dynamic negative. Freeze the smallest contact-impossible
-RP04A probe against the three single-lane canonical V5 paths. Resolve the
-gateway's excursion and controlled-return contract without weakening joint,
-collision, camera, exact-action, or cleanup gates. Physical task authority
-remains false.
+Run the already frozen RP04A static compiler exactly once. It binds the
+smallest-span V5 lane to a row-490 dual-scene no-contact prefix and two
+prospective gateway segments. Physical, camera, serial, mapping, and task
+authority remain false until that receipt passes and a separately hashed
+one-execution packet is reviewed.
 
 ## RP00 immutable result
 
@@ -362,6 +362,22 @@ remains false.
 - V5 is simulator evidence only. Its mapping label remains
   `provisional_range_audit_blocked`, and physical authority remains false
   until RP04A passes.
+
+## RP04A coordinated-unloading blocker decision
+
+- The targeted Fable consult selected one no-contact coordinated V5 prefix
+  instead of a fourth locked-elbow task mechanism.
+- Independent reconciliation rejected a one-shot row-736 probe because the
+  zero-rigid-transform stress scene contacts a different pawn at row `531`.
+- The frozen row-490 prefix remains at least `40` source rows (`1.0 s`) before
+  contact under both scene hypotheses and reaches elbow `39.718344 deg` from
+  the `99.472527 deg` source anchor.
+- Frozen source action: `tan_pawn_f7__f7_e7`, SHA-256 `e9f128e0...`.
+- Frozen gateway segment boundaries: `[0, 433, 490]`; maximum permitted
+  per-origin excursion: `80 deg`.
+- This is a coordinated-unloading diagnostic only. It cannot move hardware,
+  approve mapping, count a task attempt, or support transfer until the static
+  compiler passes and a separate packet is frozen.
 
 ## RP01 freeze
 
