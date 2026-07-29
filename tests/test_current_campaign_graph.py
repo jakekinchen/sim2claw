@@ -31,14 +31,12 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
     assert rebuilt == tracked
     assert tracked["active_pointer"]["milestone_id"] == "CC02"
     assert tracked["active_pointer"] == {
-        "node_id": "verdict:canonical-wrist-path-low-contact-temporal-v3-partial-reject",
+        "node_id": "checkpoint:canonical-wrist-path-stroke-static-v5-frozen",
         "milestone_id": "CC02",
-        "status": (
-            "low_contact_two_family_partial_reject_before_bounded_stroke_static_freeze"
-        ),
-        "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_STATIC_SUCCESSOR",
+        "status": "preregistered_before_exactly_once_bounded_stroke_static_replay",
+        "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_STATIC_REPLAY",
         "resume_action": (
-            "freeze_four_family_66mm_stroke_static_successor"
+            "execute_canonical_wrist_path_stroke_static_v5_exactly_once"
         ),
         "resume_authorized": True,
         "heldout_open_count": 1,
@@ -46,7 +44,7 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "counted_task_attempts": 0,
     }
     assert [row["revision"] for row in tracked["revision_timeline"]] == list(
-        range(133)
+        range(134)
     )
     assert [row["event_id"] for row in tracked["revision_timeline"][:5]] == [
         "V00",
@@ -56,10 +54,10 @@ def test_current_campaign_graph_is_reproducible_and_backtrackable() -> None:
         "V04",
     ]
     assert tracked["revision_timeline"][-1]["event_id"] == (
-        "CANONICAL_WRIST_PATH_LOW_CONTACT_TEMPORAL_V3_PARTIAL_REJECT"
+        "CANONICAL_WRIST_PATH_STROKE_STATIC_V5_FROZEN"
     )
     assert tracked["revision_timeline"][-1]["node_ids_added"] == [
-        "verdict:canonical-wrist-path-low-contact-temporal-v3-partial-reject"
+        "checkpoint:canonical-wrist-path-stroke-static-v5-frozen"
     ]
     assert config["active_pointer"] == tracked["active_pointer"]
     assert tracked["active_pointer"]["resume_authorized"] is True

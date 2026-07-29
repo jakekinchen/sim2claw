@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC02_BOUNDED_STROKE_STATIC_SUCCESSOR`
+Status: `ACTIVE_CC02_BOUNDED_STROKE_STATIC_REPLAY`
 
 Created: `2026-07-28`
 
@@ -410,6 +410,10 @@ Current state:
   `+/-3 mm` reset uncertainty. No failed case receives a private adjustment.
   Contact height, wrist orientation, precontact path, jaw target, reset,
   physics, action rate, and every task/robustness gate remain unchanged.
+- Stroke static V5 is frozen before execution at contract SHA-256
+  `8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f`.
+  It contains exactly one cell per complete V3 family, two per assigned
+  direction, and no dynamic or physical authority.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -451,6 +455,6 @@ This authorization:
 
 Next step:
 
-- Freeze and execute one static-only `66 mm` stroke cell for each of the same
-  four low-contact families. Dynamic replay may be frozen only if all four
-  pass the unchanged IK, collision, camera, contact, and gateway gates.
+- Execute stroke static V5 exactly once. Dynamic replay may be frozen only if
+  all four pass the unchanged IK, collision, camera, contact, and gateway
+  gates.

@@ -1,0 +1,63 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_stroke_static_successor.v5",
+  "contract_id": "canonical-wrist-path-stroke-static-20260729-v5",
+  "status": "frozen_after_low_contact_dynamic_partial_before_bounded_stroke_static_replay",
+  "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
+  "base_contract": {
+    "path": "configs/evaluations/canonical_wrist_path_static_v4.json",
+    "sha256": "dc759ea2b13a9f29e82a86553b91cb4239f439876fc9f4926bc24c68bb236c64"
+  },
+  "predecessor_closeout": {
+    "path": "configs/decisions/canonical_wrist_path_low_contact_temporal_v3_closeout.json",
+    "sha256": "ccedd64fc67bc88553be5a4944d314fde46c09b67243a30377448cf36c7362e2"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_wrist_path_stroke_static.py",
+    "sha256": "5ef7dd2009bcf2fda7ba1bcbb0b2e2c2713ea18cd865eb42b7ac4f83027ee540"
+  },
+  "stroke_override": {
+    "from_m": 0.06,
+    "to_m": 0.066,
+    "derivation": "existing 0.060 m stroke plus the full 0.006 m span of the frozen plus/minus 0.003 m reset uncertainty",
+    "only_outcome_relevant_change": true
+  },
+  "cases": [
+    {
+      "case_id": "tan_pawn_h7__h7_h8",
+      "direction": "REAL_TO_SIM",
+      "wrist_orientation_index": 1,
+      "contact_height_index": 0
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_c7",
+      "direction": "SIM_TO_REAL",
+      "wrist_orientation_index": 0,
+      "contact_height_index": 0
+    },
+    {
+      "case_id": "tan_pawn_f7__f7_e7",
+      "direction": "REAL_TO_SIM",
+      "wrist_orientation_index": 2,
+      "contact_height_index": 0
+    },
+    {
+      "case_id": "tan_pawn_d7__d7_e7",
+      "direction": "SIM_TO_REAL",
+      "wrist_orientation_index": 0,
+      "contact_height_index": 0
+    }
+  ],
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-wrist-path-stroke-static-v5",
+  "unchanged_from_v4": {
+    "same_complete_four_family_set": true,
+    "same_low_contact_height_and_wrist_cell_per_family": true,
+    "same_current_anchor_and_calibrated_joint_ranges": true,
+    "same_35mm_horizontal_precontact_path": true,
+    "same_jaw_target_contact_offset_and_clearance": true,
+    "same_ik_collision_camera_contact_and_gateway_gates": true,
+    "same_two_per_direction_requirement": true,
+    "same_no_dynamic_outcome_selection": true,
+    "same_false_mapping_and_physical_authority": true
+  },
+  "claim_boundary": "Prospectively frozen static-only stroke successor after low-contact dynamic V3 passed only one family per direction and localized every remaining failure to progress. Exactly one 66 mm stroke cell is compiled for each of the complete four-family V3 set. The 6 mm increase is fixed from the full span of the already-frozen plus/minus 3 mm reset uncertainty; no case receives a private adjustment. The action bytes are new and no dynamics are run here. A pass freezes four static action tensors only and cannot approve dynamic replay, mapping, evaluator V2, hardware, or transfer."
+}

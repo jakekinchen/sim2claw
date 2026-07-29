@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "08c5fbd718771911dfe3b61885587ade69f3ea2c5606a085dfc4812e8d1a65d0",
+      "sha256": "3dd27ac6ccfb7eba56e42b871e3f18ba6f8794d769c6211df639479608b66102",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -1636,6 +1636,16 @@
         "schema_version": "sim2claw.canonical_wrist_path_temporal_closeout.v1",
         "status": "low_contact_two_family_partial_reject",
         "proof_class": "cpu_fp64_exact_low_contact_action_isolated_reset_direct_target_and_diagnostic_zoh_dynamic_partial_negative"
+      }
+    },
+    "canonical_wrist_path_stroke_static_v5_contract": {
+      "path": "configs/evaluations/canonical_wrist_path_stroke_static_v5.json",
+      "sha256": "8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f",
+      "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_wrist_path_stroke_static_successor.v5",
+        "status": "frozen_after_low_contact_dynamic_partial_before_bounded_stroke_static_replay",
+        "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze"
       }
     },
     "simulator_candidate": {
@@ -4505,6 +4515,24 @@
       }
     },
     {
+      "id": "checkpoint:canonical-wrist-path-stroke-static-v5-frozen",
+      "type": "checkpoint",
+      "label": "Four-family 66 mm stroke-only static successor frozen",
+      "status": "preregistered_before_exactly_once_bounded_stroke_static_replay",
+      "source_binding": "canonical_wrist_path_stroke_static_v5_contract",
+      "data": {
+        "case_count": 4,
+        "stroke_m": 0.066,
+        "real_to_sim_families": 2,
+        "sim_to_real_families": 2,
+        "grid_cells_per_family": 1,
+        "dynamic_simulation_authorized": false,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -6178,6 +6206,17 @@
       }
     },
     {
+      "source": "checkpoint:canonical-wrist-path-stroke-static-v5-frozen",
+      "type": "generated-from",
+      "target": "verdict:canonical-wrist-path-low-contact-temporal-v3-partial-reject",
+      "metadata": {
+        "single_stroke_mechanism": true,
+        "complete_four_family_set": true,
+        "static_only": true,
+        "physical_motion": false
+      }
+    },
+    {
       "source": "certificate:bidirectional-transfer",
       "type": "generated-from",
       "target": "checkpoint:v04-owner-integration-barrier",
@@ -7419,14 +7458,23 @@
       "node_ids_added": [
         "verdict:canonical-wrist-path-low-contact-temporal-v3-partial-reject"
       ]
+    },
+    {
+      "revision": 133,
+      "event_id": "CANONICAL_WRIST_PATH_STROKE_STATIC_V5_FROZEN",
+      "status": "preregistered_before_exactly_once_bounded_stroke_static_replay",
+      "source_binding": "canonical_wrist_path_stroke_static_v5_contract",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-stroke-static-v5-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "verdict:canonical-wrist-path-low-contact-temporal-v3-partial-reject",
+    "node_id": "checkpoint:canonical-wrist-path-stroke-static-v5-frozen",
     "milestone_id": "CC02",
-    "status": "low_contact_two_family_partial_reject_before_bounded_stroke_static_freeze",
-    "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_STATIC_SUCCESSOR",
-    "resume_action": "freeze_four_family_66mm_stroke_static_successor",
+    "status": "preregistered_before_exactly_once_bounded_stroke_static_replay",
+    "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_STATIC_REPLAY",
+    "resume_action": "execute_canonical_wrist_path_stroke_static_v5_exactly_once",
     "resume_authorized": true,
     "heldout_open_count": 1,
     "cumulative_manifest_read_count": 2,

@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC02",
-    "node_id": "verdict:canonical-wrist-path-low-contact-temporal-v3-partial-reject",
-    "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_STATIC_SUCCESSOR",
-    "resume_action": "freeze_four_family_66mm_stroke_static_successor",
+    "node_id": "checkpoint:canonical-wrist-path-stroke-static-v5-frozen",
+    "queue_status": "ACTIVE_CC02_BOUNDED_STROKE_STATIC_REPLAY",
+    "resume_action": "execute_canonical_wrist_path_stroke_static_v5_exactly_once",
     "resume_authorized": true,
-    "status": "low_contact_two_family_partial_reject_before_bounded_stroke_static_freeze"
+    "status": "preregistered_before_exactly_once_bounded_stroke_static_replay"
   },
   "authority": {
     "camera_open": false,
@@ -82,23 +82,23 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 158,
+    "edges": 159,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
       "evaluated-on": 40,
       "fitted-on": 4,
-      "generated-from": 98,
+      "generated-from": 99,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 152,
+    "nodes": 153,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 98,
+      "checkpoint": 99,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
@@ -437,6 +437,17 @@
       "source": "checkpoint:canonical-wrist-path-static-v4-pass",
       "target": "checkpoint:canonical-wrist-path-static-v4-frozen",
       "type": "evaluated-on"
+    },
+    {
+      "metadata": {
+        "complete_four_family_set": true,
+        "physical_motion": false,
+        "single_stroke_mechanism": true,
+        "static_only": true
+      },
+      "source": "checkpoint:canonical-wrist-path-stroke-static-v5-frozen",
+      "target": "verdict:canonical-wrist-path-low-contact-temporal-v3-partial-reject",
+      "type": "generated-from"
     },
     {
       "metadata": {
@@ -1890,7 +1901,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "b46b3c735a65cd4b41a1897827aa2d97895d8a6de2a67778fc4d72d7bc04dd52",
+  "graph_digest": "33fd4e32024caf495cf8b03d7e5e99f1c8c87c41266faa96ce34985773877ab4",
   "node_types": [
     "workcell",
     "session",
@@ -2560,6 +2571,36 @@
     },
     {
       "data": {
+        "case_count": 4,
+        "dynamic_simulation_authorized": false,
+        "grid_cells_per_family": 1,
+        "mapping_calibration_approved": false,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "real_to_sim_families": 2,
+        "sim_to_real_families": 2,
+        "source_binding_id": "canonical_wrist_path_stroke_static_v5_contract",
+        "stroke_m": 0.066
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:canonical-wrist-path-stroke-static-v5-frozen",
+      "label": "Four-family 66 mm stroke-only static successor frozen",
+      "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
+      "source": {
+        "path": "configs/evaluations/canonical_wrist_path_stroke_static_v5.json",
+        "payload_contract": {
+          "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
+          "schema_version": "sim2claw.canonical_wrist_path_stroke_static_successor.v5",
+          "status": "frozen_after_low_contact_dynamic_partial_before_bounded_stroke_static_replay"
+        },
+        "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
+        "sha256": "8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f"
+      },
+      "status": "preregistered_before_exactly_once_bounded_stroke_static_replay",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
         "action_count": 4,
         "actions_byte_frozen": true,
         "camera_authorized": false,
@@ -2610,7 +2651,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "08c5fbd718771911dfe3b61885587ade69f3ea2c5606a085dfc4812e8d1a65d0"
+        "sha256": "3dd27ac6ccfb7eba56e42b871e3f18ba6f8794d769c6211df639479608b66102"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -7637,7 +7678,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "08c5fbd718771911dfe3b61885587ade69f3ea2c5606a085dfc4812e8d1a65d0",
+      "source_sha256": "3dd27ac6ccfb7eba56e42b871e3f18ba6f8794d769c6211df639479608b66102",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -7929,6 +7970,16 @@
       "source_binding": "canonical_wrist_path_low_contact_temporal_v3_closeout",
       "source_sha256": "ccedd64fc67bc88553be5a4944d314fde46c09b67243a30377448cf36c7362e2",
       "status": "low_contact_two_family_partial_reject_before_bounded_stroke_static_freeze"
+    },
+    {
+      "event_id": "CANONICAL_WRIST_PATH_STROKE_STATIC_V5_FROZEN",
+      "node_ids_added": [
+        "checkpoint:canonical-wrist-path-stroke-static-v5-frozen"
+      ],
+      "revision": 133,
+      "source_binding": "canonical_wrist_path_stroke_static_v5_contract",
+      "source_sha256": "8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f",
+      "status": "preregistered_before_exactly_once_bounded_stroke_static_replay"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -8364,6 +8415,17 @@
       "sha256": "b9374eaa326af2bdb063eac577e76293c2a3e45f11001c1d135bdd7258a15e31"
     },
     {
+      "id": "canonical_wrist_path_stroke_static_v5_contract",
+      "path": "configs/evaluations/canonical_wrist_path_stroke_static_v5.json",
+      "payload_contract": {
+        "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
+        "schema_version": "sim2claw.canonical_wrist_path_stroke_static_successor.v5",
+        "status": "frozen_after_low_contact_dynamic_partial_before_bounded_stroke_static_replay"
+      },
+      "proof_class": "prospective_cpu_fp64_four_family_66mm_stroke_static_action_freeze",
+      "sha256": "8577514b7456e745bad7947c30c5798ebb2f82e31daab6a641be7460a40e106f"
+    },
+    {
       "id": "canonical_wrist_path_temporal_v1_closeout",
       "path": "configs/decisions/canonical_wrist_path_temporal_v1_closeout.json",
       "payload_contract": {
@@ -8400,7 +8462,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "08c5fbd718771911dfe3b61885587ade69f3ea2c5606a085dfc4812e8d1a65d0"
+      "sha256": "3dd27ac6ccfb7eba56e42b871e3f18ba6f8794d769c6211df639479608b66102"
     },
     {
       "id": "current_task_scene_labels",
