@@ -1,0 +1,55 @@
+{
+  "schema_version": "sim2claw.reachable_lock_task_certificate.v1",
+  "contract_id": "reachable-lock-task-certificate-20260729-v1",
+  "status": "frozen_after_no_contact_reachable_floor_before_one_static_screen",
+  "proof_class": "prospective_cpu_fp64_static_task_geometry_at_bounded_reachable_elbow_locks",
+  "inputs": {
+    "physical_closeout": {
+      "path": "configs/decisions/full_range_no_contact_execution_v2_closeout.json",
+      "sha256": "a02aead2ec17408fe6e127a6ed3d7dd4433a81e1f37de749b68a92f0288bbc6e"
+    },
+    "template_contract": {
+      "path": "configs/evaluations/directional_displacement_static_v1.json",
+      "sha256": "852dfc133f4c74e6ee25728610b4b77b73a76f63f237e7243ec6997fa430902b"
+    },
+    "implementation": {
+      "path": "src/sim2claw/reachable_lock_task_certificate.py",
+      "sha256": "1e0ebf2727cbe0c9991f7ada9267c2e8db091f27ec6c3837693be5bf7f36df7b"
+    }
+  },
+  "base_seed_degrees_percent": [
+    6.5054945054945055,
+    -85.53846153846153,
+    99.47252747252747,
+    -20.087912087912088,
+    -103.34065934065934,
+    2.3752969121140137
+  ],
+  "lock_grid_degrees": [
+    85.0,
+    80.0,
+    77.5
+  ],
+  "selection": {
+    "preferred_lock_degrees": 80.0,
+    "preferred_lock_requires_static_pass": true,
+    "minimum_distinct_families_per_direction": 1,
+    "dynamic_outcomes_used": false,
+    "physical_task_outcomes_used": false,
+    "grid_expansion_after_run": false
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-task-certificate-v1",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_simulation": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "mapping_approval": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "This static-only screen evaluates the unchanged directional-displacement family universe at exactly 85, 80, and 77.5 degree elbow locks after the no-contact physical route observed a 77.4066 degree floor. The 80 degree lock is predeclared as preferred physical margin. No dynamic or task outcome enters selection. A pass can only freeze a dynamic simulator screen; it cannot authorize cameras, gateway, serial, motion, pawn contact, a task attempt, mapping approval, or transfer."
+}

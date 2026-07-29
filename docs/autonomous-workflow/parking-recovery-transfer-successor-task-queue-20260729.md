@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04C_V2_ONE_PHYSICAL_EXECUTION_AUTHORIZED`
+Status: `RP04D_REACHABLE_LOCK_STATIC_SCREEN_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -47,6 +47,7 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04 | `DONE_EXISTING_SIMULATOR_PASS_RECONCILED` | Select the strongest already frozen natural-anchor simulator route without using later outcomes to alter its actions. | Canonical wrist-path V5 predates this successor and has exactly two families per direction across direct/ZOH and five resets, with exact actions and ObservableEpisode traces. | Receipt `cf21bd8c...` passes `40/40`; its four action tensors are immutable transfer candidates. This does not approve mapping or hardware. |
 | RP04A | `DONE_TERMINAL_V5_TRACKING_NEGATIVE` | Approve or reject the coordinated-unloading hypothesis before any task packet. | The elbow-only fit passed its untouched tail, then the exact 20-episode challenger preserved all V5 requested bytes and the canonical evaluator. | `0/20` task episodes passed. All four V5 actions are closed for hardware; no retry, task-conditioned refit, action repair, or gate relaxation. |
 | RP04C | `V2_ONE_PHYSICAL_EXECUTION_AUTHORIZED` | Extend execution evidence toward the smallest V5 contact-angle corridor without pawn or board contact. | V2 static receipt `accd098e...` passes: `1105` rows, reachable `-60 deg` pan, `-10.409 deg` elbow, `75.874 mm` worst-case clearance, both scenes contact-free, and all route gates. Packet commit `6ca36ab` passed four focused tests; one packet-hash-bound authorization is active until `12:29:14 CDT`. | No V1 retry. Any live start, camera, gateway, tracking, boundary, or cleanup defect stops safely; still zero task attempts. |
+| RP04D | `REACHABLE_LOCK_STATIC_SCREEN_FROZEN_PENDING_ONE_RUN` | Compile task geometry around the physically observed elbow floor instead of ideal V5 angles. | Screen exactly `{85, 80, 77.5} deg` with the unchanged directional-displacement static family universe. `80 deg` is prospectively preferred as a `2.59 deg` margin above the observed `77.4066 deg` floor. Require at least one family per direction; no dynamic or physical task outcome enters selection. | If preferred `80 deg` fails, do not cherry-pick after outcomes. A pass may freeze only a dynamic simulator screen, not hardware. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -66,10 +67,10 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Execute the one authorized V2 packet at most once after its fresh torque-off
-start-envelope check. Cameras must start before the gateway; preserve exact
-forward/reverse rows, five boundaries, controlled failure return, and torque-off
-cleanup. Then review the cameras and freeze a chronological plant-fit split.
+Run the already frozen three-lock RP04D static task screen exactly once. If the
+predeclared `80 deg` lock yields at least one family per direction, freeze its
+exact action tensors for direct/ZOH dynamic replay before considering any
+physical task packet. If it fails, preserve the bounded negative.
 
 ## RP00 immutable result
 
@@ -450,6 +451,19 @@ cleanup. Then review the cameras and freeze a chronological plant-fit split.
 - Both cameras completed; visual review found no pawn or board contact.
 - Controlled return completed within `1.495 deg`; postflight torque is off.
 - No physical pawn-task attempt or mapping approval occurred.
+
+## RP04C V2 immutable physical result
+
+- Packet freeze commit: `6ca36ab`; authorization commit: `23fc410`.
+- Receipt SHA-256:
+  `5b8ecb4376533b1df21c369ddf7f2cfff5aa2b8c875a88363ca1525fceca27eb`.
+- The reachable `-60 deg` pan boundary passed and `501` forward route rows
+  executed before the gateway's five-second elbow no-progress stop.
+- Minimum observed elbow: `77.406593 deg`, a new physical range result.
+- Both cameras completed; visual review found no pawn or board contact.
+- Controlled return completed within `1.495 deg`; postflight torque is off.
+- This is a physical configuration-space advancement, not a task attempt,
+  mapping approval, or transfer.
 
 ## RP01 freeze
 

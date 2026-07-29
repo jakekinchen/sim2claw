@@ -1,0 +1,33 @@
+{
+  "schema_version": "sim2claw.full_range_no_contact_execution_closeout.v2",
+  "decision_id": "full-range-no-contact-execution-20260729-v2-closeout",
+  "status": "reachable_elbow_floor_identified_task_lock_screen_admitted",
+  "packet_freeze_commit": "6ca36ab",
+  "authorization_commit": "23fc410",
+  "packet": {
+    "path": "configs/hardware/full_range_no_contact_execution_v2.json",
+    "sha256": "d70bebcbd0912badd13e273fc0755323b53ac396427d0f5867eda7a2ff154544"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-execution-v2/receipt.json",
+    "sha256": "5b8ecb4376533b1df21c369ddf7f2cfff5aa2b8c875a88363ca1525fceca27eb"
+  },
+  "camera_review": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-full-range-no-contact-execution-v2/review/camera_review.json",
+    "sha256": "e5f4cc46fec1b21cb3121daafd1966f0bc1e20f1993d2c702be68082528249fb"
+  },
+  "result": {
+    "forward_source_rows_completed": 501,
+    "minimum_observed_elbow_degrees": 77.4065934065934,
+    "maximum_elbow_tracking_error_degrees": 30.46807216057887,
+    "failure": "gateway five-second no-progress stop during coordinated elbow descent",
+    "cameras_complete": true,
+    "camera_review_no_pawn_or_board_contact": true,
+    "controlled_return_completed": true,
+    "maximum_controlled_return_residual_degrees": 1.4945054945054927,
+    "postflight_torque_off": true,
+    "physical_task_attempts": 0,
+    "mapping_approved": false
+  },
+  "decision": "Close further attempts to drive the ideal V5 zero-degree elbow corridor. Preserve the new 77.4066 degree observed reachable floor as mechanism evidence, not a hold or mapping approval. Prospectively screen static task families at exactly 85, 80, and 77.5 degrees, with 80 degrees predeclared as the preferred physical-margin lock if it passes. Do not use V5 tracking outcomes to alter task gates and do not authorize hardware from this closeout."
+}
