@@ -1,0 +1,36 @@
+{
+  "schema_version": "sim2claw.coordinated_unloading_tracking_temporal_closeout.v1",
+  "decision_id": "coordinated-unloading-tracking-temporal-20260729-v1-closeout",
+  "status": "terminal_v5_tracking_negative",
+  "freeze_commit": "91d2dd3",
+  "contract": {
+    "path": "configs/evaluations/coordinated_unloading_tracking_temporal_v1.json",
+    "sha256": "ad79cecd80473d71b05952911038c1df4e9740a6c260fae95391f81f0142cf6b"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-coordinated-unloading-tracking-temporal-v1/receipt.json",
+    "sha256": "da3badac7a0e4af54bbdfd53f4f95af19da36e988d973ec78836ddca47ac6ad5"
+  },
+  "result": {
+    "prior_v5_direct_zoh_passes": 40,
+    "prior_v5_direct_zoh_episodes": 40,
+    "tracking_challenger_passes": 0,
+    "tracking_challenger_episodes": 20,
+    "passing_cases_per_direction": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "physical_task_attempts": 0,
+    "mapping_approved": false
+  },
+  "causal_localization": {
+    "first_divergence_channel": "applied_action",
+    "all_cases_lost_canonical_task_geometry": true,
+    "h7_to_h8_selected_contact_steps": 0,
+    "other_cases_violate_no_lift_and_collision": true,
+    "physical_support_extrapolation_material": true,
+    "minimum_extrapolated_rows_in_any_case": 592,
+    "maximum_extrapolated_rows_in_any_case": 2262
+  },
+  "decision": "Close all four V5 action tensors for physical task execution. Do not retry, refit on these task outcomes, relax the 36.025 mm or no-lift/collision gates, or send any V5 task packet. The next successor must first extend no-contact physical identification through the elbow range needed by the smallest-contact-angle family, then prospectively compile execution-aware commands and validate them on the same frozen evaluator and heldouts before any task authority can reopen."
+}
