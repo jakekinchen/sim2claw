@@ -48,11 +48,11 @@ from .physical_gateway import (
 from .physical_sim_replay import replay_physical_recording
 from .replay_eligibility import audit_exact_replay_manifest
 from .render import write_rgb_png
-from .scene import (
+from .current_workcell import (
     CURRENT_TASK_LAYOUT_ID,
     CURRENT_TASK_PIECE_LAYOUT,
     ROBOT_JOINTS,
-    build_scene_spec,
+    build_current_workcell_spec,
     initialize_robot_poses,
     scene_summary,
 )
@@ -645,7 +645,7 @@ class SimulationFollowerBackend:
 
     def open(self) -> dict[str, Any]:
         self.leader.open()
-        self.model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()
+        self.model = build_current_workcell_spec().compile()
         self.data = mujoco.MjData(self.model)
         initialize_robot_poses(self.model, self.data)
         for joint in ROBOT_JOINTS:

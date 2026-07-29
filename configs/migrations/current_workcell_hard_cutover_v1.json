@@ -1,0 +1,166 @@
+{
+  "schema_version": "sim2claw.current_workcell_hard_cutover.v1",
+  "status": "verified_complete",
+  "cutover_id": "canonical_rank1_near_v1",
+  "historical_runtime_boundary": {
+    "commit": "9e563f4",
+    "scene_path": "src/sim2claw/scene.py",
+    "scene_sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46",
+    "mutation_allowed": false,
+    "receipts_actions_hashes_preserved": true
+  },
+  "authority": {
+    "simulation_only": true,
+    "physical_authority": false,
+    "gateway_or_serial_authority": false,
+    "counted_task_attempts_authorized": false
+  },
+  "canonical_contract": {
+    "runtime_module": "sim2claw.current_workcell",
+    "builder": "build_current_workcell_spec",
+    "square_resolver": "current_square_center",
+    "rank_1_side": "near_robot_operator",
+    "rank_8_side": "far",
+    "files_from_operator": "a_to_h_left_to_right",
+    "public_frame_or_transform_options": [],
+    "piece_layout": "two_sided_sparse_pawns_rows_1_2_7_8_v1"
+  },
+  "active_canonical_entrypoints": [
+    {
+      "path": "src/sim2claw/studio_live.py",
+      "reason": "live Studio pose mirror"
+    },
+    {
+      "path": "src/sim2claw/studio_assets.py",
+      "reason": "Studio inspection posters"
+    },
+    {
+      "path": "src/sim2claw/teleop_recording.py",
+      "reason": "episode record workspace and preview"
+    }
+  ],
+  "production_scene_caller_classification": [
+    {
+      "path": "src/sim2claw/current_workcell.py",
+      "class": "ACTIVE_CANONICAL",
+      "reason": "sole transform-free active scene API and quarantined immutable renderer binding"
+    },
+    {
+      "path": "src/sim2claw/legacy/scene.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "explicit frozen-evidence facade"
+    },
+    {
+      "path": "src/sim2claw/scene.py",
+      "class": "LOW_LEVEL_NEUTRAL",
+      "reason": "hash-bound immutable measured geometry and historical compatibility implementation"
+    },
+    {
+      "path": "src/sim2claw/alignment.py",
+      "class": "LOW_LEVEL_NEUTRAL",
+      "reason": "generic scan alignment without current task authority"
+    },
+    {
+      "path": "src/sim2claw/render.py",
+      "class": "LOW_LEVEL_NEUTRAL",
+      "reason": "generic inspection renderer"
+    },
+    {
+      "path": "src/sim2claw/robot_anchored_overlay.py",
+      "class": "LOW_LEVEL_NEUTRAL",
+      "reason": "read-only overlay diagnostic"
+    },
+    {
+      "path": "src/sim2claw/state_trace.py",
+      "class": "LOW_LEVEL_NEUTRAL",
+      "reason": "generic state trace utility"
+    },
+    {
+      "path": "src/sim2claw/bidirectional_scene_registration_v4.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "frozen V04 fit-only evaluator"
+    },
+    {
+      "path": "src/sim2claw/chess_task.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "pre-cutover task runtime not authorized for new evidence"
+    },
+    {
+      "path": "src/sim2claw/empty_gripper_diagnostic.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "completed diagnostic"
+    },
+    {
+      "path": "src/sim2claw/goal_act_evaluator.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "hash-bound prior evaluator"
+    },
+    {
+      "path": "src/sim2claw/grasp.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "pre-cutover scene construction; reusable math does not grant scene authority"
+    },
+    {
+      "path": "src/sim2claw/img5349_articulated_cad_fit.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "completed fixed-data fit"
+    },
+    {
+      "path": "src/sim2claw/joint_limit_comparison.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "completed comparison diagnostic"
+    },
+    {
+      "path": "src/sim2claw/learning_factory_components.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "pre-cutover synthetic factory component"
+    },
+    {
+      "path": "src/sim2claw/pawn_bg_demo_sim.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "prior B-G demonstration"
+    },
+    {
+      "path": "src/sim2claw/pawn_bg_source_fit.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "prior source-fit lane"
+    },
+    {
+      "path": "src/sim2claw/pawn_bg_source_fit_visuals.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "prior fit visualization"
+    },
+    {
+      "path": "src/sim2claw/pawn_bg_workcell_fit.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "prior parameter-fit lane"
+    },
+    {
+      "path": "src/sim2claw/pawn_source_evaluator.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "prior frozen evaluator"
+    },
+    {
+      "path": "src/sim2claw/pawn_source_expert.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "prior source policy"
+    },
+    {
+      "path": "src/sim2claw/physical_sim_replay.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "existing physical receipts depend on the pre-cutover scene; no new physical authority"
+    },
+    {
+      "path": "src/sim2claw/real_to_sim_transfer.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "prior transfer evaluator"
+    },
+    {
+      "path": "src/sim2claw/recorded_replay.py",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "hash-bound replay compiler; new work must bind canonical_current_workcell"
+    }
+  ],
+  "future_rule": "New task, replay, or evaluator code must import sim2claw.current_workcell and must not call sim2claw.scene.build_scene_spec directly.",
+  "registration_gate": "A fresh canonical task-plane registration at or below 25 mm is required before any physical experiment packet can be frozen."
+}

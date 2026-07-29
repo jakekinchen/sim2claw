@@ -24,10 +24,10 @@ import numpy as np
 from .overhead_video import OverheadVideoError, list_avfoundation_cameras
 from .physical_gateway import GatewayIdentity, SO101PhysicalGateway
 from .physical_sim_replay import physical_values_to_sim
-from .scene import (
+from .current_workcell import (
     CURRENT_TASK_PIECE_LAYOUT,
     ROBOT_JOINTS,
-    build_scene_spec,
+    build_current_workcell_spec,
     initialize_robot_poses,
 )
 from .state_trace import build_scene_manifest
@@ -163,7 +163,7 @@ class PhysicalPoseMirror:
     """Project observed follower joints into the current MuJoCo visual scene."""
 
     def __init__(self) -> None:
-        self.model = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT).compile()
+        self.model = build_current_workcell_spec().compile()
         self.data = mujoco.MjData(self.model)
         initialize_robot_poses(self.model, self.data)
         mujoco.mj_forward(self.model, self.data)

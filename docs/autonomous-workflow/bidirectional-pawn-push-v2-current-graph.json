@@ -7553,5 +7553,24 @@
       "proof_class": "board_conditioned_monocular_3dgs_to_sim_visual_registration",
       "sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4"
     }
-  ]
+  ],
+  "current_workcell_hard_cutover": {
+    "cutover_id": "canonical_rank1_near_v1",
+    "status": "verified_complete_pending_commit_push",
+    "historical_boundary_commit": "9e563f4",
+    "historical_scene_sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46",
+    "manifest": "configs/migrations/current_workcell_hard_cutover_v1.json",
+    "runtime": "sim2claw.current_workcell",
+    "active_entrypoints": [
+      "src/sim2claw/studio_live.py",
+      "src/sim2claw/studio_assets.py",
+      "src/sim2claw/teleop_recording.py"
+    ],
+    "public_frame_or_transform_options": [],
+    "legacy_reproduction": "explicit_read_only_facade",
+    "physical_authority": false,
+    "gateway_or_serial_authority": false,
+    "counted_task_attempts_authorized": false,
+    "physical_resume_gate": "fresh_canonical_task_plane_registration_lte_25_mm"
+  }
 }

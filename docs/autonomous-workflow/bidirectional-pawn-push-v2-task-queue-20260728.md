@@ -3527,3 +3527,30 @@ servers remain; no replay/simulator worker, camera, gateway, or serial-client
 process remains, and both USB serial devices are unowned. `brev ls` reports no
 instances. The unrelated untracked
 `tools/build_fiducial_sheet.py` remains untouched.
+
+### HC-01 through HC-06 canonical current-workcell hard cutover — 2026-07-28
+
+The owner authorized an operational hard cutover instead of extending the
+legacy orientation-successor chain. Commit `9e563f4` is bound as the immutable
+historical runtime boundary. Prior receipts, action tensors, labels, hashes,
+and terminal-negative conclusions remain unchanged.
+
+The executable cutover and caller classification live in
+`configs/migrations/current_workcell_hard_cutover_v1.json`; the milestone
+contract is
+`docs/autonomous-workflow/current-workcell-hard-cutover-20260728.md`.
+`sim2claw.current_workcell` is now the only active public scene-construction
+surface. Its API has no transform, frame, or legacy selector. Studio live,
+Studio assets, and episode recording use it directly. Historical
+reproduction is isolated behind the explicit read-only `sim2claw.legacy`
+facade, while the hash-bound `src/sim2claw/scene.py` remains byte-identical.
+
+The first focused cutover/scene/orientation/Studio/recording suite passed
+`68` tests and `2` subtests. Final relevant verification passed `96` tests
+and `18` subtests; Python compilation, diff checking, JSON parsing, exact
+`24/24` caller classification, and the workflow audit passed. HC-06 is
+complete pending the publication identity recorded after commit/push.
+
+This cutover grants no physical, gateway, serial, evaluator, or counted-action
+authority. A fresh canonical task-plane registration with error `<=25 mm`
+remains mandatory before any physical experiment packet can be frozen.

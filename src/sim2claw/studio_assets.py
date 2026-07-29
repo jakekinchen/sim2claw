@@ -16,10 +16,9 @@ from .paths import (
     STUDIO_ASSET_ROOT,
 )
 from .render import write_rgb_png
-from .scene import (
+from .current_workcell import (
     CURRENT_TASK_LAYOUT_ID,
-    CURRENT_TASK_PIECE_LAYOUT,
-    build_scene_spec,
+    build_current_workcell_spec,
     initialize_robot_poses,
 )
 
@@ -67,7 +66,7 @@ def render_studio_assets(
     if settle_steps < 0:
         raise ValueError("settle_steps cannot be negative")
     output_directory.mkdir(parents=True, exist_ok=True)
-    spec = build_scene_spec(piece_layout=CURRENT_TASK_PIECE_LAYOUT)
+    spec = build_current_workcell_spec()
     model = spec.compile()
     data = mujoco.MjData(model)
     initialize_robot_poses(model, data)
