@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 2,
     "heldout_open_count": 1,
     "milestone_id": "CC03",
-    "node_id": "checkpoint:calibration-graph-composite-probe-v2-route-frozen",
-    "queue_status": "ACTIVE_CC03_COMPOSITE_PROBE_V2_COMPILE",
-    "resume_action": "compile_review_execute_composite_calibration_probe_v2",
+    "node_id": "verdict:calibration-graph-composite-probe-v2-review-admit",
+    "queue_status": "ACTIVE_CC03_COMPOSITE_PROBE_V2_EXECUTE",
+    "resume_action": "execute_composite_calibration_probe_v2_stage_1_once",
     "resume_authorized": true,
-    "status": "preregistered_before_packet_compile"
+    "status": "reviewed_for_single_calibration_execution"
   },
   "authority": {
     "camera_open": false,
@@ -82,27 +82,27 @@
     "wrist_depth": "omitted_not_required"
   },
   "counts": {
-    "edges": 173,
+    "edges": 175,
     "edges_by_type": {
       "affected-by": 1,
       "applied-to": 4,
       "counterexample-to": 3,
-      "evaluated-on": 47,
+      "evaluated-on": 48,
       "fitted-on": 4,
-      "generated-from": 106,
+      "generated-from": 107,
       "invalidates": 3,
       "observed-by": 3,
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 167,
+    "nodes": 169,
     "nodes_by_type": {
       "candidate": 2,
-      "checkpoint": 108,
+      "checkpoint": 109,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 32,
+      "evaluator_verdict": 33,
       "evidence": 6,
       "intervention": 1,
       "mechanism": 3,
@@ -239,6 +239,16 @@
       },
       "source": "checkpoint:calibration-graph-composite-probe-route-frozen",
       "target": "verdict:calibration-graph-v1-mapping-reject",
+      "type": "generated-from"
+    },
+    {
+      "metadata": {
+        "fresh_torque_off_anchor": true,
+        "no_modeled_contacts": true,
+        "physical_motion": false
+      },
+      "source": "checkpoint:calibration-graph-composite-probe-v2-packet-compiled",
+      "target": "checkpoint:calibration-graph-composite-probe-v2-route-frozen",
       "type": "generated-from"
     },
     {
@@ -1661,6 +1671,16 @@
     },
     {
       "metadata": {
+        "no_contact_calibration_only": true,
+        "physical_motion_at_review": false,
+        "single_stage_execution": true
+      },
+      "source": "verdict:calibration-graph-composite-probe-v2-review-admit",
+      "target": "checkpoint:calibration-graph-composite-probe-v2-packet-compiled",
+      "type": "evaluated-on"
+    },
+    {
+      "metadata": {
         "full_active_rank": true,
         "physical_model_mapping_approved": false,
         "physical_motion": false
@@ -2044,7 +2064,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "a6f1572206e91d0146589f0446ea32b8f421061f8dcd69332d17552082a1cf86",
+  "graph_digest": "f593a73b5f9eb8b8e2ff84a3e6dca18b08bb6e18986ff58a6387b3041d898d4e",
   "node_types": [
     "workcell",
     "session",
@@ -2156,6 +2176,32 @@
         "sha256": "0c9e41d71af945144e782778d5fa4f52f2096f6e2705598b7dad742d3a0069be"
       },
       "status": "preregistered_before_packet_compile",
+      "type": "checkpoint"
+    },
+    {
+      "data": {
+        "exact_action_sha256": "25df23c1cc7a392e190b2eda42afcc23ea3b523e9ce760dfe607d3be3993502b",
+        "modeled_contact_pairs": 0,
+        "physical_motion": false,
+        "physical_task_attempts": 0,
+        "plan_sha256": "1a8cabd2416c421061092506cf3595b02ba96573eec7a94747ce79cc4835930e",
+        "source_binding_id": "calibration_graph_composite_probe_v2_packet"
+      },
+      "evaluator_identity": null,
+      "id": "checkpoint:calibration-graph-composite-probe-v2-packet-compiled",
+      "label": "Composite tricam V2 packet compiled from fresh torque-off anchor",
+      "proof_class": "reviewable_follower_only_no_contact_calibration_packet",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/packet.json",
+        "payload_contract": {
+          "physical_motion_commanded": false,
+          "plan_sha256": "1a8cabd2416c421061092506cf3595b02ba96573eec7a94747ce79cc4835930e",
+          "schema_version": "sim2claw.wrist_view_reposition_packet.v2"
+        },
+        "proof_class": "reviewable_follower_only_no_contact_calibration_packet",
+        "sha256": "d7f095627c4735ab4b6132aa6ff4666ca57372468837031a93ecc3fd887eb930"
+      },
+      "status": "compiled_no_motion",
       "type": "checkpoint"
     },
     {
@@ -3057,7 +3103,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "e175880e0691449059ecdbb8d0befb2f27f583c383c4da3f2265554ebc90071f"
+        "sha256": "9b7c9903c27a52d0805697879196385f5e7878e438645a2abbeb7699fb0522d5"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -6097,6 +6143,32 @@
     },
     {
       "data": {
+        "no_contact_calibration_only": true,
+        "physical_motion_at_review": false,
+        "physical_task_attempts": 0,
+        "reviewed_packet_source_binding": "calibration_graph_composite_probe_v2_packet",
+        "single_stage_execution": true,
+        "source_binding_id": "calibration_graph_composite_probe_v2_review"
+      },
+      "evaluator_identity": "d7f095627c4735ab4b6132aa6ff4666ca57372468837031a93ecc3fd887eb930",
+      "id": "verdict:calibration-graph-composite-probe-v2-review-admit",
+      "label": "Independent review admits one composite calibration stage",
+      "proof_class": "independent_single_stage_no_contact_calibration_packet_review",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/review.json",
+        "payload_contract": {
+          "physical_authority": false,
+          "schema_version": "sim2claw.wrist_view_reposition_review.v2",
+          "status": "admitted_for_one_execution_per_stage"
+        },
+        "proof_class": "independent_single_stage_no_contact_calibration_packet_review",
+        "sha256": "81b2524acd777e51497151ddbae09c81cdbe2b1a15c931572af45fdd99b590e1"
+      },
+      "status": "admitted_for_one_execution_per_stage",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "active_jacobian_rank": 4,
         "condition_number": 5.6936633786994335,
         "physical_model_mapping_approved": false,
@@ -8230,7 +8302,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "e175880e0691449059ecdbb8d0befb2f27f583c383c4da3f2265554ebc90071f",
+      "source_sha256": "9b7c9903c27a52d0805697879196385f5e7878e438645a2abbeb7699fb0522d5",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -8672,6 +8744,26 @@
       "source_binding": "calibration_graph_composite_probe_v2_route",
       "source_sha256": "5cf70e332236729dbf5cd1562c8992947f59592e0590b33148654b24b47e69df",
       "status": "preregistered_before_packet_compile"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_COMPOSITE_PROBE_V2_PACKET_COMPILED",
+      "node_ids_added": [
+        "checkpoint:calibration-graph-composite-probe-v2-packet-compiled"
+      ],
+      "revision": 148,
+      "source_binding": "calibration_graph_composite_probe_v2_packet",
+      "source_sha256": "d7f095627c4735ab4b6132aa6ff4666ca57372468837031a93ecc3fd887eb930",
+      "status": "compiled_no_motion"
+    },
+    {
+      "event_id": "CALIBRATION_GRAPH_COMPOSITE_PROBE_V2_REVIEW_ADMIT",
+      "node_ids_added": [
+        "verdict:calibration-graph-composite-probe-v2-review-admit"
+      ],
+      "revision": 149,
+      "source_binding": "calibration_graph_composite_probe_v2_review",
+      "source_sha256": "81b2524acd777e51497151ddbae09c81cdbe2b1a15c931572af45fdd99b590e1",
+      "status": "admitted_for_one_execution_per_stage"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -8696,6 +8788,28 @@
       },
       "proof_class": "cpu_fp64_static_collision_gateway_compile_negative",
       "sha256": "ca9b3527361784649b72d011c17c545ebef59922d755bdfbeac96fcc9ddbddd9"
+    },
+    {
+      "id": "calibration_graph_composite_probe_v2_packet",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/packet.json",
+      "payload_contract": {
+        "physical_motion_commanded": false,
+        "plan_sha256": "1a8cabd2416c421061092506cf3595b02ba96573eec7a94747ce79cc4835930e",
+        "schema_version": "sim2claw.wrist_view_reposition_packet.v2"
+      },
+      "proof_class": "reviewable_follower_only_no_contact_calibration_packet",
+      "sha256": "d7f095627c4735ab4b6132aa6ff4666ca57372468837031a93ecc3fd887eb930"
+    },
+    {
+      "id": "calibration_graph_composite_probe_v2_review",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/review.json",
+      "payload_contract": {
+        "physical_authority": false,
+        "schema_version": "sim2claw.wrist_view_reposition_review.v2",
+        "status": "admitted_for_one_execution_per_stage"
+      },
+      "proof_class": "independent_single_stage_no_contact_calibration_packet_review",
+      "sha256": "81b2524acd777e51497151ddbae09c81cdbe2b1a15c931572af45fdd99b590e1"
     },
     {
       "id": "calibration_graph_composite_probe_v2_route",
@@ -9372,7 +9486,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "e175880e0691449059ecdbb8d0befb2f27f583c383c4da3f2265554ebc90071f"
+      "sha256": "9b7c9903c27a52d0805697879196385f5e7878e438645a2abbeb7699fb0522d5"
     },
     {
       "id": "current_task_scene_labels",

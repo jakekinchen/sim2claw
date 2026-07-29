@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_COMPOSITE_PROBE_V2_COMPILE`
+Status: `ACTIVE_CC03_COMPOSITE_PROBE_V2_EXECUTE`
 
 Created: `2026-07-28`
 
@@ -487,6 +487,14 @@ Current state:
   exactly to the fresh torque-off start, and remains calibration-only. Its
   selected 961-row exact action SHA-256 is
   `25df23c1cc7a392e190b2eda42afcc23ea3b523e9ce760dfe607d3be3993502b`.
+- Composite tricam V2 compiled from a fresh torque-off follower read with no
+  modeled contacts and no action assistance. Packet SHA-256
+  `d7f095627c4735ab4b6132aa6ff4666ca57372468837031a93ecc3fd887eb930`;
+  plan SHA-256
+  `1a8cabd2416c421061092506cf3595b02ba96573eec7a94747ce79cc4835930e`.
+  Independent review admitted exactly one stage execution; review SHA-256
+  `81b2524acd777e51497151ddbae09c81cdbe2b1a15c931572af45fdd99b590e1`.
+  Compilation and review commanded no motion and opened no cameras.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -528,6 +536,7 @@ This authorization:
 
 Next step:
 
-- Compile, independently review, and execute composite calibration probe V2
-  within the owner authorization window. Do not weaken the V1 safety reject,
-  touch a pawn, or count a task attempt.
+- Execute the single reviewed composite calibration probe V2 stage within the
+  owner authorization window, verify tricam/action/return/torque-off receipts,
+  and evaluate it only as the untouched composite mapping factor. Do not
+  weaken the V1 safety reject, touch a pawn, or count a task attempt.

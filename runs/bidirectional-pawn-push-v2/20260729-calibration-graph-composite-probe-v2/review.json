@@ -1,0 +1,20 @@
+{
+  "bounded_slew_reviewed": true,
+  "camera_inspection_between_stages_acknowledged": true,
+  "clear_workcell_acknowledged": true,
+  "decision_id": "cc03-composite-probe-v2-20260729-v1",
+  "final_hold_capture_reviewed": true,
+  "fresh_anchor_and_identity_checks_reviewed": true,
+  "frozen_float64_actions_reviewed": true,
+  "packet_path": "/Users/kelly/Developer/sim2claw/runs/bidirectional-pawn-push-v2/20260729-calibration-graph-composite-probe-v2/packet.json",
+  "packet_sha256": "d7f095627c4735ab4b6132aa6ff4666ca57372468837031a93ecc3fd887eb930",
+  "physical_authority": false,
+  "plan_sha256": "1a8cabd2416c421061092506cf3595b02ba96573eec7a94747ce79cc4835930e",
+  "recovery_source_contact_admission_reviewed": false,
+  "reviewer": "codex-cc03-independent-packet-review",
+  "schema_version": "sim2claw.wrist_view_reposition_review.v2",
+  "simulation_contact_preview_reviewed": true,
+  "stage_excursions_reviewed": true,
+  "status": "admitted_for_one_execution_per_stage",
+  "torque_off_close_reviewed": true
+}
