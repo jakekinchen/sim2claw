@@ -1,0 +1,45 @@
+{
+  "schema_version": "sim2claw.canonical_seeded_action_static_defect_closeout.v1",
+  "decision_id": "canonical-seeded-action-static-v1-defect-20260728",
+  "status": "v1_static_pass_invalidated_by_stock_model_range_defect",
+  "contract": {
+    "path": "configs/evaluations/canonical_seeded_action_static_v1.json",
+    "sha256": "6740b72ee1bee9e6357e5810a6b5463492a27779843692d9ef2ab8f873da67e4"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v1/receipt.json",
+    "sha256": "30ea3327a1f33fc1fd07ff53e43e735f572c67015c431452f966d7d9a0c54b45",
+    "reported_status": "canonical_seeded_action_static_pass"
+  },
+  "defect": {
+    "field": "selected[*].compile.minimum_model_joint_margin_rad",
+    "observed_minimum_rad": -0.04612311967611782,
+    "joint": "left_elbow_flex",
+    "stock_model_upper_rad": 1.69,
+    "live_seed_rad": 1.7361231196761178,
+    "live_seed_excess_rad": 0.04612311967611782,
+    "live_seed_excess_degrees": 2.642527472527476,
+    "physical_seed_inside_calibrated_hardware_range": true,
+    "root_cause": "The V1 canonical compiler loaded the stock SO-101 MuJoCo elbow limit instead of the already bound calibrated physical body range and did not require nonnegative model joint margin in its final pass boolean."
+  },
+  "decision": {
+    "v1_actions_admitted": false,
+    "v1_actions_may_enter_dynamic_replay": false,
+    "v1_actions_may_enter_physical_review": false,
+    "physical_attempt_consumed": false,
+    "success_evidence": false,
+    "v2_calibrated_range_successor_authorized": true
+  },
+  "authority": {
+    "static_compilation_v2": true,
+    "dynamic_simulation": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "physical_packet": false,
+    "physical_motion": false,
+    "task_attempt": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "V1 found candidate geometry but did not pass its stated joint-limit acceptance. It is evaluator-defect evidence only and grants no dynamic or physical authority."
+}

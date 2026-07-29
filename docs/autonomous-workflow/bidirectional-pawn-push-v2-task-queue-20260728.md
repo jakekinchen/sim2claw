@@ -3660,3 +3660,27 @@ direction. Focused tests pass `4/4`; these tmp-directory tests do not grant
 dynamic or physical authority. Exactly one official static output is next.
 Dynamic simulation, cameras, gateway/serial, physical packets, torque,
 contact motion, task attempts, and transfer claims remain false.
+
+### HC-R06 V1 evaluator defect and calibrated-range V2 freeze — 2026-07-28
+
+The official V1 static receipt SHA-256 is
+`30ea3327a1f33fc1fd07ff53e43e735f572c67015c431452f966d7d9a0c54b45`.
+It reported four families and `2/2` lanes, but its selected diagnostics expose
+`minimum_model_joint_margin_rad:-0.046123120`. The live elbow seed maps to
+`1.736123120 rad`, `0.046123120 rad` (`2.642527 deg`) above the stock model's
+`1.69 rad` limit. The physical seed remains inside the bound calibrated
+hardware range.
+
+V1 is invalidated before dynamics because its final pass boolean omitted its
+stated model joint-limit gate. No V1 action is admitted or reusable as
+success evidence, and no attempt was consumed.
+
+The V2 contract
+`configs/evaluations/canonical_seeded_action_static_v2.json`, SHA-256
+`f79ad5dc65895affe13796199bd5ab682c12acf80c0134a995fdeb95ba2fef2c`,
+is now frozen. It preserves the exact V1 grid and construction and changes
+only range authority: the already bound calibrated body ranges are converted
+through the bound transform and applied to model joints and actuator
+controls. V2 explicitly requires nonnegative model joint margin. Focused V2
+tests pass `4/4`. Exactly one official V2 static output is next; dynamic and
+physical authority remain false.

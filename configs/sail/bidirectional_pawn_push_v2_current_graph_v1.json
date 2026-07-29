@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/bidirectional-pawn-push-v2-task-queue-20260728.md",
-      "sha256": "5d383dcc74a1d86916569fd4ea8477ca9a7976856d2c7ea125b0983e041de272",
+      "sha256": "93a696578134fb1a5e71676da8d2b1e08b57dac860baac383f53fc233dc4a1d8",
       "proof_class": "campaign_control_state"
     },
     "v00": {
@@ -5892,8 +5892,8 @@
   },
   "canonical_transfer_campaign": {
     "campaign_id": "canonical-transfer-20260728-v1",
-    "status": "canonical_seeded_static_contract_frozen",
-    "active_milestone": "HC-R05",
+    "status": "v1_static_defect_closed_v2_calibrated_range_contract_frozen",
+    "active_milestone": "HC-R06",
     "contract": "configs/evaluations/canonical_transfer_readiness_v1.json",
     "receipt": "runs/bidirectional-pawn-push-v2/20260728-canonical-transfer-readiness-v1/receipt.json",
     "receipt_sha256": "edc8267472c346dde7743f0f7cd8a85bb66fe512aa51f319bea999277c38cdb1",
@@ -5906,12 +5906,18 @@
     "legacy_candidates_are_diagnostics_only": true,
     "static_contract": "configs/evaluations/canonical_seeded_action_static_v1.json",
     "static_contract_sha256": "6740b72ee1bee9e6357e5810a6b5463492a27779843692d9ef2ab8f873da67e4",
+    "v1_static_receipt_sha256": "30ea3327a1f33fc1fd07ff53e43e735f572c67015c431452f966d7d9a0c54b45",
+    "v1_static_actions_admitted": false,
+    "v1_defect": "live_elbow_seed_outside_stock_model_range_by_0.04612311967611782_rad",
+    "v2_static_contract": "configs/evaluations/canonical_seeded_action_static_v2.json",
+    "v2_static_contract_sha256": "f79ad5dc65895affe13796199bd5ab682c12acf80c0134a995fdeb95ba2fef2c",
+    "calibrated_model_ranges_required": true,
     "row_zero_exact_live_anchor_required": true,
     "minimum_families_per_direction": 2,
     "physical_authority": false,
     "gateway_or_serial_authority": false,
     "physical_packet_authorized": false,
     "task_attempts": 0,
-    "next_action": "execute_canonical_seeded_static_compiler_once"
+    "next_action": "execute_canonical_seeded_static_v2_once"
   }
 }
