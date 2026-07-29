@@ -1,6 +1,6 @@
 # Realized-Action Outcome Calibration Goal Loop
 
-Status: `ACTIVE_C1_EPISODE_TWIN_BUNDLES`
+Status: `ACTIVE_C2_STATIC_GEOMETRY_RECONCILIATION`
 
 Created: `2026-07-29`
 
@@ -123,12 +123,12 @@ safe alternatives. Do not tune sealed inputs or repeat C6.
 
 ```text
 Current state: ACTIVE
-Active card: C1
-Completed: C0
-Evidence: C0 artifact 232c80bb28cac325f54d829e31fd2b84d12df85df1948d3d8fb5b4fd3e4739d1
-Remaining: C1, C2, C2-RP04N, C3, C3A, C4, C5, C6, C7, C8, C9 boundary
+Active card: C2
+Completed: C0, C1
+Evidence: C1 artifact 5290ef26caa3fa5a22db8f0bfc4aa1ec8e69c9eca63d431fab73a612e8258914
+Remaining: C2, C2-RP04N, C3, C3A, C4, C5, C6, C7, C8, C9 boundary
 Blockers: physical pathway closed at elbow service boundary; not needed for C0-C8
-Next step: build deterministic EpisodeTwinBundle.v1 artifacts for the eight cohorts
+Next step: reconcile independent existing static-geometry residual channels
 ```
 
 ## Stop conditions
