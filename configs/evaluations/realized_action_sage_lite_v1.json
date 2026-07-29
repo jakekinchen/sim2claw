@@ -1,0 +1,97 @@
+{
+  "schema_version": "sim2claw.realized_action_sage_lite_contract.v1",
+  "contract_id": "realized-action-sage-lite-v1",
+  "sources": {
+    "episode_twin_closeout": {
+      "path": "configs/decisions/episode_twin_bundle_v1_closeout.json",
+      "sha256": "f85b8406426c5e4e540224ce6f367be802763dc77cbfe0464ccea9e6bf3f3f86"
+    },
+    "episode_twin_receipt": {
+      "path": "outputs/episode_twin_bundle_v1/receipt.json",
+      "sha256": "33fb5ced9ad2eee5adfb5042c017dfb321af5f32e434283547e789e74b308fc8",
+      "artifact_sha256": "5290ef26caa3fa5a22db8f0bfc4aa1ec8e69c9eca63d431fab73a612e8258914"
+    },
+    "kinematic_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "mapping_status": "provisional_range_audit_blocked"
+    },
+    "runtime_surfaces": [
+      {
+        "path": "src/sim2claw/recorded_replay.py",
+        "sha256": "ad3223f9f4b67c31b444b1bbb5da118bf07936cd6bcf0fc14bd55e9f83c240af"
+      },
+      {
+        "path": "src/sim2claw/current_workcell.py",
+        "sha256": "df6bdf6b4408b7dcaaa1670fc0575f8506e11cef3add37124cc1afa2e8b69fad"
+      },
+      {
+        "path": "src/sim2claw/scene.py",
+        "sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46"
+      }
+    ]
+  },
+  "cohorts": {
+    "expected_episode_count": 8,
+    "expected_counts": {
+      "fit": 4,
+      "validation": 3,
+      "sealed": 1
+    },
+    "sealed_use": "report_only_no_parameter_or_mechanism_selection"
+  },
+  "joint_order": [
+    "shoulder_pan",
+    "shoulder_lift",
+    "elbow_flex",
+    "wrist_flex",
+    "wrist_roll",
+    "gripper"
+  ],
+  "analysis": {
+    "alignment_sample_shifts": [
+      -4,
+      -3,
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "alignment_semantics": "positive_shift_means_measured_sample_after_sent_sample",
+    "hold_command_slew_max_degrees_per_second": 0.5,
+    "direction_command_delta_min_degrees": 0.05,
+    "minimum_direction_samples": 10,
+    "return_sent_body_rms_max_degrees": 2.0,
+    "empirical_rate_margin_fraction": 0.98,
+    "current_register_use": "uncalibrated_association_proxy_only",
+    "ee_attribution": "single_joint_sent_substitution_into_measured_state_current_provisional_kinematics"
+  },
+  "forbidden_claims": {
+    "sample_alignment_is_causal_command_latency": true,
+    "current_register_is_torque_or_force": true,
+    "sealed_episode_selects_mechanism": true,
+    "provisional_mapping_is_globally_approved": true,
+    "analysis_is_action_outcome_transfer": true
+  },
+  "explicitly_missing_observables": [
+    "actuator_application_or_ack_timestamp",
+    "actuator_applied_command",
+    "calibrated_motor_torque",
+    "contact_force",
+    "per_sample_contact_state",
+    "per_sample_metric_object_pose"
+  ],
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "parameter_fit": false,
+    "paid_compute": false
+  }
+}
