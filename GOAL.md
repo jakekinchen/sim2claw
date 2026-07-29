@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR3 PHYSICAL OBSERVATION`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR4 FIRST CONTACT DIVERGENCE`
 
 ## Active long-horizon alignment successor
 
@@ -18,9 +18,12 @@ board-gauge camera at `2.270 px` RMS and rejects the old projective camera as
 physically implausible; exact intrinsics remain unidentified. OR2 prospectively
 rejects a rigid robot-board correction: fit and validation remain at
 `16.324 / 16.302 px` jaw-tip RMS, while the model underpredicts observed jaw
-separation by about `21.2 px`. OR3 is active to compile the physical
-jaw-pawn-contact timeline before any jaw/contact mechanism is changed. Physical
-motion remains closed at the follower-elbow service boundary.
+separation by about `21.2 px`. OR3 now accepts the physical timeline:
+enclosure is bounded to samples `228–232`, carried motion is visible from
+`260–390`, release occurs within `400–407`, and the accepted endpoint is
+upright at D2. OR4 is active to compare those events with immutable C6 on the
+exact source sample/time base. Physical motion remains closed at the
+follower-elbow service boundary.
 
 ## Latest realized-action outcome result
 

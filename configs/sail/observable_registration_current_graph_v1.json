@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or3_physical_observation",
+  "status": "active_or4_first_contact_divergence",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "7ba56c5f73d9a205667c86f39ef36b6441138e425836195c99873028d5bd8deb",
+      "sha256": "65adc4e120c18d0706647fc34166858787d2204272ccf8d1983e4af243eb814a",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -80,6 +80,11 @@
       "path": "configs/decisions/observable_robot_jaw_mapping_v1_closeout.json",
       "sha256": "28461906ca0b3cb8e67e5e68471f434c3498ea425bb8b6f93f4512baf6cf5da1",
       "proof_class": "frozen_camera_bounded_robot_board_rigid_fit_negative"
+    },
+    "or3": {
+      "path": "configs/decisions/observable_physical_episode_observations_v1_closeout.json",
+      "sha256": "4d64346dfbf671e04a6d05ac204f2381abfc650a2c7bbe2418b471b26c6469bf",
+      "proof_class": "timestamp_bound_two_pass_wrist_rgb_contact_motion_event_observation"
     }
   },
   "nodes": [
@@ -93,7 +98,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or3",
+      "status": "active_or4",
       "source_binding": "queue"
     },
     {
@@ -134,6 +139,22 @@
         "fit_projected_separation_px": 11.070739202088228,
         "validation_observed_separation_px": 32.37087238623927,
         "validation_projected_separation_px": 11.139617565595817
+      }
+    },
+    {
+      "id": "evidence:or3-physical-events",
+      "type": "evidence",
+      "label": "Observable physical jaw pawn contact and motion events",
+      "status": "accepted",
+      "source_binding": "or3",
+      "data": {
+        "candidate_contact_samples": [228, 232],
+        "definite_carried_motion_samples": [260, 390],
+        "candidate_release_samples": [400, 407],
+        "fixed_jaw_track_count": 23,
+        "moving_jaw_track_count": 23,
+        "pawn_crown_track_count": 10,
+        "metric_depth_available": false
       }
     },
     {
@@ -215,6 +236,11 @@
       "type": "constrained-by"
     },
     {
+      "source": "evidence:or3-physical-events",
+      "target": "evidence:immutable-c6",
+      "type": "counterexample-to"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -230,6 +256,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR3",
-  "next_transition": "or3_freeze_timestamp_schedule_then_compile_physical_visual_events"
+  "active_card": "OR4",
+  "next_transition": "or4_bind_physical_and_simulator_contact_object_events_on_exact_time_base"
 }
