@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_ELBOW_LOCKED_STATIC_V2_RUN`
+Status: `ACTIVE_CC03_ELBOW_LOCKED_STATIC_V3_RUN`
 
 Created: `2026-07-28`
 
@@ -720,6 +720,26 @@ Current state:
   It changes only resolved-contract implementation binding; live seed, elbow
   lock, family universe, grid, gates, selection, model, outcome blindness, and
   authority are unchanged.
+- V2 opened all `288` static cells and rejected all of them at the frozen IK
+  residual gate before collision/contact evaluation; `0/48` families were
+  eligible and no actions were selected. Receipt SHA-256 is
+  `74ce790dfcbab663f10cdda10ff2af9270ded6352dd8b50c074c522342bf0479`.
+  Implementation audit found that the wrapper applied the elbow lock and fresh
+  anchor but omitted the intended V4 `35 mm` rear-standoff override, so the
+  negative is valid only for the resolved original vertical-precontact path.
+  Closeout SHA-256 is
+  `5dd660cec8ec94c8170c96bed53f04e0bbaca78de9d4c000ff1840c1b15aa8de`.
+- Static-only reachability localization found that the best original-path
+  family still missed a stage by `28.305 mm`, while a `40 mm` target height
+  admitted an effectively zero-residual position solution for `h1->g1`.
+  Contact-height V3 is prospectively frozen at SHA-256
+  `3d1e00daf8c673e8c509bc0e7dba146f4fc3b548ce2f9cea2ba80f6d53f2c404`.
+  It explicitly materializes the intended `35 mm` rear-standoff path and
+  replaces only the `10/14 mm` target heights with `36/40 mm`; the modeled
+  first-contact witness must still stay at or below the unchanged `32 mm`
+  gate. The `48` families, `288`-cell maximum, quarantine, stroke, jaw,
+  collision, camera, gateway, contact-normal, direction, and authority gates
+  remain unchanged.
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -761,7 +781,7 @@ This authorization:
 
 Next step:
 
-- Run the frozen elbow-locked static V2 successor exactly once. If at least two
+- Run the frozen elbow-locked contact-height V3 exactly once. If at least two
   statically safe families per direction survive with bitwise-constant elbow,
   freeze their exact baseline/ZOH dynamic screen before opening dynamics.
   Otherwise preserve the terminal static result and select one bounded,

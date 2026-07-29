@@ -1,0 +1,13 @@
+{
+  "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_contact_height_bridge.v3",
+  "status": "frozen_materialized_base_before_static_enumeration",
+  "base_contract": {
+    "path": "configs/evaluations/canonical_elbow_locked_wrist_path_contact_height_base_v3.json",
+    "sha256": "456e9b8f2c6ad48bb6c79fe16c613d9f47f893cd80efd82b24780437270300d8"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_wrist_path_static.py",
+    "sha256": "1726ddaf42820840046f046ef413943cecd7d9c40e07e621ddca9b9264782e0f"
+  },
+  "claim_boundary": "Binding-only bridge that lets the immutable elbow-locked V1 runner resolve the prospectively materialized 36/40 mm contact-height base. It has no execution or promotion authority."
+}

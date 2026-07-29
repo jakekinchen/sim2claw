@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v1",
+  "contract_id": "canonical-elbow-locked-wrist-path-static-20260729-v3",
+  "status": "frozen_before_static_only_elbow_locked_enumeration",
+  "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_contact_height_static_action_search",
+  "base_contract": {
+    "path": "configs/evaluations/canonical_elbow_locked_wrist_path_contact_height_bridge_v3.json",
+    "sha256": "4052cf57a0a68bbc2de12e5e1f2a7de0e15503aa51b6ee7441ce1f93f0c42939"
+  },
+  "mapping_closeout": {
+    "path": "configs/decisions/calibration_graph_d405_wrist_corner_shape_v6_closeout.json",
+    "sha256": "78c4f24d7722004e0808ed3f5cbfbc84b63b643ecdd8c6f00641c5759daac545"
+  },
+  "fresh_wrist_heldout_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-calibration-graph-d405-wrist-corner-shape-v4/evaluation/receipt.json",
+    "sha256": "16b7896c45904c7563d00f8b8386cddf3892de9deec70c77c0a2c9ff087294c6"
+  },
+  "elbow_stall_closeout": {
+    "path": "configs/decisions/calibration_graph_d405_corner_shape_v2_elbow_stall_closeout.json",
+    "sha256": "65f71a1bbf418e43632ebf834d2aaffab7e5f3b0dd6cdb45f8f3d4d0caacfbef"
+  },
+  "implementation": {
+    "path": "src/sim2claw/canonical_elbow_locked_wrist_path_static.py",
+    "sha256": "cf5d5261b0c8045b8509cd3694fc790d69fc44afe4d6fc5c9d3c80f99ca4b4d4"
+  },
+  "live_seed": {
+    "source": "fresh_v4_torque_off_preflight_anchor",
+    "follower_position_degrees": [
+      5.802197802197802,
+      -85.01098901098901,
+      99.64835164835165,
+      -16.395604395604394,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "locked_joint_name": "elbow_flex",
+    "locked_joint_index": 2,
+    "locked_value_degrees": 99.64835164835165
+  },
+  "unchanged_from_base": {
+    "four_outcome_informed_cases_remain_quarantined": true,
+    "remaining_48_family_universe": true,
+    "three_wrist_roll_targets": true,
+    "two_contact_height_targets_preserve_4mm_span": true,
+    "jaw_target_contact_offset_stroke_clearance_and_35mm_precontact_backoff": true,
+    "maximum_288_cells": true,
+    "collision_camera_gateway_first_contact_height_and_contact_normal_gates": true,
+    "four_distinct_selected_families_two_per_direction": true,
+    "dynamic_outcomes_not_read_or_used": true,
+    "dynamic_and_physical_authority_false": true
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-wrist-path-static-v3",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Prospectively frozen static-only elbow-locked contact-height successor. The materialized base applies the intended 35 mm rear-standoff path and changes only target contact heights to 36/40 mm, while retaining the unchanged 32 mm first-contact witness gate. It may freeze statically eligible actions only and cannot authorize dynamics, mapping, evaluator V2, hardware, pawn contact, or transfer."
+}

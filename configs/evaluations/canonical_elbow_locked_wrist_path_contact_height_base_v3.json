@@ -1,0 +1,177 @@
+{
+  "schema_version": "sim2claw.canonical_wrist_path_static.v1",
+  "contract_id": "canonical-elbow-locked-wrist-path-contact-height-base-20260729-v3",
+  "status": "frozen_after_elbow_locked_ik_negative_before_contact_height_static_enumeration",
+  "proof_class": "prospective_cpu_fp64_elbow_locked_contact_height_static_action_search",
+  "inputs": {
+    "proxy_closeout": {
+      "path": "configs/decisions/canonical_proxy_contact_temporal_v3_closeout.json",
+      "sha256": "275cba65da93c343dd4a11287aac3b6db793f7d8f7e4b90098723b656deb6503"
+    },
+    "static_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-canonical-seeded-action-static-v2/receipt.json",
+      "sha256": "c68599e9f18120f46bea955732ccc82c3582b9f18af280292f2aad73cfd47977"
+    },
+    "candidate_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170"
+    },
+    "registration_candidate": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/fit-rigid-v4/candidate.json",
+      "sha256": "4d08518f3d8d6885fb184a93f9d7639ff017a76074a65e9ebedcd7c9d2a3739c"
+    },
+    "implementation": {
+      "path": "src/sim2claw/canonical_wrist_path_static.py",
+      "sha256": "1726ddaf42820840046f046ef413943cecd7d9c40e07e621ddca9b9264782e0f"
+    },
+    "elbow_locked_v2_closeout": {
+      "path": "configs/decisions/canonical_elbow_locked_wrist_path_static_v2_closeout.json",
+      "sha256": "5dd660cec8ec94c8170c96bed53f04e0bbaca78de9d4c000ff1840c1b15aa8de"
+    }
+  },
+  "live_seed": {
+    "source": "overridden_by_elbow_locked_v3_fresh_anchor",
+    "model_radians": [
+      0.11354229859127946,
+      -1.492927790936688,
+      1.7361231196761178,
+      -0.35060020578523454,
+      -1.803634756676338,
+      -0.12892762470308788
+    ],
+    "follower_calibrated_minimum": [
+      -120.26373626373626,
+      -106.63736263736264,
+      -102.10989010989012,
+      -107.47252747252747,
+      -180.0,
+      0.0
+    ],
+    "follower_calibrated_maximum": [
+      120.26373626373626,
+      106.63736263736264,
+      102.10989010989012,
+      107.47252747252747,
+      180.0,
+      100.0
+    ],
+    "torque_enabled": false
+  },
+  "quarantine": {
+    "case_ids": [
+      "tan_pawn_h7__h7_h6",
+      "tan_pawn_h7__h7_g7",
+      "tan_pawn_f7__f7_f6",
+      "tan_pawn_f7__f7_g7"
+    ],
+    "exact_count": 4,
+    "reason": "outcome-informed canonical temporal diagnostics remain negative evidence and cannot be reselected"
+  },
+  "family_universe": {
+    "source": "all current sparse-layout pawns to empty orthogonal canonical neighbor squares",
+    "prequarantine_count": 52,
+    "expected_postquarantine_count": 48,
+    "reset_layout_changed": false,
+    "grid_expansion_after_result": false
+  },
+  "grid": {
+    "wrist_roll_targets_rad": [
+      -1.9562840850716032,
+      -1.803634756676338,
+      -1.6509854282810728
+    ],
+    "derivation": "unchanged live wrist roll plus and minus geometry-derived jaw angle",
+    "contact_heights_m": [
+      0.036,
+      0.04
+    ],
+    "contact_height_derivation": "static-only reachability successor centered on the 40 mm zero-residual h1-to-g1 target while preserving the prior 4 mm two-level span",
+    "contact_offset_m": 0.022,
+    "stroke_m": 0.06,
+    "clearance_height_m": 0.09,
+    "cells_per_family": 6,
+    "maximum_total_cells": 288,
+    "finite_and_nonexpandable_after_freeze": true
+  },
+  "action": {
+    "sample_hz": 40.0,
+    "dtype": "little_endian_float64",
+    "row_zero_exact_live_seed": true,
+    "closed_jaw_rad": -0.1727003294848389,
+    "target_rates_per_joint": [
+      8.0,
+      8.0,
+      8.0,
+      8.0,
+      12.0,
+      20.0
+    ],
+    "path_shape": "lift with live wrist, rotate at clearance, descend at 35 mm rear standoff, approach horizontally, push, retreat",
+    "precontact_backoff_m": 0.035,
+    "clipping_smoothing_retiming_offset_repair_assistance": false
+  },
+  "gates": {
+    "maximum_ik_residual_m": 0.004,
+    "minimum_model_joint_margin_rad": 0.0,
+    "gateway_rate_limits_per_joint": [
+      60.0,
+      60.0,
+      60.0,
+      60.0,
+      90.0,
+      100.0
+    ],
+    "selected_contact_required": true,
+    "new_disallowed_robot_contact_forbidden": true,
+    "maximum_first_contact_height_m": 0.032,
+    "maximum_first_contact_abs_vertical_normal": 0.35,
+    "contact_gate_semantics": "kinematic mj_forward witness only; target height does not weaken the unchanged first-contact witness height gate",
+    "future_minimum_signed_progress_mm": 36.025,
+    "future_maximum_selected_vertical_rise_mm": 2.0
+  },
+  "camera_gate": {
+    "owner": "fixed_c922_rgb",
+    "image_size_px": [
+      1920,
+      1080
+    ],
+    "minimum_margin_px": 20.0,
+    "wrist_depth_required": false
+  },
+  "selection": {
+    "one_winner_per_family": true,
+    "selected_count": 4,
+    "direction_assignment": "alternate prospectively ranked distinct families REAL_TO_SIM then SIM_TO_REAL",
+    "minimum_per_direction": 2,
+    "ranking": [
+      "lowest first-contact absolute vertical normal",
+      "lowest first-contact height",
+      "largest model joint margin",
+      "largest camera margin",
+      "smallest IK residual",
+      "frozen grid index and case id"
+    ],
+    "dynamic_outcome_used": false
+  },
+  "simulation": {
+    "engine": "mujoco",
+    "numeric_mode": "cpu_float64",
+    "timestep_s": 0.0025
+  },
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-wrist-path-contact-height-v3",
+  "authority": {
+    "model_loading": true,
+    "static_simulation": true,
+    "dynamic_replay": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "Static-only elbow-locked successor that materializes the intended 35 mm rear-standoff path and changes only target contact heights to 36/40 mm. The modeled first-contact height must still remain at or below 32 mm. It reads no dynamic outcome and cannot authorize dynamics, mapping, evaluator V2, hardware, pawn contact, or transfer."
+}

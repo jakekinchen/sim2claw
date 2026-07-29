@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "877ce9dbc14a068dc17e11ee7bbf0b34a25ad2a2eb2ada6e1168a815931f8426",
+      "sha256": "1359e7047ce65b8100c054978309538410a1afaf1577107aa150dcf367572e36",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -2292,6 +2292,37 @@
         "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v2",
         "status": "frozen_after_v1_pre_model_failure_before_static_enumeration",
         "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_static_action_search"
+      }
+    },
+    "canonical_elbow_locked_wrist_path_static_receipt_v2": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-wrist-path-static-v2/receipt.json",
+      "sha256": "74ce790dfcbab663f10cdda10ff2af9270ded6352dd8b50c074c522342bf0479",
+      "proof_class": "cpu_fp64_elbow_locked_original_path_static_ik_negative",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_receipt.v2",
+        "status": "canonical_elbow_locked_wrist_path_static_reject",
+        "passed": false,
+        "physical_motion": false
+      }
+    },
+    "canonical_elbow_locked_wrist_path_static_closeout_v2": {
+      "path": "configs/decisions/canonical_elbow_locked_wrist_path_static_v2_closeout.json",
+      "sha256": "5dd660cec8ec94c8170c96bed53f04e0bbaca78de9d4c000ff1840c1b15aa8de",
+      "proof_class": "cpu_fp64_elbow_locked_static_ik_negative_with_implementation_scope_localization",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_closeout.v2",
+        "status": "static_reject_with_v4_path_override_omission_contact_height_successor_required",
+        "proof_class": "cpu_fp64_elbow_locked_static_ik_negative_with_implementation_scope_localization"
+      }
+    },
+    "canonical_elbow_locked_wrist_path_static_contract_v3": {
+      "path": "configs/evaluations/canonical_elbow_locked_wrist_path_static_v3.json",
+      "sha256": "3d1e00daf8c673e8c509bc0e7dba146f4fc3b548ce2f9cea2ba80f6d53f2c404",
+      "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_contact_height_static_action_search",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v1",
+        "status": "frozen_before_static_only_elbow_locked_enumeration",
+        "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_contact_height_static_action_search"
       }
     },
     "simulator_candidate": {
@@ -6047,6 +6078,55 @@
       }
     },
     {
+      "id": "verdict:canonical-elbow-locked-wrist-path-static-v2-reject",
+      "type": "evaluator_verdict",
+      "label": "Elbow-locked original path rejects all static cells at IK",
+      "status": "static_reject_zero_of_48_families",
+      "source_binding": "canonical_elbow_locked_wrist_path_static_receipt_v2",
+      "evaluator_identity": "6d9d02fec6d1c6072d60e4087a6d1461c5f6f3693c442a80d3e8ba48537de303",
+      "data": {
+        "family_count": 48,
+        "grid_result_count": 288,
+        "compile_reject_count": 288,
+        "statically_eligible_family_count": 0,
+        "dynamic_simulation": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "verdict:canonical-elbow-locked-wrist-path-static-v2-closeout",
+      "type": "evaluator_verdict",
+      "label": "V2 negative scoped and contact-height successor selected",
+      "status": "static_reject_with_v4_path_override_omission_contact_height_successor_required",
+      "source_binding": "canonical_elbow_locked_wrist_path_static_closeout_v2",
+      "evaluator_identity": "74ce790dfcbab663f10cdda10ff2af9270ded6352dd8b50c074c522342bf0479",
+      "data": {
+        "resolved_v4_precontact_backoff_applied": false,
+        "contact_height_successor_authorized": true,
+        "dynamic_simulation": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "checkpoint:canonical-elbow-locked-wrist-path-static-v3-frozen",
+      "type": "checkpoint",
+      "label": "Elbow-locked contact-height V3 frozen",
+      "status": "frozen_before_static_only_elbow_locked_enumeration",
+      "source_binding": "canonical_elbow_locked_wrist_path_static_contract_v3",
+      "data": {
+        "target_contact_heights_m": [
+          0.036,
+          0.04
+        ],
+        "maximum_first_contact_height_m": 0.032,
+        "precontact_backoff_m": 0.035,
+        "family_universe": 48,
+        "maximum_grid_cells": 288,
+        "dynamic_simulation": false,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -9710,14 +9790,41 @@
       "node_ids_added": [
         "checkpoint:canonical-elbow-locked-wrist-path-static-v2-frozen"
       ]
+    },
+    {
+      "revision": 190,
+      "event_id": "CANONICAL_ELBOW_LOCKED_WRIST_PATH_STATIC_V2_REJECT",
+      "status": "static_reject_zero_of_48_families",
+      "source_binding": "canonical_elbow_locked_wrist_path_static_receipt_v2",
+      "node_ids_added": [
+        "verdict:canonical-elbow-locked-wrist-path-static-v2-reject"
+      ]
+    },
+    {
+      "revision": 191,
+      "event_id": "CANONICAL_ELBOW_LOCKED_WRIST_PATH_STATIC_V2_CLOSEOUT",
+      "status": "static_reject_with_v4_path_override_omission_contact_height_successor_required",
+      "source_binding": "canonical_elbow_locked_wrist_path_static_closeout_v2",
+      "node_ids_added": [
+        "verdict:canonical-elbow-locked-wrist-path-static-v2-closeout"
+      ]
+    },
+    {
+      "revision": 192,
+      "event_id": "CANONICAL_ELBOW_LOCKED_WRIST_PATH_STATIC_V3_FROZEN",
+      "status": "frozen_before_static_only_elbow_locked_enumeration",
+      "source_binding": "canonical_elbow_locked_wrist_path_static_contract_v3",
+      "node_ids_added": [
+        "checkpoint:canonical-elbow-locked-wrist-path-static-v3-frozen"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-elbow-locked-wrist-path-static-v2-frozen",
+    "node_id": "checkpoint:canonical-elbow-locked-wrist-path-static-v3-frozen",
     "milestone_id": "CC03",
-    "status": "elbow_locked_static_v2_successor_frozen",
-    "queue_status": "ACTIVE_CC03_ELBOW_LOCKED_STATIC_V2_RUN",
-    "resume_action": "run_elbow_locked_static_v2_once",
+    "status": "elbow_locked_contact_height_v3_frozen",
+    "queue_status": "ACTIVE_CC03_ELBOW_LOCKED_STATIC_V3_RUN",
+    "resume_action": "run_elbow_locked_static_v3_once",
     "resume_authorized": true,
     "heldout_open_count": 4,
     "cumulative_manifest_read_count": 4,

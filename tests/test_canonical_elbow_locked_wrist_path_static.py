@@ -65,3 +65,22 @@ def test_contract_is_bounded_outcome_blind_and_has_no_motion_authority() -> None
         for key, value in contract["authority"].items()
         if key not in {"model_loading", "static_simulation"}
     )
+
+
+def test_v3_height_successor_materializes_path_without_weakening_contact_gate() -> None:
+    successor_path = (
+        ROOT
+        / "configs/evaluations/canonical_elbow_locked_wrist_path_static_v3.json"
+    )
+    successor = json.loads(successor_path.read_text(encoding="utf-8"))
+    bridge_path = ROOT / successor["base_contract"]["path"]
+    assert _sha(bridge_path) == successor["base_contract"]["sha256"]
+    bridge = json.loads(bridge_path.read_text(encoding="utf-8"))
+    base_path = ROOT / bridge["base_contract"]["path"]
+    assert _sha(base_path) == bridge["base_contract"]["sha256"]
+    base = json.loads(base_path.read_text(encoding="utf-8"))
+    assert base["grid"]["contact_heights_m"] == [0.036, 0.04]
+    assert base["action"]["precontact_backoff_m"] == 0.035
+    assert base["gates"]["maximum_first_contact_height_m"] == 0.032
+    assert base["grid"]["maximum_total_cells"] == 288
+    assert all(successor["unchanged_from_base"].values())

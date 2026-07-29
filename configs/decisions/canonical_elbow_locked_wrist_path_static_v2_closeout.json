@@ -1,0 +1,61 @@
+{
+  "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_closeout.v2",
+  "decision_id": "canonical-elbow-locked-wrist-path-static-20260729-v2-closeout",
+  "status": "static_reject_with_v4_path_override_omission_contact_height_successor_required",
+  "proof_class": "cpu_fp64_elbow_locked_static_ik_negative_with_implementation_scope_localization",
+  "contract": {
+    "path": "configs/evaluations/canonical_elbow_locked_wrist_path_static_v2.json",
+    "sha256": "8b1393209494b3b8f6a4630f5a1b7dd9e510178745e51a1e229f446b6b7858c6"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-wrist-path-static-v2/receipt.json",
+    "sha256": "74ce790dfcbab663f10cdda10ff2af9270ded6352dd8b50c074c522342bf0479"
+  },
+  "result": {
+    "family_count": 48,
+    "grid_result_count": 288,
+    "compile_reject_count": 288,
+    "compile_reject_reason": "canonical lifted-wrist IK residual exceeded gate",
+    "statically_eligible_family_count": 0,
+    "direction_counts": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "dynamic_simulation": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "implementation_audit": {
+    "elbow_lock_applied": true,
+    "fresh_live_seed_applied": true,
+    "base_v4_precontact_backoff_applied": false,
+    "reason": "the V1 elbow wrapper resolved the V4 base to V1 but did not copy V4 path_shape_override into the resolved action",
+    "result_scope": "valid only for the resolved original V1 vertical-precontact path at 10 and 14 mm target heights"
+  },
+  "static_geometry_localization": {
+    "dynamic_or_physical_outcomes_used": false,
+    "best_original_path_family": "brown_pawn_h1__h1_g1",
+    "best_original_path_maximum_stage_residual_m": 0.028305,
+    "frozen_ik_gate_m": 0.004,
+    "bounded_height_probe": {
+      "family": "brown_pawn_h1__h1_g1",
+      "contact_offset_m": 0.01,
+      "contact_target_height_m": 0.04,
+      "best_position_residual_m": 1.9053986525245556e-12
+    }
+  },
+  "decision": "Preserve V2 as a complete static IK negative for the actually resolved original V1 vertical-precontact path. Do not describe it as the intended V4 35 mm rear-standoff path because the wrapper omitted that override. Freeze one finite successor that explicitly materializes the 35 mm precontact backoff and changes only target contact heights from 10/14 mm to 36/40 mm, centered on the static reachability diagnostic. Keep the first-contact witness height gate at 32 mm, so a higher pinch target is admitted only if the modeled jaw still contacts the pawn low. Preserve the 48 families, 288-cell maximum, quarantine, stroke, jaw, camera, collision, gateway, contact-normal, two-per-direction, outcome-blindness, and false dynamic/physical authority.",
+  "authority": {
+    "freeze_contact_height_static_successor": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}
