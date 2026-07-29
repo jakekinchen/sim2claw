@@ -1,0 +1,86 @@
+{
+  "schema_version": "sim2claw.achieved_lock_tangent_seat_temporal.v1",
+  "contract_id": "achieved-lock-tangent-seat-temporal-20260729-v1",
+  "status": "frozen_after_rp03d_static_pass_before_dynamic_replay",
+  "proof_class": "prospective_cpu_fp64_exact_lock_tangent_seat_direct_target_and_diagnostic_zoh_causal_replay",
+  "base_temporal_contract": {
+    "path": "configs/evaluations/canonical_seeded_action_temporal_v1.json",
+    "sha256": "2591592ada90a93cdbac82b89777770153ab0e358574f310468a0e5ae22f72c3"
+  },
+  "static_contract": {
+    "path": "configs/evaluations/parking_recovery_rp03d_tangent_seat_static_v1.json",
+    "sha256": "68345972740da7c0742bd899560b0669ffb3417cba9a02ff23ff24e6cc17122c"
+  },
+  "static_receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-rp03d-tangent-seat-static-v1/receipt.json",
+    "sha256": "488bf150d6706435a5a22be60797ece17b75730ab64c6feeba3c3f631a2f555c"
+  },
+  "static_closeout": {
+    "path": "configs/decisions/parking_recovery_rp03d_tangent_seat_static_v1_closeout.json",
+    "sha256": "8a8a8dbf9e3f5e0286965be82f17911f130d6b2774c364a3c6589a093efa6732"
+  },
+  "corridor_temporal_implementation": {
+    "path": "src/sim2claw/achieved_lock_cartesian_corridor_temporal.py",
+    "sha256": "ec74c22a9ecac864cb3a2011f791abe2a04c999f2799618629fc1d533b2ddf34"
+  },
+  "implementation": {
+    "path": "src/sim2claw/achieved_lock_tangent_seat_temporal.py",
+    "sha256": "f8a151c1fef9065ce5c1dadc174f24b56c89c78d5aa41c37c59747107111a121"
+  },
+  "cases": [
+    {
+      "case_id": "brown_pawn_g2__g2_f2",
+      "direction": "REAL_TO_SIM",
+      "source_square": "g2",
+      "destination_square": "f2",
+      "selected_piece_id": "brown_pawn_g2",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-rp03d-tangent-seat-static-v1/actions/00.f64le",
+      "action_sha256": "993c3e92dd457c10beac6bbf8980d5b9919472c4dc976386817b2a19297ac61d",
+      "action_shape": [
+        514,
+        6
+      ]
+    },
+    {
+      "case_id": "brown_pawn_f1__f1_f2",
+      "direction": "SIM_TO_REAL",
+      "source_square": "f1",
+      "destination_square": "f2",
+      "selected_piece_id": "brown_pawn_f1",
+      "action_path": "runs/bidirectional-pawn-push-v2/20260729-rp03d-tangent-seat-static-v1/actions/01.f64le",
+      "action_sha256": "7fb77329d23f8f141fe51b64fb44fc0b0b6983aa4baeadccbeb6ee1b9e70a3e2",
+      "action_shape": [
+        676,
+        6
+      ]
+    }
+  ],
+  "live_seed": {
+    "source": "rp02d_successful_torque_on_held_pose",
+    "follower_position_degrees": [
+      5.802197802197802,
+      -85.01098901098901,
+      92.43956043956044,
+      -12.0,
+      -103.34065934065934,
+      2.375296912114014
+    ],
+    "torque_enabled": true
+  },
+  "outer_materialization_directory": "runs/bidirectional-pawn-push-v2/20260729-rp03d-tangent-seat-temporal-outer-materialization-v1",
+  "inner_materialization_directory": "runs/bidirectional-pawn-push-v2/20260729-rp03d-tangent-seat-temporal-inner-materialization-v1",
+  "output_directory": "runs/bidirectional-pawn-push-v2/20260729-rp03d-tangent-seat-temporal-v1",
+  "unchanged": {
+    "requested_mapped_sent_action_identity": true,
+    "forty_hz_row_order_and_timing": true,
+    "direct_target_baseline_and_uncalibrated_0p11s_zoh_challenger": true,
+    "five_frozen_reset_variants": true,
+    "cpu_fp64_mujoco_and_substeps": true,
+    "observable_episode_v2_min_and_first_divergence": true,
+    "progress_gate_36p025mm": true,
+    "contact_exclusion_no_lift_collision_and_camera_gates": true,
+    "one_case_per_direction_both_plant_paths_required": true,
+    "dynamic_only_authority": true
+  },
+  "claim_boundary": "Prospectively frozen CPU/fp64 replay of the two exact RP03D 1.5 mm tangent-seat action tensors. Both plant paths, all five reset deltas, exact action bytes, 40 Hz timing, ObservableEpisode.v2-min traces, causal summaries, first-divergence channels, and unchanged consequence gates remain required. All 20 episodes must pass before physical packet design; this run cannot approve mapping, hardware, a physical attempt, simulator promotion, or transfer."
+}

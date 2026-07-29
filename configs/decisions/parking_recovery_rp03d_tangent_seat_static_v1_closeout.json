@@ -1,0 +1,50 @@
+{
+  "schema_version": "sim2claw.parking_recovery_rp03d_tangent_seat_static_closeout.v1",
+  "decision_id": "parking-recovery-rp03d-tangent-seat-static-20260729-v1-closeout",
+  "status": "accepted_static_pass_opens_frozen_dynamic_gate",
+  "freeze_commit": "dfd849a",
+  "contract": {
+    "path": "configs/evaluations/parking_recovery_rp03d_tangent_seat_static_v1.json",
+    "sha256": "68345972740da7c0742bd899560b0669ffb3417cba9a02ff23ff24e6cc17122c"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-rp03d-tangent-seat-static-v1/receipt.json",
+    "sha256": "488bf150d6706435a5a22be60797ece17b75730ab64c6feeba3c3f631a2f555c"
+  },
+  "result": {
+    "grid_result_count": 576,
+    "compile_reject_count": 483,
+    "static_reject_count": 89,
+    "static_eligible_cell_count": 4,
+    "statically_eligible_family_count": 2,
+    "direction_counts": {
+      "REAL_TO_SIM": 1,
+      "SIM_TO_REAL": 1
+    },
+    "selected": [
+      {
+        "case_id": "brown_pawn_g2__g2_f2",
+        "direction": "REAL_TO_SIM",
+        "action_sha256": "993c3e92dd457c10beac6bbf8980d5b9919472c4dc976386817b2a19297ac61d",
+        "action_shape": [
+          514,
+          6
+        ],
+        "maximum_cartesian_chord_error_m": 0.0004986924419411828
+      },
+      {
+        "case_id": "brown_pawn_f1__f1_f2",
+        "direction": "SIM_TO_REAL",
+        "action_sha256": "7fb77329d23f8f141fe51b64fb44fc0b0b6983aa4baeadccbeb6ee1b9e70a3e2",
+        "action_shape": [
+          676,
+          6
+        ],
+        "maximum_cartesian_chord_error_m": 0.0004933250773856709
+      }
+    ],
+    "dynamic_replay_executed": false,
+    "physical_task_attempts": 0
+  },
+  "decision": "Accept the two prospectively selected RP03D action tensors for exactly one unchanged 20-episode CPU/fp64 dynamic gate. Physical authority remains false until all 20 episodes pass."
+}

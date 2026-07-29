@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP03D_TANGENT_SEAT_STATIC_FROZEN_PENDING_ONE_RUN`
+Status: `RP03D_TANGENT_SEAT_DYNAMIC_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -40,7 +40,7 @@ does not rewrite that result.
 | RP03A | `DONE_IMMUTABLE_NEGATIVE` | Replay both exact achieved-lock actions under baseline and timing stress. | Preserve exact action bytes, 40 Hz row order, five reset deltas, `36.025 mm` progress, contact/exclusion/no-lift/collision/camera gates, direct target plus diagnostic `0.11 s` ZOH, and ObservableEpisode.v2-min first-divergence traces. Both cases must pass both paths. | Both directions rejected: contact occurred but progress and no-lift failed. Identity, camera, collision, and exclusions passed. |
 | RP03B | `DONE_TERMINAL_STATIC_NEGATIVE` | Compile one bounded longer-stroke successor at the exact achieved lock. | Change only stroke from `40 mm` to the previously preregistered `66 mm`; preserve the 48-family universe, 576-cell bound, ranking, wrist/contact grid, IK, collision, contact, camera, calibrated-range, gateway-rate, one-family-per-direction, and false physical authority. | `0/576` cells were eligible; the uniform longer-stroke mechanism is closed without dynamics or hardware. |
 | RP03C | `DONE_TERMINAL_DYNAMIC_NEGATIVE` | Replace only sparse joint interpolation between the existing 35 mm precontact, contact, and 40 mm pushed Cartesian endpoints with a deterministic chord-error-constrained corridor. | Static receipt `5a9230fa...` passed all 576 cells with one selected family per direction. Dynamic receipt `8b7a889d...` then ran all `20` frozen episodes. | `0/20` passed; every episode still failed progress and no-lift. Cartesian interpolation bow alone is closed. |
-| RP03D | `STATIC_FROZEN_PENDING_ONE_RUN` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Exactly `1.5 mm`, the midpoint of the prospectively advised `1--2 mm` range; same 48 families, 576 cells, contact/wrist grid, exact lock, 40 mm endpoint, 40 Hz rates, 0.5 mm corridor audit, collision/contact/camera/gateway gates, and false physical authority. | A static negative closes the tangent-seat mechanism. A pass opens the same exact 20-episode dynamic gate; no hardware beforehand. |
+| RP03D | `STATIC_PASS_DYNAMIC_FROZEN_PENDING_ONE_RUN` | Add one small tangent-seat waypoint after contact without changing the original push endpoint. | Static receipt `488bf150...` passes all 576 cells with one selected family per direction. The seat remains exactly `1.5 mm`; same contact/wrist grid, exact lock, 40 mm endpoint, 40 Hz rates, 0.5 mm corridor audit, collision/contact/camera/gateway gates, and false physical authority. The frozen consequence denominator remains exactly 20 episodes. | A dynamic negative closes the tangent-seat mechanism. All 20 episodes must pass before any physical packet. |
 | RP04 | `PENDING` | Complete a REAL->SIM task transfer. | Camera-owned physical success, then byte-identical CPU/fp64 replay success; first-divergence trace complete. | At most three task attempts; diagnose after two good-tracking failures. |
 | RP05 | `PENDING` | Complete a distinct SIM->REAL task transfer. | Simulator success and robustness predate freeze; distinct family; camera-owned physical success with identical bytes. | At most three task attempts; failures stay in the denominator. |
 | RP06 | `PENDING` | Approve a task-bounded mapping for the successful locked-elbow slice. | Scope and factors are preregistered; accepted wrist/pan/lift evidence plus successful first-divergence bounds support the exact task slice. | Never relabel as global mapping approval. |
@@ -60,9 +60,8 @@ does not rewrite that result.
 
 ## Current next step
 
-RP03C dynamic rejected the interpolation-only hypothesis. Run the already
-frozen RP03D 1.5 mm tangent-seat static universe exactly once. Physical
-authority remains false.
+RP03D static passed. Run the already frozen 20-episode tangent-seat dynamic
+contract exactly once. Physical authority remains false.
 
 ## RP00 immutable result
 
@@ -309,6 +308,20 @@ authority remains false.
 - The interpolation-bow hypothesis is rejected without spending a physical
   attempt. RP03D changes only one prospectively frozen `1.5 mm`
   task-horizontal tangent-seat waypoint.
+
+## RP03D immutable tangent-seat static pass
+
+- Freeze commit: `dfd849a`.
+- Receipt SHA-256:
+  `488bf150d6706435a5a22be60797ece17b75730ab64c6feeba3c3f631a2f555c`.
+- All `576` cells ran: `483` compile rejects, `89` static rejects, and `4`
+  eligible cells spanning exactly one selected family per direction.
+- REAL->SIM action SHA `993c3e92...` has `514` rows; SIM->REAL action SHA
+  `7fb77329...` has `676` rows.
+- Both preserve the original `40 mm` endpoint and contain the exact frozen
+  `1.5 mm` tangent-seat waypoint. Chord error remains below `0.5 mm`,
+  task-axis backtracking is zero, and all static gates pass.
+- This opens exactly one 20-episode dynamic run, not hardware.
 
 ## RP01 freeze
 
