@@ -1,0 +1,22 @@
+{
+  "schema_version": "sim2claw.owner_physical_authorization.v1",
+  "authorization_id": "owner-rp02-elbow-parking-20260729-074456-cdt",
+  "status": "active",
+  "source_owner_instruction": "Proceed, and don't stop until we get a successful advancement in our goal metrics.",
+  "operation_id": "rp02-elbow-parking-20260729-v1",
+  "packet_sha256": "79382c1aa0a9ec6d292300bb34dcf1c910fafb6a64f57bfa8e549c87c79abfe6",
+  "issued_at": "2026-07-29T07:44:56-05:00",
+  "expires_at": "2026-07-29T08:44:56-05:00",
+  "operator_name": "Kelly",
+  "operator_present_full_transaction": true,
+  "power_down_supply_on_torque_cleanup_error": true,
+  "physical_parking_transaction": true,
+  "physical_task_attempt": false,
+  "maximum_executions": 1,
+  "camera_setup_authorized": true,
+  "gateway_setup_authorized": true,
+  "serial_authorized": true,
+  "torque_authorized": true,
+  "pawn_contact_authorized": false,
+  "claim_boundary": "Exactly one RP02 setup/recovery execution under the frozen packet. This is not a pawn-task attempt and does not authorize transfer, mapping promotion, policy ranking, retry, or any other physical operation."
+}
