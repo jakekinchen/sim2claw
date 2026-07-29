@@ -1,0 +1,146 @@
+{
+  "schema_version": "sim2claw.realized_action_outcome_mission_contract.v1",
+  "experiment_id": "realized-action-outcome-mission-v1",
+  "source": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "requested": {
+      "path": "outputs/realized_action_effective_plant_v1/traces/20260727T041737Z-89190e53/requested.f4le",
+      "sha256": "5d58874c166d2df9b890177ab9f1ef0a6934e53d46242b2346bf3428e5904c79",
+      "dtype": "<f4",
+      "shape": [
+        531,
+        6
+      ]
+    },
+    "gateway_sent": {
+      "path": "outputs/realized_action_effective_plant_v1/traces/20260727T041737Z-89190e53/sent.f4le",
+      "sha256": "3b034bd965d4bf1a71591cc77f033e97f1fe8eb30aa75cb314cc529b4e40e3ef",
+      "dtype": "<f4",
+      "shape": [
+        531,
+        6
+      ]
+    },
+    "initial_measured": {
+      "path": "outputs/realized_action_effective_plant_v1/traces/20260727T041737Z-89190e53/measured.f8le",
+      "sha256": "ec75ad25adf9957311e837744af7340e27b602cfec5a2985db7841b5c3558312",
+      "dtype": "<f8",
+      "shape": [
+        531,
+        6
+      ],
+      "allowed_rows": [
+        0
+      ]
+    },
+    "timestamps": {
+      "path": "outputs/realized_action_effective_plant_v1/traces/20260727T041737Z-89190e53/timestamps.f8le",
+      "sha256": "68e87c15992123e4415b2a3ec6d1a8e68cffd1ca642ac35002ed255544829f48",
+      "dtype": "<f8",
+      "shape": [
+        531
+      ],
+      "actuator_application_semantics": false
+    },
+    "identified_applied": {
+      "path": "outputs/realized_action_effective_plant_v1/traces/20260727T041737Z-89190e53/identified_effective_plant_v1.applied.f8le",
+      "sha256": "4b486ac78d2377f5fad70f713ab1183cfd9717996e975b87e0288eb5fc7a259c",
+      "dtype": "<f8",
+      "shape": [
+        531,
+        6
+      ],
+      "source": "C4_fit_validation_identified_effective_plant_v1"
+    }
+  },
+  "lineage": {
+    "c4_closeout": {
+      "path": "configs/decisions/realized_action_effective_plant_v1_closeout.json",
+      "sha256": "01192e6d605c273b70c3d60d58978bf92b0b53622789aaa33acdfecac7b66686"
+    },
+    "c4_receipt": {
+      "path": "outputs/realized_action_effective_plant_v1/receipt.json",
+      "sha256": "5afba2e280e7c34308aa51548b938a6af54bd299e49038d6083043342b353c07",
+      "artifact_sha256": "df50459a4c7f60894690610c8578f67e064c13de3d0a9f7e286aa8c26e736aa6"
+    },
+    "c5_closeout": {
+      "path": "configs/decisions/realized_action_contact_identifiability_v1_closeout.json",
+      "sha256": "9ac27196f6037111634f9a3f1263002736059d2159aceeaa31457ec78695306c"
+    },
+    "c5_receipt": {
+      "path": "outputs/realized_action_contact_identifiability_v1/receipt.json",
+      "sha256": "e676ab052a00ae30009d22c6f842a1ed7c71b99cd1a4987fb683fa4503c5d1c9",
+      "artifact_sha256": "6a904ef2231f634a65661778afd59ec5e901204386d7dfeee85a05d574961692"
+    },
+    "initial_endpoint_receipt": {
+      "path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+      "sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011"
+    },
+    "current_workcell": {
+      "path": "src/sim2claw/current_workcell.py",
+      "sha256": "df6bdf6b4408b7dcaaa1670fc0575f8506e11cef3add37124cc1afa2e8b69fad"
+    },
+    "manifest_aware_compiler": {
+      "path": "src/sim2claw/recorded_replay.py",
+      "sha256": "ad3223f9f4b67c31b444b1bbb5da118bf07936cd6bcf0fc14bd55e9f83c240af"
+    },
+    "joint_mapping_manifest": {
+      "path": "runs/physical_excitation/20260725-follower-only-v1/simulation-canary-v1/candidate_manifest.json",
+      "sha256": "f4110c4be9712aa14df9682ce0e28f4d7f0d6d00bc8bc2561290cc49de18f170",
+      "global_mapping_approved": false
+    }
+  },
+  "initialization": {
+    "selected_piece": "brown_pawn_d1",
+    "source_square": "d1",
+    "destination_square": "d2",
+    "physical_d1_world_position_m": [
+      -0.016734997049834582,
+      0.6326329847170037,
+      0.8008839412854517
+    ],
+    "physical_d1_square_center_error_m": 0.003100600525428267,
+    "pawn_xy_source": "frozen_C922_initial_metric_observation",
+    "pawn_z_source": "current_simulator_support_plane",
+    "pawn_orientation_source": "physical_reviewed_upright_current_board_yaw",
+    "robot_state_source": "measured_row_zero_only"
+  },
+  "replay": {
+    "one_run_only": true,
+    "robot_trajectory_source": "C4_identified_applied_from_exact_gateway_sent",
+    "robot_trajectory_application": "kinematic_effective_plant_interpolated_at_mujoco_timestep",
+    "joint_range_source": "bound_manifest_ranges_union_exact_initialized_and_C4_applied_state_extent",
+    "maximum_joint_range_expansion_rad": 0.002,
+    "contact_model": "current_mujoco_defaults_unvalidated_C5_baseline",
+    "contact_model_validated": false,
+    "post_action_settle_seconds": 1.0,
+    "preserve_source_row_order": true,
+    "preserve_source_timestamps": true,
+    "observed_state_after_initialization_allowed": false,
+    "camera_update_after_initialization_allowed": false,
+    "observed_grasp_or_release_marker_allowed": false,
+    "latch_or_object_attachment_allowed": false,
+    "support_projection_allowed": false,
+    "terminal_endpoint_input_allowed": false,
+    "action_clipping_smoothing_offset_retiming_or_ik_allowed": false
+  },
+  "evaluator": {
+    "maximum_final_planar_center_error_m": 0.006,
+    "maximum_upright_tilt_degrees": 10.0,
+    "maximum_other_piece_displacement_m": 0.005,
+    "maximum_final_height_error_m": 0.006,
+    "maximum_final_linear_speed_m_s": 0.02,
+    "maximum_final_angular_speed_rad_s": 1.0,
+    "selected_piece_contact_required": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": true,
+    "paid_compute": false
+  }
+}
