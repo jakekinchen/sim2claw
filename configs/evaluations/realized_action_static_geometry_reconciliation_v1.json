@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.realized_action_static_geometry_reconciliation.v1",
+  "contract_id": "realized-action-static-geometry-reconciliation-v1",
+  "sources": {
+    "task_plane": {
+      "path": "configs/decisions/canonical_task_plane_registration_closeout_v1.json",
+      "sha256": "23a7db903929d37f3e59d834c7de0e87006b619fbf6d869ef7634a2086c334ff"
+    },
+    "pawn_endpoints": {
+      "closeout_path": "configs/decisions/retrospective_c922_endpoint_to_sim_v1_closeout.json",
+      "closeout_sha256": "b1a5529ade25992cd88cc00a3b926b3f7cb987956b41ad3d50c4a50ea0303761",
+      "receipt_path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+      "receipt_sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011"
+    },
+    "fixed_base": {
+      "path": "runs/pi-link-tag-calibration/20260726-fixed-base-registration-diagnostic-v1/receipt.json",
+      "sha256": "5ac2c833eb6b9440deac43123f0de2bd79f81ea7ea40ad4ff2d2a18a824a30e0"
+    },
+    "articulated_differential": {
+      "path": "configs/decisions/calibration_graph_composite_heldout_v1_closeout.json",
+      "sha256": "8bb6f4c0295449c19e6423338c5e52bcde316d2ebb036052df6674d8170ba3f4"
+    },
+    "silhouette": {
+      "path": "runs/pi-link-tag-calibration/20260727-current-session-articulated-cad-bundle-v4/receipt.json",
+      "sha256": "527476fc7e5db6a7fbb97e4a6ae0f574e4ab6c688329dfb91c76707ad70f4a7d",
+      "pose": "mid"
+    },
+    "floor_support_visual": {
+      "path": "configs/evaluations/img5349_3dgs_board_registration_v1.json",
+      "sha256": "d74e0cd05df64a054b0e4286a7cc4df0e961b4e16b4a0aab65a035d86a7b65b4"
+    }
+  },
+  "frozen_gates": {
+    "task_plane_registration_maximum_mm": 25.0,
+    "initial_pawn_base_maximum_error_m": 0.006,
+    "terminal_pawn_base_maximum_error_m": 0.006,
+    "fixed_base_p90_maximum_px": 8.0,
+    "fixed_base_within_4px_minimum_fraction": 0.75,
+    "articulated_displacement_rmse_maximum_px": 3.0,
+    "silhouette_heldout_median_maximum_px": 12.0,
+    "silhouette_heldout_p80_maximum_px": 24.0
+  },
+  "rules": {
+    "preserve_accepted_task_plane": true,
+    "joint_camera_robot_object_refit_allowed": false,
+    "camera_pose_may_absorb_joint_or_link_error": false,
+    "retrospective_silhouette_may_promote_parameters": false,
+    "nominal_3dgs_scale_is_metric_floor_measurement": false,
+    "rejected_factor_may_be_promoted": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "parameter_fit": false,
+    "mapping_approval": false,
+    "paid_compute": false
+  }
+}
