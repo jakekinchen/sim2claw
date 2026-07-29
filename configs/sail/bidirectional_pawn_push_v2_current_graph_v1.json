@@ -1214,7 +1214,7 @@
     },
     "causal_closure_successor_queue": {
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
-      "sha256": "9dc93e11d3e720db8f4155cbf3ea8844df147df4942ac84c5a9ec71adc271fec",
+      "sha256": "97d95434d75cc5116fd4bfa1509420ba8d47997be85fbc05a5239cdfadf02081",
       "proof_class": "active_causal_closure_campaign_control_state"
     },
     "canonical_seeded_static_v2_receipt": {
@@ -2354,6 +2354,27 @@
         "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static.v1",
         "status": "frozen_before_static_only_elbow_locked_enumeration",
         "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_low_direct_path_static_action_search"
+      }
+    },
+    "canonical_elbow_locked_low_path_static_receipt_v4": {
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-low-path-static-v4/receipt.json",
+      "sha256": "eceb14e34d32738151f06c0557c0a40f5bfdb71ac5d85774f44a61315a62b94e",
+      "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_receipt.v1",
+        "status": "canonical_elbow_locked_wrist_path_static_reject",
+        "passed": false,
+        "physical_motion": false
+      }
+    },
+    "canonical_elbow_locked_low_path_static_closeout_v4": {
+      "path": "configs/decisions/canonical_elbow_locked_low_path_static_v4_closeout.json",
+      "sha256": "0df993af40b6ea274878d874a315d46757f7a2e44a918730c948807f15395b33",
+      "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+      "payload_contract": {
+        "schema_version": "sim2claw.canonical_elbow_locked_low_path_static_closeout.v4",
+        "status": "terminal_elbow_actuator_locked_workspace_safety_boundary_no_task_mapping",
+        "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative"
       }
     },
     "simulator_candidate": {
@@ -6203,6 +6224,38 @@
       }
     },
     {
+      "id": "verdict:canonical-elbow-locked-low-path-static-v4-reject",
+      "type": "evaluator_verdict",
+      "label": "Low-direct elbow-locked path has no safe family",
+      "status": "static_reject_zero_of_48_families_collision_and_contact_height",
+      "source_binding": "canonical_elbow_locked_low_path_static_receipt_v4",
+      "evaluator_identity": "7c101120fa4ea4cad4cadc113e59dd5e8287c6b21b69f730d4a0232f5b3e9a8e",
+      "data": {
+        "compile_reject_count": 279,
+        "static_reject_count": 9,
+        "statically_eligible_family_count": 0,
+        "compiled_family_count": 2,
+        "all_compiled_cells_self_collide": true,
+        "all_compiled_cells_exceed_contact_height": true,
+        "physical_task_attempts": 0
+      }
+    },
+    {
+      "id": "verdict:canonical-elbow-locked-low-path-static-v4-terminal-boundary",
+      "type": "evaluator_verdict",
+      "label": "Current elbow anchor is a terminal task-workspace safety boundary",
+      "status": "terminal_elbow_actuator_locked_workspace_safety_boundary_no_task_mapping",
+      "source_binding": "canonical_elbow_locked_low_path_static_closeout_v4",
+      "evaluator_identity": "eceb14e34d32738151f06c0557c0a40f5bfdb71ac5d85774f44a61315a62b94e",
+      "data": {
+        "safe_in_scope_elbow_locked_alternatives_exhausted": true,
+        "task_scope_mapping_approved": false,
+        "evaluator_v2_frozen": false,
+        "directional_transfer_attempts": 0,
+        "physical_task_attempts": 0
+      }
+    },
+    {
       "id": "policy:bidirectional-action",
       "type": "policy",
       "label": "Bidirectional canonical action",
@@ -9920,15 +9973,33 @@
       "node_ids_added": [
         "checkpoint:canonical-elbow-locked-low-path-static-v4-frozen"
       ]
+    },
+    {
+      "revision": 196,
+      "event_id": "CANONICAL_ELBOW_LOCKED_LOW_PATH_STATIC_V4_REJECT",
+      "status": "static_reject_zero_of_48_families_collision_and_contact_height",
+      "source_binding": "canonical_elbow_locked_low_path_static_receipt_v4",
+      "node_ids_added": [
+        "verdict:canonical-elbow-locked-low-path-static-v4-reject"
+      ]
+    },
+    {
+      "revision": 197,
+      "event_id": "CANONICAL_ELBOW_LOCKED_LOW_PATH_STATIC_V4_TERMINAL_BOUNDARY",
+      "status": "terminal_elbow_actuator_locked_workspace_safety_boundary_no_task_mapping",
+      "source_binding": "canonical_elbow_locked_low_path_static_closeout_v4",
+      "node_ids_added": [
+        "verdict:canonical-elbow-locked-low-path-static-v4-terminal-boundary"
+      ]
     }
   ],
   "active_pointer": {
-    "node_id": "checkpoint:canonical-elbow-locked-low-path-static-v4-frozen",
+    "node_id": "verdict:canonical-elbow-locked-low-path-static-v4-terminal-boundary",
     "milestone_id": "CC03",
-    "status": "elbow_locked_low_path_v4_frozen",
-    "queue_status": "ACTIVE_CC03_ELBOW_LOCKED_LOW_PATH_STATIC_V4_RUN",
-    "resume_action": "run_elbow_locked_low_path_static_v4_once",
-    "resume_authorized": true,
+    "status": "terminal_elbow_actuator_locked_workspace_safety_boundary",
+    "queue_status": "BLOCKED_CC03_ELBOW_ACTUATOR_LOCKED_WORKSPACE_SAFETY_BOUNDARY",
+    "resume_action": "request_existing_fable_thread_advisory_review",
+    "resume_authorized": false,
     "heldout_open_count": 4,
     "cumulative_manifest_read_count": 4,
     "counted_task_attempts": 0

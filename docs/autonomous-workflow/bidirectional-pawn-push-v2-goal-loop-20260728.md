@@ -255,15 +255,15 @@ identity, preregistration, evidence, action-integrity, or cleanup gate.
 Current state:
 Active card: CC03 minimum gauge-fixed CalibrationGraph.v1.
 Completed: CC00, CC00A, CC01, CC02.
-Evidence: fresh wrist pass 16b7896c...; V3 high-clearance negative 8a61f250...; stage closeout 03a73ade...; low-path V4 contract 3351b2c6....
+Evidence: fresh wrist pass 16b7896c...; low-path terminal receipt eceb14e3...; safety closeout 0df993af....
 REAL->SIM successes/attempts:
 SIM->REAL successes/attempts:
 Heldout open count: 4
 Physical task attempts: 0/10
 Physical/camera/torque state: closed after wrist-only calibration; torque false.
 Remaining: CC03 through CC15.
-Blockers: the original actions require a physically nonresponsive elbow; only an elbow-locked task scope can be considered.
-Next step: run the frozen elbow-locked low-path V4 exactly once, then freeze exact baseline/ZOH dynamics only if two safe families per direction survive; no pawn contact or task attempt.
+Blockers: the elbow is physically nonresponsive, and every compiled elbow-locked pawn-push cell violates self-collision and first-contact-height gates.
+Next step: request an adversarial review in the existing Fable thread, disposition any concrete safe recommendation, and preserve false task/transfer authority unless the hardware/external boundary changes.
 ```
 
 ## Physical Authority Boundaries

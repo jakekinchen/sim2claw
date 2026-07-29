@@ -4,11 +4,11 @@
     "cumulative_manifest_read_count": 4,
     "heldout_open_count": 4,
     "milestone_id": "CC03",
-    "node_id": "checkpoint:canonical-elbow-locked-low-path-static-v4-frozen",
-    "queue_status": "ACTIVE_CC03_ELBOW_LOCKED_LOW_PATH_STATIC_V4_RUN",
-    "resume_action": "run_elbow_locked_low_path_static_v4_once",
-    "resume_authorized": true,
-    "status": "elbow_locked_low_path_v4_frozen"
+    "node_id": "verdict:canonical-elbow-locked-low-path-static-v4-terminal-boundary",
+    "queue_status": "BLOCKED_CC03_ELBOW_ACTUATOR_LOCKED_WORKSPACE_SAFETY_BOUNDARY",
+    "resume_action": "request_existing_fable_thread_advisory_review",
+    "resume_authorized": false,
+    "status": "terminal_elbow_actuator_locked_workspace_safety_boundary"
   },
   "authority": {
     "camera_open": false,
@@ -95,14 +95,14 @@
       "predicts": 2
     },
     "negative_or_nonpromoted_candidates": 2,
-    "nodes": 215,
+    "nodes": 217,
     "nodes_by_type": {
       "candidate": 2,
       "checkpoint": 135,
       "context": 2,
       "counterexample": 4,
       "dataset": 1,
-      "evaluator_verdict": 51,
+      "evaluator_verdict": 53,
       "evidence": 8,
       "intervention": 1,
       "mechanism": 3,
@@ -2126,7 +2126,7 @@
     }
   ],
   "generated_at": "2026-07-28T18:09:33-05:00",
-  "graph_digest": "c1ef7aff44cbf7891971c4edc282ab2bd372d7a74340978b7a92a7a09e6ea2fa",
+  "graph_digest": "26c97b262fd205087fe0a271689ee4fdd15039aedd052413ff4d888392e11184",
   "node_types": [
     "workcell",
     "session",
@@ -3829,7 +3829,7 @@
       "source": {
         "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
         "proof_class": "active_causal_closure_campaign_control_state",
-        "sha256": "9dc93e11d3e720db8f4155cbf3ea8844df147df4942ac84c5a9ec71adc271fec"
+        "sha256": "97d95434d75cc5116fd4bfa1509420ba8d47997be85fbc05a5239cdfadf02081"
       },
       "status": "contract_design_active_before_dynamic_execution",
       "type": "checkpoint"
@@ -7324,6 +7324,61 @@
     },
     {
       "data": {
+        "all_compiled_cells_exceed_contact_height": true,
+        "all_compiled_cells_self_collide": true,
+        "compile_reject_count": 279,
+        "compiled_family_count": 2,
+        "physical_task_attempts": 0,
+        "source_binding_id": "canonical_elbow_locked_low_path_static_receipt_v4",
+        "static_reject_count": 9,
+        "statically_eligible_family_count": 0
+      },
+      "evaluator_identity": "7c101120fa4ea4cad4cadc113e59dd5e8287c6b21b69f730d4a0232f5b3e9a8e",
+      "id": "verdict:canonical-elbow-locked-low-path-static-v4-reject",
+      "label": "Low-direct elbow-locked path has no safe family",
+      "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+      "source": {
+        "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-low-path-static-v4/receipt.json",
+        "payload_contract": {
+          "passed": false,
+          "physical_motion": false,
+          "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_receipt.v1",
+          "status": "canonical_elbow_locked_wrist_path_static_reject"
+        },
+        "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+        "sha256": "eceb14e34d32738151f06c0557c0a40f5bfdb71ac5d85774f44a61315a62b94e"
+      },
+      "status": "static_reject_zero_of_48_families_collision_and_contact_height",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
+        "directional_transfer_attempts": 0,
+        "evaluator_v2_frozen": false,
+        "physical_task_attempts": 0,
+        "safe_in_scope_elbow_locked_alternatives_exhausted": true,
+        "source_binding_id": "canonical_elbow_locked_low_path_static_closeout_v4",
+        "task_scope_mapping_approved": false
+      },
+      "evaluator_identity": "eceb14e34d32738151f06c0557c0a40f5bfdb71ac5d85774f44a61315a62b94e",
+      "id": "verdict:canonical-elbow-locked-low-path-static-v4-terminal-boundary",
+      "label": "Current elbow anchor is a terminal task-workspace safety boundary",
+      "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+      "source": {
+        "path": "configs/decisions/canonical_elbow_locked_low_path_static_v4_closeout.json",
+        "payload_contract": {
+          "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+          "schema_version": "sim2claw.canonical_elbow_locked_low_path_static_closeout.v4",
+          "status": "terminal_elbow_actuator_locked_workspace_safety_boundary_no_task_mapping"
+        },
+        "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+        "sha256": "0df993af40b6ea274878d874a315d46757f7a2e44a918730c948807f15395b33"
+      },
+      "status": "terminal_elbow_actuator_locked_workspace_safety_boundary_no_task_mapping",
+      "type": "evaluator_verdict"
+    },
+    {
+      "data": {
         "grid_cells_opened": 0,
         "model_loaded": false,
         "output_created": false,
@@ -9560,7 +9615,7 @@
       ],
       "revision": 103,
       "source_binding": "causal_closure_successor_queue",
-      "source_sha256": "9dc93e11d3e720db8f4155cbf3ea8844df147df4942ac84c5a9ec71adc271fec",
+      "source_sha256": "97d95434d75cc5116fd4bfa1509420ba8d47997be85fbc05a5239cdfadf02081",
       "status": "contract_design_active_before_dynamic_execution"
     },
     {
@@ -10482,6 +10537,26 @@
       "source_binding": "canonical_elbow_locked_low_path_static_contract_v4",
       "source_sha256": "3351b2c6b4967d05bfcc86e59c0439a42e653d98305bbe6a903db61b0f203f95",
       "status": "frozen_before_static_only_elbow_locked_enumeration"
+    },
+    {
+      "event_id": "CANONICAL_ELBOW_LOCKED_LOW_PATH_STATIC_V4_REJECT",
+      "node_ids_added": [
+        "verdict:canonical-elbow-locked-low-path-static-v4-reject"
+      ],
+      "revision": 196,
+      "source_binding": "canonical_elbow_locked_low_path_static_receipt_v4",
+      "source_sha256": "eceb14e34d32738151f06c0557c0a40f5bfdb71ac5d85774f44a61315a62b94e",
+      "status": "static_reject_zero_of_48_families_collision_and_contact_height"
+    },
+    {
+      "event_id": "CANONICAL_ELBOW_LOCKED_LOW_PATH_STATIC_V4_TERMINAL_BOUNDARY",
+      "node_ids_added": [
+        "verdict:canonical-elbow-locked-low-path-static-v4-terminal-boundary"
+      ],
+      "revision": 197,
+      "source_binding": "canonical_elbow_locked_low_path_static_closeout_v4",
+      "source_sha256": "0df993af40b6ea274878d874a315d46757f7a2e44a918730c948807f15395b33",
+      "status": "terminal_elbow_actuator_locked_workspace_safety_boundary_no_task_mapping"
     }
   ],
   "schema_version": "sim2claw.sail_belief_graph.v1",
@@ -11046,6 +11121,17 @@
       "sha256": "89ecb1d20b2176fb0e890b1afda128c8f9eb577cc519277b171361626c4f5bc2"
     },
     {
+      "id": "canonical_elbow_locked_low_path_static_closeout_v4",
+      "path": "configs/decisions/canonical_elbow_locked_low_path_static_v4_closeout.json",
+      "payload_contract": {
+        "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+        "schema_version": "sim2claw.canonical_elbow_locked_low_path_static_closeout.v4",
+        "status": "terminal_elbow_actuator_locked_workspace_safety_boundary_no_task_mapping"
+      },
+      "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+      "sha256": "0df993af40b6ea274878d874a315d46757f7a2e44a918730c948807f15395b33"
+    },
+    {
       "id": "canonical_elbow_locked_low_path_static_contract_v4",
       "path": "configs/evaluations/canonical_elbow_locked_low_path_static_v4.json",
       "payload_contract": {
@@ -11055,6 +11141,18 @@
       },
       "proof_class": "prospective_cpu_fp64_current_workcell_elbow_locked_low_direct_path_static_action_search",
       "sha256": "3351b2c6b4967d05bfcc86e59c0439a42e653d98305bbe6a903db61b0f203f95"
+    },
+    {
+      "id": "canonical_elbow_locked_low_path_static_receipt_v4",
+      "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-low-path-static-v4/receipt.json",
+      "payload_contract": {
+        "passed": false,
+        "physical_motion": false,
+        "schema_version": "sim2claw.canonical_elbow_locked_wrist_path_static_receipt.v1",
+        "status": "canonical_elbow_locked_wrist_path_static_reject"
+      },
+      "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+      "sha256": "eceb14e34d32738151f06c0557c0a40f5bfdb71ac5d85774f44a61315a62b94e"
     },
     {
       "id": "canonical_elbow_locked_wrist_path_static_closeout_v2",
@@ -11746,7 +11844,7 @@
       "id": "causal_closure_successor_queue",
       "path": "docs/autonomous-workflow/causal-closure-successor-task-queue-20260728.md",
       "proof_class": "active_causal_closure_campaign_control_state",
-      "sha256": "9dc93e11d3e720db8f4155cbf3ea8844df147df4942ac84c5a9ec71adc271fec"
+      "sha256": "97d95434d75cc5116fd4bfa1509420ba8d47997be85fbc05a5239cdfadf02081"
     },
     {
       "id": "current_task_scene_labels",

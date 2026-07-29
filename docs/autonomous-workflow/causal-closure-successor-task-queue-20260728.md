@@ -1,6 +1,6 @@
 # Causal-Closure Successor Task Queue
 
-Status: `ACTIVE_CC03_ELBOW_LOCKED_LOW_PATH_STATIC_V4_RUN`
+Status: `BLOCKED_CC03_ELBOW_ACTUATOR_LOCKED_WORKSPACE_SAFETY_BOUNDARY`
 
 Created: `2026-07-28`
 
@@ -756,6 +756,22 @@ Current state:
   `35 mm` backoff, `48` families, `288` cells, quarantine, jaw, collision,
   camera, gateway, first-contact-height, contact-normal, and two-per-direction
   gates. Static simulation is its only authority.
+- V4 is the terminal static safety negative for the current nonresponsive
+  elbow anchor. Receipt SHA-256
+  `eceb14e34d32738151f06c0557c0a40f5bfdb71ac5d85774f44a61315a62b94e`
+  records `279/288` IK rejects and `9/288` compiled cells across only two
+  families. Every compiled cell introduces arm self-collision and contacts the
+  pawn at `44.774--48.270 mm`, above the unchanged `32 mm` ceiling; one also
+  fails contact normal. Eligible families remain `0/48`, directions `0/0`,
+  dynamics false, and physical attempts `0/10`. Closeout SHA-256 is
+  `0df993af40b6ea274878d874a315d46757f7a2e44a918730c948807f15395b33`.
+- Safe in-scope elbow-locked alternatives are exhausted without weakening a
+  gate: original path, binding-corrected finite grid, contact-height
+  successor, and direct low path. CC03 cannot approve a task-scope mapping
+  because no safe action exists at the physically nonresponsive elbow anchor.
+  Further task progress requires a genuine hardware/external state change
+  (responsive elbow repair, a different reachable actuator/tool, or an
+  explicitly redesigned physically executable proof task).
 - Physical/model mapping remains unapproved.
 - REAL->SIM `0/0`; SIM->REAL `0/0`; physical attempts `0/10`.
 - Cameras, gateway, serial, torque, paid compute, training, and physical task
@@ -797,9 +813,8 @@ This authorization:
 
 Next step:
 
-- Run the frozen elbow-locked low-path V4 exactly once. If at least two
-  statically safe families per direction survive with bitwise-constant elbow,
-  freeze their exact baseline/ZOH dynamic screen before opening dynamics.
-  Otherwise preserve the terminal static result and select one bounded,
-  geometry-derived action-family change. Do not touch a pawn or count a task
-  attempt.
+- Present the bound CC03 safety boundary and full causal evidence to the
+  existing project Fable thread for an adversarial review of missing safe
+  mechanisms and the highest-leverage next implementation. Classify every
+  concrete recommendation into an evidence-backed queue action, rejection, or
+  already-satisfied item. Do not touch a pawn or count a task attempt.

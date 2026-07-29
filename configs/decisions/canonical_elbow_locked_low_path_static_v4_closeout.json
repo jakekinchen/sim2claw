@@ -1,0 +1,77 @@
+{
+  "schema_version": "sim2claw.canonical_elbow_locked_low_path_static_closeout.v4",
+  "decision_id": "canonical-elbow-locked-low-path-static-20260729-v4-closeout",
+  "status": "terminal_elbow_actuator_locked_workspace_safety_boundary_no_task_mapping",
+  "proof_class": "cpu_fp64_elbow_locked_static_terminal_safety_negative",
+  "contract": {
+    "path": "configs/evaluations/canonical_elbow_locked_low_path_static_v4.json",
+    "sha256": "3351b2c6b4967d05bfcc86e59c0439a42e653d98305bbe6a903db61b0f203f95"
+  },
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-canonical-elbow-locked-low-path-static-v4/receipt.json",
+    "sha256": "eceb14e34d32738151f06c0557c0a40f5bfdb71ac5d85774f44a61315a62b94e"
+  },
+  "result": {
+    "family_count": 48,
+    "grid_result_count": 288,
+    "compile_reject_count": 279,
+    "static_reject_count": 9,
+    "statically_eligible_family_count": 0,
+    "represented_compiled_families": [
+      "brown_pawn_h1__h1_g1",
+      "brown_pawn_h1__h1_h2"
+    ],
+    "failed_gate_counts": {
+      "new_disallowed_robot_contact": 9,
+      "first_contact_height": 9,
+      "first_contact_normal": 1
+    },
+    "first_contact_height_range_m": [
+      0.0447744189396565,
+      0.04826977234479901
+    ],
+    "frozen_maximum_first_contact_height_m": 0.032,
+    "new_disallowed_contact_pairs": [
+      [
+        "left_gripper",
+        "left_shoulder"
+      ],
+      [
+        "left_shoulder",
+        "left_wrist"
+      ],
+      [
+        "left_upper_arm",
+        "left_wrist"
+      ]
+    ],
+    "direction_counts": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "dynamic_simulation": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0
+  },
+  "exhausted_safe_in_scope_alternatives": [
+    "original inherited elbow-locked vertical-precontact path",
+    "wiring-corrected finite 48-family elbow-locked search",
+    "36/40 mm contact-target height successor with unchanged low-contact witness gate",
+    "direct low-precontact to contact to pushed-endpoint path with unchanged collision and contact gates"
+  ],
+  "decision": "Preserve V4 as the terminal static safety negative for pawn pushing at the current physically nonresponsive elbow anchor. Do not weaken self-collision, first-contact-height, contact-normal, progress, direction-family, or physical-safety gates. The current wrist/pan/lift mapping evidence is not enough to approve a task packet because no safe elbow-locked task action exists. Further task progress requires a genuine external or hardware state change: restore responsive elbow actuation through separately authorized repair, replace the task actuator/tool with one whose safe workspace reaches the board, or explicitly redesign the proof around a different physically executable task. No pawn motion, evaluator V2 freeze, counted task packet, or transfer is authorized.",
+  "authority": {
+    "cc03_terminal_boundary_closeout": true,
+    "request_advisory_fable_review": true,
+    "dynamic_simulation": false,
+    "mapping_approval": false,
+    "evaluator_v2_freeze": false,
+    "camera": false,
+    "gateway": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}
