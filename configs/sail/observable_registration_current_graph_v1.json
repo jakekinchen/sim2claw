@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or1_camera_world_model",
+  "status": "active_or2_robot_jaw_mapping",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "88ee83f70b61b7568aa05debb20c99c3de193edee652d455f4e16f51840d4620",
+      "sha256": "79319e32144d705a85eed84e97cb73b629c3800a904dca7407dcb9be73c93a4e",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -70,6 +70,11 @@
       "path": "configs/decisions/observable_registration_corpus_v1_closeout.json",
       "sha256": "ee6173c282cd2cae43628cc4886080473284c9b71b0ad289ef1ff0388b5cff04",
       "proof_class": "retained_observability_inventory"
+    },
+    "or1": {
+      "path": "configs/decisions/observable_c922_camera_world_v1_closeout.json",
+      "sha256": "42fb05f07184dcf3d0fc71de85d8c47771d932692c54096895fc5f43c4faeb36",
+      "proof_class": "bounded_board_gauge_camera_world_projection"
     }
   },
   "nodes": [
@@ -83,8 +88,21 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or1",
+      "status": "active_or2",
       "source_binding": "queue"
+    },
+    {
+      "id": "mapping:or1-camera-world",
+      "type": "mapping_candidate",
+      "label": "Bounded C922 camera/world model",
+      "status": "partial_accepted_exact_intrinsics_unidentified",
+      "source_binding": "or1",
+      "data": {
+        "board_reprojection_rms_px": 2.2703078871460747,
+        "board_reprojection_max_px": 5.652360377112204,
+        "exact_intrinsics_approved": false,
+        "global_mapping_approved": false
+      }
     },
     {
       "id": "evidence:or0-corpus",
@@ -170,6 +188,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR1",
-  "next_transition": "or1_gauge_fixed_camera_world_model"
+  "active_card": "OR2",
+  "next_transition": "or2_robot_jaw_mapping_under_frozen_camera"
 }

@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.observable_c922_camera_world_closeout.v1",
+  "decision_id": "observable-c922-camera-world-v1-closeout",
+  "result": "PARTIAL_ACCEPTED_BOUNDED_CAMERA_WORLD_EXACT_INTRINSICS_UNIDENTIFIED",
+  "proof_class": "board_gauge_square_pixel_zero_distortion_assumption_camera_world_projection",
+  "freeze_commit": "8a75aa1",
+  "contract": {
+    "path": "configs/evaluations/observable_c922_camera_world_v1.json",
+    "sha256": "9af4ed8f8f205522d24481df77d380da8421b609d0d8d916ccd4bf658af7f853"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_camera_world.py",
+    "sha256": "d59024237077b83933c2c540c97a839adae41bef5db5dcf98910015709d6300b"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_c922_camera_world_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "a2fda1032ad70c026fb8e82f3849896926ee92f07a14f5ecdf8e827141324614",
+    "artifact_sha256": "f6add6ce80386e9795d2f51e65d42dfad042ebf095b3a1b325aa253c2d4baeb4"
+  },
+  "projective_candidate_diagnostic": {
+    "physically_plausible": false,
+    "fx_px": 518.8230981618135,
+    "fy_px": 279.18100029652965,
+    "absolute_skew_px": 191.5708666069856,
+    "focal_aspect_ratio": 1.8583753823173859,
+    "failed_gates": ["skew", "aspect"],
+    "interpretation": "The prior 3x4 projective candidate absorbed non-camera geometry and cannot serve as physical intrinsics."
+  },
+  "bounded_physical_pinhole": {
+    "accepted": true,
+    "board_correspondence_count": 25,
+    "board_reprojection_rms_px": 2.2703078871460747,
+    "board_reprojection_max_px": 5.652360377112204,
+    "focal_px": 1178.3737622421925,
+    "principal_point_px": [320.0, 240.0],
+    "skew_px": 0.0,
+    "focal_aspect_ratio": 1.0,
+    "horizontal_fov_degrees": 30.385775599193618,
+    "vertical_fov_degrees": 23.024011563330646,
+    "rotation_determinant": 1.0,
+    "jacobian_rank": 7,
+    "jacobian_condition_number": 96615.60806106364,
+    "camera_center_task_world_m": [
+      0.4560844244532806,
+      1.2663570693761834,
+      1.2684113531486867
+    ],
+    "robot_jaw_or_outcome_rows_consumed": 0
+  },
+  "exact_calibration_boundary": {
+    "exact_intrinsic_calibration_approved": false,
+    "distortion_measured": false,
+    "pristine_heldout_available": false,
+    "known_outcome_validation_reuse_promotable": false,
+    "reason": "Only one planar board view is available under fixed principal-point, square-pixel, and zero-distortion assumptions."
+  },
+  "validation": {
+    "focused_tests": "3 passed",
+    "deterministic_rebuild": true,
+    "bounded_model_all_frozen_gates_passed": true
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replay": false,
+    "paid_compute": false,
+    "global_mapping_approved": false,
+    "transfer_claim": false
+  },
+  "next_card": "OR2"
+}

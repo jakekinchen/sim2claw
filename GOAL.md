@@ -13,11 +13,11 @@ measured first contact divergence, one prospectively justified simulator
 correction, and a new exact-action replay.
 
 OR0 passes with 20 hash-bound sources and exact identities for the `531` action
-rows, `1029` C922 frames, and `171` wrist RGB frames. OR1 is active: it will
-separate the physically plausible camera/world model from the older projective
-camera that was allowed to absorb robot error. Physical motion remains closed
-at the follower-elbow service boundary. The crown-only RP04N negative remains
-an occlusion counterexample, not a terminal statement about the full episode.
+rows, `1029` C922 frames, and `171` wrist RGB frames. OR1 accepts a bounded
+board-gauge camera at `2.270 px` RMS and rejects the old projective camera as
+physically implausible; exact intrinsics remain unidentified. OR2 is active and
+will fit robot/jaw geometry without allowing the frozen camera to absorb that
+error. Physical motion remains closed at the follower-elbow service boundary.
 
 ## Latest realized-action outcome result
 
