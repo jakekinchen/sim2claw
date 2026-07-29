@@ -1,6 +1,6 @@
 # Parking-Recovery Transfer Successor Queue
 
-Status: `RP04D_80DEG_TEMPORAL_FROZEN_PENDING_ONE_RUN`
+Status: `RP04E_80DEG_66MM_STATIC_FROZEN_PENDING_ONE_RUN`
 
 Created: `2026-07-29`
 
@@ -47,7 +47,8 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 | RP04 | `DONE_EXISTING_SIMULATOR_PASS_RECONCILED` | Select the strongest already frozen natural-anchor simulator route without using later outcomes to alter its actions. | Canonical wrist-path V5 predates this successor and has exactly two families per direction across direct/ZOH and five resets, with exact actions and ObservableEpisode traces. | Receipt `cf21bd8c...` passes `40/40`; its four action tensors are immutable transfer candidates. This does not approve mapping or hardware. |
 | RP04A | `DONE_TERMINAL_V5_TRACKING_NEGATIVE` | Approve or reject the coordinated-unloading hypothesis before any task packet. | The elbow-only fit passed its untouched tail, then the exact 20-episode challenger preserved all V5 requested bytes and the canonical evaluator. | `0/20` task episodes passed. All four V5 actions are closed for hardware; no retry, task-conditioned refit, action repair, or gate relaxation. |
 | RP04C | `V2_ONE_PHYSICAL_EXECUTION_AUTHORIZED` | Extend execution evidence toward the smallest V5 contact-angle corridor without pawn or board contact. | V2 static receipt `accd098e...` passes: `1105` rows, reachable `-60 deg` pan, `-10.409 deg` elbow, `75.874 mm` worst-case clearance, both scenes contact-free, and all route gates. Packet commit `6ca36ab` passed four focused tests; one packet-hash-bound authorization is active until `12:29:14 CDT`. | No V1 retry. Any live start, camera, gateway, tracking, boundary, or cleanup defect stops safely; still zero task attempts. |
-| RP04D | `80DEG_TEMPORAL_FROZEN_PENDING_ONE_RUN` | Compile task geometry around the physically observed elbow floor instead of ideal V5 angles. | Static receipt `065e75e...` passes all three frozen locks. At the predeclared `80 deg` lock, eight families are eligible and one exact case per direction is selected. The temporal contract preserves their bytes, direct/ZOH, five resets, `36.025 mm`, ObservableEpisode, collision, no-lift, and camera gates. | Run exactly `2 x 2 x 5 = 20` episodes. No post-outcome switch to the 85 or 77.5 degree families. A pass may open task-packet design only. |
+| RP04D | `DONE_TERMINAL_80DEG_40MM_DYNAMIC_NEGATIVE` | Compile task geometry around the physically observed elbow floor instead of ideal V5 angles. | Static receipt `065e75e...` passed all locks; the predeclared 80-degree pair then ran `20` direct/ZOH/reset episodes with exact bytes. | `0/20` passed. Both cases made contact but failed progress and no-lift. Do not switch to 85 or 77.5 degree families after outcomes. |
+| RP04E | `80DEG_66MM_STATIC_FROZEN_PENDING_ONE_RUN` | Test the evidence-directed undertravel mechanism at the same reachable lock. | Change only stroke from `40 mm` to the already established `66 mm` successor; retain 80-degree lock, 48-family universe, 576 cells, wrist/head-height grid, jaw/contact/collision/camera/gateway gates, and false dynamic/hardware authority. | Static failure closes this mechanism without dynamics. A pass freezes exactly one family per direction for the unchanged temporal gate. |
 | RP04B | `PENDING` | Complete one REAL->SIM pawn-task transfer. | Camera-owned physical source success with exact evaluator outcome, then byte-identical CPU/fp64 replay of its action and initial state; complete object/contact/outcome and first-divergence traces. | At most three task attempts; diagnose after two good-tracking failures. Failures remain in the denominator. |
 | RP05 | `PENDING` | Complete one distinct SIM->REAL pawn-task transfer. | V5 simulator success and robustness predate the exact-action freeze; use a distinct family; camera-owned physical success with identical requested bytes and declared physical timing. | At most three task attempts; failures remain in the denominator. |
 | RP06 | `PENDING` | Pilot predictive policy ranking with three prospectively declared deterministic controllers. | Freeze controllers, ID/OOD distribution, rank hypothesis, and six-case physical sampling before outcomes; report exact denominators, Wilson intervals, and failure map. | Small evidence stays a pilot; do not claim general predictive authority. |
@@ -67,10 +68,10 @@ frozen natural-anchor canonical wrist-path V5 simulator pass.
 
 ## Current next step
 
-Run the already frozen 20-episode `80 deg` temporal screen exactly once. Both
-directions must pass direct target and diagnostic `0.11 s` ZOH across all five
-reset variants with exact action bytes and the unchanged task gates. Do not
-switch to another lock or family after opening outcomes.
+Run the already frozen 80-degree, 66 mm stroke static screen exactly once. It
+must yield one distinct family per direction under every unchanged static
+gate before any dynamic outcome opens. Do not alter the lock, stroke, family
+universe, or gates after the result.
 
 ## RP00 immutable result
 

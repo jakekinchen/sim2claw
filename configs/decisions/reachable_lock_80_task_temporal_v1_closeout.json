@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.reachable_lock_task_temporal_closeout.v1",
+  "decision_id": "reachable-lock-80-task-temporal-20260729-v1-closeout",
+  "status": "terminal_40mm_dynamic_negative_66mm_static_successor_admitted",
+  "freeze_commit": "6e825c2",
+  "receipt": {
+    "path": "runs/bidirectional-pawn-push-v2/20260729-reachable-lock-80-task-temporal-v1/receipt.json",
+    "sha256": "242631da086e9e9494e6b7d671a15bfbe40b44464f173fcad7a796c95180d7b0"
+  },
+  "result": {
+    "episodes": 20,
+    "passes": 0,
+    "passing_cases_per_direction": {
+      "REAL_TO_SIM": 0,
+      "SIM_TO_REAL": 0
+    },
+    "failure_channels": [
+      "progress",
+      "no_lift"
+    ],
+    "real_to_sim_progress_range_mm": [
+      11.010502138074452,
+      18.743280337440705
+    ],
+    "sim_to_real_progress_range_mm": [
+      18.65668729346456,
+      23.84659348136066
+    ],
+    "physical_task_attempts": 0
+  },
+  "decision": "Do not switch to the 85 or 77.5 degree selected families after opening outcomes. The 40 mm actions made consistent selected contact but undertraveled and lifted. Admit one prospective 66 mm static-only successor at the same predeclared 80 degree lock, changing stroke only and preserving the family universe, geometry, contact, collision, camera, gateway, false dynamic/hardware authority, and 36.025 mm eventual temporal gate."
+}
