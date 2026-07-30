@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `COMPLETE_RETAINED_DATA_RECALCULATION_PARTIAL_DYNAMIC_ADVANCEMENT`
+Status: `COMPLETE_OR20_PARTIAL_REPLAY_ADVANCEMENT_OBJECT_DYNAMICS_UNIDENTIFIED`
 
 ## Active mission
 
@@ -9,19 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR20_CONTACT_CONSEQUENCE_LOCALIZATION`
+`OR20_COMPLETE_CONTACT_CONSEQUENCE_LOCALIZATION`
 
 ## Current card
 
-No active card — the retained-data loop is closed at an identified object-dynamics evidence boundary.
+`none` — the campaign is at an external-input boundary
 
 ## Current evidence
 
-- OR19 artifact: `f33198841ce3e70a11dfc7f2e617174248e436bd18474b3bb626700b6674e184`.
-- OR20 artifact: `4374827196aae08617b9899387cbdd31e5bfcd625e773efadbf95229ac908668`.
-- Exact actions first make named jaw contact at sample `231`, move the pawn at `248`, and produce `47.513 mm` signed D2 progress.
-- The `36.025 mm` progress gate passes and final D2 error is `9.945 mm`, but the pawn tips `102.106°` and collateral displacement reaches `11.451 mm`.
-- The remaining causal channel is object orientation/contact consequence. Existing evidence does not identify contact height, mass/COM, friction, or compliance.
+- Proof class: `retrospective_exact_action_contact_and_progress_with_object_consequence_identifiability_boundary_no_promotion_authority`.
 
 ## Authority
 
@@ -36,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`preserve_or19_best_replay_until_independent_metric_orientation_and_contact_force_evidence_exists`
+`wait_for_independent_metric_orientation_and_contact_force_evidence`
 
 ## Stop conditions
 
