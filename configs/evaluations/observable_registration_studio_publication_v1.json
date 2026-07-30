@@ -1,0 +1,75 @@
+{
+  "schema_version": "sim2claw.observable_registration_studio_publication_contract.v1",
+  "experiment_id": "observable-registration-studio-publication-v1",
+  "proof_class": "read_only_observable_registration_successor_projection",
+  "sources": {
+    "base_proof_bundle": {
+      "path": "outputs/realized_action_studio_proof_v1/bundle.json",
+      "sha256": "ad4bf47e5cafe9231f87cbc5fe8cdca6f40204f6df6f286fb7e58058c5b859bd"
+    },
+    "base_proof_receipt": {
+      "path": "outputs/realized_action_studio_proof_v1/receipt.json",
+      "sha256": "9d17e4137b79f746db533a2ff102e8b8e5fc83b6fb02330c34ebae49e251b3f0"
+    },
+    "or0_closeout": {
+      "path": "configs/decisions/observable_registration_corpus_v1_closeout.json",
+      "sha256": "ee6173c282cd2cae43628cc4886080473284c9b71b0ad289ef1ff0388b5cff04"
+    },
+    "or1_closeout": {
+      "path": "configs/decisions/observable_c922_camera_world_v1_closeout.json",
+      "sha256": "42fb05f07184dcf3d0fc71de85d8c47771d932692c54096895fc5f43c4faeb36"
+    },
+    "or2_closeout": {
+      "path": "configs/decisions/observable_robot_jaw_mapping_v1_closeout.json",
+      "sha256": "28461906ca0b3cb8e67e5e68471f434c3498ea425bb8b6f93f4512baf6cf5da1"
+    },
+    "or3_closeout": {
+      "path": "configs/decisions/observable_physical_episode_observations_v1_closeout.json",
+      "sha256": "4d64346dfbf671e04a6d05ac204f2381abfc650a2c7bbe2418b471b26c6469bf"
+    },
+    "or4_closeout": {
+      "path": "configs/decisions/observable_first_contact_divergence_v1_closeout.json",
+      "sha256": "61d750b9a270e22fb7d5fe1f0ca919ead7bb941a371bc5c91c14b74dec0b678e"
+    },
+    "or6_closeout": {
+      "path": "configs/decisions/observable_jaw_aperture_fit_v1_closeout.json",
+      "sha256": "f8ea72cad4cd8dda9c244dd074b1e6b6019ab62baeed5eb6572d11f791c2eba7"
+    },
+    "or7_closeout": {
+      "path": "configs/decisions/observable_jaw_aperture_replay_v1_closeout.json",
+      "sha256": "a8f7d2f159e55e73c6626832479e6cf8a451f80924f15bba637fd40d7089f63e"
+    },
+    "or7a_closeout": {
+      "path": "configs/decisions/observable_jaw_pawn_geometric_gap_v1_closeout.json",
+      "sha256": "a8f4f9324ad97554efc73915872fd8ba153a33e8b5afabea30bbcf439f2ee88d"
+    },
+    "or7b_closeout": {
+      "path": "configs/decisions/observable_body_joint_zero_offset_mechanism_v1_closeout.json",
+      "sha256": "f0d7d2b7966b8183356a91f121c70aaa2c613b89ade18a5707338076688f50f7"
+    }
+  },
+  "rules": {
+    "base_proof_may_be_rewritten": false,
+    "base_timeline_may_be_changed": false,
+    "proof_class_may_be_promoted": false,
+    "missing_metric_depth_may_be_imputed": false,
+    "global_mapping_must_remain_unapproved": true,
+    "exact_replay_successes_must_equal": 0,
+    "exact_replay_attempts_must_equal": 2,
+    "validation_required_pose_count": 4,
+    "validation_admissible_pose_count": 0
+  },
+  "authority": {
+    "write": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "training": false,
+    "promotion": false,
+    "paid_compute": false
+  }
+}

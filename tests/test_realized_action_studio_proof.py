@@ -98,7 +98,7 @@ def test_studio_serves_read_only_realized_action_proof(tmp_path: Path) -> None:
         "physical_authority": False,
     }
     with patch(
-        "sim2claw.studio_server.load_realized_action_studio_proof",
+        "sim2claw.studio_server.load_observable_registration_studio_proof",
         return_value=payload,
     ):
         server = create_server("127.0.0.1", 0, repo_root=tmp_path, read_only=True)
@@ -125,6 +125,8 @@ def test_frontend_has_dedicated_desktop_and_phone_proof_surface() -> None:
     assert 'id="proof-scrubber"' in html
     assert 'id="proof-plot"' in html
     assert 'id="proof-availability-grid"' in html
+    assert 'id="proof-registration-list"' in html
+    assert 'id="proof-spatial-list"' in html
     assert 'fetch("/api/realized-action-proof"' in js
     assert '["replay", "sail", "proof", "library"' in js
     assert ".proof-view" in css

@@ -24,7 +24,9 @@ from .learning_factory_studio import DEFAULT_FACTORY_PROJECT, build_factory_navi
 from .orchestrator_frames import LocalOverheadSnapshotAdapter
 from .physical_gateway import PhysicalGatewayError
 from .physical_sim_replay import replay_physical_recording
-from .realized_action_studio_proof import load_realized_action_studio_proof
+from .observable_registration_studio_publication import (
+    load_observable_registration_studio_proof,
+)
 from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
 from .studio_project_map import StudioProjectMapError, build_project_map
@@ -310,7 +312,9 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
         if path == "/api/realized-action-proof":
             try:
                 self._send_json(
-                    load_realized_action_studio_proof(root=self.server.repo_root)
+                    load_observable_registration_studio_proof(
+                        root=self.server.repo_root
+                    )
                 )
             except (
                 FactoryArtifactError,

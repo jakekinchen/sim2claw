@@ -156,6 +156,9 @@ const elements = {
   proofContactBoundary: document.querySelector("#proof-contact-boundary"),
   proofContactNeeds: document.querySelector("#proof-contact-needs"),
   proofGeometryList: document.querySelector("#proof-geometry-list"),
+  proofRegistrationList: document.querySelector("#proof-registration-list"),
+  proofSpatialList: document.querySelector("#proof-spatial-list"),
+  proofNextEvidence: document.querySelector("#proof-next-evidence"),
   proofGateGrid: document.querySelector("#proof-gate-grid"),
   proofPathGrid: document.querySelector("#proof-path-grid"),
   proofAvailabilityGrid: document.querySelector("#proof-availability-grid"),
@@ -1408,6 +1411,59 @@ function renderProofGeometry() {
   }));
 }
 
+function renderProofRegistration() {
+  const successor = state.proof?.registration_successor;
+  if (!successor) {
+    elements.proofRegistrationList.replaceChildren(
+      proofNode("p", "", "Registration successor unavailable."),
+    );
+    elements.proofSpatialList.replaceChildren();
+    text(elements.proofNextEvidence, "");
+    return;
+  }
+  const initial = successor.initial_alignment;
+  const event = successor.first_contact_divergence;
+  const aperture = successor.aperture_correction;
+  const replay = successor.exact_replay;
+  const rows = [
+    ["Camera / board", `${Number(initial.camera_board_reprojection_rms_px).toFixed(3)} px RMS · bounded pinhole`],
+    ["Robot / jaw", `${Number(initial.robot_jaw_fit_rms_px).toFixed(3)} px fit · mapping not approved`],
+    ["Physical enclosure", `#${event.physical_enclosure_sample} · ${event.channel.replaceAll("_", " ")}`],
+    ["Simulator consequence", `#${event.simulator_first_pawn_motion_sample} · ${event.gap_samples} samples / ${Number(event.gap_seconds).toFixed(3)} s late`],
+    ["Jaw aperture fit", `${Number(aperture.fit_aperture_rms_before_px).toFixed(3)} → ${Number(aperture.fit_aperture_rms_after_px).toFixed(3)} px`],
+    ["Jaw aperture held-out", `${Number(aperture.validation_aperture_rms_before_px).toFixed(3)} → ${Number(aperture.validation_aperture_rms_after_px).toFixed(3)} px`],
+    ["Exact action replays", `${replay.successes} / ${replay.attempts} · ${replay.selected_jaw_contact_steps} selected-jaw contacts`],
+  ];
+  elements.proofRegistrationList.replaceChildren(...rows.map(([label, value]) => {
+    const row = proofNode("div", "proof-geometry");
+    row.append(proofNode("b", "", label), proofNode("span", "", value));
+    return row;
+  }));
+  const gap = successor.signed_geometric_gap;
+  const spatial = successor.spatial_mechanism;
+  const vector = gap.enclosure_midpoint_to_pawn_vector_mm
+    .map((value) => `${Number(value) >= 0 ? "+" : ""}${Number(value).toFixed(1)}`)
+    .join(", ");
+  const spatialRows = [
+    ["Fixed-jaw gap", `${Number(gap.enclosure_fixed_jaw_gap_mm).toFixed(3)} mm at physical enclosure`],
+    ["Aperture effect", `${Number(gap.aperture_gap_reduction_mm).toFixed(3)} mm gap reduction`],
+    ["Midpoint → pawn", `[${vector}] mm`],
+    ["Pan / lift family", `rank ${spatial.jacobian_rank} · condition ${Number(spatial.jacobian_condition_number).toFixed(3)}`],
+    ["Untouched validation", `${spatial.validation_admissible_pose_count} / ${spatial.validation_required_pose_count} admissible`],
+    ["Values promoted", spatial.parameter_values_produced ? "YES" : "NO"],
+  ];
+  elements.proofSpatialList.replaceChildren(...spatialRows.map(([label, value]) => {
+    const row = proofNode("div", "proof-geometry");
+    row.append(proofNode("b", "", label), proofNode("span", "", value));
+    return row;
+  }));
+  const next = successor.next_evidence_requirement;
+  text(
+    elements.proofNextEvidence,
+    `Next admissible evidence: ${next.minimum_new_no_contact_static_pose_count} new no-contact C922 poses after elbow service, spanning ≥${next.minimum_shoulder_pan_span_degrees}° pan and ≥${next.minimum_shoulder_lift_span_degrees}° lift, with both jaw endpoints visible. No task attempt is required.`,
+  );
+}
+
 function renderProofGates() {
   const outcome = state.proof.mission.outcome;
   elements.proofGateGrid.replaceChildren(...Object.entries(outcome.gates).map(([name, passed]) => {
@@ -1459,7 +1515,13 @@ function renderProof() {
     return;
   }
   elements.proofEmpty.hidden = true;
-  text(elements.proofStatus, "TERMINAL NEGATIVE · 0 / 1");
+  const successor = state.proof.registration_successor;
+  text(
+    elements.proofStatus,
+    successor
+      ? `ALIGNMENT BOUNDED · TASK ${successor.exact_replay.successes} / ${successor.exact_replay.attempts}`
+      : "TERMINAL NEGATIVE · 0 / 1",
+  );
   text(elements.proofReceipt, state.proof.receipt_sha256);
   const video = state.proof.recording.video;
   if (elements.proofVideo.dataset.sha256 !== video.sha256) {
@@ -1481,6 +1543,7 @@ function renderProof() {
   renderProofDivergence();
   renderProofContact();
   renderProofGeometry();
+  renderProofRegistration();
   renderProofGates();
   renderProofAvailability();
 }
