@@ -1,0 +1,106 @@
+{
+  "schema_version": "sim2claw.observable_registration_studio_publication_closeout.v1",
+  "decision_id": "observable-registration-studio-publication-v1-closeout",
+  "result": "PASS_EVIDENCE_LIMITED_CAMPAIGN_PUBLICATION",
+  "proof_class": "read_only_hash_bound_observable_registration_and_exact_action_replay_publication",
+  "campaign_result": "COMPLETE_EVIDENCE_LIMITED_EXTERNAL_SERVICE_AND_FRESH_VALIDATION_BOUNDARY",
+  "implementation_freeze_commit": "dc7e928",
+  "presentation_consistency_commit": "a40a23d",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_studio_publication_v1.json",
+    "sha256": "993e1dae68d232081f42aa09a5e381ec6920fc077c845d48ab27a1cf176f374d"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_registration_studio_publication_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "665897408c6d80b798066a0d692e027160a836a7295a71042be8adbe2d5f4f4a",
+    "artifact_sha256": "22e1b8102bf3f629a2a6c0b1b030910493fe34604d521ea4e64121506e858657"
+  },
+  "generated_supplement": {
+    "path": "outputs/observable_registration_studio_publication_v1/supplement.json",
+    "git_ignored": true,
+    "sha256": "351b1514eea0790f0d14460705e9a812c49397c5ba00f0287b2ca1c78f152e5f",
+    "artifact_sha256": "59215118ae4c6c2829d852c6e26db4099e8aaa9ef7f56befaec559e2c4d602ce"
+  },
+  "base_proof_unchanged": {
+    "bundle_sha256": "ad4bf47e5cafe9231f87cbc5fe8cdca6f40204f6df6f286fb7e58058c5b859bd",
+    "receipt_sha256": "9d17e4137b79f746db533a2ff102e8b8e5fc83b6fb02330c34ebae49e251b3f0"
+  },
+  "published_ledger": {
+    "camera_board_reprojection_rms_px": 2.2703078871460747,
+    "robot_jaw_fit_rms_px": 16.324430040121502,
+    "global_mapping_approved": false,
+    "physical_enclosure_sample": 232,
+    "simulator_first_pawn_motion_sample": 386,
+    "contact_divergence_gap_samples": 154,
+    "contact_divergence_gap_seconds": 7.69659558404237,
+    "aperture_fit_rms_before_px": 21.259295702706172,
+    "aperture_fit_rms_after_px": 1.848181009986101,
+    "enclosure_fixed_jaw_gap_mm": 61.693932994227524,
+    "exact_replay_successes": 0,
+    "exact_replay_attempts": 2,
+    "selected_jaw_contact_steps": 0,
+    "physical_task_attempts_added": 0
+  },
+  "desktop_acceptance": {
+    "route": "http://127.0.0.1:4175/#/proof",
+    "status": "PASS",
+    "verified_visible": [
+      "observable_registration_and_realized_action_heading",
+      "alignment_bounded_task_0_of_2_status",
+      "observable_alignment_card",
+      "spatial_frontier_card",
+      "missing_depth_and_global_mapping_boundaries",
+      "read_only_hardware_closed_notice"
+    ]
+  },
+  "mobile_acceptance": {
+    "viewport_width_px": 390,
+    "viewport_height_px": 844,
+    "status": "PASS",
+    "verified_visible": [
+      "responsive_proof_navigation",
+      "observable_registration_heading",
+      "alignment_bounded_task_0_of_2_status",
+      "stacked_proof_verdicts",
+      "read_only_hardware_closed_notice"
+    ],
+    "viewport_reset_after_test": true
+  },
+  "verification": {
+    "focused_studio_tests": "9 passed",
+    "broad_observable_registration_tests": "51 passed",
+    "javascript_syntax": "PASS",
+    "python_compile": "PASS",
+    "json_parse": "PASS"
+  },
+  "next_evidence_requirement": {
+    "physical_task_attempt": false,
+    "minimum_new_no_contact_static_pose_count": 4,
+    "minimum_shoulder_pan_span_degrees": 10.0,
+    "minimum_shoulder_lift_span_degrees": 3.0,
+    "same_fixed_c922_mount_and_mode_required": true,
+    "both_distal_jaw_endpoints_visible_required": true,
+    "fit_candidate_frozen_before_single_validation_open_required": true,
+    "hardware_service_and_fresh_authority_required": true
+  },
+  "proof_boundaries": {
+    "camera_model_is_bounded_not_exact": true,
+    "global_mapping_approved": false,
+    "matching_action_to_task_transfer_proved": false,
+    "metric_wrist_depth_available": false,
+    "spatial_parameter_values_produced": false,
+    "successor_dynamic_replay_authorized": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "paid_compute": false
+  },
+  "next_card": null
+}

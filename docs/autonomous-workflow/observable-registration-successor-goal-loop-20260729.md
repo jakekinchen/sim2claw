@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Goal Loop
 
-Status: `ACTIVE`
+Status: `COMPLETE_EVIDENCE_LIMITED_EXTERNAL_SERVICE_AND_FRESH_VALIDATION_BOUNDARY`
 
 Created: `2026-07-29`
 
@@ -98,13 +98,13 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: ACTIVE
-Active card: OR8
-Completed: predecessor evidence; OR0-OR7B; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
-Evidence: OR7B artifact dcb88a286a2a8709fa829903df6167950f785869805fd438470fc3dabcf1586d; pan/lift family rank 2 and condition 1.428 on fit data, but admissible untouched validation is 0/4 and no values were fit
-Remaining: OR8
-Blockers: no current software blocker; physical motion remains service-gated
-Next step: publish the evidence chain and exact post-service no-contact validation requirement, then verify repository closeout
+Current state: COMPLETE_EVIDENCE_LIMITED
+Active card: none
+Completed: predecessor evidence; OR0-OR8; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
+Evidence: OR8 receipt artifact 22e1b8102bf3f629a2a6c0b1b030910493fe34604d521ea4e64121506e858657; supplement artifact 59215118ae4c6c2829d852c6e26db4099e8aaa9ef7f56befaec559e2c4d602ce; desktop and 390x844 mobile acceptance pass; 51 broad tests pass
+Remaining: no safe retained-data card
+Blockers: follower-elbow service, fresh authority, and four new no-contact C922 static validation poses
+Next step: after service and fresh authority, capture four no-contact poses with both jaw endpoints visible, >=10 deg pan span, and >=3 deg lift span; then freeze one candidate before opening validation
 ```
 
 ## Stop conditions

@@ -559,6 +559,10 @@ def run_aperture_replay_once(
             ],
         },
     )
+    try:
+        trace_receipt_path = trace_path.relative_to(root).as_posix()
+    except ValueError:
+        trace_receipt_path = trace_path.resolve().as_posix()
     unsigned = {
         "schema_version": RECEIPT_SCHEMA,
         "experiment_id": contract["experiment_id"],
@@ -630,7 +634,7 @@ def run_aperture_replay_once(
             "global_mapping_approved": False,
         },
         "trace": {
-            "path": trace_path.relative_to(root).as_posix(),
+            "path": trace_receipt_path,
             "sha256": sha256_file(trace_path),
             "row_count": len(trace_rows),
         },

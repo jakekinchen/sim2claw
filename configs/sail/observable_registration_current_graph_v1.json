@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or8_publication_and_closeout",
+  "status": "complete_evidence_limited_external_service_and_fresh_validation_boundary",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "83349073f9e8ab926903c7049ee9b021ff6c878908f3edd1fb831fad6967d1fb",
+      "sha256": "98f33f8266a3df717e4c30c480b2bde5cba7ecdf019feab3cbc58addecdf6cb3",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -120,6 +120,11 @@
       "path": "configs/decisions/observable_body_joint_zero_offset_mechanism_v1_closeout.json",
       "sha256": "f0d7d2b7966b8183356a91f121c70aaa2c613b89ade18a5707338076688f50f7",
       "proof_class": "fit_only_static_body_joint_zero_offset_identifiability_and_unopened_validation_admissibility_terminal_negative"
+    },
+    "or8": {
+      "path": "configs/decisions/observable_registration_studio_publication_v1_closeout.json",
+      "sha256": "815384a834061bc9ee2387537a6e72c5e1a573f48a50f4ce95b6931b8527fff5",
+      "proof_class": "read_only_hash_bound_observable_registration_and_exact_action_replay_publication"
     }
   },
   "nodes": [
@@ -133,7 +138,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or8",
+      "status": "complete_evidence_limited",
       "source_binding": "queue"
     },
     {
@@ -285,8 +290,8 @@
       "id": "session:or8-publication-closeout",
       "type": "session",
       "label": "Observable registration publication and evidence-limited closeout",
-      "status": "active",
-      "source_binding": "queue"
+      "status": "pass",
+      "source_binding": "or8"
     },
     {
       "id": "counterexample:or5-v1-per-view-sensitivity",
@@ -446,6 +451,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR8",
-  "next_transition": "or8_publish_evidence_chain_and_exact_post_service_no_contact_validation_requirement"
+  "active_card": null,
+  "next_transition": "external_follower_elbow_service_then_four_fresh_no_contact_c922_validation_poses_under_fresh_authority"
 }

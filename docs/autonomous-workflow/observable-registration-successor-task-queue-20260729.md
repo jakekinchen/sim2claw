@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `ACTIVE_OR8_PUBLICATION_AND_CLOSEOUT`
+Status: `COMPLETE_EVIDENCE_LIMITED_EXTERNAL_SERVICE_AND_FRESH_VALIDATION_BOUNDARY`
 
 Created: `2026-07-29`
 
@@ -94,7 +94,26 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR7B | `TERMINAL_NEGATIVE` | Declare one task-bounded jaw-center/global wrist spatial mechanism, if OR7A and nonsealed static evidence identify it. | One mechanism; fit data and a fresh retained validation image cohort freeze before annotation/open; contact/task outcome excluded. | Artifact `dcb88a286a2a8709fa829903df6167950f785869805fd438470fc3dabcf1586d`; pan/lift zero-offset family is fit-identifiable at rank `2`, condition `1.428`, singular values `[842.700,589.932] px/rad`, but admissible untouched validation is `0/4`; no parameters fit and no images opened. |
 | OR7C | `NOT_RUN_PREREQUISITE_FAILED` | Fit and no-refit validate the spatial mechanism. | Static fit and newly opened validation pass; aperture remains fixed; camera, action, plant, contact, and object remain unchanged. | OR7B has no admissible untouched validation cohort; fitting is prohibited. |
 | OR7D | `NOT_RUN_PREREQUISITE_FAILED` | Run another exact-action replay only if OR7C passes prospectively frozen static gates. | New write-once experiment; exact C6 identity; one declared spatial change on top of OR6; natural contact only. | OR7C did not run; no spatial candidate or replay authority exists. |
-| OR8 | `ACTIVE` | Publish and close the evidence chain. | Studio exposes physical/simulator camera alignment, tracks, missingness, residuals, first divergence, mechanism change, C6-versus-successor outcome, proof limits, and mobile/desktop acceptance. Focused and broad relevant tests pass; queue/graph/GOAL agree; `HEAD == origin/main`; worktree clean. | Closeout commits, screenshots or acceptance receipt, exact ledger, and next physical/service boundary if any. |
+| OR8 | `PASS` | Publish and close the evidence chain. | Studio exposes physical/simulator camera alignment, tracks, missingness, residuals, first divergence, mechanism change, C6-versus-successor outcome, proof limits, and mobile/desktop acceptance. Focused and broad relevant tests pass; queue/graph/GOAL agree; `HEAD == origin/main`; worktree clean. | Closeout SHA `815384a834061bc9ee2387537a6e72c5e1a573f48a50f4ce95b6931b8527fff5`; publication receipt artifact `22e1b8102bf3f629a2a6c0b1b030910493fe34604d521ea4e64121506e858657`; supplement artifact `59215118ae4c6c2829d852c6e26db4099e8aaa9ef7f56befaec559e2c4d602ce`; desktop and `390×844` mobile acceptance pass; `51` broad tests pass. |
+
+## Campaign closeout
+
+All safe retained-data cards are terminal. The campaign improved the validated
+jaw-aperture projection but did not improve the exact-action task result:
+aperture fit/validation RMS moved from `21.259→1.848 px` and
+`24.045→3.828 px`, while the two exact-action simulator replays remain `0/2`
+with zero selected-jaw contact. OR7A localizes the remaining error to a
+`61.694 mm` fixed-jaw spatial gap at physical enclosure. OR7B proves that a
+bounded shoulder-pan/shoulder-lift family is locally identifiable on fit poses,
+but no admissible untouched validation cohort remains, so no spatial values
+were fit and no successor replay was authorized.
+
+The next admissible step is not another outcome-tuned replay. It is four new
+no-contact C922 static poses after follower-elbow service and fresh authority,
+with the same fixed camera mount/mode, both distal jaw endpoints visible,
+`≥10°` shoulder-pan span, and `≥3°` shoulder-lift span. That capture is not a
+physical pawn-task attempt. Until it exists, global mapping, metric wrist depth,
+matching action-to-task transfer, and physical transfer remain unapproved.
 
 ## Milestone invariants
 
@@ -151,11 +170,11 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: ACTIVE_OR8_PUBLICATION_AND_CLOSEOUT
-Active card: OR8
-Completed: immutable predecessor C0-C9; OR0-OR7B; OR7C/OR7D not run because their prerequisite failed; camera endpoint REAL-to-SIM 1/1
-Evidence: OR7B artifact dcb88a286a2a8709fa829903df6167950f785869805fd438470fc3dabcf1586d; pan/lift family is fit-identifiable but untouched validation availability is 0/4, so no spatial values were fit and no replay ran
-Remaining: OR8
-Physical boundary: follower elbow service; hardware authority false
-Next step: publish the aligned evidence ladder, residual timeline, immutable negatives, and exact post-service no-contact validation requirement in Studio and tracked closeouts
+Current state: COMPLETE_EVIDENCE_LIMITED_EXTERNAL_SERVICE_AND_FRESH_VALIDATION_BOUNDARY
+Active card: none
+Completed: immutable predecessor C0-C9; OR0-OR8; OR7C/OR7D not run because their prerequisite failed; camera endpoint REAL-to-SIM 1/1
+Evidence: OR8 receipt artifact 22e1b8102bf3f629a2a6c0b1b030910493fe34604d521ea4e64121506e858657; supplement artifact 59215118ae4c6c2829d852c6e26db4099e8aaa9ef7f56befaec559e2c4d602ce; desktop and mobile acceptance pass; 51 broad tests pass
+Remaining: no safe retained-data card
+Physical boundary: follower elbow service, fresh authority, and four new no-contact C922 validation poses; hardware authority false
+Next step: after service and fresh authority, capture the four-pose static validation cohort and freeze one pan/lift candidate before opening validation
 ```

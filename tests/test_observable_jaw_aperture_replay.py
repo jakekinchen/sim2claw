@@ -25,7 +25,8 @@ def test_or7_contract_is_exact_one_run_and_nonphysical() -> None:
 
 
 def test_or7_exact_replay_emits_identity_and_honest_result(tmp_path) -> None:
-    receipt = run_aperture_replay_once(output_directory=tmp_path / "run")
+    output = tmp_path / "run"
+    receipt = run_aperture_replay_once(output_directory=output)
     assert all(receipt["source_identity"][key] for key in (
         "recording_id",
         "requested",
@@ -35,6 +36,7 @@ def test_or7_exact_replay_emits_identity_and_honest_result(tmp_path) -> None:
         "row_order",
     ))
     assert receipt["candidate_identity"]["only_gripper_zero_offset_changed"] is True
+    assert receipt["trace"]["path"] == (output / "trace.json").resolve().as_posix()
     assert receipt["trace"]["row_count"] == 531
     assert receipt["runtime"]["natural_contact_only"] is True
     assert receipt["runtime"]["contact_material_validated"] is False

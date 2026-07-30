@@ -1,16 +1,16 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR8 PUBLICATION AND CLOSEOUT`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR COMPLETE; EXTERNAL SERVICE AND FRESH VALIDATION BOUNDARY`
 
-## Active long-horizon alignment successor
+## Completed long-horizon alignment successor
 
-The active queue is
+The authoritative completed queue is
 `docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md`.
-It preserves the immutable C6 `0/1` action-to-outcome result and now targets
-the missing causal evidence directly: held-out camera/world registration,
+It preserves the immutable C6 `0/1` action-to-outcome result and directly
+evaluates the missing causal evidence: held-out camera/world registration,
 separate robot/jaw/support residuals, bounded physical pawn-and-jaw tracks,
 measured first contact divergence, one prospectively justified simulator
-correction, and a new exact-action replay.
+correction, and a successor exact-action replay.
 
 OR0 passes with 20 hash-bound sources and exact identities for the `531` action
 rows, `1029` C922 frames, and `171` wrist RGB frames. OR1 accepts a bounded
@@ -35,11 +35,7 @@ selected-jaw contact and the same sample-`388` launch. OR7A localizes the
 remaining spatial error without fit or dynamics: the fixed jaw remains
 `61.694 mm` from the pawn surface at physical enclosure sample `232`, the
 candidate midpoint is displaced by `[+72.970,-24.138,-93.272] mm`, and the
-aperture correction reduces the fixed-jaw gap by exactly `0 mm`. OR7B is active
-to prospectively freeze the smallest identifiable body-joint zero-offset
-registration and a previously unopened retained validation cohort before any
-new fit or annotation. Physical motion remains closed at the follower-elbow
-service boundary.
+aperture correction reduces the fixed-jaw gap by exactly `0 mm`.
 
 OR7B has now audited that next family without fitting it. The bounded
 shoulder-pan/shoulder-lift zero-offset family is locally identifiable on the
@@ -47,9 +43,10 @@ six open static poses (rank `2`, condition `1.428`, singular values
 `842.700/589.932 px/rad`), but there are `0/4` admissible untouched validation
 poses: earlier heldouts are reuse-forbidden, v4 has already been opened, and
 the task episode is sealed from calibration. No offset values were produced,
-no validation image was opened, and no successor replay is authorized. OR8 is
-active to publish this exact boundary and a post-service four-pose no-contact
-validation requirement rather than overfit the retained task result.
+no validation image was opened, and no successor replay is authorized. OR8
+publishes this exact boundary in the read-only Studio on desktop and phone.
+The safe retained-data campaign is complete; the next admissible input is four
+post-service, no-contact C922 validation poses under fresh authority.
 
 ## Latest realized-action outcome result
 
@@ -75,7 +72,7 @@ and visible missingness on desktop and phone.
 Current ledger:
 
 - camera endpoint episode REAL→SIM: `1/1`;
-- realized physical action trajectory → simulator task outcome: `0/1`;
+- realized physical action trajectory → simulator task outcome: `0/2`;
 - SIM→REAL pawn task: `0/0`;
 - physical pawn-task attempts: `0/10`;
 - globally approved physical/model mapping: no;
