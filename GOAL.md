@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR19_CANONICAL_RESET_DYNAMIC_REPLAY`
+Status: `COMPLETE_RETAINED_DATA_RECALCULATION_PARTIAL_DYNAMIC_ADVANCEMENT`
 
 ## Active mission
 
@@ -9,19 +9,19 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR19_EXACT_ACTION_DYNAMIC_REPLAY_AFTER_CANONICAL_RESET_REPAIR`
+`OR20_CONTACT_CONSEQUENCE_LOCALIZATION`
 
 ## Current card
 
-`OR19` — canonical rank-1-near reset plus exact-action dynamic consequence
+No active card — the retained-data loop is closed at an identified object-dynamics evidence boundary.
 
 ## Current evidence
 
-- OR18 artifact: `36057bb69f0da745418c4d61b44d6ff76480539aa806fe36de779d715bf9f37e`.
-- Frozen contract: `configs/evaluations/observable_registration_unilateral_push_dynamic_replay_v1.json`.
-- Proof class: `retrospective_outcome_informed_exact_action_simulator_diagnostic`.
-- Static contact is clear through sample `224`; the named moving jaw first contacts the pawn at sample `231`.
-- The legacy reset-layout composition placed `tan_pawn_e8` at canonical D1; OR19 uses the hardcutover current-workcell reset and fails closed on any initial non-board overlap.
+- OR19 artifact: `f33198841ce3e70a11dfc7f2e617174248e436bd18474b3bb626700b6674e184`.
+- OR20 artifact: `4374827196aae08617b9899387cbdd31e5bfcd625e773efadbf95229ac908668`.
+- Exact actions first make named jaw contact at sample `231`, move the pawn at `248`, and produce `47.513 mm` signed D2 progress.
+- The `36.025 mm` progress gate passes and final D2 error is `9.945 mm`, but the pawn tips `102.106°` and collateral displacement reaches `11.451 mm`.
+- The remaining causal channel is object orientation/contact consequence. Existing evidence does not identify contact height, mass/COM, friction, or compliance.
 
 ## Authority
 
@@ -36,7 +36,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`run_formal_write_once_exact_action_dynamic_replay_and_bind_contact_progress_outcome`
+`preserve_or19_best_replay_until_independent_metric_orientation_and_contact_force_evidence_exists`
 
 ## Stop conditions
 

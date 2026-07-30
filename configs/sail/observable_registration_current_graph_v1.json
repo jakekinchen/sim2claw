@@ -2,9 +2,9 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or19_canonical_reset_dynamic_replay",
-  "active_card": "OR16",
-  "next_transition": "run_frozen_historical_mapping_static_contact_gate_then_stop_before_dynamics",
+  "status": "complete_or20_partial_replay_advancement_object_dynamics_unidentified",
+  "active_card": null,
+  "next_transition": "wait_for_independent_metric_orientation_and_contact_force_evidence",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "d80e3840cc3b33ecfc1b8d05c5ee56225b2944ec8d01f3e8de02b56bbe87f562",
+      "sha256": "ade098044b9a1d374371f109ef45951bb9643899eda366a7fa57f143c53db6ea",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -672,13 +672,41 @@
       "id": "intervention:or19-canonical-reset-dynamic-replay",
       "type": "intervention",
       "label": "Exact-action dynamic replay after canonical rank-1-near reset repair",
-      "status": "in_progress_frozen_contract",
+      "status": "pass_quarantined_exact_action_contact_and_progress",
       "source_binding": "configs/evaluations/observable_registration_unilateral_push_dynamic_replay_v1.json",
       "data": {
         "row_count": 531,
         "canonical_piece_reset_required": true,
         "natural_contact_only": true,
+        "artifact_sha256": "f33198841ce3e70a11dfc7f2e617174248e436bd18474b3bb626700b6674e184",
+        "first_selected_jaw_contact_sample": 231,
+        "first_motion_over_1mm_sample": 248,
+        "signed_progress_toward_d2_m": 0.047512685857362694,
+        "required_progress_passed": true,
+        "final_d2_error_m": 0.009944924550405172,
+        "final_tilt_degrees": 102.10574823765309,
+        "maximum_other_piece_displacement_m": 0.011450864570197318,
+        "numeric_task_success": false,
         "actions_changed": false,
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "residual:or20-object-contact-consequence",
+      "type": "residual",
+      "label": "Object orientation and contact consequence after phase-correct contact",
+      "status": "localized_blocked_identifiability",
+      "source_binding": "configs/evaluations/observable_registration_contact_consequence_localization_v1.json",
+      "data": {
+        "artifact_sha256": "4374827196aae08617b9899387cbdd31e5bfcd625e773efadbf95229ac908668",
+        "first_simulator_planar_motion_over_1mm_sample": 248,
+        "first_simulator_vertical_motion_over_1mm_sample": 248,
+        "physical_candidate_lift_start_sample": 247,
+        "physical_definite_carried_motion_start_sample": 260,
+        "metric_orientation_path_available": false,
+        "known_contact_force_available": false,
+        "parameter_fit_allowed": false,
         "global_mapping_approved": false,
         "transfer_claim": false
       }
@@ -874,6 +902,11 @@
       "source": "intervention:or18-unilateral-push-contact",
       "target": "intervention:or19-canonical-reset-dynamic-replay",
       "type": "admitted-to"
+    },
+    {
+      "source": "intervention:or19-canonical-reset-dynamic-replay",
+      "target": "residual:or20-object-contact-consequence",
+      "type": "generated-from"
     }
   ]
 }

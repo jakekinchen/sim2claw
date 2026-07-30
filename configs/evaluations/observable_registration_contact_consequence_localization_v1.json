@@ -1,0 +1,57 @@
+{
+  "schema_version": "sim2claw.observable_registration_contact_consequence_localization_contract.v1",
+  "experiment_id": "OR20_CONTACT_CONSEQUENCE_LOCALIZATION_V1",
+  "proof_class": "retrospective_exact_action_contact_consequence_localization",
+  "sources": {
+    "or19_receipt": {
+      "path": "outputs/observable_registration_unilateral_push_dynamic_replay_v1/receipt.json",
+      "sha256": "8eb1547b1b91620b5e80f36ca1de6787840b0c65dd217159879f4f62164d6475"
+    },
+    "or19_trace": {
+      "path": "outputs/observable_registration_unilateral_push_dynamic_replay_v1/trace.json",
+      "sha256": "8d0a5d461428a55a2469acefaaf79699c959e106ed52e609b5ec77b9652b763b"
+    },
+    "physical_episode_receipt": {
+      "path": "outputs/observable_physical_episode_observations_v1/receipt.json",
+      "sha256": "e8e76bf8f9d1f44789c647e967a313b57893770edb1d3570f3b4974cb4b94d1a"
+    },
+    "contact_identifiability_contract": {
+      "path": "configs/evaluations/realized_action_contact_identifiability_v1.json",
+      "sha256": "3c63438dc79c4a6d239529d4d486336aaa9b39eff7394ff802fe0cef12fd5a90"
+    },
+    "contact_identifiability_receipt": {
+      "path": "outputs/realized_action_contact_identifiability_v1/receipt.json",
+      "sha256": "e676ab052a00ae30009d22c6f842a1ed7c71b99cd1a4987fb683fa4503c5d1c9"
+    },
+    "mechanism_registry": {
+      "path": "configs/sail/mechanism_registry_v1.json",
+      "sha256": "f8c509aae1658eb17f114089a052e20c6261c826e71389ffcf7e0cc9252cd8c5"
+    }
+  },
+  "thresholds": {
+    "planar_motion_m": 0.001,
+    "vertical_motion_m": 0.001,
+    "physical_contact_samples": [228, 232],
+    "physical_lift_samples": [247, 260],
+    "physical_carried_motion_samples": [260, 390]
+  },
+  "policy": {
+    "parameter_fit_allowed": false,
+    "contact_or_object_mutation_allowed": false,
+    "action_change_allowed": false,
+    "transfer_claim_allowed": false,
+    "global_mapping_promotion_allowed": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}
