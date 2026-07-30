@@ -134,6 +134,7 @@ const elements = {
   proofReceipt: document.querySelector("#proof-receipt"),
   proofPlantVerdict: document.querySelector("#proof-plant-verdict"),
   proofMissionVerdict: document.querySelector("#proof-mission-verdict"),
+  proofOutcomeDenominator: document.querySelector("#proof-outcome-denominator"),
   proofRobustVerdict: document.querySelector("#proof-robust-verdict"),
   proofMappingVerdict: document.querySelector("#proof-mapping-verdict"),
   proofVideo: document.querySelector("#proof-video"),
@@ -1330,8 +1331,12 @@ function renderProofFrame({ syncVideo = false } = {}) {
 function renderProofVerdicts() {
   const proof = state.proof;
   const status = proof.proof_status;
+  const exactReplay = proof.registration_successor?.exact_replay;
+  const missionSuccesses = exactReplay?.successes ?? proof.mission.successes;
+  const missionAttempts = exactReplay?.attempts ?? proof.mission.attempts;
   text(elements.proofPlantVerdict, status.plant_identification.replace("PASS_VALIDATED_", ""));
-  text(elements.proofMissionVerdict, `${proof.mission.successes} / ${proof.mission.attempts} · terminal`);
+  text(elements.proofMissionVerdict, `${missionSuccesses} / ${missionAttempts} · terminal`);
+  text(elements.proofOutcomeDenominator, `${missionSuccesses} / ${missionAttempts}`);
   text(elements.proofRobustVerdict, `${proof.robustness.deterministic_path_successes} / ${proof.robustness.deterministic_path_attempts}`);
   text(elements.proofMappingVerdict, status.global_mapping_approved ? "APPROVED" : "NOT APPROVED");
   const outcome = proof.mission.outcome;
@@ -1502,7 +1507,13 @@ function renderProofAvailability() {
     );
     return row;
   }));
-  text(elements.proofClaimBoundary, state.proof.claim_boundary);
+  const successorBoundary = state.proof.registration_successor?.claim_boundary;
+  text(
+    elements.proofClaimBoundary,
+    successorBoundary
+      ? `${state.proof.claim_boundary} ${successorBoundary}`
+      : state.proof.claim_boundary,
+  );
 }
 
 function renderProof() {
