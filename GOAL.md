@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `COMPLETE_OR20_PARTIAL_REPLAY_ADVANCEMENT_OBJECT_DYNAMICS_UNIDENTIFIED`
+Status: `IN_PROGRESS_OR21_EXACT_REPLAY_CONTACT_CAUSALITY_INTROSPECTION`
 
 ## Active mission
 
@@ -9,15 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR20_COMPLETE_CONTACT_CONSEQUENCE_LOCALIZATION`
+`OR21_EXACT_REPLAY_CONTACT_CAUSALITY_INTROSPECTION`
 
 ## Current card
 
-`none` — the campaign is at an external-input boundary
+`OR21`
 
 ## Current evidence
 
-- Proof class: `retrospective_exact_action_contact_and_progress_with_object_consequence_identifiability_boundary_no_promotion_authority`.
+- Proof class: `retrospective_outcome_informed_exact_action_simulator_introspection_no_parameter_selection_no_promotion_authority`.
 
 ## Authority
 
@@ -32,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`wait_for_independent_metric_orientation_and_contact_force_evidence`
+`run_model_identical_byte_identical_or19_introspection_then_freeze_result_before_pi_proxy_analysis`
 
 ## Stop conditions
 

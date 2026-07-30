@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `PASS_PARTIAL_REPLAY_ADVANCEMENT_OBJECT_DYNAMICS_UNIDENTIFIED`
+Status: `IN_PROGRESS_OR21_EXACT_REPLAY_CONTACT_CAUSALITY_INTROSPECTION`
 
 Created: `2026-07-29`
 
@@ -48,6 +48,10 @@ task success are accepted only if their frozen evaluator gates pass.
   jaw, silhouette, base, contact-event, or board evidence.
 - The retained source contains `1029` C922 frames at 30 fps and `171` D405 RGB
   frames at 5 fps across the full 531-row action.
+- The original successful D1-to-D2 source has no Pi IMX708 stream. Pi recordings
+  exist only for later guarded executions and contact-free tri-camera runs, so
+  they are independent auxiliary evidence and cannot be relabeled as a third
+  view of the successful source.
 - IMG_5349 supplies a board-conditioned relative-scale 3DGS registration with
   `3.759 px` held-out board-corner RMS. It is visual geometry, not metric or
   collision authority.
@@ -108,10 +112,65 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR18 | `PASS_QUARANTINED_UNILATERAL_NAMED_CONTACT_NO_DYNAMICS` | Correct the task mismatch between a push and the inherited bilateral-grasp evaluator, then test one explicitly outcome-informed robot-yaw candidate with the historical body mapping and canonical gripper baseline. | Require no intended jaw contact through sample `224` and a named unilateral jaw contact during `228–232`. Board support is reported but is not misclassified as jaw contact. No action change, integration, dynamics, global mapping, or transfer claim. | Artifact `36057bb69f0da745418c4d61b44d6ff76480539aa806fe36de779d715bf9f37e`; precontact minimum clearance `6.475 mm`; first exact moving-jaw/pawn contact at sample `231`; actions unchanged; zero integration steps. Candidate selection used task rows and is permanently quarantined. |
 | OR19 | `PASS_QUARANTINED_EXACT_ACTION_CONTACT_AND_PROGRESS` | Run one exact-action dynamic diagnostic after repairing the canonical rank-1-near reset-layout composition. | Use the exact 531-row C6 requested/sent/timestamp/applied tensors, the OR18 scene, frozen historical mapping/ranges, canonical gripper baseline, natural contact only, and the C6 task gates. The selected pawn must have no initial non-board overlap. Report contact, motion, progress, outcome, and collateral displacement. | Artifact `f33198841ce3e70a11dfc7f2e617174248e436bd18474b3bb626700b6674e184`; canonical reset has zero initial non-board contacts; named jaw contact begins at `231`; pawn motion begins at `248`; signed D2 progress is `47.513 mm`, passing the `36.025 mm` gate; final D2 error is `9.945 mm`. Full task fails because tilt is `102.106°`, height error `14.539 mm`, and collateral displacement `11.451 mm`. Exact actions and order are unchanged. |
 | OR20 | `PASS_LOCALIZED_OBJECT_CONSEQUENCE_BLOCKED_IDENTIFIABILITY` | Localize the first residual after phase-correct contact without another parameter search. | Bind OR19 trace, retained physical event windows, the existing contact-identifiability negative, and the mechanism registry. Report first simulator planar/vertical consequence and physical lift/carry timing. No parameter fit or simulator mutation. | Artifact `4374827196aae08617b9899387cbdd31e5bfcd625e773efadbf95229ac908668`; simulator planar and vertical motion both cross `1 mm` at sample `248`, one sample after the physical candidate-lift window starts and 12 samples before definite physical carry. The remaining channel is object orientation/contact consequence, but retained evidence lacks metric orientation trajectory and known contact force required to identify contact height, mass/COM, friction, or compliance. |
+| OR21 | `ACTIVE_FROZEN_PENDING_RUN` | Reproduce OR19 with model-identical, byte-identical actions while emitting internal contact-causality traces. | Freeze the exact OR19 model/config/action/timestamp/initialization identities. At the 5 ms internal step, emit pawn orientation/angular velocity/support state, named unilateral and bilateral contacts, contact position/normal/wrench where available, jaw/pawn relative velocity, and slip. The OR19 selected-contact, motion, progress, exclusion, collision, and outcome fields must reproduce exactly within frozen deterministic tolerances. No parameter selection, camera fit, or simulator mutation. | This is retrospective introspection of an already quarantined replay. It can localize the simulated toppling mechanism but cannot promote OR19, identify physical force, or authorize a transfer claim. |
+| OR22A | `FROZEN_PENDING_OR21` | Intake the later Pi IMX708 streams and associate frames with action intervals using only robot-motion timing cues. | Hash-bind each Pi browser video, raw timing sidecar, capture receipt, execution receipt, and joint-sample trace. Estimate one run-specific constant offset only; never infer exposure synchronization from host capture bounds. Freeze motion features, lag grid, acceptance thresholds, and validation splits before task consequence frames are opened. Fit on contact-free or setup/precontact motion only; require at least three independent motion/hold transitions, a unique peak with at least `20%` margin, leave-one-transition-out lag span no more than two Pi frames, and accepted association intervals no wider than `100 ms`. Otherwise return `PI_ACTION_ASSOCIATION_INSUFFICIENT`. | Pi is auxiliary robot/context evidence for later executions. It is not present in the original successful D1-to-D2 source, is not synchronized stereo, and grants no metric camera, task-success, physical, or transfer authority. |
+| OR22 | `PENDING_OR22A` | Extract retained RGB proxies for the object-orientation/contact-consequence residual without manufacturing metric depth. | Use C922 and D405 RGB from the successful source as the primary episode. Use accepted Pi associations only for same-run precontact robot geometry, motion timing, and later-run failure context. Every track carries source episode, interval uncertainty, confidence, visibility, and abstention. No cross-episode frame merge, metric depth restoration, contact-force inference, or task-result use in alignment. | Emit bounded image-plane pawn-axis/orientation, jaw silhouette, support-loss, and first-consequence observations or a receipt-backed insufficient result. |
+| OR23 | `PENDING_OR22` | Freeze one mechanism discriminator from OR21 simulator traces and OR22 retained visual proxies. | Evaluate only samples `210–300`; exclude terminal task outcome from selection. The discriminator must distinguish one predeclared channel such as off-center contact moment, jaw/pawn slip, support transition, or downstream collision. Select exactly one branch or return `MECHANISM_NOT_IDENTIFIABLE`. | No parameter fit and no second simulator replay on this card. |
+| OR24 | `PENDING_OR23` | Admit at most one independently constrained mechanism correction. | The chosen family must have an independent retained measurement or public component property, explicit uncertainty, bound margin, and an untouched no-refit check. Contact height, mass/COM, friction, and compliance remain prohibited when the required independent witness is absent. | A terminal insufficient result is preferable to an outcome-tuned fit. |
+| OR25 | `PENDING_OR24` | Run one prospective exact-action replay only if OR24 passes. | Freeze a new experiment ID before execution; preserve the exact OR19 action tensor, row order, timing, scene initialization, and all unrelated mechanisms. Require natural named contact, progress at least `36.025 mm`, no exclusion/collision regression, and improved upright/height/collateral consequence on the untouched evaluator. | One immutable run; prior receipts remain unchanged. No physical or transfer authority follows automatically. |
 
-## Retained-data campaign closeout and acquisition continuation
+## Pi IMX708 auxiliary evidence and timing contract
 
-The earlier retained-data fitting/replay cards are terminal. OR10 and OR10B are
+The Pi evidence is divided by execution lineage. It must never be merged across
+episodes merely because the robot followed related actions.
+
+- The original successful physical D1-to-D2 source
+  `datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53`
+  has C922 and D405 RGB only. Its `531` rows run at nominal `20 Hz`.
+- The later D1-to-D2 exact-v4 guarded execution has a `1536×864`, nominal
+  `30 fps`, `1040`-frame Pi browser video at
+  `runs/prospective-real-to-sim/20260727-d1-d2-exact-v4/stage-1/final_hold_camera/pi_motion/pi_imx708.browser.mp4`,
+  SHA-256 `ca1505972f2b2830ca16c02e163604fb48d85abb32906560ef3f4e6db6482d0b`.
+  Its PTS sidecar SHA-256 is
+  `c1614af7e99c557c50ef32dc1caa97ebc0d70dfcb9e6bfb0ab2644b2226e1d71`;
+  execution receipt SHA-256 is
+  `5f840da4d097a9f3fe7777140261955d513121945e6599a397142f88e50da21f`;
+  joint samples SHA-256 is
+  `2d09b20421ced3bcb4fb0ccce00f3eda3c24a5fd49452c498178a6cda8bd8ace`.
+  That attempt stopped before pawn contact after `80` excluded setup rows and
+  `609` counted task rows because of elbow tracking. Its resampled `40 Hz`
+  actions are not byte-identical to the original `531`-row source.
+- The later C2-to-C1 exact-v1 guarded execution has a `1536×864`, nominal
+  `30 fps`, `1040`-frame Pi browser video with SHA-256
+  `e40a7d78b7f7ca1fa9f5713e64bff78fb1f2144c0903aa467ea8b5459c1c80b0`.
+  Its PTS sidecar SHA-256 is
+  `c12a9b69595ece50dbe11b842ff199bceb256ba3966f15df32b61296ab11dd37`;
+  execution receipt SHA-256 is
+  `48a5642c131a3958f371dd3c6d81526b90f435b0d13d7283e196720d0f4cf14b`;
+  joint samples SHA-256 is
+  `9c8b9c146c67c2cc339506690a28df0e7fb63f5ffa81f4372fd58411182bfa97`.
+  Its pawn displacement/topple is retained only as a negative consequence
+  witness.
+- Contact-free tri-camera runs under `runs/geometric-microtransfer/` are the
+  development and no-refit validation source for the timing-association method.
+  Task contact and task outcome are excluded from offset fitting.
+
+`rpicam-vid --save-pts` supplies Pi-relative PTS. Existing capture receipts
+provide host monotonic process bounds only and explicitly do not prove camera
+exposure or cross-camera synchronization. Therefore
+`host_monotonic_start + pi_pts` is not an exposure timestamp. OR22A will
+normalize Pi PTS, compare predeclared robot/link image-motion energy against
+host-timestamped joint-velocity energy and same-run C922 whole-arm motion, fit
+one constant lag per run, and publish an interval-valued frame/action
+association with uncertainty. Drift, scale, task-contact, and outcome fitting
+are excluded in v1.
+
+## Retained-data campaign closeout and causal continuation
+
+The earlier retained-data fitting/replay cards through OR20 are immutable.
+OR21 opens a model-identical introspection lane, and OR22A opens a separately
+lineaged Pi timing lane. Neither reopens parameter fitting or promotion.
+OR10 and OR10B are
 bounded exceptions opened by the owner specifically to use already-retained
 image pixels more faithfully; they do not reopen any sealed heldout or task
 outcome. The
@@ -197,11 +256,12 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: PASS_PARTIAL_REPLAY_ADVANCEMENT_OBJECT_DYNAMICS_UNIDENTIFIED
-Active card: none; retained-data recalculation is closed at the contact-consequence identifiability boundary
+Current state: IN_PROGRESS_OR21_EXACT_REPLAY_CONTACT_CAUSALITY_INTROSPECTION
+Active card: OR21; contract frozen, model-identical and byte-identical introspection pending
 Completed: immutable predecessor C0-C9; OR0-OR20; OR7C/OR7D not run because their prerequisite failed; camera endpoint REAL-to-SIM 1/1
 Evidence: OR16 cut the sample-232 fixed-jaw gap to 3.194 mm; OR17 proved board yaw is gauge-only under direct world-XY task initialization; OR18 established action-identical, phase-correct unilateral moving-jaw contact at sample 231 with 6.475 mm precontact clearance; OR19 repaired the canonical D1/E8 reset overlap and produced 47.513 mm of exact-action D2 progress, passing the 36.025 mm progress gate; OR20 localizes the remaining failure to object orientation/contact consequence at sample 248.
-Remaining: full matching task outcome, exact intrinsics, pristine heldout extrinsics, and globally approved mapping remain unapproved. A defensible contact/object fit needs new metric orientation-path and known-force evidence; tuning the sealed outcome would be non-identifiable.
+Pi intake: the original successful source has no Pi view. Later D1-to-D2 exact-v4 and C2-to-C1 exact-v1 Pi videos are hash-bound auxiliary evidence, and contact-free tri-camera runs will validate a fail-closed interval-valued Pi/action association without task-outcome fitting.
+Remaining: full matching task outcome, exact intrinsics, pristine heldout extrinsics, and globally approved mapping remain unapproved. OR21 can localize simulated contact consequence; OR22A/OR22 can add timing and image-plane orientation evidence. A defensible contact/object fit still needs an independent witness for whichever mechanism OR23 selects.
 External boundary: hardware authority remains false; the retained four-pose validation is outcome-known and cannot promote a global mapping
-Next step: acquire an independent metric object-orientation/contact-force witness before fitting contact height, pawn mass/COM, friction, or compliance; otherwise preserve OR19 as the best quarantined replay
+Next step: reproduce OR19 under exact internal introspection, then freeze its result before implementing OR22A Pi/action association
 ```

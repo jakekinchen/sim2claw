@@ -2,9 +2,40 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "complete_or20_partial_replay_advancement_object_dynamics_unidentified",
-  "active_card": null,
-  "next_transition": "wait_for_independent_metric_orientation_and_contact_force_evidence",
+  "status": "in_progress_or21_exact_replay_contact_causality_introspection",
+  "active_card": "OR21",
+  "active_card_contract": {
+    "card_id": "OR21",
+    "proof_target": "deterministic_model_identical_byte_identical_or19_contact_causality_trace_without_parameter_selection",
+    "allowed_paths": [
+      "configs/evaluations/observable_registration_exact_replay_contact_introspection_v1.json",
+      "src/sim2claw/observable_registration_exact_replay_contact_introspection.py",
+      "scripts/build_observable_registration_exact_replay_contact_introspection.py",
+      "tests/test_observable_registration_exact_replay_contact_introspection.py",
+      "configs/decisions/observable_registration_exact_replay_contact_introspection_v1_closeout.json",
+      "outputs/observable_registration_exact_replay_contact_introspection_v1",
+      "docs/session-logs/092-executor-observable-registration-or21.md",
+      "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
+      "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
+      "configs/sail/observable_registration_current_graph_v1.json",
+      "docs/autonomous-workflow/project_state.json",
+      "GOAL.md"
+    ],
+    "allowed_operations": [
+      "read",
+      "test",
+      "write",
+      "commit"
+    ],
+    "validation_commands": [
+      "uv run --locked pytest -q tests/test_observable_registration_exact_replay_contact_introspection.py",
+      "uv run --locked sim2claw check --profile agent",
+      "uv run --locked sim2claw agent-goal --check"
+    ],
+    "commit": true,
+    "push_origin_main": true
+  },
+  "next_transition": "run_model_identical_byte_identical_or19_introspection_then_freeze_result_before_pi_proxy_analysis",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +76,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "ade098044b9a1d374371f109ef45951bb9643899eda366a7fa57f143c53db6ea",
+      "sha256": "e9ffc437c576574291865d209a172f2b187eb8e6356bb30c7355b31967ea77ef",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -710,6 +741,67 @@
         "global_mapping_approved": false,
         "transfer_claim": false
       }
+    },
+    {
+      "id": "mechanism:or21-exact-replay-contact-introspection",
+      "type": "mechanism",
+      "label": "Model-identical exact-action OR19 contact-causality introspection",
+      "status": "active_frozen_pending_run",
+      "data": {
+        "predecessor_artifact_sha256": "f33198841ce3e70a11dfc7f2e617174248e436bd18474b3bb626700b6674e184",
+        "action_row_count": 531,
+        "requested_sent_timestamp_applied_identity_required": true,
+        "model_and_configuration_identity_required": true,
+        "internal_step_seconds": 0.005,
+        "parameter_fit_allowed": false,
+        "simulator_mutation_allowed": false,
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "evidence:or22a-pi-auxiliary-action-sync",
+      "type": "evidence",
+      "label": "Same-run Pi IMX708 auxiliary action-interval association",
+      "status": "frozen_pending_or21",
+      "data": {
+        "original_successful_d1_d2_pi_available": false,
+        "d1_d2_exact_v4_pi_browser_sha256": "ca1505972f2b2830ca16c02e163604fb48d85abb32906560ef3f4e6db6482d0b",
+        "d1_d2_exact_v4_pi_pts_sha256": "c1614af7e99c557c50ef32dc1caa97ebc0d70dfcb9e6bfb0ab2644b2226e1d71",
+        "d1_d2_exact_v4_execution_receipt_sha256": "5f840da4d097a9f3fe7777140261955d513121945e6599a397142f88e50da21f",
+        "d1_d2_exact_v4_joint_samples_sha256": "2d09b20421ced3bcb4fb0ccce00f3eda3c24a5fd49452c498178a6cda8bd8ace",
+        "c2_c1_exact_v1_pi_browser_sha256": "e40a7d78b7f7ca1fa9f5713e64bff78fb1f2144c0903aa467ea8b5459c1c80b0",
+        "c2_c1_exact_v1_pi_pts_sha256": "c12a9b69595ece50dbe11b842ff199bceb256ba3966f15df32b61296ab11dd37",
+        "c2_c1_exact_v1_execution_receipt_sha256": "48a5642c131a3958f371dd3c6d81526b90f435b0d13d7283e196720d0f4cf14b",
+        "c2_c1_exact_v1_joint_samples_sha256": "9c8b9c146c67c2cc339506690a28df0e7fb63f5ffa81f4372fd58411182bfa97",
+        "host_bounds_only": true,
+        "camera_exposure_synchronized": false,
+        "cross_camera_exposure_synchronized": false,
+        "fit_model": "one_constant_offset_per_run",
+        "fit_uses_task_contact_or_outcome": false,
+        "maximum_association_interval_seconds": 0.1,
+        "parameter_fit_allowed": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "observation:or22-retained-rgb-contact-proxies",
+      "type": "observation_channel",
+      "label": "Retained image-plane pawn orientation and contact-consequence proxies",
+      "status": "pending_or22a",
+      "data": {
+        "successful_episode_primary_streams": [
+          "c922",
+          "d405_rgb"
+        ],
+        "successful_episode_pi_available": false,
+        "pi_role": "same_run_precontact_robot_motion_and_later_negative_context_only",
+        "metric_depth_available": false,
+        "contact_force_available": false,
+        "cross_episode_merge_allowed": false,
+        "abstention_required": true,
+        "transfer_claim": false
+      }
     }
   ],
   "edges": [
@@ -907,6 +999,21 @@
       "source": "intervention:or19-canonical-reset-dynamic-replay",
       "target": "residual:or20-object-contact-consequence",
       "type": "generated-from"
+    },
+    {
+      "source": "residual:or20-object-contact-consequence",
+      "target": "mechanism:or21-exact-replay-contact-introspection",
+      "type": "predicts"
+    },
+    {
+      "source": "mechanism:or21-exact-replay-contact-introspection",
+      "target": "observation:or22-retained-rgb-contact-proxies",
+      "type": "predicts"
+    },
+    {
+      "source": "evidence:or22a-pi-auxiliary-action-sync",
+      "target": "observation:or22-retained-rgb-contact-proxies",
+      "type": "constrained-by"
     }
   ]
 }
