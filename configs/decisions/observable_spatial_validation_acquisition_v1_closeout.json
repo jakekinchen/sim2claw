@@ -1,0 +1,75 @@
+{
+  "schema_version": "sim2claw.observable_spatial_validation_acquisition_closeout.v1",
+  "decision_id": "observable-spatial-validation-acquisition-v1-closeout",
+  "result": "PASS_DESIGN_READY_BLOCKED_REQUIRED_EXTERNAL_INPUTS",
+  "proof_class": "prospective_motion_free_post_service_validation_acquisition_readiness",
+  "freeze_commit": "adc6025",
+  "contract": {
+    "path": "configs/acquisition/observable_spatial_validation_acquisition_v1.json",
+    "sha256": "94b482298f6db49facc930a9bec8205a33de7a152a756817361dcb973424aae0"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_spatial_validation_acquisition.py",
+    "sha256": "a92af4cd48b05bed2a660da66d5097abcce50305ad92f7c65fdfb94b03929213"
+  },
+  "generated_readiness": {
+    "path": "outputs/observable_spatial_validation_acquisition_v1/readiness.json",
+    "git_ignored": true,
+    "sha256": "a6199fb7b222206635a474882991aecf3d6621105c4f70de20738f72c5c249e3",
+    "artifact_sha256": "da04d93eda4313d8be121e0299b1e887b13cd27f10e76f6c58efbf60f73003b1",
+    "status": "BLOCKED_REQUIRED_EXTERNAL_INPUTS"
+  },
+  "pose_design": {
+    "validation_target_count": 4,
+    "shoulder_pan_span_degrees": 20.0,
+    "shoulder_lift_span_degrees": 3.0,
+    "both_distal_jaw_endpoints_visible_required": true,
+    "board_lattice_visible_required": true,
+    "d405_depth_required": false,
+    "prior_images_annotations_outcomes_and_action_arrays_reused": false
+  },
+  "design_verdict": {
+    "design_ready": true,
+    "design_gates_passed": 16,
+    "design_gates_total": 16,
+    "capture_ready": false
+  },
+  "missing_external_inputs": [
+    "follower_elbow_service_receipt",
+    "fresh_torque_off_identity_and_limits_receipt",
+    "fresh_current_physical_authority_receipt",
+    "fresh_cpu_fp64_route_collision_camera_review"
+  ],
+  "future_transition": {
+    "versioned_successor_required": true,
+    "bind_external_inputs_before_route_or_action_compilation": true,
+    "freeze_pan_lift_candidate_before_opening_all_four_validation_members_once": true,
+    "postopen_refit_or_threshold_change_forbidden": true
+  },
+  "verification": {
+    "focused_prefreeze_tests": "9 passed",
+    "broad_observable_registration_tests": "54 passed",
+    "json_parse": "PASS",
+    "python_compile": "PASS"
+  },
+  "proof_boundaries": {
+    "spatial_parameter_values_produced": false,
+    "validation_images_opened": false,
+    "actions_compiled": false,
+    "global_mapping_approved": false,
+    "matching_action_to_task_transfer_proved": false,
+    "physical_transfer_proved": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_constructed": false,
+    "serial_used": false,
+    "torque_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "paid_compute": false
+  },
+  "next_card": null
+}

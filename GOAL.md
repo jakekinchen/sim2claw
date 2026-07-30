@@ -1,8 +1,8 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR9 POST-SERVICE VALIDATION ACQUISITION READINESS`
+Status: `OBSERVABLE ALIGNMENT SOFTWARE READY; EXTERNAL SERVICE, AUTHORITY, AND FRESH ROUTE BOUNDARY`
 
-## Active long-horizon alignment successor
+## Long-horizon alignment successor at external boundary
 
 The authoritative queue is
 `docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md`.
@@ -45,7 +45,7 @@ poses: earlier heldouts are reuse-forbidden, v4 has already been opened, and
 the task episode is sealed from calibration. No offset values were produced,
 no validation image was opened, and no successor replay is authorized. OR8
 publishes this exact boundary in the read-only Studio on desktop and phone.
-The retained-data fitting/replay campaign is complete. OR9 now freezes the
+The retained-data fitting/replay campaign is complete. OR9 freezes the
 four post-service, no-contact C922 validation targets and a fail-closed
 readiness evaluator before any fresh authority, route compilation, camera
 open, or motion. The new targets span `20°` shoulder pan and `3°` shoulder
@@ -54,7 +54,10 @@ and do not require D405 depth. Prior images, annotations, outcomes, and action
 arrays are excluded. The official readiness receipt must remain blocked until
 elbow service, fresh torque-off identity/limits, current authority, and a
 fresh CPU/fp64 collision-camera route review are bound in a versioned
-successor.
+successor. Its official artifact
+`da04d93eda4313d8be121e0299b1e887b13cd27f10e76f6c58efbf60f73003b1`
+passes all `16/16` design gates and stops with actions, images, motion, and
+counted attempts all at zero. No safe software or retained-data card remains.
 
 ## Latest realized-action outcome result
 

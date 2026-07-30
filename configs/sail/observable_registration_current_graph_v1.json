@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or9_post_service_validation_acquisition_readiness",
+  "status": "complete_software_ready_external_service_authority_and_fresh_route_boundary",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "83f4a487b7a47e5b54de69ddf85c97af54b062cfb6cb7c8ee59be65324eefc87",
+      "sha256": "35c03558957434c542192c6682818262b9d7d2a30f80d1997e72426374f500bc",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -130,6 +130,11 @@
       "path": "configs/acquisition/observable_spatial_validation_acquisition_v1.json",
       "sha256": "94b482298f6db49facc930a9bec8205a33de7a152a756817361dcb973424aae0",
       "proof_class": "prospective_motion_free_post_service_validation_acquisition_readiness"
+    },
+    "or9": {
+      "path": "configs/decisions/observable_spatial_validation_acquisition_v1_closeout.json",
+      "sha256": "dd1757e9a93ff69c15ed05ae64657230cfa7ed1fe183ce44e0f75a217c011987",
+      "proof_class": "prospective_motion_free_post_service_validation_acquisition_readiness"
     }
   },
   "nodes": [
@@ -143,7 +148,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or9",
+      "status": "complete_software_ready_external_boundary",
       "source_binding": "queue"
     },
     {
@@ -302,8 +307,8 @@
       "id": "session:or9-spatial-validation-acquisition-readiness",
       "type": "session",
       "label": "Post-service four-pose spatial validation acquisition readiness",
-      "status": "active",
-      "source_binding": "or9_contract",
+      "status": "pass_design_ready_blocked_external_inputs",
+      "source_binding": "or9",
       "data": {
         "validation_target_count": 4,
         "shoulder_pan_span_degrees": 20.0,
@@ -475,6 +480,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR9",
-  "next_transition": "freeze_or9_then_compile_motion_free_fail_closed_readiness_receipt"
+  "active_card": null,
+  "next_transition": "external_elbow_service_current_authority_fresh_torque_off_limits_and_cpu_fp64_route_review_then_versioned_successor"
 }
