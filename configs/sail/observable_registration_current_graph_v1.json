@@ -2,9 +2,9 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "complete_or11_exact_contact_phase_negative_blocked_external_metric_anchor",
+  "status": "complete_or12_translation_candidate_material_gap_reduction_no_contact",
   "active_card": null,
-  "next_transition": "external_robot_base_to_board_metric_anchor_v1_or_post_service_or9_four_pose_no_contact_validation_then_one_frozen_candidate",
+  "next_transition": "independent_base_height_or_articulated_wrist_vertical_registration_then_one_frozen_static_candidate_before_any_dynamics",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "64d2f860bd6fd7f161ffc7258bee5450521cdb68a1314c26940231ae34854dcd",
+      "sha256": "0c70d0f8a123c720e3646bbc6a86c15c7f8aa1594c417cf1ad8eb063c90d059d",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -172,6 +172,11 @@
       "path": "configs/decisions/robot_base_to_board_metric_anchor_readiness_v1_closeout.json",
       "sha256": "e5f4c2333c31c99e035abe9e2e21191b125b9258e5a43ed21cb8469cc2faedad",
       "proof_class": "prospective_no_contact_metric_board_to_base_measurement_readiness"
+    },
+    "or12": {
+      "path": "configs/decisions/post_hackathon_home_workspace_metrology_v1_closeout.json",
+      "sha256": "a90cc5ff58b6a28dc9d0b6550b22521ab08d86bac16db7a8b867ea576cee404d",
+      "proof_class": "owner_reported_manual_metrology_translation_only_static_scene_candidate_and_exact_contact_phase_diagnostic"
     }
   },
   "nodes": [
@@ -524,6 +529,30 @@
         "robot_motion_required": false,
         "task_attempts": 0
       }
+    },
+    {
+      "id": "mapping:or12-home-workspace-translation",
+      "type": "mapping_candidate",
+      "label": "Owner-measured post-hackathon board-to-left-base translation",
+      "status": "pass_material_static_gap_reduction_no_named_contact",
+      "source_binding": "or12",
+      "data": {
+        "base_stl_identity_maximum_error_m": 0.0010000059027142905,
+        "base_stl_rescaled": false,
+        "translation_delta_table_xy_m": [
+          0.05036967599983482,
+          -0.0029216712176817206
+        ],
+        "maximum_translation_standard_uncertainty_m": 0.002694902595642373,
+        "sample_232_fixed_jaw_gap_before_m": 0.06169299190969042,
+        "sample_232_fixed_jaw_gap_after_m": 0.02657975636028604,
+        "sample_232_planar_midpoint_error_after_m": 0.027049211713311292,
+        "sample_232_vertical_midpoint_residual_m": -0.0852724880202006,
+        "named_contact": false,
+        "dynamic_replays": 0,
+        "yaw_approved": false,
+        "global_mapping_approved": false
+      }
     }
   ],
   "edges": [
@@ -651,6 +680,16 @@
       "source": "counterexample:or11-exact-contact-phase",
       "target": "boundary:or11-independent-metric-anchor",
       "type": "constrained-by"
+    },
+    {
+      "source": "boundary:or11-independent-metric-anchor",
+      "target": "mapping:or12-home-workspace-translation",
+      "type": "admitted-to"
+    },
+    {
+      "source": "mapping:or12-home-workspace-translation",
+      "target": "counterexample:or11-exact-contact-phase",
+      "type": "evaluated-on"
     }
   ]
 }

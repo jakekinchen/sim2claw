@@ -1,0 +1,113 @@
+{
+  "schema_version": "sim2claw.post_hackathon_home_workspace_metrology_contract.v1",
+  "experiment_id": "post-hackathon-home-workspace-metrology-v1",
+  "frozen_date": "2026-07-30",
+  "proof_class": "owner_reported_manual_metrology_translation_only_static_scene_candidate_and_exact_contact_phase_diagnostic",
+  "sources": {
+    "measurement": {
+      "path": "configs/measurements/post_hackathon_home_workspace_manual_metrology_v1.json",
+      "sha256": "37c6976043181dd93342a3f70617773cd2e0ed70e4991b1c55da46c7507a1660"
+    },
+    "baseline_scene": {
+      "path": "configs/polycam/8873B66C-774C-48B1-B51D-338645867009.json",
+      "sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05"
+    },
+    "base_stl": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/assets/base_so101_v2.stl",
+      "sha256": "bb12b7026575e1f70ccc7240051f9d943553bf34e5128537de6cd86fae33924d"
+    },
+    "or11_contract": {
+      "path": "configs/evaluations/observable_contact_phase_registration_v1.json",
+      "sha256": "a037dbc6002a8fbee64b8ac8e2d48aec8c78d2812ac7f68d6021fb9239dc96a5"
+    },
+    "or11_receipt": {
+      "path": "outputs/observable_contact_phase_registration_v1/receipt.json",
+      "sha256": "6b45e5a4b97ff650d46e460ea3844f869abc84f9adc500a7c7914cc8917aa08d",
+      "artifact_sha256": "b1c3b834c0acbbf581001849d311bf9eca4853b1dd306bf83b39be6f3d52a1be"
+    },
+    "or6_candidate": {
+      "path": "outputs/observable_jaw_aperture_fit_v1/candidate_manifest.json",
+      "sha256": "e8c27ef3118c3383d2d2312371a54b6c40d749880b5ab73aa9a14e0305dd17e5",
+      "candidate_config_sha256": "dd03853d957192062b6cfd9b23a6f973c516efaad87f162b29e6f8136492a693"
+    },
+    "or7_receipt": {
+      "path": "outputs/observable_jaw_aperture_replay_v1/receipt.json",
+      "sha256": "edaece18101c331a4437cad1781bd4ccf48b9b52dd566839b93f4fc0280c7ddd",
+      "artifact_sha256": "600dd7973b32dd92cc4612762f44f80843572ea51457beb4a92380e554c4baeb"
+    },
+    "initial_endpoint_receipt": {
+      "path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+      "sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011"
+    },
+    "c6_contract": {
+      "path": "configs/evaluations/realized_action_outcome_mission_v1.json",
+      "sha256": "f406149f51578b7ecae646c46b35c9237693b4f172c66dbb271cee67b9728b77"
+    }
+  },
+  "scene_policy": {
+    "baseline_scene_immutable": true,
+    "derived_scene_output": "outputs/post_hackathon_home_workspace_metrology_v1/derived_scene_config.json",
+    "board_outside_side_source": "measurement.board.outside_side_primary",
+    "playing_surface_side_source": "measurement.board.playing_surface_side",
+    "board_frame_width_formula": "(outside_side-playing_surface_side)/2",
+    "board_thickness_source": "measurement.board.thickness",
+    "left_base_yaw_relative_to_table_degrees": -88.0,
+    "left_base_yaw_fit_allowed": false,
+    "left_base_z_fit_allowed": false,
+    "right_robot_changed": false,
+    "camera_changed": false
+  },
+  "stl_outline": {
+    "body": "left_base",
+    "mesh": "left_base_so101_v2",
+    "front_axis": "+base_x",
+    "cross_section_tolerance_m": 0.0015,
+    "maximum_dimension_absolute_error_m": 0.003
+  },
+  "translation_fit": {
+    "frame": "board_xy",
+    "parameters": [
+      "base_origin_board_x_m",
+      "base_origin_board_y_m"
+    ],
+    "weighted_least_squares": true,
+    "fit_yaw": false,
+    "fit_z": false,
+    "maximum_translation_standard_uncertainty_m": 0.003,
+    "maximum_normalized_measurement_residual": 2.0,
+    "task_rows_allowed": false,
+    "task_outcome_allowed": false,
+    "contact_rows_allowed": false
+  },
+  "contact_phase_gate": {
+    "schedule_source": "or11_contract",
+    "physics_integration_allowed": false,
+    "candidate_contact_samples": [
+      228,
+      232
+    ],
+    "last_definitely_separate_sample": 224,
+    "minimum_fixed_jaw_gap_reduction_m": 0.03,
+    "named_contact_required_for_contact_pass": true,
+    "dynamics_authorized": false
+  },
+  "promotion": {
+    "translation_candidate_publishable": true,
+    "canonical_scene_replacement_allowed": false,
+    "global_mapping_approved": false,
+    "reason": "single owner-reported measurements lack repeat observations and direct yaw and height metrology"
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_dynamic_replay": false,
+    "simulator_promotion": false,
+    "training": false,
+    "paid_compute": false,
+    "transfer_claim": false
+  }
+}

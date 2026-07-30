@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `COMPLETE_OR11_EXACT_CONTACT_PHASE_NEGATIVE_BLOCKED_EXTERNAL_METRIC_ANCHOR`
+Status: `COMPLETE_OR12_TRANSLATION_CANDIDATE_MATERIAL_GAP_REDUCTION_NO_CONTACT`
 
 ## Active mission
 
@@ -9,7 +9,7 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR11_COMPLETE_EXACT_CONTACT_PHASE_NEGATIVE_BLOCKED_EXTERNAL_METRIC_ANCHOR`
+`OR12_COMPLETE_TRANSLATION_CANDIDATE_MATERIAL_GAP_REDUCTION_NO_CONTACT`
 
 ## Current card
 
@@ -17,9 +17,9 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_contact_phase_registration_v1_closeout.json`.
-- Closeout SHA-256: `76bdbd096119ba190ac8bdf6cee24b94bac027cb33819a4e20cb851a2177e086`.
-- Proof class: `exact_applied_state_named_geom_kinematic_contact_phase_gate_no_fit_no_dynamics`.
+- Closeout: `configs/decisions/post_hackathon_home_workspace_metrology_v1_closeout.json`.
+- Closeout SHA-256: `a90cc5ff58b6a28dc9d0b6550b22521ab08d86bac16db7a8b867ea576cee404d`.
+- Proof class: `owner_reported_manual_metrology_translation_only_static_scene_candidate_and_exact_contact_phase_diagnostic`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`external_robot_base_to_board_metric_anchor_v1_or_post_service_or9_four_pose_no_contact_validation_then_one_frozen_candidate`
+`independent_base_height_or_articulated_wrist_vertical_registration_then_one_frozen_static_candidate_before_any_dynamics`
 
 ## Stop conditions
 

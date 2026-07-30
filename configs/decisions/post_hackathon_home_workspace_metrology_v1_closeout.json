@@ -1,0 +1,132 @@
+{
+  "schema_version": "sim2claw.post_hackathon_home_workspace_metrology_closeout.v1",
+  "decision_id": "post-hackathon-home-workspace-metrology-v1-closeout",
+  "card_id": "OR12",
+  "result": "TRANSLATION_CANDIDATE_MATERIALLY_REDUCES_GAP_NO_NAMED_CONTACT_NO_DYNAMICS",
+  "proof_class": "owner_reported_manual_metrology_translation_only_static_scene_candidate_and_exact_contact_phase_diagnostic",
+  "measurement": {
+    "path": "configs/measurements/post_hackathon_home_workspace_manual_metrology_v1.json",
+    "sha256": "37c6976043181dd93342a3f70617773cd2e0ed70e4991b1c55da46c7507a1660"
+  },
+  "contract": {
+    "path": "configs/evaluations/post_hackathon_home_workspace_metrology_v1.json",
+    "sha256": "345d96c8478174ab121d027a2dd0dbe36b2d11351ba340540aaa50acc55fad4a"
+  },
+  "implementation": {
+    "path": "src/sim2claw/post_hackathon_home_workspace_metrology.py",
+    "sha256": "e7238b7b27783621c7cb76df0bd6fd6b28c14100ed8758b970974059bdaeeafd"
+  },
+  "generated_receipt": {
+    "path": "outputs/post_hackathon_home_workspace_metrology_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "fcb10774c2427c638c07740b28dd48d78f04e731354643ccece26c9bc47505bc",
+    "artifact_sha256": "c4fee2fa113aaecce400b596ae37f0bcb334823307e2a5f27a63f712cc7be685"
+  },
+  "generated_trace": {
+    "path": "outputs/post_hackathon_home_workspace_metrology_v1/contact_phase_trace.json",
+    "git_ignored": true,
+    "sha256": "5116cf361e1b6eaf4b66cfe713abfe09b95af556d1ea90d805c887e55e2d9295",
+    "row_count": 2315,
+    "physics_integration_steps": 0
+  },
+  "derived_scene": {
+    "path": "outputs/post_hackathon_home_workspace_metrology_v1/derived_scene_config.json",
+    "git_ignored": true,
+    "sha256": "e36a7ce8f6a2975559b0ae26dc923b0065ded2b95c38395c69f33a45d702d96a",
+    "workspace": "post_hackathon_home_workspace",
+    "canonical_replacement_allowed": false
+  },
+  "stl_identity": {
+    "mesh": "base_so101_v2.stl",
+    "owner_front_width_m": 0.065,
+    "stl_front_width_m": 0.06558185254875791,
+    "owner_maximum_width_m": 0.11,
+    "stl_maximum_width_m": 0.11092499865208277,
+    "owner_rear_width_m": 0.0855,
+    "stl_rear_width_m": 0.08610608625132078,
+    "owner_length_m": 0.086,
+    "stl_length_m": 0.08700000590271428,
+    "maximum_absolute_error_m": 0.0010000059027142905,
+    "identity_gate_passed": true,
+    "scale_change_applied": false
+  },
+  "board_geometry": {
+    "baseline_outside_side_m": 0.4064,
+    "candidate_outside_side_m": 0.3937,
+    "playing_surface_side_m": 0.3556,
+    "candidate_frame_width_m": 0.01905,
+    "baseline_thickness_m": 0.016,
+    "candidate_thickness_m": 0.024,
+    "orthogonal_check_m": 0.3875,
+    "orthogonal_consistency_gate_passed": true
+  },
+  "translation_candidate": {
+    "baseline_base_origin_board_xy_m": [
+      -0.06833952741063791,
+      0.4320066075805909
+    ],
+    "candidate_base_origin_board_xy_m": [
+      -0.01806731081541117,
+      0.4277235407313374
+    ],
+    "candidate_mount_in_table_frame_xyz_m": [
+      0.010369675999834821,
+      0.36207832878231827,
+      0.799
+    ],
+    "translation_delta_table_xy_m": [
+      0.05036967599983482,
+      -0.0029216712176817206
+    ],
+    "translation_delta_world_xy_m": [
+      0.04619622372806681,
+      -0.02028667878926871
+    ],
+    "maximum_standard_uncertainty_m": 0.002694902595642373,
+    "maximum_absolute_normalized_residual": 0.6287289327711378,
+    "translation_gate_passed": true,
+    "yaw_degrees_frozen_unapproved": -108.388574,
+    "rotation_gate_passed": false,
+    "global_mapping_approved": false
+  },
+  "contact_phase": {
+    "physical_enclosure_sample": 232,
+    "baseline_fixed_jaw_gap_m": 0.06169299190969042,
+    "candidate_fixed_jaw_gap_m": 0.02657975636028604,
+    "fixed_jaw_gap_reduction_m": 0.03511323554940438,
+    "minimum_phase_fixed_jaw_gap_m": 0.01966461924057482,
+    "candidate_moving_jaw_gap_m": 0.05084174113706664,
+    "baseline_midpoint_to_pawn_planar_distance_m": 0.0768580704490655,
+    "candidate_midpoint_to_pawn_planar_distance_m": 0.027049211713311292,
+    "candidate_midpoint_to_pawn_vector_m": [
+      0.026773570325053106,
+      -0.0038517251149287057,
+      -0.0852724880202006
+    ],
+    "named_contact_at_expected_phase": false,
+    "dynamic_replays": 0
+  },
+  "decision": {
+    "post_hackathon_translation_candidate_admitted": true,
+    "base_stl_rescaled": false,
+    "camera_changed": false,
+    "yaw_changed": false,
+    "canonical_scene_replaced": false,
+    "global_mapping_approved": false,
+    "dynamic_replay_authorized": false,
+    "next_mechanism": "independent base height or articulated wrist vertical registration; do not tune from sample 232"
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "training": false,
+    "paid_compute": false,
+    "global_mapping_approved": false,
+    "transfer_claim": false
+  }
+}

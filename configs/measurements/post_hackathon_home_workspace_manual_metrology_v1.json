@@ -1,0 +1,115 @@
+{
+  "schema_version": "sim2claw.post_hackathon_home_workspace_manual_metrology.v1",
+  "measurement_id": "post-hackathon-home-workspace-manual-metrology-v1",
+  "reported_date": "2026-07-30",
+  "reporter": "workspace_owner",
+  "workspace": "post_hackathon_home_workspace",
+  "method": "manual_ruler_or_tape_measurement_reported_in_conversation",
+  "proof_class": "owner_reported_manual_static_metrology_with_declared_uncertainty",
+  "board": {
+    "outside_side_primary": {
+      "reported_value": 15.5,
+      "reported_unit": "inch",
+      "value_m": 0.3937,
+      "uncertainty_m": 0.0005,
+      "role": "fit_primary",
+      "semantic": "full outside edge of the square chessboard"
+    },
+    "outside_side_orthogonal_check": {
+      "reported_value": 38.75,
+      "reported_unit": "centimetre",
+      "value_m": 0.3875,
+      "uncertainty_m": 0.005,
+      "role": "consistency_diagnostic_only",
+      "semantic": "approximate second outside edge of the square chessboard"
+    },
+    "thickness": {
+      "reported_value": 2.4,
+      "reported_unit": "centimetre",
+      "value_m": 0.024,
+      "uncertainty_m": 0.002,
+      "role": "fit_primary",
+      "semantic": "board bottom to top surface"
+    },
+    "playing_surface_side": {
+      "value_m": 0.3556,
+      "role": "preserved_existing_measured_constant_not_remeasured_here",
+      "semantic": "eight square playing surface without the wood frame"
+    }
+  },
+  "follower_base_outline": {
+    "front_tip_to_tip_width": {
+      "reported_value": 6.5,
+      "reported_unit": "centimetre",
+      "value_m": 0.065,
+      "uncertainty_m": 0.003,
+      "role": "stl_identity_check_only"
+    },
+    "maximum_center_width": {
+      "reported_value": 11.0,
+      "reported_unit": "centimetre",
+      "value_m": 0.11,
+      "uncertainty_m": 0.002,
+      "role": "stl_identity_check_only"
+    },
+    "rear_width": {
+      "reported_value": 8.55,
+      "reported_unit": "centimetre",
+      "value_m": 0.0855,
+      "uncertainty_m": 0.003,
+      "role": "stl_identity_check_only"
+    },
+    "front_to_rear_length": {
+      "reported_value": 8.6,
+      "reported_unit": "centimetre",
+      "value_m": 0.086,
+      "uncertainty_m": 0.002,
+      "role": "stl_identity_check_only"
+    }
+  },
+  "board_to_follower_base": {
+    "near_board_edge_to_front_tip": {
+      "reported_value": 16.6,
+      "reported_unit": "centimetre",
+      "value_m": 0.166,
+      "uncertainty_m": 0.0025,
+      "role": "fit_translation_board_y",
+      "semantic": "shortest planar clearance from the board edge facing the follower arm to the front-most STL base tip"
+    },
+    "operator_left_board_edge_to_base_left_side": {
+      "reported_value": 12.25,
+      "reported_unit": "centimetre",
+      "value_m": 0.1225,
+      "uncertainty_m": 0.003,
+      "role": "fit_translation_board_x",
+      "semantic": "planar gap from the operator-left outside board edge to the base outline at its widest section"
+    },
+    "base_right_side_to_operator_right_board_edge": {
+      "reported_range": [
+        15.5,
+        15.6
+      ],
+      "reported_unit": "centimetre",
+      "value_m": 0.1555,
+      "uncertainty_m": 0.006,
+      "role": "fit_translation_board_x",
+      "semantic": "rough planar gap from the base outline at its widest section to the operator-right outside board edge"
+    }
+  },
+  "fit_exclusions": {
+    "task_episode_rows": true,
+    "task_outcome": true,
+    "contact_timing": true,
+    "camera_pixels": true,
+    "jaw_or_pawn_residual": true,
+    "dynamic_replay": true
+  },
+  "limitations": {
+    "repeat_measurements_available": false,
+    "instrument_identity_recorded": false,
+    "base_yaw_directly_measured": false,
+    "base_height_directly_measured": false,
+    "operator_left_right_semantics_assumed_from_report": true,
+    "global_mapping_approval_allowed": false
+  }
+}
