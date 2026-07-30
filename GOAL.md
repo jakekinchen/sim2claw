@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `COMPLETE_OR13_STATIC_GEOMETRY_AND_CAMERA_CENTER_CANDIDATE_NO_CONTACT`
+Status: `IN_PROGRESS_OR14_BELIEF_RECALCULATION`
 
 ## Active mission
 
@@ -9,17 +9,17 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR13_COMPLETE_STATIC_GEOMETRY_AND_CAMERA_CENTER_CANDIDATE_NO_CONTACT`
+`OR14_RECALCULATE_STATIC_ROBOT_BELIEFS_UNDER_OR13`
 
 ## Current card
 
-`none` — the campaign is at an external-input boundary
+`OR14` — bounded retained-image factor recalculation
 
 ## Current evidence
 
-- Closeout: `configs/decisions/post_hackathon_home_workspace_geometry_camera_v2_closeout.json`.
-- Closeout SHA-256: `9c32891753a61d407db68467bddc9eac6893e9c86e880528524ae2538697b956`.
-- Proof class: `owner_reported_board_object_camera_center_metrology_static_geometry_successor_and_retrospective_orientation_diagnostic`.
+- Predecessor: `configs/decisions/post_hackathon_home_workspace_geometry_camera_v2_closeout.json`.
+- Frozen contract: `configs/evaluations/observable_registration_belief_recalculation_v1.json`.
+- Proof class: `retrospective_static_image_factor_recalculation_under_owner_metrology_no_task_outcome_no_promotion`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`independent_robot_base_height_or_articulated_wrist_vertical_registration_then_one_frozen_static_candidate_before_any_dynamics`
+`rank_bounded_robot_side_static_families_then_freeze_at_most_one_exact_contact_phase_candidate`
 
 ## Stop conditions
 

@@ -1,0 +1,119 @@
+{
+  "schema_version": "sim2claw.observable_registration_belief_recalculation_contract.v1",
+  "experiment_id": "observable-registration-belief-recalculation-v1",
+  "proof_class": "retrospective_static_image_factor_recalculation_under_owner_metrology_no_task_outcome_no_promotion",
+  "sources": {
+    "or13_receipt": {
+      "path": "outputs/post_hackathon_home_workspace_geometry_camera_v2/receipt.json",
+      "sha256": "4b029081910ef5168fb1819ba649e64d0d8bab3ee02c9a4a2c3eb10dc1da81fa"
+    },
+    "or13_scene": {
+      "path": "outputs/post_hackathon_home_workspace_geometry_camera_v2/derived_scene_config.json",
+      "sha256": "9298ca9f70a3cff87c06cf73b6b343f5bbb927d13f6c9a5427242c2fabf7ed03"
+    },
+    "or6_candidate": {
+      "path": "outputs/observable_jaw_aperture_fit_v1/candidate_manifest.json",
+      "sha256": "e8c27ef3118c3383d2d2312371a54b6c40d749880b5ab73aa9a14e0305dd17e5"
+    },
+    "fit_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+      "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3"
+    },
+    "fit_manifest": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit_manifest.json",
+      "sha256": "71f704ee95a2c1966f23f1ff96db04d6448bb409a86b209ea54b06e25e9f1f46"
+    },
+    "validation_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_annotations_v4.json",
+      "sha256": "654b32fbe4dbb35096d9ed361e574f92a563d9241c0d434a9c756df06db2105d"
+    },
+    "validation_open_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/heldout-rigid-v4/single_open_recovery_receipt.json",
+      "sha256": "e35cf89214543c0ad47b11abb254a4aeec72a695eb3f0f1dcf7e50c6a2278607"
+    },
+    "joint_samples": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/joint_samples.jsonl",
+      "sha256": "32e623dc0d8ec219cdb329b79cdd2a8647ab4f0ba597af72606cf32d8de90f9f"
+    }
+  },
+  "split": {
+    "fit_pose_count": 6,
+    "known_outcome_validation_pose_count": 4,
+    "fit_validation_overlap_allowed": false,
+    "validation_refit_allowed": false,
+    "validation_is_pristine_heldout": false
+  },
+  "camera_policy": {
+    "camera_center_source": "owner_manual_metrology_or13",
+    "orientation_source": "retrospective_nonheldout_board_pixels_or13",
+    "camera_refit_allowed": false,
+    "exact_intrinsics_approved": false
+  },
+  "candidate_families": [
+    {
+      "family_id": "base_height_residual_z_v1",
+      "parameter_names": ["base_height_residual_world_z_m"],
+      "minimum_values": [-0.004],
+      "maximum_values": [0.004],
+      "physical_reason": "the compiled SO-101 base remains constrained to the modeled clamp support stack"
+    },
+    {
+      "family_id": "shoulder_pan_lift_zero_offsets_v1",
+      "parameter_names": ["shoulder_pan_zero_offset_rad", "shoulder_lift_zero_offset_rad"],
+      "minimum_values": [-0.08726646259971647, -0.08726646259971647],
+      "maximum_values": [0.08726646259971647, 0.08726646259971647],
+      "physical_reason": "OR7B proved local rank two sensitivity for this bounded body-joint family"
+    },
+    {
+      "family_id": "wrist_flex_roll_zero_offsets_v1",
+      "parameter_names": ["wrist_flex_zero_offset_rad", "wrist_roll_zero_offset_rad"],
+      "minimum_values": [-0.08726646259971647, -0.08726646259971647],
+      "maximum_values": [0.08726646259971647, 0.08726646259971647],
+      "physical_reason": "tests the articulated wrist-height hypothesis without changing camera or contact geometry"
+    },
+    {
+      "family_id": "gripper_local_height_v1",
+      "parameter_names": ["gripper_local_z_m"],
+      "minimum_values": [-0.01],
+      "maximum_values": [0.01],
+      "physical_reason": "bounded distal CAD and jaw-tip registration residual"
+    }
+  ],
+  "acceptance_gates": {
+    "minimum_fit_midpoint_improvement_fraction": 0.2,
+    "minimum_validation_midpoint_improvement_fraction": 0.15,
+    "maximum_validation_separation_regression_px": 2.0,
+    "maximum_jacobian_condition_number": 1000.0,
+    "minimum_bound_margin_fraction": 0.1,
+    "minimum_lopo_improved_pose_count": 4,
+    "minimum_lopo_median_improvement_fraction": 0.1,
+    "maximum_base_mesh_to_clamp_support_error_m": 0.004
+  },
+  "selection_policy": {
+    "task_rows_allowed_in_fit": false,
+    "task_outcome_allowed_in_fit": false,
+    "contact_timing_allowed_in_fit": false,
+    "one_family_may_be_selected": true,
+    "rank_by": "known_outcome_validation_midpoint_rms_px",
+    "selected_candidate_may_enter_one_separately_frozen_static_contact_gate": true,
+    "selected_candidate_may_enter_dynamics": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_dynamic_replay": false,
+    "simulator_promotion": false,
+    "training": false,
+    "transfer_claim": false
+  },
+  "promotion": {
+    "global_mapping_approved": false,
+    "canonical_scene_replacement_allowed": false,
+    "reason": "camera intrinsics and validation are not pristine; this card only recalculates bounded static beliefs"
+  }
+}
