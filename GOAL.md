@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR14_BELIEF_RECALCULATION`
+Status: `IN_PROGRESS_OR15_RETAINED_CAMERA_COMPOSITION`
 
 ## Active mission
 
@@ -9,17 +9,17 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR14_RECALCULATE_STATIC_ROBOT_BELIEFS_UNDER_OR13`
+`OR15_COMPOSE_SAME_SESSION_CAMERA_STATIC_JOINT_CANDIDATE_AND_OR13_GEOMETRY`
 
 ## Current card
 
-`OR14` — bounded retained-image factor recalculation
+`OR15` — frozen no-refit composition and exact kinematic contact-phase gate
 
 ## Current evidence
 
-- Predecessor: `configs/decisions/post_hackathon_home_workspace_geometry_camera_v2_closeout.json`.
-- Frozen contract: `configs/evaluations/observable_registration_belief_recalculation_v1.json`.
-- Proof class: `retrospective_static_image_factor_recalculation_under_owner_metrology_no_task_outcome_no_promotion`.
+- OR14 artifact: `27a31536e0535c9e82ada67bee2af3397f9490e7cc7de8fd0af9c8a92f8340cf`.
+- Frozen contract: `configs/evaluations/observable_registration_retained_camera_composition_v1.json`.
+- Proof class: `prospectively_frozen_composition_of_owner_static_geometry_same_session_camera_and_prior_static_joint_candidate`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`rank_bounded_robot_side_static_families_then_freeze_at_most_one_exact_contact_phase_candidate`
+`run_frozen_same_session_camera_joint_geometry_composition_then_require_named_contact_before_dynamics`
 
 ## Stop conditions
 

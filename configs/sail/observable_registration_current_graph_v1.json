@@ -2,9 +2,9 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or14_belief_recalculation",
-  "active_card": "OR14",
-  "next_transition": "rank_bounded_robot_side_static_families_then_freeze_at_most_one_exact_contact_phase_candidate",
+  "status": "in_progress_or15_retained_camera_composition",
+  "active_card": "OR15",
+  "next_transition": "run_frozen_same_session_camera_joint_geometry_composition_then_require_named_contact_before_dynamics",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "82615c72c800d3d80d06b8626ecb95cf0349e58b773ed209d700b255cb3eb15f",
+      "sha256": "386cbbd16e3b8ae756128beb06283ab3c404d7aa9bfec633f7b40e8e9ab1a794",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -587,7 +587,7 @@
       "id": "mechanism:or14-static-robot-belief-recalculation",
       "type": "mechanism",
       "label": "OR13-conditioned bounded robot-side factor recalculation",
-      "status": "in_progress_frozen_contract",
+      "status": "terminal_negative_camera_cohort_mismatch_localized",
       "source_binding": "configs/evaluations/observable_registration_belief_recalculation_v1.json",
       "data": {
         "candidate_family_count": 4,
@@ -596,6 +596,25 @@
         "task_rows_used_for_fit": 0,
         "task_outcome_used_for_fit": false,
         "dynamics_authorized": false,
+        "artifact_sha256": "27a31536e0535c9e82ada67bee2af3397f9490e7cc7de8fd0af9c8a92f8340cf",
+        "or13_camera_fit_midpoint_rms_px": 103.11642274430362,
+        "or13_camera_validation_midpoint_rms_px": 99.90432562541325,
+        "accepted_family_count": 0,
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "intervention:or15-retained-camera-static-composition",
+      "type": "intervention",
+      "label": "Same-session camera plus frozen shoulder candidate under OR13 geometry",
+      "status": "in_progress_frozen_contract",
+      "source_binding": "configs/evaluations/observable_registration_retained_camera_composition_v1.json",
+      "data": {
+        "camera_refit_allowed": false,
+        "joint_refit_allowed": false,
+        "task_rows_used_for_fit": 0,
+        "physics_integration_allowed": false,
+        "dynamic_replay_authorized": false,
         "global_mapping_approved": false
       }
     }
@@ -760,6 +779,16 @@
       "source": "observation:c922",
       "target": "mechanism:or14-static-robot-belief-recalculation",
       "type": "observed-by"
+    },
+    {
+      "source": "mechanism:or14-static-robot-belief-recalculation",
+      "target": "intervention:or15-retained-camera-static-composition",
+      "type": "predicts"
+    },
+    {
+      "source": "mapping:or10-retained-pixel-camera-challenger",
+      "target": "intervention:or15-retained-camera-static-composition",
+      "type": "admitted-to"
     }
   ]
 }
