@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR15_RETAINED_CAMERA_COMPOSITION`
+Status: `IN_PROGRESS_OR16_HISTORICAL_MAPPING_COMPOSITION`
 
 ## Active mission
 
@@ -9,17 +9,17 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR15_COMPOSE_SAME_SESSION_CAMERA_STATIC_JOINT_CANDIDATE_AND_OR13_GEOMETRY`
+`OR16_COMPOSE_HISTORICAL_BODY_MAPPING_AND_OR13_GEOMETRY`
 
 ## Current card
 
-`OR15` — frozen no-refit composition and exact kinematic contact-phase gate
+`OR16` — quarantined historical mapping and exact kinematic contact-phase gate
 
 ## Current evidence
 
-- OR14 artifact: `27a31536e0535c9e82ada67bee2af3397f9490e7cc7de8fd0af9c8a92f8340cf`.
-- Frozen contract: `configs/evaluations/observable_registration_retained_camera_composition_v1.json`.
-- Proof class: `prospectively_frozen_composition_of_owner_static_geometry_same_session_camera_and_prior_static_joint_candidate`.
+- OR15 artifact: `d4ffb2c9e8cdf8042935f2a7c405b97b696baac5d34dcdd132b07f11e7b41db8`.
+- Frozen contract: `configs/evaluations/observable_registration_historical_mapping_composition_v1.json`.
+- Proof class: `quarantined_outcome_informed_historical_mapping_composed_with_new_static_metrology`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`run_frozen_same_session_camera_joint_geometry_composition_then_require_named_contact_before_dynamics`
+`run_frozen_historical_mapping_static_contact_gate_then_stop_before_dynamics`
 
 ## Stop conditions
 

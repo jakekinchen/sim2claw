@@ -346,6 +346,7 @@ def _contact_phase_candidate(
     pawn_height_m: float,
     board_thickness_m: float,
     root: Path,
+    joint_zero_overrides: dict[int, float] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     or11_path = _bound_path(
         contract["sources"]["or11_contract"],
@@ -373,12 +374,17 @@ def _contact_phase_candidate(
         root=root,
         label="OR6 candidate",
     )
-    candidate = candidate_manifest["candidate_config"]
+    candidate = copy.deepcopy(candidate_manifest["candidate_config"])
     _require(
         canonical_digest(candidate)
         == contract["sources"]["or6_candidate"]["candidate_config_sha256"],
         "OR6 candidate identity changed",
     )
+    if joint_zero_overrides:
+        joints = candidate["physical_adapter"]["joint_transform"]["joints"]
+        for index, value in joint_zero_overrides.items():
+            _require(index in range(5), "only frozen body-joint offsets are allowed")
+            joints[index]["zero_offset"] = float(value)
     or7 = _bound_json(
         contract["sources"]["or7_receipt"], root=root, label="OR7"
     )

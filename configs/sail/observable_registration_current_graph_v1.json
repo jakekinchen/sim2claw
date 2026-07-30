@@ -2,9 +2,9 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or15_retained_camera_composition",
-  "active_card": "OR15",
-  "next_transition": "run_frozen_same_session_camera_joint_geometry_composition_then_require_named_contact_before_dynamics",
+  "status": "in_progress_or16_historical_mapping_composition",
+  "active_card": "OR16",
+  "next_transition": "run_frozen_historical_mapping_static_contact_gate_then_stop_before_dynamics",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "386cbbd16e3b8ae756128beb06283ab3c404d7aa9bfec633f7b40e8e9ab1a794",
+      "sha256": "2fa0d4cf0e48bca1bb160523ee6d90a371ce922c8be99402ddf0a965427d047a",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -607,12 +607,29 @@
       "id": "intervention:or15-retained-camera-static-composition",
       "type": "intervention",
       "label": "Same-session camera plus frozen shoulder candidate under OR13 geometry",
-      "status": "in_progress_frozen_contract",
+      "status": "terminal_negative_no_phase_correct_named_contact",
       "source_binding": "configs/evaluations/observable_registration_retained_camera_composition_v1.json",
       "data": {
         "camera_refit_allowed": false,
         "joint_refit_allowed": false,
         "task_rows_used_for_fit": 0,
+        "physics_integration_allowed": false,
+        "dynamic_replay_authorized": false,
+        "artifact_sha256": "d4ffb2c9e8cdf8042935f2a7c405b97b696baac5d34dcdd132b07f11e7b41db8",
+        "sample_232_planar_midpoint_error_m": 0.01243907862876143,
+        "sample_232_vertical_residual_m": -0.10140111088484782,
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "intervention:or16-historical-body-mapping-composition",
+      "type": "intervention",
+      "label": "Quarantined historical body mapping under OR13 geometry",
+      "status": "in_progress_frozen_contract",
+      "source_binding": "configs/evaluations/observable_registration_historical_mapping_composition_v1.json",
+      "data": {
+        "shoulder_lift_zero_offset_degrees": 18.701248448127163,
+        "mapping_refit_allowed": false,
         "physics_integration_allowed": false,
         "dynamic_replay_authorized": false,
         "global_mapping_approved": false
@@ -789,6 +806,11 @@
       "source": "mapping:or10-retained-pixel-camera-challenger",
       "target": "intervention:or15-retained-camera-static-composition",
       "type": "admitted-to"
+    },
+    {
+      "source": "intervention:or15-retained-camera-static-composition",
+      "target": "intervention:or16-historical-body-mapping-composition",
+      "type": "predicts"
     }
   ]
 }

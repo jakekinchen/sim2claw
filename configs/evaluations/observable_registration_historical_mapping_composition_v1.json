@@ -1,0 +1,37 @@
+{
+  "schema_version": "sim2claw.observable_registration_historical_mapping_composition_contract.v1",
+  "experiment_id": "observable-registration-historical-mapping-composition-v1",
+  "proof_class": "quarantined_outcome_informed_historical_mapping_composed_with_new_static_metrology",
+  "sources": {
+    "or15_receipt": {"path": "outputs/observable_registration_retained_camera_composition_v1/receipt.json", "sha256": "ff56b04891f4b12dc4af594e03432c86adf12f818af6563dc150de003f19fb0a"},
+    "historical_mapping_receipt": {"path": "outputs/retrospective_real_to_sim_support_handoff_v1/receipt.json", "sha256": "1af33c78d2a5846e009ff1d14561afd648df687bcb48a29a6b61089f7c33db51"},
+    "or13_contract": {"path": "configs/evaluations/post_hackathon_home_workspace_geometry_camera_v2.json", "sha256": "b8ea91021fe849ec4b79dcbfa96731fb83cc278d2697ef033f275f96fa421aef"},
+    "or13_receipt": {"path": "outputs/post_hackathon_home_workspace_geometry_camera_v2/receipt.json", "sha256": "4b029081910ef5168fb1819ba649e64d0d8bab3ee02c9a4a2c3eb10dc1da81fa"},
+    "or13_scene": {"path": "outputs/post_hackathon_home_workspace_geometry_camera_v2/derived_scene_config.json", "sha256": "9298ca9f70a3cff87c06cf73b6b343f5bbb927d13f6c9a5427242c2fabf7ed03"}
+  },
+  "frozen_mapping": {
+    "joint_names": ["shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll"],
+    "joint_zero_offsets_rad": [-8.857845572838224e-8, 0.326398359653299, -0.000974338501499911, -0.00041414541195713517, 0.0],
+    "refit_allowed": false,
+    "global_mapping_approved": false
+  },
+  "contact_phase_gate": {
+    "precontact_latest_sample": 224,
+    "candidate_contact_samples": [228, 232],
+    "physics_integration_allowed": false,
+    "dynamics_allowed": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "serial": false,
+    "simulator_dynamic_replay": false,
+    "simulator_promotion": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}
