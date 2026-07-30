@@ -1,0 +1,227 @@
+{
+  "schema_version": "sim2claw.pi_action_motion_alignment_contract.v1",
+  "experiment_id": "OR22A_PI_ACTION_MOTION_ALIGNMENT_V1",
+  "proof_class": "retained_same_run_pi_and_c922_motion_derivative_to_host_joint_motion_interval_alignment_no_task_outcome_fit",
+  "method": {
+    "pi_feature": "full_frame_grayscale_mean_absolute_frame_difference_then_three_frame_boxcar_then_first_derivative",
+    "c922_feature": "full_frame_grayscale_mean_absolute_frame_difference_then_three_frame_boxcar_then_first_derivative",
+    "joint_feature": "sum_absolute_follower_actual_joint_velocity_then_three_sample_boxcar",
+    "resize_width": 192,
+    "resize_height": 108,
+    "lag_minimum_seconds": 0.0,
+    "lag_maximum_seconds": 1.5,
+    "lag_step_seconds": 0.005,
+    "distinct_peak_exclusion_pi_frames": 2,
+    "minimum_c922_derivative_correlation": 0.35,
+    "minimum_distinct_peak_margin_fraction": 0.2,
+    "joint_motion_threshold_fraction_of_peak": 0.2,
+    "minimum_transition_separation_seconds": 0.3,
+    "minimum_independent_transitions": 3,
+    "leave_one_transition_out_seconds": 0.25,
+    "maximum_leave_one_transition_out_lag_span_seconds": 0.06666666666666667,
+    "maximum_joint_corroboration_lag_delta_seconds": 0.1,
+    "maximum_association_interval_seconds": 0.1,
+    "fit_model": "one_constant_offset_per_run",
+    "drift_fit_allowed": false,
+    "scale_fit_allowed": false,
+    "task_contact_or_outcome_fit_allowed": false,
+    "cross_episode_merge_allowed": false
+  },
+  "runs": [
+    {
+      "run_id": "vertical_15mm_contact_free",
+      "role": "contact_free_method_validation",
+      "fit_phase_allowlist": ["motion", "capture_hold"],
+      "execution_receipt": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/execution_receipt.json",
+        "sha256": "ed9123b6282a850821eb921861230002d0a4243dfdd83b99714a7a346904cba4"
+      },
+      "joint_samples": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/joint_samples.jsonl",
+        "sha256": "b5a1d61e2a3e7a63e2f7c39a2ce9f7d62d2c35bd127573cfff9a2ab0c4c43b33"
+      },
+      "pi_video": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.browser.mp4",
+        "sha256": "fbe81d227ab1b71309668ee5d86148ef8a7f6f18ee861f40b525511f1d15f0b5"
+      },
+      "pi_pts": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.pts",
+        "sha256": "42641481b60bda80ab278eb7c0d619dfc1d7c1efac24c3f6f89dfd251c14a0b1"
+      },
+      "c922_video": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/final_hold_camera/overhead_c922.mp4",
+        "sha256": "3413ba3bdbad6c8fc7f2bc4759b7a08dc24aa5a99d678f39fc127e31dd8382e3"
+      },
+      "c922_callbacks": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-vertical-15mm-tricam-v1/stage-1/final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "sha256": "3632ded05dea74085fd25c7421f7e96376bf02321d11db281c28e46cce9e9cdb"
+      }
+    },
+    {
+      "run_id": "lateral_y20_round_trip_contact_free",
+      "role": "contact_free_method_validation",
+      "fit_phase_allowlist": ["motion", "capture_hold"],
+      "execution_receipt": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/execution_receipt.json",
+        "sha256": "da6498bf5fe47de6170d12aa967872fdf33ad5df89a90e6973f693e17a8422c4"
+      },
+      "joint_samples": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/joint_samples.jsonl",
+        "sha256": "76f6ef6c1c998bd8c94959ccf7ea6968725d6648000fb6022f42c4bbe358f179"
+      },
+      "pi_video": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.browser.mp4",
+        "sha256": "6d66fb4e27c522d28b4b026639909464d1047485c9a3927d3dc436e0053c0014"
+      },
+      "pi_pts": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.pts",
+        "sha256": "49db40b3a7b1df3576a96a454e01633729bfde78026b10054fcb8b6ad0721df4"
+      },
+      "c922_video": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/final_hold_camera/overhead_c922.mp4",
+        "sha256": "f2f71767603aecfbc679a566640f4bfb248f1fa8802e49d8b1866fb604f2ab92"
+      },
+      "c922_callbacks": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-lateral-y20-round-trip-tricam-v1/stage-1/final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "sha256": "6be556cb62d5c0f53eef7d44865612c1131b493b45afb24419932bcfaf90b386"
+      }
+    },
+    {
+      "run_id": "oblique_round_trip_contact_free",
+      "role": "contact_free_method_validation",
+      "fit_phase_allowlist": ["motion", "capture_hold"],
+      "execution_receipt": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/execution_receipt.json",
+        "sha256": "4818f9d06d12a614c8158111208fc22136ebf5f9bdf9eecd27430a9137aa545e"
+      },
+      "joint_samples": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/joint_samples.jsonl",
+        "sha256": "1060ec44371c2f641890e718497776d4ac5bb17e563248469a8bc710b29edbe9"
+      },
+      "pi_video": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.browser.mp4",
+        "sha256": "acfcf5daeebbf47294ae01584c19e9a980dfc49370558357724cbd530f6e113d"
+      },
+      "pi_pts": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.pts",
+        "sha256": "68755a1816441439ae42a8955a08b2af9683ba8121fc3380d15388f89b651952"
+      },
+      "c922_video": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/final_hold_camera/overhead_c922.mp4",
+        "sha256": "159912acec3cf61ef93ef445755c4592d7e4d6878ccc8e80fdb5815a975ff593"
+      },
+      "c922_callbacks": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-xm5-ym15-z15-round-trip-tricam-v1/stage-1/final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "sha256": "57d5f5ad5ca1016439462aac5f291bf4911ef0395306a16745e7f6bc93d11047"
+      }
+    },
+    {
+      "run_id": "four_crossing_shuttle_contact_free",
+      "role": "contact_free_method_validation",
+      "fit_phase_allowlist": ["motion", "capture_hold"],
+      "execution_receipt": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/execution_receipt.json",
+        "sha256": "2532d0bfbc38febfe88d6355950d0b7eea66eba9e574493b0a0b18372818f35a"
+      },
+      "joint_samples": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/joint_samples.jsonl",
+        "sha256": "571d782502d54ea643d95bdc9b3eab0b82daf2b472e4a77dd1a5e4fcd7db3dc0"
+      },
+      "pi_video": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.browser.mp4",
+        "sha256": "08ed790a5f1639921fe63c6900107fdc10eb9cfc90a88c2b2fef66c2bc899048"
+      },
+      "pi_pts": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.pts",
+        "sha256": "83d5c8e050fe132c2da0ea57258adf3f55bfbde92dee2499d0a504912034d262"
+      },
+      "c922_video": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/final_hold_camera/overhead_c922.mp4",
+        "sha256": "69898147c7e49cf4f2457b6f2441e1a18a0c3f65c504e19d4010c13d8f8a33e7"
+      },
+      "c922_callbacks": {
+        "path": "runs/geometric-microtransfer/20260727-geometric-oblique-four-crossing-shuttle-tricam-v1/stage-1/final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "sha256": "23e9f0c859396564575f304af9c7aca6e944284edd24ad855acf73f711a18157"
+      }
+    },
+    {
+      "run_id": "d1_d2_exact_v4_precontact_terminal_negative",
+      "role": "later_guarded_run_application",
+      "fit_phase_allowlist": ["setup_recovery_prefix", "counted_task_action"],
+      "execution_receipt": {
+        "path": "runs/prospective-real-to-sim/20260727-d1-d2-exact-v4/stage-1/execution_receipt.json",
+        "sha256": "5f840da4d097a9f3fe7777140261955d513121945e6599a397142f88e50da21f"
+      },
+      "joint_samples": {
+        "path": "runs/prospective-real-to-sim/20260727-d1-d2-exact-v4/stage-1/joint_samples.jsonl",
+        "sha256": "2d09b20421ced3bcb4fb0ccce00f3eda3c24a5fd49452c498178a6cda8bd8ace"
+      },
+      "pi_video": {
+        "path": "runs/prospective-real-to-sim/20260727-d1-d2-exact-v4/stage-1/final_hold_camera/pi_motion/pi_imx708.browser.mp4",
+        "sha256": "ca1505972f2b2830ca16c02e163604fb48d85abb32906560ef3f4e6db6482d0b"
+      },
+      "pi_pts": {
+        "path": "runs/prospective-real-to-sim/20260727-d1-d2-exact-v4/stage-1/final_hold_camera/pi_motion/pi_imx708.pts",
+        "sha256": "c1614af7e99c557c50ef32dc1caa97ebc0d70dfcb9e6bfb0ab2644b2226e1d71"
+      },
+      "c922_video": {
+        "path": "runs/prospective-real-to-sim/20260727-d1-d2-exact-v4/stage-1/final_hold_camera/overhead_c922.mp4",
+        "sha256": "1d4f0542b0d2a5b264198ce0adb76e78893586d68813fcbe29e2a8f72f8c15ba"
+      },
+      "c922_callbacks": {
+        "path": "runs/prospective-real-to-sim/20260727-d1-d2-exact-v4/stage-1/final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "sha256": "6854481b3a0444695ae8b967d121495c803b6b2384d8d56bf901a1ec99d29174"
+      }
+    },
+    {
+      "run_id": "c2_c1_exact_v1_setup_only",
+      "role": "later_guarded_run_application",
+      "fit_phase_allowlist": ["setup_recovery_prefix"],
+      "execution_receipt": {
+        "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/stage-1/execution_receipt.json",
+        "sha256": "48a5642c131a3958f371dd3c6d81526b90f435b0d13d7283e196720d0f4cf14b"
+      },
+      "joint_samples": {
+        "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/stage-1/joint_samples.jsonl",
+        "sha256": "9c8b9c146c67c2cc339506690a28df0e7fb63f5ffa81f4372fd58411182bfa97"
+      },
+      "pi_video": {
+        "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.browser.mp4",
+        "sha256": "e40a7d78b7f7ca1fa9f5713e64bff78fb1f2144c0903aa467ea8b5459c1c80b0"
+      },
+      "pi_pts": {
+        "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/stage-1/final_hold_camera/pi_motion/pi_imx708.pts",
+        "sha256": "c12a9b69595ece50dbe11b842ff199bceb256ba3966f15df32b61296ab11dd37"
+      },
+      "c922_video": {
+        "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/stage-1/final_hold_camera/overhead_c922.mp4",
+        "sha256": "2a08b10f2098ad315e9743e14acf5d46f6629e3bc34b2b7de0c9616a32508ef0"
+      },
+      "c922_callbacks": {
+        "path": "runs/prospective-real-to-sim/20260727-c2-c1-exact-v1/stage-1/final_hold_camera/native_dual_camera/camera_callback_timestamps.jsonl",
+        "sha256": "5ae86c76fadf16319761cc481f441b733a3888bf04b366e4b89a11be6146efa6"
+      }
+    }
+  ],
+  "reporting": {
+    "minimum_contact_free_accepted_runs": 3,
+    "emit_motion_curves": true,
+    "emit_frame_action_intervals_for_accepted_runs": true,
+    "original_successful_d1_d2_pi_available": false,
+    "global_mapping_approval_allowed": false,
+    "task_success_claim_allowed": false,
+    "transfer_claim_allowed": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

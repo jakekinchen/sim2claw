@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR22A_PI_ACTION_MOTION_ALIGNMENT`
+Status: `IN_PROGRESS_OR22_RETAINED_RGB_CONSEQUENCE_PROXIES`
 
 ## Active mission
 
@@ -9,15 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR22A_PI_ACTION_MOTION_ALIGNMENT`
+`OR22_RETAINED_RGB_CONSEQUENCE_PROXIES`
 
 ## Current card
 
-`OR22A`
+`OR22`
 
 ## Current evidence
 
-- Proof class: `retained_same_run_pi_motion_energy_to_host_joint_motion_interval_alignment_no_task_outcome_fit`.
+- Proof class: `retained_successful_episode_c922_d405_image_plane_contact_consequence_proxy_with_explicit_orientation_abstention`.
 
 ## Authority
 
@@ -32,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`build_and_validate_same_run_pi_motion_energy_to_joint_motion_action_interval_alignment`
+`reduce_successful_source_c922_d405_tracks_to_bounded_contact_consequence_proxies_with_abstention`
 
 ## Stop conditions
 

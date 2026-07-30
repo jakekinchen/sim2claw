@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.pi_action_motion_alignment_closeout.v1",
+  "experiment_id": "OR22A_PI_ACTION_MOTION_ALIGNMENT_V1",
+  "status": "PASS_METHOD_VALIDATION_TARGET_APPLICATIONS_FAIL_CLOSED",
+  "proof_class": "retained_same_run_pi_and_c922_motion_derivative_to_host_joint_motion_interval_alignment_no_task_outcome_fit",
+  "contract": {
+    "path": "configs/evaluations/pi_action_motion_alignment_v1.json",
+    "sha256": "c8b54d85086a1169b844f9ecb1b83ba260c66f67e188623a5ac642b6f9cbac35"
+  },
+  "implementation": {
+    "path": "src/sim2claw/pi_action_motion_alignment.py",
+    "sha256": "03933941f74a6d31c0fbfe25725f4bf34e194da3d19876cd7c90faecf9da647a"
+  },
+  "receipt": {
+    "path": "outputs/pi_action_motion_alignment_v1/receipt.json",
+    "sha256": "c2f069091cd9765e2a0776aaa5b1881bbf1192aa584939574950865620c3decf",
+    "artifact_sha256": "befe9ba7e81da015403726486428216707e458c853129f3f0c8cc4c993329310"
+  },
+  "curves": {
+    "path": "outputs/pi_action_motion_alignment_v1/curves.json",
+    "sha256": "14016e0d643a360cc7c3f580225b976042630eac61cfb674d24999450b67e9aa"
+  },
+  "associations": {
+    "path": "outputs/pi_action_motion_alignment_v1/associations.json",
+    "sha256": "14e7f9bc0fca2b9c72fc4eeb65df8073916ccf176dc9bd5391ea839740491254"
+  },
+  "result": {
+    "contact_free_method_validation_passed": true,
+    "contact_free_accepted_runs": 3,
+    "contact_free_total_runs": 4,
+    "d1_d2_exact_v4_visual_lag_seconds": 0.965,
+    "d1_d2_exact_v4_visual_correlation": 0.8878333133249652,
+    "d1_d2_exact_v4_visual_peak_margin_fraction": 0.5345138438070275,
+    "d1_d2_exact_v4_joint_lag_seconds": 0.845,
+    "d1_d2_exact_v4_joint_visual_delta_seconds": 0.12,
+    "d1_d2_exact_v4_accepted": false,
+    "d1_d2_exact_v4_failure_gate": "joint_corroboration_lag_delta_over_100ms",
+    "c2_c1_exact_v1_visual_lag_seconds": 0.97,
+    "c2_c1_exact_v1_visual_correlation": 0.7016742246115119,
+    "c2_c1_exact_v1_transition_count": 1,
+    "c2_c1_exact_v1_accepted": false,
+    "c2_c1_exact_v1_failure_gate": "fewer_than_three_setup_motion_hold_transitions",
+    "original_successful_d1_d2_pi_available": false,
+    "task_contact_or_outcome_used_for_fit": false,
+    "camera_exposure_synchronized": false,
+    "global_mapping_approved": false,
+    "task_success_claim": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

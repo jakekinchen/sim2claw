@@ -1,11 +1,11 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-30T15:32:00-05:00",
+  "updated_at": "2026-07-30T16:03:00-05:00",
   "active_campaign": "observable_registration_contact_causality_v1",
-  "current_milestone": "OR22A_PI_ACTION_MOTION_ALIGNMENT",
+  "current_milestone": "OR22_RETAINED_RGB_CONSEQUENCE_PROXIES",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
-  "proof_class": "retained_same_run_pi_motion_energy_to_host_joint_motion_interval_alignment_no_task_outcome_fit",
+  "proof_class": "retained_successful_episode_c922_d405_image_plane_contact_consequence_proxy_with_explicit_orientation_abstention",
   "four_hour_hil_transaction": {
     "schema_version": "sim2claw.four_hour_hil_transaction.v1",
     "status": "four_physical_attempts_complete_two_admitted_two_rejected_simulator_candidate_rejected_offline_decomposition_frozen_closeout_verification_active",

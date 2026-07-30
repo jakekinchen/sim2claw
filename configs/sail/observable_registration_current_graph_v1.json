@@ -2,19 +2,19 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or22a_pi_action_motion_alignment",
-  "active_card": "OR22A",
+  "status": "in_progress_or22_retained_rgb_consequence_proxies",
+  "active_card": "OR22",
   "active_card_contract": {
-    "card_id": "OR22A",
-    "proof_target": "same_run_fail_closed_pi_frame_to_action_interval_alignment_from_precontact_and_contact_free_motion_only",
+    "card_id": "OR22",
+    "proof_target": "bounded_successful_episode_c922_d405_jaw_crown_support_and_orientation_proxy_with_explicit_abstention",
     "allowed_paths": [
-      "configs/evaluations/pi_action_motion_alignment_v1.json",
-      "src/sim2claw/pi_action_motion_alignment.py",
-      "scripts/build_pi_action_motion_alignment.py",
-      "tests/test_pi_action_motion_alignment.py",
-      "configs/decisions/pi_action_motion_alignment_v1_closeout.json",
-      "outputs/pi_action_motion_alignment_v1",
-      "docs/session-logs/093-executor-observable-registration-or22a.md",
+      "configs/evaluations/retained_rgb_contact_consequence_proxies_v1.json",
+      "src/sim2claw/retained_rgb_contact_consequence_proxies.py",
+      "scripts/build_retained_rgb_contact_consequence_proxies.py",
+      "tests/test_retained_rgb_contact_consequence_proxies.py",
+      "configs/decisions/retained_rgb_contact_consequence_proxies_v1_closeout.json",
+      "outputs/retained_rgb_contact_consequence_proxies_v1",
+      "docs/session-logs/094-executor-observable-registration-or22.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
@@ -28,14 +28,14 @@
       "commit"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_pi_action_motion_alignment.py",
+      "uv run --locked pytest -q tests/test_retained_rgb_contact_consequence_proxies.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "build_and_validate_same_run_pi_motion_energy_to_joint_motion_action_interval_alignment",
+  "next_transition": "reduce_successful_source_c922_d405_tracks_to_bounded_contact_consequence_proxies_with_abstention",
   "node_types": [
     "workcell",
     "session",
@@ -76,7 +76,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "101b7795fbec38d875bb6ec66abaf25b8b7e408d97d3de5b32c0101b08efe5c3",
+      "sha256": "1acde728da71b4b0f319edab9703779c20ba9280d7b52b5aedb69b307b0dad9c",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -218,6 +218,11 @@
       "path": "configs/decisions/observable_registration_exact_replay_contact_introspection_v1_closeout.json",
       "sha256": "80511a5e3b5080a85a7f73fd4da713226aa4f671faaff5b07b897db9c1a6d776",
       "proof_class": "retrospective_outcome_informed_model_identical_byte_identical_simulator_introspection_no_parameter_selection"
+    },
+    "or22a": {
+      "path": "configs/decisions/pi_action_motion_alignment_v1_closeout.json",
+      "sha256": "a22860eeee2e973a9b866e31722bcdd48f1e9e996a42b0a651ad1a83ab5a20ed",
+      "proof_class": "retained_same_run_pi_and_c922_motion_derivative_to_host_joint_motion_interval_alignment_no_task_outcome_fit"
     }
   },
   "nodes": [
@@ -775,7 +780,8 @@
       "id": "evidence:or22a-pi-auxiliary-action-sync",
       "type": "evidence",
       "label": "Same-run Pi IMX708 auxiliary action-interval association",
-      "status": "active_frozen_pending_run",
+      "status": "pass_method_validation_target_applications_fail_closed",
+      "source_binding": "or22a",
       "data": {
         "original_successful_d1_d2_pi_available": false,
         "d1_d2_exact_v4_pi_browser_sha256": "ca1505972f2b2830ca16c02e163604fb48d85abb32906560ef3f4e6db6482d0b",
@@ -792,6 +798,14 @@
         "fit_model": "one_constant_offset_per_run",
         "fit_uses_task_contact_or_outcome": false,
         "maximum_association_interval_seconds": 0.1,
+        "contact_free_accepted_runs": 3,
+        "contact_free_total_runs": 4,
+        "d1_d2_exact_v4_visual_lag_seconds": 0.965,
+        "d1_d2_exact_v4_visual_correlation": 0.8878333133249652,
+        "d1_d2_exact_v4_joint_visual_delta_seconds": 0.12,
+        "d1_d2_exact_v4_association_accepted": false,
+        "c2_c1_exact_v1_transition_count": 1,
+        "c2_c1_exact_v1_association_accepted": false,
         "parameter_fit_allowed": false,
         "transfer_claim": false
       }
@@ -800,7 +814,7 @@
       "id": "observation:or22-retained-rgb-contact-proxies",
       "type": "observation_channel",
       "label": "Retained image-plane pawn orientation and contact-consequence proxies",
-      "status": "pending_or22a",
+      "status": "active_frozen_pending_run",
       "data": {
         "successful_episode_primary_streams": [
           "c922",
