@@ -1,0 +1,118 @@
+{
+  "schema_version": "sim2claw.observable_contact_phase_registration_contract.v1",
+  "experiment_id": "observable-contact-phase-registration-v1",
+  "frozen_date": "2026-07-30",
+  "proof_class": "exact_applied_state_named_geom_kinematic_contact_phase_gate_no_fit_no_dynamics",
+  "sources": {
+    "c6_contract": {
+      "path": "configs/evaluations/realized_action_outcome_mission_v1.json",
+      "sha256": "f406149f51578b7ecae646c46b35c9237693b4f172c66dbb271cee67b9728b77"
+    },
+    "or3_closeout": {
+      "path": "configs/decisions/observable_physical_episode_observations_v1_closeout.json",
+      "sha256": "4d64346dfbf671e04a6d05ac204f2381abfc650a2c7bbe2418b471b26c6469bf"
+    },
+    "or6_candidate": {
+      "path": "outputs/observable_jaw_aperture_fit_v1/candidate_manifest.json",
+      "sha256": "e8c27ef3118c3383d2d2312371a54b6c40d749880b5ab73aa9a14e0305dd17e5",
+      "candidate_config_sha256": "dd03853d957192062b6cfd9b23a6f973c516efaad87f162b29e6f8136492a693"
+    },
+    "or7_receipt": {
+      "path": "outputs/observable_jaw_aperture_replay_v1/receipt.json",
+      "sha256": "edaece18101c331a4437cad1781bd4ccf48b9b52dd566839b93f4fc0280c7ddd",
+      "artifact_sha256": "600dd7973b32dd92cc4612762f44f80843572ea51457beb4a92380e554c4baeb"
+    },
+    "factor_isolation_receipt": {
+      "path": "outputs/observable_registration_factor_isolation_v1/receipt.json",
+      "sha256": "05c0ab9fc37b118f5f8636d068d76b73843cef6f7af5f59ea3eca8df53ba9c53",
+      "artifact_sha256": "c186e444a9444e6371d600274e87bc765efaa30d82bdb7e5a384b2169764d391"
+    },
+    "initial_endpoint_receipt": {
+      "path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+      "sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011"
+    }
+  },
+  "identity": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "row_count": 531,
+    "joint_count": 6,
+    "requested_sha256": "5d58874c166d2df9b890177ab9f1ef0a6934e53d46242b2346bf3428e5904c79",
+    "gateway_sent_sha256": "3b034bd965d4bf1a71591cc77f033e97f1fe8eb30aa75cb314cc529b4e40e3ef",
+    "timestamps_sha256": "68e87c15992123e4415b2a3ec6d1a8e68cffd1ca642ac35002ed255544829f48",
+    "identified_applied_sha256": "4b486ac78d2377f5fad70f713ab1183cfd9717996e975b87e0288eb5fc7a259c",
+    "selected_piece": "brown_pawn_d1"
+  },
+  "fit_policy": {
+    "task_rows_allowed_in_fit": false,
+    "task_outcome_allowed_in_fit": false,
+    "contact_timing_allowed_in_fit": false,
+    "one_mechanism_family_only": true,
+    "current_promotable_spatial_candidate_required": true,
+    "factor_isolation_required_result": "PROMOTABLE_SINGLE_FAMILY",
+    "heldout_refit_allowed": false
+  },
+  "schedule": {
+    "timestep_seconds": 0.005,
+    "interpolation": "exact_or7_linear_source_interval_subdivision",
+    "physics_integration_allowed": false,
+    "forward_kinematics_only": true,
+    "preserve_source_row_order": true,
+    "preserve_source_timestamps": true
+  },
+  "geometry": {
+    "fixed_jaw_prefix": "left_fixed_jaw_",
+    "moving_jaw_prefix": "left_moving_jaw_",
+    "fixed_tip_geoms": [
+      "left_fixed_jaw_sph_tip1",
+      "left_fixed_jaw_sph_tip2",
+      "left_fixed_jaw_sph_tip3"
+    ],
+    "moving_tip_geoms": [
+      "left_moving_jaw_sph_tip1",
+      "left_moving_jaw_sph_tip2",
+      "left_moving_jaw_sph_tip3"
+    ],
+    "distance_maximum_m": 1.0
+  },
+  "phase_gate": {
+    "last_definitely_separate_sample": 224,
+    "candidate_contact_samples": [
+      228,
+      232
+    ],
+    "minimum_precontact_clearance_m": 0.0005,
+    "contact_signed_distance_m": 0.0,
+    "other_pad_maximum_distance_m": 0.002,
+    "pawn_center_bracketing_required": true,
+    "unrelated_contact_allowed": false,
+    "leave_one_pose_out_contact_sample_tolerance": 2
+  },
+  "dynamic_gate": {
+    "requires_static_admission": true,
+    "requires_phase_admission": true,
+    "named_pad_geom_required": true,
+    "minimum_normal_force_n": 0.0001,
+    "minimum_consecutive_internal_steps": 2,
+    "carry_or_d2_required_for_contact_milestone": false
+  },
+  "proof_boundaries": {
+    "global_mapping_approved": false,
+    "simulator_geometry_promoted": false,
+    "contact_material_validated": false,
+    "task_outcome_proved": false,
+    "transfer_proved": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_dynamic_replay": false,
+    "simulator_promotion": false,
+    "training": false,
+    "paid_compute": false,
+    "transfer_claim": false
+  }
+}

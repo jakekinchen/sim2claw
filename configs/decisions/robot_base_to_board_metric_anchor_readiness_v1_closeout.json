@@ -1,0 +1,55 @@
+{
+  "schema_version": "sim2claw.robot_base_to_board_metric_anchor_readiness_closeout.v1",
+  "decision_id": "robot-base-to-board-metric-anchor-readiness-v1-closeout",
+  "card_id": "OR11",
+  "result": "DESIGN_READY_BLOCKED_EXTERNAL_METRIC_ANCHOR",
+  "proof_class": "prospective_no_contact_metric_board_to_base_measurement_readiness",
+  "contract": {
+    "path": "configs/evaluations/robot_base_to_board_metric_anchor_readiness_v1.json",
+    "sha256": "bcfe200411dcdfd16c90c4ef84d0a87e2543e877b7ab50bcca5364bf94a8d71e"
+  },
+  "implementation": {
+    "path": "src/sim2claw/robot_base_to_board_metric_anchor_readiness.py",
+    "sha256": "fb31dcacdb7c638408f420b304d2215b4d4396410f3172f91bb366d8e1c5ad18"
+  },
+  "generated_receipt": {
+    "path": "outputs/robot_base_to_board_metric_anchor_readiness_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "cc0c3e37246fd2ce5150617ab0c2940e3091e851cd8ddc205cc2654044b6aaa0",
+    "artifact_sha256": "a7f0986d75da40a0400f727615589cd33ae1a8683af4079574d66311f12b34a3"
+  },
+  "measurement_design": {
+    "target_transform": "world_T_left_base",
+    "minimum_non_collinear_correspondences": 3,
+    "known_base_to_fixture_transform_required": true,
+    "model_base_frame_definition_required": true,
+    "measurement_covariance_required": true,
+    "repeat_observations_required": true,
+    "maximum_translation_uncertainty_m": 0.003,
+    "maximum_rotation_uncertainty_degrees": 0.5,
+    "task_episode_allowed": false,
+    "pawn_contact_allowed": false,
+    "robot_motion_required": false
+  },
+  "decision": {
+    "measurement_rows": 0,
+    "candidate_transform_produced": false,
+    "canonical_parameter_update_authorized": false,
+    "simulator_dynamic_replay_authorized": false,
+    "global_mapping_approved": false,
+    "next_input": "independent metric robot_base_to_board_metric_anchor_v1 measurement or the already-frozen OR9 four-pose no-contact validation acquisition after service and fresh authority"
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "training": false,
+    "paid_compute": false,
+    "global_mapping_approved": false,
+    "transfer_claim": false
+  }
+}

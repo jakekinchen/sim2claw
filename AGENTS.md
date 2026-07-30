@@ -1,5 +1,11 @@
 # sim2claw Clean-Room Operating Rules
 
+- For autonomous workflow work, begin with
+  `uv run --locked sim2claw check --profile agent`, then compile the exact role
+  packet with `uv run --locked sim2claw agent-context --role <role>`.
+  `GOAL.md` is a generated current-state projection; its linked history and any
+  control plane explicitly marked historical are evidence, not live authority.
+  Do not discover an active task by choosing lexicographically latest files.
 - Prior-project material is consulted read-only in the archive repository
   (`jakekinchen/sim2claw-imported-archive` @ `798491e`) or the local read-only
   checkout `/Users/kelly/Developer/sim-link`; freshly authored maps live at

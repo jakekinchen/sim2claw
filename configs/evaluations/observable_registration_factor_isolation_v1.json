@@ -1,0 +1,205 @@
+{
+  "schema_version": "sim2claw.observable_registration_factor_isolation_contract.v1",
+  "experiment_id": "observable-registration-factor-isolation-v1",
+  "frozen_date": "2026-07-29",
+  "proof_class": "retrospective_known_outcome_static_factor_isolation_diagnostic",
+  "sources": {
+    "or1_receipt": {
+      "path": "outputs/observable_c922_camera_world_v1/receipt.json",
+      "sha256": "a2fda1032ad70c026fb8e82f3849896926ee92f07a14f5ecdf8e827141324614"
+    },
+    "or10_receipt": {
+      "path": "outputs/observable_c922_pixel_lattice_refinement_v1/receipt.json",
+      "sha256": "bf29c29b1160de6e0c48f81f40b7f52d11e09825e95a4beae7f77aa9df4934b7"
+    },
+    "or2_receipt": {
+      "path": "outputs/observable_robot_jaw_mapping_v1/receipt.json",
+      "sha256": "436cd9f629b780e5f8a08e9f00708659c4fa416a5362fe603bfee6f1f6484c3a"
+    },
+    "or6_candidate": {
+      "path": "outputs/observable_jaw_aperture_fit_v1/candidate_manifest.json",
+      "sha256": "e8c27ef3118c3383d2d2312371a54b6c40d749880b5ab73aa9a14e0305dd17e5"
+    },
+    "fit_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+      "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3"
+    },
+    "fit_manifest": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit_manifest.json",
+      "sha256": "71f704ee95a2c1966f23f1ff96db04d6448bb409a86b209ea54b06e25e9f1f46"
+    },
+    "validation_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_heldout_annotations_v4.json",
+      "sha256": "654b32fbe4dbb35096d9ed361e574f92a563d9241c0d434a9c756df06db2105d"
+    },
+    "validation_open_receipt": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/heldout-rigid-v4/single_open_recovery_receipt.json",
+      "sha256": "e35cf89214543c0ad47b11abb254a4aeec72a695eb3f0f1dcf7e50c6a2278607"
+    },
+    "joint_samples": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/joint_samples.jsonl",
+      "sha256": "32e623dc0d8ec219cdb329b79cdd2a8647ab4f0ba597af72606cf32d8de90f9f"
+    }
+  },
+  "split": {
+    "fit_pose_count": 6,
+    "known_outcome_validation_pose_count": 4,
+    "fit_validation_overlap_allowed": false,
+    "validation_refit_allowed": false,
+    "promotion_grade_heldout": false,
+    "sealed_task_episode_used": false
+  },
+  "coordinate_frame": {
+    "frame_id": "measured_table_frame",
+    "x_axis": "positive_left_from_robot_operator_near_side_toward_file_a",
+    "y_axis": "positive_backward_robotward_away_from_board",
+    "z_axis": "positive_up",
+    "table_yaw_degrees": -20.388574,
+    "owner_backward_left_hypothesis_signs": {
+      "delta_x_table": "positive",
+      "delta_y_table": "positive"
+    }
+  },
+  "camera_candidates": [
+    {
+      "camera_id": "or1",
+      "evidence_role": "frozen_bounded_task_plane_camera",
+      "refit_allowed": false,
+      "canonical_replacement_allowed": false
+    },
+    {
+      "camera_id": "or10",
+      "evidence_role": "retrospective_inspection_only_board_plane_camera",
+      "refit_allowed": false,
+      "canonical_replacement_allowed": false
+    }
+  ],
+  "factor_blocks": [
+    {
+      "block_id": "base_b6",
+      "parameters": [
+        "base_left_m",
+        "base_backward_m",
+        "base_up_m",
+        "base_roll_rad",
+        "base_pitch_rad",
+        "base_yaw_rad"
+      ],
+      "objective": "jaw_midpoint_reprojection_error_px",
+      "minimum_values": [
+        -0.15,
+        -0.15,
+        -0.1,
+        -0.05235987755982989,
+        -0.05235987755982989,
+        -0.3490658503988659
+      ],
+      "maximum_values": [
+        0.15,
+        0.15,
+        0.1,
+        0.05235987755982989,
+        0.05235987755982989,
+        0.3490658503988659
+      ],
+      "task_endpoint_in_objective": false
+    },
+    {
+      "block_id": "joint_j2",
+      "parameters": [
+        "shoulder_pan_zero_offset_rad",
+        "shoulder_lift_zero_offset_rad"
+      ],
+      "objective": "jaw_midpoint_reprojection_error_px",
+      "minimum_values": [
+        -0.17453292519943295,
+        -0.17453292519943295
+      ],
+      "maximum_values": [
+        0.17453292519943295,
+        0.17453292519943295
+      ],
+      "task_endpoint_in_objective": false
+    },
+    {
+      "block_id": "tool_w6",
+      "parameters": [
+        "gripper_local_x_m",
+        "gripper_local_y_m",
+        "gripper_local_z_m",
+        "gripper_local_roll_rad",
+        "gripper_local_pitch_rad",
+        "gripper_local_yaw_rad"
+      ],
+      "objective": "globally_centered_tip_pair_and_separation_vector_error_px",
+      "minimum_values": [
+        -0.025,
+        -0.025,
+        -0.025,
+        -0.17453292519943295,
+        -0.17453292519943295,
+        -0.17453292519943295
+      ],
+      "maximum_values": [
+        0.025,
+        0.025,
+        0.025,
+        0.17453292519943295,
+        0.17453292519943295,
+        0.17453292519943295
+      ],
+      "task_endpoint_in_objective": false
+    }
+  ],
+  "acceptance_gates": {
+    "maximum_camera_board_rms_px": 2.0,
+    "maximum_camera_board_max_px": 3.0,
+    "minimum_fit_improvement_fraction": 0.3,
+    "minimum_known_outcome_validation_improvement_fraction": 0.2,
+    "maximum_jacobian_condition_number": 100000.0,
+    "minimum_bound_margin_fraction": 0.05,
+    "maximum_orthogonal_regression_px": 1.0,
+    "minimum_winner_ratio": 1.5,
+    "effective_composed_base_limits": {
+      "minimum_translation_world_xyz_m": [-0.15, -0.15, -0.1],
+      "maximum_translation_world_xyz_m": [0.15, 0.15, 0.1],
+      "minimum_rotation_table_rpy_rad": [
+        -0.05235987755982989,
+        -0.05235987755982989,
+        -0.3490658503988659
+      ],
+      "maximum_rotation_table_rpy_rad": [
+        0.05235987755982989,
+        0.05235987755982989,
+        0.3490658503988659
+      ]
+    }
+  },
+  "promotion": {
+    "diagnostic_only": true,
+    "canonical_parameter_update_allowed": false,
+    "dynamic_replay_allowed": false,
+    "global_mapping_approved": false
+  },
+  "proof_boundaries": {
+    "known_outcome_validation_is_pristine": false,
+    "factor_isolation_is_parameter_promotion": false,
+    "or10_is_exact_intrinsic_calibration": false,
+    "or10_may_replace_canonical_camera": false,
+    "static_attribution_approves_contact": false,
+    "static_attribution_approves_task_transfer": false,
+    "sealed_task_episode_may_enter_fit_or_validation": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "canonical_scene_update": false,
+    "training": false,
+    "paid_compute": false
+  }
+}

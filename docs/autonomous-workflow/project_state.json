@@ -1,11 +1,11 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-29T20:25:00-05:00",
+  "updated_at": "2026-07-30T00:35:00-05:00",
   "active_campaign": "observable_registration_contact_causality_v1",
-  "current_milestone": "OR10_COMPLETE_BOARD_PLANE_DIAGNOSTIC_IMPROVED_EXACT_INTRINSICS_EXTERNAL_BOUNDARY",
+  "current_milestone": "OR11_COMPLETE_EXACT_CONTACT_PHASE_NEGATIVE_BLOCKED_EXTERNAL_METRIC_ANCHOR",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
-  "proof_class": "retrospective_outcome_informed_retained_pixel_board_plane_camera_diagnostic_no_new_physical_or_transfer_authority",
+  "proof_class": "exact_named_geom_contact_phase_terminal_negative_and_prospective_metric_anchor_readiness_no_hardware_or_promotion_authority",
   "four_hour_hil_transaction": {
     "schema_version": "sim2claw.four_hour_hil_transaction.v1",
     "status": "four_physical_attempts_complete_two_admitted_two_rejected_simulator_candidate_rejected_offline_decomposition_frozen_closeout_verification_active",
@@ -1425,6 +1425,7 @@
   "autonomous_dev_loop": {
     "schema_version": "sim2claw.autonomous_dev_loop_state.v1",
     "status": "active",
+    "operational_scope": "historical_closed_by_terminal_packet",
     "plan": "docs/goals/AUTONOMOUS_DEV_LOOP_OPS_AND_ADVANCEMENT_PLAN.md",
     "plan_sha256": "cc480b36a9c490d91d2b504b585e29fb82a2510a1bbe05095c412ea0b65ea240",
     "goal_loop": "docs/autonomous-workflow/goal-loop-autonomous-dev-ops-advancement.md",

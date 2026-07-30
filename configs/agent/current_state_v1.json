@@ -1,0 +1,20 @@
+{
+  "schema_version": "sim2claw.agent_current_state.v1",
+  "project_state_path": "docs/autonomous-workflow/project_state.json",
+  "campaign_graph_path": "configs/sail/observable_registration_current_graph_v1.json",
+  "goal_path": "GOAL.md",
+  "goal_history_path": "docs/history/GOAL-through-or10-20260729.md",
+  "expected_branch": "main",
+  "expected_remote": "origin/main",
+  "require_remote_equality_at_boundary": true,
+  "max_context_bytes": 15360,
+  "max_goal_lines": 100,
+  "historical_control_planes": [
+    {
+      "name": "autonomous_dev_loop",
+      "project_state_key": "autonomous_dev_loop",
+      "operational_scope": "historical_closed_by_terminal_packet",
+      "closeout_state_path": "sail_executed_benchmark_c2_adapter.closed_d6_baseline"
+    }
+  ]
+}

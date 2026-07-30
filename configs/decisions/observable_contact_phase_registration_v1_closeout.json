@@ -1,0 +1,78 @@
+{
+  "schema_version": "sim2claw.observable_contact_phase_registration_closeout.v1",
+  "decision_id": "observable-contact-phase-registration-v1-closeout",
+  "card_id": "OR11",
+  "result": "FROZEN_RETAINED_CANDIDATE_MISSES_NAMED_CONTACT_PHASE_NO_DYNAMICS",
+  "proof_class": "exact_applied_state_named_geom_kinematic_contact_phase_gate_no_fit_no_dynamics",
+  "contract": {
+    "path": "configs/evaluations/observable_contact_phase_registration_v1.json",
+    "sha256": "a037dbc6002a8fbee64b8ac8e2d48aec8c78d2812ac7f68d6021fb9239dc96a5"
+  },
+  "implementation": [
+    {
+      "path": "src/sim2claw/exact_applied_state_schedule.py",
+      "sha256": "bf6bea048188b795c5a2245d0529ed7fe2eda7e56873370dbe1c8dc68c0971fe"
+    },
+    {
+      "path": "src/sim2claw/named_jaw_contact.py",
+      "sha256": "70a4578582df2e64385dbd40b48339275765fa9d7ef34800df606c64a40fabcf"
+    },
+    {
+      "path": "src/sim2claw/observable_contact_phase_registration.py",
+      "sha256": "fbeb2c55394623fccb82c740c1f6c651e369b3ff1071099b4a9fd37a27ca12f0"
+    }
+  ],
+  "generated_receipt": {
+    "path": "outputs/observable_contact_phase_registration_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "6b45e5a4b97ff650d46e460ea3844f869abc84f9adc500a7c7914cc8917aa08d",
+    "artifact_sha256": "b1c3b834c0acbbf581001849d311bf9eca4853b1dd306bf83b39be6f3d52a1be"
+  },
+  "generated_trace": {
+    "path": "outputs/observable_contact_phase_registration_v1/trace.json",
+    "git_ignored": true,
+    "sha256": "24ffd3090c8aa06814ea3871b6c8eab4827848a064ad62b33cd5669da3917051",
+    "row_count": 2315
+  },
+  "identity": {
+    "source_rows": 531,
+    "internal_applied_state_rows": 5294,
+    "timestep_seconds": 0.005,
+    "physics_integration_steps": 0,
+    "task_rows_used_for_fit": 0,
+    "task_outcome_used_for_fit": false,
+    "source_hashes_unchanged": true
+  },
+  "phase_result": {
+    "physical_candidate_contact_samples": [
+      228,
+      232
+    ],
+    "first_simulator_named_contact_sample": null,
+    "sample_232_fixed_jaw_gap_m": 0.06169299190969042,
+    "sample_232_moving_jaw_gap_m": 0.09737351550159229,
+    "sample_232_pawn_center_bracketed": false,
+    "phase_contact_gate_passed": false
+  },
+  "decision": {
+    "canonical_parameter_update_authorized": false,
+    "simulator_dynamic_replay_authorized": false,
+    "simulator_dynamic_replay_count": 0,
+    "global_mapping_approved": false,
+    "task_phase_error_used_as_update_vector": false,
+    "reason": "The exact named collision geometry remains separated by 61.693 mm on the fixed-jaw side and 97.374 mm on the moving-jaw side at physical enclosure sample 232. The retained static candidate is also non-promotable, so the frozen prerequisite correctly forbids a dynamic replay."
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "training": false,
+    "paid_compute": false,
+    "global_mapping_approved": false,
+    "transfer_claim": false
+  }
+}

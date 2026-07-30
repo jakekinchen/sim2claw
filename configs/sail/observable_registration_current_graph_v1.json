@@ -1,8 +1,10 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
-  "generated_at": "2026-07-29",
-  "status": "complete_or10b_terminal_cross_workspace_focal_disagreement_zero_data_lane_closed",
+  "generated_at": "2026-07-30",
+  "status": "complete_or11_exact_contact_phase_negative_blocked_external_metric_anchor",
+  "active_card": null,
+  "next_transition": "external_robot_base_to_board_metric_anchor_v1_or_post_service_or9_four_pose_no_contact_validation_then_one_frozen_candidate",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "f0fec25c4db802f600f37052fbbbed58d82d142c6e1c95469fbdf2c65bcdf18b",
+      "sha256": "64d2f860bd6fd7f161ffc7258bee5450521cdb68a1314c26940231ae34854dcd",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -155,6 +157,21 @@
       "path": "configs/decisions/observable_c922_retained_cross_pose_corroboration_v1_closeout.json",
       "sha256": "69e776797c1183bce710588a92f01c988209d3d1ff9fc8a5b03b028a16169874",
       "proof_class": "retrospective_retained_cross_workspace_focal_family_corroboration_terminal_disagreement"
+    },
+    "or11_factor_isolation": {
+      "path": "configs/decisions/observable_registration_factor_isolation_v1_closeout.json",
+      "sha256": "95faa8997f642d6930013cc83d6d7c6a02dddfb643ca457fb9f942b1993cdac0",
+      "proof_class": "retrospective_known_outcome_static_factor_isolation_diagnostic"
+    },
+    "or11_contact_phase": {
+      "path": "configs/decisions/observable_contact_phase_registration_v1_closeout.json",
+      "sha256": "76bdbd096119ba190ac8bdf6cee24b94bac027cb33819a4e20cb851a2177e086",
+      "proof_class": "exact_applied_state_named_geom_kinematic_contact_phase_gate_no_fit_no_dynamics"
+    },
+    "or11_metric_anchor": {
+      "path": "configs/decisions/robot_base_to_board_metric_anchor_readiness_v1_closeout.json",
+      "sha256": "e5f4c2333c31c99e035abe9e2e21191b125b9258e5a43ed21cb8469cc2faedad",
+      "proof_class": "prospective_no_contact_metric_board_to_base_measurement_readiness"
     }
   },
   "nodes": [
@@ -464,6 +481,49 @@
       "type": "external_boundary",
       "label": "Follower elbow ID-3 service",
       "status": "blocks_physical_motion_not_offline_observability"
+    },
+    {
+      "id": "counterexample:or11-factor-isolation",
+      "type": "counterexample",
+      "label": "Camera-frozen static registration factor isolation",
+      "status": "confounded_no_promotion",
+      "source_binding": "or11_factor_isolation",
+      "data": {
+        "task_rows_used_for_fit": 0,
+        "task_outcome_used_for_fit": false,
+        "canonical_parameter_update_authorized": false,
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "counterexample:or11-exact-contact-phase",
+      "type": "counterexample",
+      "label": "Exact named-geometry physical contact-phase gate",
+      "status": "terminal_negative_no_named_contact_no_dynamics",
+      "source_binding": "or11_contact_phase",
+      "data": {
+        "physical_enclosure_sample": 232,
+        "fixed_jaw_gap_m": 0.06169299190969042,
+        "moving_jaw_gap_m": 0.09737351550159229,
+        "pawn_center_bracketed": false,
+        "physics_integration_steps": 0,
+        "simulator_dynamic_replays": 0,
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "boundary:or11-independent-metric-anchor",
+      "type": "external_boundary",
+      "label": "Independent metric board-to-left-base anchor",
+      "status": "design_ready_zero_measurement_rows",
+      "source_binding": "or11_metric_anchor",
+      "data": {
+        "target_transform": "world_T_left_base",
+        "measurement_rows": 0,
+        "candidate_transform_produced": false,
+        "robot_motion_required": false,
+        "task_attempts": 0
+      }
     }
   ],
   "edges": [
@@ -576,8 +636,21 @@
       "source": "boundary:follower-elbow-service",
       "target": "workcell:current-so101-chessboard",
       "type": "constrained-by"
+    },
+    {
+      "source": "mapping:or2-robot-jaw-rigid",
+      "target": "counterexample:or11-factor-isolation",
+      "type": "evaluated-on"
+    },
+    {
+      "source": "counterexample:or11-factor-isolation",
+      "target": "counterexample:or11-exact-contact-phase",
+      "type": "predicts"
+    },
+    {
+      "source": "counterexample:or11-exact-contact-phase",
+      "target": "boundary:or11-independent-metric-anchor",
+      "type": "constrained-by"
     }
-  ],
-  "active_card": null,
-  "next_transition": "zero_new_data_camera_lane_closed_then_external_elbow_service_current_authority_fresh_torque_off_limits_and_cpu_fp64_route_review_then_or9_prospective_four_pose_validation"
+  ]
 }

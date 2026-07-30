@@ -14,12 +14,10 @@ Options:
   --max-cycles <n>      Maximum loop cycles. Default: 1 for --once, 10 for --loop.
   --model <name>        Pass a model to codex exec.
   --sandbox <mode>      Codex sandbox mode. Default: workspace-write.
-  --approval <policy>   Codex approval policy. Default: never.
   --allow-dirty         Allow starting from a dirty worktree.
-  --dangerous           Use --dangerously-bypass-approvals-and-sandbox.
   -h, --help            Show this help.
 
-The loop continues only when the Reviewer writes a latest decision of CONTINUE.
+The loop continues only when the read-only Reviewer returns CONTINUE.
 Any STOP, ESCALATE, REDIRECT, NUDGE, missing decision, command failure, or stop
 sentinel ends the loop.
 EOF
@@ -31,9 +29,7 @@ INTERVAL="60"
 MAX_CYCLES=""
 MODEL=""
 SANDBOX="workspace-write"
-APPROVAL="never"
 ALLOW_DIRTY=0
-DANGEROUS=0
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -69,16 +65,8 @@ while [ "$#" -gt 0 ]; do
       SANDBOX="${2:?--sandbox requires a value}"
       shift 2
       ;;
-    --approval)
-      APPROVAL="${2:?--approval requires a value}"
-      shift 2
-      ;;
     --allow-dirty)
       ALLOW_DIRTY=1
-      shift
-      ;;
-    --dangerous)
-      DANGEROUS=1
       shift
       ;;
     -h|--help)
@@ -117,11 +105,6 @@ if [ ! -f GOAL.md ]; then
   exit 1
 fi
 
-if [ ! -f executor-reviewer-pair-programming.md ]; then
-  printf 'executor-reviewer-pair-programming.md missing. Run bootstrap before starting the loop.\n' >&2
-  exit 1
-fi
-
 if ! command -v codex >/dev/null 2>&1 && [ "$MODE" != "dry-run" ]; then
   printf 'codex CLI not found on PATH.\n' >&2
   exit 1
@@ -142,22 +125,17 @@ has_stop_sentinel() {
   grep -q '<stop-orchestrator/>' GOAL.md 2>/dev/null
 }
 
-latest_file() {
-  dir="$1"
-  if [ -d "$dir" ]; then
-    find "$dir" -maxdepth 1 -type f ! -name '.gitkeep' -print | sort | tail -1
-  fi
-}
-
 latest_reviewer_decision() {
-  file="$(latest_file docs/reviewer-messages || true)"
+  file="$(
+    find "$runtime_dir" -maxdepth 1 -type f \
+      -name '*-reviewer-last-message.md' -print | sort | tail -1
+  )"
   if [ -z "${file:-}" ]; then
     return 1
   fi
-  sed -n '/^## Decision/,/^## /p' "$file" |
-    grep -E '^[[:space:]]*`(CONTINUE|NUDGE|REDIRECT|STOP|ESCALATE)`[[:space:]]*$' |
+  grep -E '^[[:space:]]*(CONTINUE|NUDGE|REDIRECT|STOP|ESCALATE)[[:space:]]*$' "$file" |
     head -1 |
-    tr -d '`[:space:]'
+    tr -d '[:space:]'
 }
 
 ensure_clean_start() {
@@ -172,21 +150,21 @@ ensure_clean_start() {
 }
 
 codex_base_args() {
+  role="$1"
   printf '%s\n' "exec"
   printf '%s\n' "--json"
+  printf '%s\n' "--ephemeral"
   printf '%s\n' "-C"
   printf '%s\n' "$ROOT"
   if [ -n "$MODEL" ]; then
     printf '%s\n' "-m"
     printf '%s\n' "$MODEL"
   fi
-  if [ "$DANGEROUS" -eq 1 ]; then
-    printf '%s\n' "--dangerously-bypass-approvals-and-sandbox"
+  printf '%s\n' "-s"
+  if [ "$role" = "reviewer" ]; then
+    printf '%s\n' "read-only"
   else
-    printf '%s\n' "-s"
     printf '%s\n' "$SANDBOX"
-    printf '%s\n' "-a"
-    printf '%s\n' "$APPROVAL"
   fi
 }
 
@@ -204,7 +182,10 @@ run_role() {
     return
   fi
 
-  mapfile -t args < <(codex_base_args)
+  args=()
+  while IFS= read -r argument; do
+    args+=("$argument")
+  done < <(codex_base_args "$role")
   args+=("-o" "$last_msg" "-")
 
   printf '\n== Running %s ==\n' "$role"
@@ -218,55 +199,53 @@ run_role() {
 
 write_executor_prompt() {
   out="$1"
-  cat > "$out" <<'EOF'
+  context_path="$2"
+  cat > "$out" <<EOF
 You are the Executor in a repo-local autonomous workflow.
 
-Read and follow:
-- executor-reviewer-pair-programming.md
-- GOAL.md
-- docs/autonomous-workflow/
-- latest docs/briefs/NNN-*.md
+Read AGENTS.md and the exact compiled role packet at:
+$context_path
 
-Your job:
-1. If GOAL.md contains <stop-orchestrator/>, do not implement. Report that execution is stopped.
-2. Otherwise implement exactly one smallest useful slice from the active brief.
-3. Run focused and broad validation appropriate to the slice.
-4. Prove reachability from a real product path.
-5. Write docs/session-logs/NNN-executor-*.md with files changed, validation, reachability, evidence, flags for Reviewer, and next suggested slice.
-6. Commit only scoped files with explicit git add paths. Do not push.
-
-If blocked, write a session log explaining the blocker category, evidence, and smallest next action. Do not wait for user input inside this unattended turn.
+Treat that packet as the complete task and authority boundary. Do not discover
+an active brief by scanning directories. Change only declared write_paths, run
+only declared validation commands plus strictly necessary focused checks, and
+do not push. If the packet and repository disagree, stop and report the drift.
 EOF
 }
 
 write_reviewer_prompt() {
   out="$1"
-  cat > "$out" <<'EOF'
+  context_path="$2"
+  cat > "$out" <<EOF
 You are the Reviewer / Planner in a repo-local autonomous workflow.
 
-Read and follow:
-- executor-reviewer-pair-programming.md
-- GOAL.md
-- docs/autonomous-workflow/
-- latest docs/briefs/NNN-*.md
-- latest docs/session-logs/NNN-executor-*.md
-- latest commit and git diff/status
+Read AGENTS.md and the exact compiled role packet at:
+$context_path
 
-Your job:
-1. Audit the Executor's latest slice from repo evidence.
-2. Choose exactly one decision: CONTINUE, NUDGE, REDIRECT, STOP, or ESCALATE.
-3. Include an evidence anchor for any NUDGE, REDIRECT, STOP, or ESCALATE.
-4. Write docs/reviewer-messages/NNN-*.md.
-5. If the decision is CONTINUE, write the next docs/briefs/NNN-*.md and update GOAL.md Current Slice if needed.
-6. If the decision is STOP, add <stop-orchestrator/> near the top of GOAL.md.
-7. Commit only scoped reviewer/planning docs with an appropriate docs: commit. Do not push.
-
-Do not write product code. If a human decision is required, choose ESCALATE and make the reason concrete.
+Audit the latest commit and working tree against the packet. This is a
+read-only role: do not edit or commit. End with exactly one line containing
+CONTINUE, NUDGE, REDIRECT, STOP, or ESCALATE, followed by concise evidence.
 EOF
 }
 
 if [ "$MODE" != "dry-run" ]; then
   ensure_clean_start
+fi
+
+context_dir="$ROOT/outputs/agent-context"
+executor_context="$context_dir/current-executor.json"
+reviewer_context="$context_dir/current-reviewer.json"
+uv run --locked sim2claw check --profile agent --root "$ROOT" >/dev/null
+uv run --locked sim2claw agent-context \
+  --root "$ROOT" --role executor --output "$executor_context" >/dev/null
+uv run --locked sim2claw agent-context \
+  --root "$ROOT" --role reviewer --output "$reviewer_context" >/dev/null
+
+if ! uv run --locked python -c \
+  'import json,sys; raise SystemExit(0 if json.load(open(sys.argv[1]))["execution_admitted"] else 1)' \
+  "$executor_context"; then
+  printf 'No Executor turn is admitted by %s; stopping cleanly.\n' "$executor_context"
+  exit 0
 fi
 
 cycle=1
@@ -281,10 +260,13 @@ while [ "$cycle" -le "$MAX_CYCLES" ]; do
   prompt_dir="$(mktemp -d -t autonomous-workflow-prompts-XXXXXX)"
   executor_prompt="$prompt_dir/executor.md"
   reviewer_prompt="$prompt_dir/reviewer.md"
-  write_executor_prompt "$executor_prompt"
-  write_reviewer_prompt "$reviewer_prompt"
+  write_executor_prompt "$executor_prompt" "$executor_context"
+  write_reviewer_prompt "$reviewer_prompt" "$reviewer_context"
 
   run_role "executor" "$executor_prompt"
+  uv run --locked sim2claw check --profile agent --root "$ROOT" >/dev/null
+  uv run --locked sim2claw agent-context \
+    --root "$ROOT" --role reviewer --output "$reviewer_context" >/dev/null
   run_role "reviewer" "$reviewer_prompt"
 
   rm -rf "$prompt_dir"

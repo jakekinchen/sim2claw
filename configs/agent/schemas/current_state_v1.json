@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sim2claw.local/schemas/agent-current-state-v1.json",
+  "title": "Sim2Claw agent current-state source map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_state_path",
+    "campaign_graph_path",
+    "goal_path",
+    "goal_history_path",
+    "expected_branch",
+    "expected_remote",
+    "require_remote_equality_at_boundary",
+    "max_context_bytes",
+    "max_goal_lines",
+    "historical_control_planes"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "sim2claw.agent_current_state.v1"
+    },
+    "project_state_path": {
+      "$ref": "#/$defs/repository_path"
+    },
+    "campaign_graph_path": {
+      "$ref": "#/$defs/repository_path"
+    },
+    "goal_path": {
+      "$ref": "#/$defs/repository_path"
+    },
+    "goal_history_path": {
+      "$ref": "#/$defs/repository_path"
+    },
+    "expected_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_remote": {
+      "type": "string",
+      "minLength": 1
+    },
+    "require_remote_equality_at_boundary": {
+      "type": "boolean"
+    },
+    "max_context_bytes": {
+      "type": "integer",
+      "minimum": 4096,
+      "maximum": 32768
+    },
+    "max_goal_lines": {
+      "type": "integer",
+      "minimum": 20,
+      "maximum": 200
+    },
+    "historical_control_planes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "project_state_key",
+          "operational_scope",
+          "closeout_state_path"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "project_state_key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operational_scope": {
+            "const": "historical_closed_by_terminal_packet"
+          },
+          "closeout_state_path": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.-]+$"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "repository_path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    }
+  }
+}

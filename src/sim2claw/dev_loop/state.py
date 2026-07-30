@@ -22,6 +22,7 @@ AUDIT_SCHEMA = "sim2claw.autonomous_dev_loop_authority_audit.v1"
 LEDGER_START = "<!-- autonomous-dev-loop-current:start -->"
 LEDGER_END = "<!-- autonomous-dev-loop-current:end -->"
 TERMINAL_AUTHORITY_MODE = "generated_post_push_merge_readiness_packet"
+HISTORICAL_OPERATIONAL_SCOPE = "historical_closed_by_terminal_packet"
 FINAL_REQUIRED_TEST_TIERS = (
     "final_focused",
     "sail_fast_contract",
@@ -254,6 +255,93 @@ def _check(name: str, passed: bool, detail: str) -> dict[str, Any]:
     return {"name": name, "passed": bool(passed), "detail": detail}
 
 
+def _audit_historical_dev_loop(
+    root: Path,
+    *,
+    project_state: Mapping[str, Any],
+    project_state_path: Path,
+) -> dict[str, Any]:
+    dev_state = project_state["autonomous_dev_loop"]
+    closeout = (
+        project_state.get("sail_executed_benchmark_c2_adapter", {})
+        .get("closed_d6_baseline")
+    )
+    checks = [
+        _check(
+            "canonical_state",
+            dev_state.get("schema_version") == STATE_SCHEMA,
+            f"schema={dev_state.get('schema_version')}",
+        ),
+        _check(
+            "operational_scope",
+            dev_state.get("operational_scope") == HISTORICAL_OPERATIONAL_SCOPE,
+            str(dev_state.get("operational_scope")),
+        ),
+    ]
+    closeout_ok = (
+        isinstance(closeout, dict)
+        and closeout.get("terminal_authority") is True
+        and all(
+            isinstance(closeout.get(name), str) and bool(closeout[name])
+            for name in ("path", "file_sha256", "packet_digest", "head")
+        )
+    )
+    checks.append(
+        _check(
+            "terminal_closeout_reference",
+            closeout_ok,
+            "committed D6 terminal packet identity is complete",
+        )
+    )
+    authority = dev_state.get("authority")
+    authority_ok = isinstance(authority, dict) and all(
+        authority.get(name) is False for name in PROHIBITED_TRUE_AUTHORITIES
+    )
+    checks.append(
+        _check(
+            "historical_authority",
+            authority_ok,
+            "historical external authority remains false",
+        )
+    )
+    locally_verified = False
+    if closeout_ok:
+        closeout_path = _repo_path(root, closeout["path"], label="D6 closeout")
+        if closeout_path.is_file():
+            locally_verified = sha256_file(closeout_path) == closeout["file_sha256"]
+            checks.append(
+                _check(
+                    "terminal_closeout_local_hash",
+                    locally_verified,
+                    str(closeout["file_sha256"]),
+                )
+            )
+    passed = all(row["passed"] for row in checks)
+    unsigned = {
+        "schema_version": AUDIT_SCHEMA,
+        "status": "historical_pass" if passed else "fail",
+        "proof_class": "historical_terminal_authority_reference",
+        "active_milestone": None,
+        "operational_scope": HISTORICAL_OPERATIONAL_SCOPE,
+        "project_state_sha256": sha256_file(project_state_path),
+        "project_state_digest": canonical_digest(project_state),
+        "git_identity": None,
+        "checks": checks,
+        "terminal_packet": (
+            {
+                "path": closeout["path"],
+                "file_sha256": closeout["file_sha256"],
+                "packet_digest": closeout["packet_digest"],
+                "head": closeout["head"],
+                "locally_verified": locally_verified,
+            }
+            if closeout_ok
+            else None
+        ),
+    }
+    return {**unsigned, "audit_digest": canonical_digest(unsigned)}
+
+
 def audit_dev_loop_authority(
     repo_root: Path,
     *,
@@ -263,6 +351,17 @@ def audit_dev_loop_authority(
     root = repo_root.resolve()
     project_state_path = root / "docs/autonomous-workflow/project_state.json"
     project_state = _load_object(project_state_path, label="project state")
+    dev_state_candidate = project_state.get("autonomous_dev_loop")
+    if (
+        isinstance(dev_state_candidate, dict)
+        and dev_state_candidate.get("operational_scope")
+        == HISTORICAL_OPERATIONAL_SCOPE
+    ):
+        return _audit_historical_dev_loop(
+            root,
+            project_state=project_state,
+            project_state_path=project_state_path,
+        )
     project_state = validate_dev_loop_state(project_state, repo_root=root)
     dev_state = project_state["autonomous_dev_loop"]
     active = _active_milestone(dev_state)
@@ -381,6 +480,7 @@ __all__ = [
     "LEDGER_START",
     "FINAL_REMAINING_GATES",
     "FINAL_REQUIRED_TEST_TIERS",
+    "HISTORICAL_OPERATIONAL_SCOPE",
     "STATE_SCHEMA",
     "TERMINAL_AUTHORITY_MODE",
     "audit_dev_loop_authority",

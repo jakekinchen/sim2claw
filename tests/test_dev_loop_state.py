@@ -10,6 +10,7 @@ from sim2claw.dev_loop.state import (
     DevLoopStateError,
     FINAL_REMAINING_GATES,
     FINAL_REQUIRED_TEST_TIERS,
+    HISTORICAL_OPERATIONAL_SCOPE,
     TERMINAL_AUTHORITY_MODE,
     audit_dev_loop_authority,
     render_current_ledger_block,
@@ -106,6 +107,30 @@ def test_live_authority_surfaces_pass_with_exact_rendered_state(tmp_path: Path) 
     assert report["status"] == "pass"
     assert all(row["passed"] for row in report["checks"])
     assert report["authority"]["physical_capture"] is False
+
+
+def test_historical_control_plane_uses_committed_terminal_packet(
+    tmp_path: Path,
+) -> None:
+    root, state = _repo(tmp_path)
+    state["current_milestone"] = "OR10_COMPLETE_EXTERNAL_BOUNDARY"
+    state["autonomous_dev_loop"]["operational_scope"] = HISTORICAL_OPERATIONAL_SCOPE
+    state["sail_executed_benchmark_c2_adapter"] = {
+        "closed_d6_baseline": {
+            "path": "outputs/dev-loop/final/merge-readiness-packet.json",
+            "file_sha256": "1" * 64,
+            "packet_digest": "2" * 64,
+            "head": "3" * 40,
+            "terminal_authority": True,
+        }
+    }
+    (root / "docs/autonomous-workflow/project_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    report = audit_dev_loop_authority(root, git_snapshot=_snapshot())
+    assert report["status"] == "historical_pass"
+    assert report["active_milestone"] is None
+    assert report["terminal_packet"]["locally_verified"] is False
 
 
 def test_plan_hash_and_authority_widening_fail_closed(tmp_path: Path) -> None:

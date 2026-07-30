@@ -43,6 +43,34 @@ def build_parser() -> argparse.ArgumentParser:
     doctor.add_argument("--render-probe", action="store_true")
     doctor.add_argument("--json", action="store_true", dest="as_json")
 
+    agent_context = subparsers.add_parser(
+        "agent-context",
+        help="compile bounded, role-specific context from canonical agent state",
+    )
+    agent_context.add_argument("--root", type=Path, default=REPO_ROOT)
+    agent_context.add_argument(
+        "--role",
+        choices=("executor", "reviewer", "manager"),
+        required=True,
+    )
+    agent_context.add_argument("--output", type=Path)
+
+    agent_goal = subparsers.add_parser(
+        "agent-goal",
+        help="render or check the concise GOAL.md current-state projection",
+    )
+    agent_goal.add_argument("--root", type=Path, default=REPO_ROOT)
+    agent_goal_mode = agent_goal.add_mutually_exclusive_group(required=True)
+    agent_goal_mode.add_argument("--check", action="store_true")
+    agent_goal_mode.add_argument("--write", action="store_true")
+
+    check = subparsers.add_parser(
+        "check",
+        help="run a named repository validation profile",
+    )
+    check.add_argument("--profile", choices=("agent",), required=True)
+    check.add_argument("--root", type=Path, default=REPO_ROOT)
+
     dev_loop_audit = subparsers.add_parser(
         "dev-loop-audit",
         help="verify canonical autonomous-development authority and drift",
@@ -1198,6 +1226,52 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = run_doctor(args.target, args.render_probe)
         print(doctor_json(report) if args.as_json else format_doctor(report))
         return 0 if report["passed"] else 1
+    if args.command in {"agent-context", "agent-goal", "check"}:
+        from .agent_context import (
+            AgentContextError,
+            check_agent_workspace,
+            compile_agent_context,
+            render_goal,
+            write_context,
+        )
+
+        try:
+            root = args.root.resolve()
+            if args.command == "agent-context":
+                report = compile_agent_context(root, role=args.role)
+                if args.output is not None:
+                    write_context(args.output, report)
+            elif args.command == "agent-goal":
+                rendered = render_goal(root)
+                goal_path = root / "GOAL.md"
+                current = goal_path.read_text(encoding="utf-8")
+                if args.write:
+                    goal_path.write_text(rendered, encoding="utf-8")
+                report = {
+                    "schema_version": "sim2claw.agent_goal_projection.v1",
+                    "status": (
+                        "written"
+                        if args.write
+                        else ("pass" if current == rendered else "fail")
+                    ),
+                    "path": "GOAL.md",
+                    "lines": len(rendered.splitlines()),
+                }
+            else:
+                report = check_agent_workspace(root)
+        except AgentContextError as error:
+            print(
+                json.dumps(
+                    {"status": "fail", "error": str(error)},
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 1
+        print(json.dumps(report, indent=2, sort_keys=True))
+        if args.command == "agent-goal" and not args.write:
+            return 0 if report["status"] == "pass" else 1
+        return 0
     if args.command == "dev-loop-render-ledger":
         from .dev_loop.state import update_current_ledger_block
 
@@ -1227,7 +1301,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.output is not None:
             atomic_write_json(args.output, report)
         print(json.dumps(report, indent=2, sort_keys=True))
-        return 0 if report["status"] == "pass" else 1
+        return 0 if report["status"] in {"pass", "historical_pass"} else 1
     if args.command == "dev-loop-benchmark":
         from .dev_loop.bench import DevLoopBenchmarkError, run_dev_loop_benchmark
 

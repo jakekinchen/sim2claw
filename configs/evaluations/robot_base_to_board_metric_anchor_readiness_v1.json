@@ -1,0 +1,58 @@
+{
+  "schema_version": "sim2claw.robot_base_to_board_metric_anchor_readiness_contract.v1",
+  "experiment_id": "robot-base-to-board-metric-anchor-readiness-v1",
+  "frozen_date": "2026-07-30",
+  "proof_class": "prospective_no_contact_metric_board_to_base_measurement_readiness",
+  "target_transform": {
+    "name": "world_T_left_base",
+    "world_frame": "accepted_board_task_world",
+    "base_frame": "mujoco_left_base_origin_and_axes",
+    "application_site": "left_robot_mount",
+    "candidate_family": "robot_base_se3_only"
+  },
+  "measurement": {
+    "measurement_id": "robot_base_to_board_metric_anchor_v1",
+    "expected_path": "outputs/robot_base_to_board_metric_anchor_v1/measurement.json",
+    "minimum_non_collinear_points": 3,
+    "noncoplanar_fixture_preferred": true,
+    "known_base_to_fixture_transform_required": true,
+    "model_base_origin_and_axes_definition_required": true,
+    "metric_units_required": true,
+    "measurement_covariance_required": true,
+    "repeat_observations_required": true,
+    "task_episode_allowed": false,
+    "pawn_contact_allowed": false,
+    "robot_motion_required": false
+  },
+  "admission": {
+    "maximum_translation_uncertainty_m": 0.003,
+    "maximum_rotation_uncertainty_degrees": 0.5,
+    "one_candidate_change_only": true,
+    "task_outcome_allowed_for_selection": false,
+    "static_no_refit_validation_required": true,
+    "exact_contact_phase_gate_required": true
+  },
+  "fallback": {
+    "if_metric_anchor_passes_but_contact_phase_fails": "shoulder_pan_lift_zero_offset_family",
+    "minimum_new_validation_pose_count": 4,
+    "minimum_shoulder_pan_span_degrees": 10.0,
+    "minimum_shoulder_lift_span_degrees": 3.0,
+    "both_distal_jaw_endpoints_required": true,
+    "board_lattice_required": true,
+    "d405_depth_required": false,
+    "new_d1_to_d2_episode_required": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_dynamic_replay": false,
+    "simulator_promotion": false,
+    "training": false,
+    "paid_compute": false,
+    "transfer_claim": false
+  }
+}
