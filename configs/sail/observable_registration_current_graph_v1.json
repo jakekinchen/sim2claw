@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or7b_spatial_mechanism_declaration",
+  "status": "active_or8_publication_and_closeout",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "0e862bb899eab501e07e29bb003d0b8e62581ec6fa1099fe1ff120ec4767e9b0",
+      "sha256": "83349073f9e8ab926903c7049ee9b021ff6c878908f3edd1fb831fad6967d1fb",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -115,6 +115,11 @@
       "path": "configs/decisions/observable_jaw_pawn_geometric_gap_v1_closeout.json",
       "sha256": "a8f4f9324ad97554efc73915872fd8ba153a33e8b5afabea30bbcf439f2ee88d",
       "proof_class": "exact_applied_state_kinematic_signed_gap_diagnostic_no_fit_no_dynamics"
+    },
+    "or7b": {
+      "path": "configs/decisions/observable_body_joint_zero_offset_mechanism_v1_closeout.json",
+      "sha256": "f0d7d2b7966b8183356a91f121c70aaa2c613b89ade18a5707338076688f50f7",
+      "proof_class": "fit_only_static_body_joint_zero_offset_identifiability_and_unopened_validation_admissibility_terminal_negative"
     }
   },
   "nodes": [
@@ -128,7 +133,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_or7b",
+      "status": "active_or8",
       "source_binding": "queue"
     },
     {
@@ -261,7 +266,26 @@
       "id": "mechanism:or7b-body-joint-zero-offset-registration",
       "type": "mechanism",
       "label": "Bounded body-joint zero-offset registration",
-      "status": "active_predeclaration_validation_unopened",
+      "status": "terminal_negative_fit_identifiable_validation_zero_of_four",
+      "source_binding": "or7b",
+      "data": {
+        "parameter_rank": 2,
+        "jacobian_singular_values_px_per_rad": [
+          842.7001096301661,
+          589.9316392298832
+        ],
+        "jacobian_condition_number": 1.4284707813438442,
+        "admissible_validation_pose_count": 0,
+        "minimum_required_validation_pose_count": 4,
+        "fit_parameter_values_produced": false,
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "session:or8-publication-closeout",
+      "type": "session",
+      "label": "Observable registration publication and evidence-limited closeout",
+      "status": "active",
       "source_binding": "queue"
     },
     {
@@ -402,6 +426,11 @@
       "type": "predicts"
     },
     {
+      "source": "mechanism:or7b-body-joint-zero-offset-registration",
+      "target": "session:or8-publication-closeout",
+      "type": "admitted-to"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -417,6 +446,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR7B",
-  "next_transition": "or7b_freeze_smallest_identifiable_body_joint_zero_offset_family_and_unopened_retained_validation_cohort"
+  "active_card": "OR8",
+  "next_transition": "or8_publish_evidence_chain_and_exact_post_service_no_contact_validation_requirement"
 }

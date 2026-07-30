@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR7B SPATIAL MECHANISM DECLARATION`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR8 PUBLICATION AND CLOSEOUT`
 
 ## Active long-horizon alignment successor
 
@@ -40,6 +40,16 @@ to prospectively freeze the smallest identifiable body-joint zero-offset
 registration and a previously unopened retained validation cohort before any
 new fit or annotation. Physical motion remains closed at the follower-elbow
 service boundary.
+
+OR7B has now audited that next family without fitting it. The bounded
+shoulder-pan/shoulder-lift zero-offset family is locally identifiable on the
+six open static poses (rank `2`, condition `1.428`, singular values
+`842.700/589.932 px/rad`), but there are `0/4` admissible untouched validation
+poses: earlier heldouts are reuse-forbidden, v4 has already been opened, and
+the task episode is sealed from calibration. No offset values were produced,
+no validation image was opened, and no successor replay is authorized. OR8 is
+active to publish this exact boundary and a post-service four-pose no-contact
+validation requirement rather than overfit the retained task result.
 
 ## Latest realized-action outcome result
 

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `ACTIVE_OR7B_SPATIAL_MECHANISM_DECLARATION`
+Status: `ACTIVE_OR8_PUBLICATION_AND_CLOSEOUT`
 
 Created: `2026-07-29`
 
@@ -91,10 +91,10 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR6 | `PASS` | Fit and validate the declared mechanism without touching C6 or held-out outcomes. | Fit improvement and untouched validation pass; camera, action bytes, actuator plant, and unrelated mechanisms remain unchanged. Reject non-identifiable or outcome-tuned candidates. | Artifact `a9347475ae827fc650430ce8c728a59ab16bd3bd4acc5e53b5284b7ed33c8565`; offset `0.049482 rad`; aperture RMS `21.259→1.848 px` fit and `24.045→3.828 px` no-refit validation; all gates pass; global mapping false. |
 | OR7 | `TERMINAL_NEGATIVE` | Freeze and run one successor exact-action replay. | New experiment ID; exact C6 gateway-sent bytes and row order; frozen initialization and evaluator; no later observations; natural contact only. Report selected-jaw contact, first object motion, progress, final pose, collisions, and change versus immutable C6. | Artifact `600dd7973b32dd92cc4612762f44f80843572ea51457beb4a92380e554c4baeb`; exact pawn trace remains C6: zero jaw contact, motion `386`, launch `388`, final D2 error `69.148 mm`. Aperture alone is rejected as the sufficient task mechanism. |
 | OR7A | `PASS` | Localize the signed jaw-to-pawn geometric gap over physical enclosure samples `228–260`. | Kinematic forward evaluation only; exact applied states and initial pawn; named collision geoms; C6 and OR6 mappings compared without fit or dynamics. | Artifact `f9d384dbde3e6a4df2c58304a7b75e2d9c4a6a77df1a2b06f8060563ca70a4c6`; minimum fixed-jaw gap `57.204 mm`; at physical enclosure sample `232`, gap `61.694 mm` and candidate midpoint-to-pawn vector `[+72.970,-24.138,-93.272] mm`; aperture mapping changes fixed-jaw gap by `0 mm`. |
-| OR7B | `ACTIVE` | Declare one task-bounded jaw-center/global wrist spatial mechanism, if OR7A and nonsealed static evidence identify it. | One mechanism; fit data and a fresh retained validation image cohort freeze before annotation/open; contact/task outcome excluded. | Frozen identifiable contract or terminal negative. |
-| OR7C | `PENDING` | Fit and no-refit validate the spatial mechanism. | Static fit and newly opened validation pass; aperture remains fixed; camera, action, plant, contact, and object remain unchanged. | Versioned candidate or terminal negative. |
-| OR7D | `PENDING` | Run another exact-action replay only if OR7C passes prospectively frozen static gates. | New write-once experiment; exact C6 identity; one declared spatial change on top of OR6; natural contact only. | Immutable result compared with C6 and OR7. |
-| OR8 | `PENDING` | Publish and close the evidence chain. | Studio exposes physical/simulator camera alignment, tracks, missingness, residuals, first divergence, mechanism change, C6-versus-successor outcome, proof limits, and mobile/desktop acceptance. Focused and broad relevant tests pass; queue/graph/GOAL agree; `HEAD == origin/main`; worktree clean. | Closeout commits, screenshots or acceptance receipt, exact ledger, and next physical/service boundary if any. |
+| OR7B | `TERMINAL_NEGATIVE` | Declare one task-bounded jaw-center/global wrist spatial mechanism, if OR7A and nonsealed static evidence identify it. | One mechanism; fit data and a fresh retained validation image cohort freeze before annotation/open; contact/task outcome excluded. | Artifact `dcb88a286a2a8709fa829903df6167950f785869805fd438470fc3dabcf1586d`; pan/lift zero-offset family is fit-identifiable at rank `2`, condition `1.428`, singular values `[842.700,589.932] px/rad`, but admissible untouched validation is `0/4`; no parameters fit and no images opened. |
+| OR7C | `NOT_RUN_PREREQUISITE_FAILED` | Fit and no-refit validate the spatial mechanism. | Static fit and newly opened validation pass; aperture remains fixed; camera, action, plant, contact, and object remain unchanged. | OR7B has no admissible untouched validation cohort; fitting is prohibited. |
+| OR7D | `NOT_RUN_PREREQUISITE_FAILED` | Run another exact-action replay only if OR7C passes prospectively frozen static gates. | New write-once experiment; exact C6 identity; one declared spatial change on top of OR6; natural contact only. | OR7C did not run; no spatial candidate or replay authority exists. |
+| OR8 | `ACTIVE` | Publish and close the evidence chain. | Studio exposes physical/simulator camera alignment, tracks, missingness, residuals, first divergence, mechanism change, C6-versus-successor outcome, proof limits, and mobile/desktop acceptance. Focused and broad relevant tests pass; queue/graph/GOAL agree; `HEAD == origin/main`; worktree clean. | Closeout commits, screenshots or acceptance receipt, exact ledger, and next physical/service boundary if any. |
 
 ## Milestone invariants
 
@@ -151,11 +151,11 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: ACTIVE_OR7B_SPATIAL_MECHANISM_DECLARATION
-Active card: OR7B
-Completed: immutable predecessor C0-C9; OR0-OR7A; camera endpoint REAL-to-SIM 1/1
-Evidence: OR7A artifact f9d384dbde3e6a4df2c58304a7b75e2d9c4a6a77df1a2b06f8060563ca70a4c6; fixed-jaw gap remains 61.694 mm at physical enclosure sample 232 and aperture changes it by 0 mm
-Remaining: OR7B-OR7D; OR8
+Current state: ACTIVE_OR8_PUBLICATION_AND_CLOSEOUT
+Active card: OR8
+Completed: immutable predecessor C0-C9; OR0-OR7B; OR7C/OR7D not run because their prerequisite failed; camera endpoint REAL-to-SIM 1/1
+Evidence: OR7B artifact dcb88a286a2a8709fa829903df6167950f785869805fd438470fc3dabcf1586d; pan/lift family is fit-identifiable but untouched validation availability is 0/4, so no spatial values were fit and no replay ran
+Remaining: OR8
 Physical boundary: follower elbow service; hardware authority false
-Next step: freeze a bounded, identifiable body-joint zero-offset family plus fit and previously unopened retained validation cohorts before any new annotation or fit
+Next step: publish the aligned evidence ladder, residual timeline, immutable negatives, and exact post-service no-contact validation requirement in Studio and tracked closeouts
 ```

@@ -1,0 +1,86 @@
+{
+  "schema_version": "sim2claw.observable_body_joint_zero_offset_mechanism_closeout.v1",
+  "decision_id": "observable-body-joint-zero-offset-mechanism-v1-closeout",
+  "result": "FIT_IDENTIFIABLE_BUT_NO_ADMISSIBLE_UNOPENED_VALIDATION_COHORT",
+  "proof_class": "fit_only_static_body_joint_zero_offset_identifiability_and_unopened_validation_admissibility_terminal_negative",
+  "freeze_commit": "fa2390d",
+  "contract": {
+    "path": "configs/evaluations/observable_body_joint_zero_offset_mechanism_v1.json",
+    "sha256": "cfa41c6d75e8595d7b53451f031ce9fc854708dcb8590931a148481fa6a1b0fb"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_body_joint_zero_offset_mechanism.py",
+    "sha256": "57d6cf147abbaf47dda3d0a0e01dee389472bd8ac02e2cae7abc9cd2f41aa3e3"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_body_joint_zero_offset_mechanism_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "5d903afce0d1e1ac76e976762bcf94e1306fd3d45ce545854bf4c828205891b5",
+    "artifact_sha256": "dcb88a286a2a8709fa829903df6167950f785869805fd438470fc3dabcf1586d"
+  },
+  "declared_family": {
+    "parameters": [
+      "shoulder_pan_zero_offset_rad",
+      "shoulder_lift_zero_offset_rad"
+    ],
+    "bound_degrees": 10.0,
+    "gripper_zero_offset_fixed_rad": 0.04948239306868429,
+    "fit_parameter_values_produced": false
+  },
+  "fit_identifiability": {
+    "accepted": true,
+    "pose_count": 6,
+    "shoulder_pan_span_degrees": 26.109890109890102,
+    "shoulder_lift_span_degrees": 4.219780219780219,
+    "jacobian_rank": 2,
+    "jacobian_singular_values_px_per_rad": [
+      842.7001096301661,
+      589.9316392298832
+    ],
+    "jacobian_condition_number": 1.4284707813438442,
+    "visual_annotation_values_opened": false
+  },
+  "validation_reservation": {
+    "accepted": false,
+    "minimum_required_pose_count": 4,
+    "admissible_pose_count": 0,
+    "images_opened": false,
+    "annotation_values_opened": false,
+    "excluded_cohort_count": 6,
+    "exclusion_reasons": [
+      "recapture_fallback_same_heldout_reuse_forbidden",
+      "successor_contract_forbids_v3_image_or_heldout_reuse_for_admission",
+      "already_opened_once_and_outcome_known",
+      "fit_only_scorability_outcome_known_and_five_of_six_lack_both_distal_endpoints",
+      "task_contact_and_outcome_excluded_from_spatial_parameter_fit_or_validation"
+    ]
+  },
+  "next_evidence_requirement": {
+    "physical_task_attempt": false,
+    "minimum_new_no_contact_static_pose_count": 4,
+    "minimum_shoulder_pan_span_degrees": 10.0,
+    "minimum_shoulder_lift_span_degrees": 3.0,
+    "same_fixed_c922_mount_and_mode_required": true,
+    "both_distal_jaw_endpoints_visible_required": true,
+    "fit_candidate_frozen_before_single_validation_open_required": true,
+    "hardware_service_and_fresh_authority_required": true
+  },
+  "proof_boundaries": {
+    "fit_identifiability_approves_parameter_fit": false,
+    "global_mapping_approved": false,
+    "contact_proved": false,
+    "task_outcome_proved": false,
+    "transfer_proved": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "paid_compute": false
+  },
+  "next_card": "OR8"
+}

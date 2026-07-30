@@ -99,12 +99,12 @@ after repository evidence and bounded alternatives have been exhausted.
 
 ```text
 Current state: ACTIVE
-Active card: OR7B
-Completed: predecessor evidence; OR0-OR7A
-Evidence: OR7A artifact f9d384dbde3e6a4df2c58304a7b75e2d9c4a6a77df1a2b06f8060563ca70a4c6; fixed-jaw gap remains 61.694 mm at physical enclosure sample 232 and aperture changes it by 0 mm
-Remaining: OR7B-OR7D; OR8
+Active card: OR8
+Completed: predecessor evidence; OR0-OR7B; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
+Evidence: OR7B artifact dcb88a286a2a8709fa829903df6167950f785869805fd438470fc3dabcf1586d; pan/lift family rank 2 and condition 1.428 on fit data, but admissible untouched validation is 0/4 and no values were fit
+Remaining: OR8
 Blockers: no current software blocker; physical motion remains service-gated
-Next step: prospectively freeze the smallest identifiable body-joint zero-offset family and an unopened retained validation cohort
+Next step: publish the evidence chain and exact post-service no-contact validation requirement, then verify repository closeout
 ```
 
 ## Stop conditions
