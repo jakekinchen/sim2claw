@@ -2,19 +2,19 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or22_retained_rgb_consequence_proxies",
-  "active_card": "OR22",
+  "status": "in_progress_or23_contact_consequence_discriminator",
+  "active_card": "OR23",
   "active_card_contract": {
-    "card_id": "OR22",
-    "proof_target": "bounded_successful_episode_c922_d405_jaw_crown_support_and_orientation_proxy_with_explicit_abstention",
+    "card_id": "OR23",
+    "proof_target": "one_branch_or_insufficient_contact_consequence_discriminator_over_frozen_samples_210_300_without_terminal_outcome",
     "allowed_paths": [
-      "configs/evaluations/retained_rgb_contact_consequence_proxies_v1.json",
-      "src/sim2claw/retained_rgb_contact_consequence_proxies.py",
-      "scripts/build_retained_rgb_contact_consequence_proxies.py",
-      "tests/test_retained_rgb_contact_consequence_proxies.py",
-      "configs/decisions/retained_rgb_contact_consequence_proxies_v1_closeout.json",
-      "outputs/retained_rgb_contact_consequence_proxies_v1",
-      "docs/session-logs/094-executor-observable-registration-or22.md",
+      "configs/evaluations/contact_consequence_mechanism_discriminator_v1.json",
+      "src/sim2claw/contact_consequence_mechanism_discriminator.py",
+      "scripts/build_contact_consequence_mechanism_discriminator.py",
+      "tests/test_contact_consequence_mechanism_discriminator.py",
+      "configs/decisions/contact_consequence_mechanism_discriminator_v1_closeout.json",
+      "outputs/contact_consequence_mechanism_discriminator_v1",
+      "docs/session-logs/095-executor-observable-registration-or23.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
@@ -28,14 +28,14 @@
       "commit"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_retained_rgb_contact_consequence_proxies.py",
+      "uv run --locked pytest -q tests/test_contact_consequence_mechanism_discriminator.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "reduce_successful_source_c922_d405_tracks_to_bounded_contact_consequence_proxies_with_abstention",
+  "next_transition": "evaluate_frozen_samples_210_300_and_select_exactly_one_supported_branch_or_insufficient",
   "node_types": [
     "workcell",
     "session",
@@ -76,7 +76,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "1acde728da71b4b0f319edab9703779c20ba9280d7b52b5aedb69b307b0dad9c",
+      "sha256": "7d7b25cb77597a1c913bf3b94355717ff57e9b682c3cd3b57ae2d60f4d8e42dc",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -223,6 +223,11 @@
       "path": "configs/decisions/pi_action_motion_alignment_v1_closeout.json",
       "sha256": "a22860eeee2e973a9b866e31722bcdd48f1e9e996a42b0a651ad1a83ab5a20ed",
       "proof_class": "retained_same_run_pi_and_c922_motion_derivative_to_host_joint_motion_interval_alignment_no_task_outcome_fit"
+    },
+    "or22": {
+      "path": "configs/decisions/retained_rgb_contact_consequence_proxies_v1_closeout.json",
+      "sha256": "a73155e5af4f2904d30210b8f91d982ad3d3dbfd53f7cf10435ee7e057b18798",
+      "proof_class": "retained_successful_episode_c922_d405_image_plane_jaw_crown_and_event_proxy_with_explicit_orientation_abstention"
     }
   },
   "nodes": [
@@ -814,7 +819,8 @@
       "id": "observation:or22-retained-rgb-contact-proxies",
       "type": "observation_channel",
       "label": "Retained image-plane pawn orientation and contact-consequence proxies",
-      "status": "active_frozen_pending_run",
+      "status": "pass_bounded_jaw_crown_event_proxy_pawn_axis_insufficient",
+      "source_binding": "or22",
       "data": {
         "successful_episode_primary_streams": [
           "c922",
@@ -826,6 +832,30 @@
         "contact_force_available": false,
         "cross_episode_merge_allowed": false,
         "abstention_required": true,
+        "jaw_proxy_rows": 23,
+        "accepted_crown_rows": 10,
+        "pawn_base_proxy_rows": 0,
+        "event_timing_correspondence_passed": true,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "mechanism:or23-contact-consequence-discriminator",
+      "type": "mechanism",
+      "label": "One-branch contact consequence discriminator",
+      "status": "active_frozen_pending_run",
+      "data": {
+        "analysis_source_sample_start": 210,
+        "analysis_source_sample_end": 300,
+        "terminal_outcome_used": false,
+        "candidate_branches": [
+          "off_center_contact_moment",
+          "jaw_pawn_slip",
+          "support_transition",
+          "downstream_collision"
+        ],
+        "exactly_one_or_insufficient": true,
+        "parameter_fit_allowed": false,
         "transfer_claim": false
       }
     }
@@ -1040,6 +1070,11 @@
       "source": "evidence:or22a-pi-auxiliary-action-sync",
       "target": "observation:or22-retained-rgb-contact-proxies",
       "type": "constrained-by"
+    },
+    {
+      "source": "observation:or22-retained-rgb-contact-proxies",
+      "target": "mechanism:or23-contact-consequence-discriminator",
+      "type": "predicts"
     }
   ]
 }

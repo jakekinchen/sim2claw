@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR22_RETAINED_RGB_CONSEQUENCE_PROXIES`
+Status: `IN_PROGRESS_OR23_CONTACT_CONSEQUENCE_DISCRIMINATOR`
 
 ## Active mission
 
@@ -9,15 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR22_RETAINED_RGB_CONSEQUENCE_PROXIES`
+`OR23_CONTACT_CONSEQUENCE_DISCRIMINATOR`
 
 ## Current card
 
-`OR22`
+`OR23`
 
 ## Current evidence
 
-- Proof class: `retained_successful_episode_c922_d405_image_plane_contact_consequence_proxy_with_explicit_orientation_abstention`.
+- Proof class: `frozen_contact_consequence_one_branch_or_insufficient_discriminator_no_parameter_fit`.
 
 ## Authority
 
@@ -32,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`reduce_successful_source_c922_d405_tracks_to_bounded_contact_consequence_proxies_with_abstention`
+`evaluate_frozen_samples_210_300_and_select_exactly_one_supported_branch_or_insufficient`
 
 ## Stop conditions
 

@@ -1,0 +1,38 @@
+{
+  "schema_version": "sim2claw.retained_rgb_contact_consequence_proxies_closeout.v1",
+  "experiment_id": "OR22_RETAINED_RGB_CONTACT_CONSEQUENCE_PROXIES_V1",
+  "status": "PASS_BOUNDED_JAW_CROWN_EVENT_PROXY_PAWN_AXIS_INSUFFICIENT",
+  "proof_class": "retained_successful_episode_c922_d405_image_plane_jaw_crown_and_event_proxy_with_explicit_orientation_abstention",
+  "contract": {
+    "path": "configs/evaluations/retained_rgb_contact_consequence_proxies_v1.json",
+    "sha256": "2f3527824b3815b6c1ab92a43e9cde2113d4d932b6387f9818e41cabe570b805"
+  },
+  "implementation": {
+    "path": "src/sim2claw/retained_rgb_contact_consequence_proxies.py",
+    "sha256": "24511a4a6527dbace25624965b256b7df057c960fdac037136bc7af6f1de95b5"
+  },
+  "receipt": {
+    "path": "outputs/retained_rgb_contact_consequence_proxies_v1/receipt.json",
+    "sha256": "3681ece59772e8cacefa813e30a86011f4c73d6d25cea60d765d04bfb8fb66fe",
+    "artifact_sha256": "22ac866bd98258801c3965c4f6b1d37251ab60ff08dc8c63a7e60dbd314210c7"
+  },
+  "proxy_rows": {
+    "path": "outputs/retained_rgb_contact_consequence_proxies_v1/proxy_rows.json",
+    "sha256": "50c3d7ad17c8133c0048b097dbacf7e51deb7de1b114c69c17fc77d5a231e96f"
+  },
+  "result": {
+    "jaw_proxy_rows": 23,
+    "accepted_crown_rows": 10,
+    "first_accepted_crown_source_sample": 290,
+    "pawn_base_proxy_rows": 0,
+    "pawn_axis_orientation_available": false,
+    "sim_contact_inside_physical_contact_interval": true,
+    "sim_orientation_onset_inside_physical_lift_interval": true,
+    "sim_support_loss_equals_physical_carry_start": true,
+    "metric_depth_available": false,
+    "contact_force_available": false,
+    "parameter_fit_allowed": false,
+    "global_mapping_approved": false,
+    "transfer_claim": false
+  }
+}

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Goal Loop
 
-Status: `IN_PROGRESS_OR22_RETAINED_RGB_CONSEQUENCE_PROXIES`
+Status: `IN_PROGRESS_OR23_CONTACT_CONSEQUENCE_DISCRIMINATOR`
 
 Created: `2026-07-29`
 
@@ -119,15 +119,15 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: IN_PROGRESS_OR22_RETAINED_RGB_CONSEQUENCE_PROXIES
-Active card: OR22
-Completed: predecessor evidence; OR0-OR22A; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
+Current state: IN_PROGRESS_OR23_CONTACT_CONSEQUENCE_DISCRIMINATOR
+Active card: OR23
+Completed: predecessor evidence; OR0-OR22; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
 Evidence: OR21 artifact 18d9ba676efa53d3c845972bcd8dd4e26aecf9fe06e6ab80f9e5167f272a09fc reproduces OR19 exactly and localizes unilateral contact/slip at 231, tilt over 5 degrees at 248, bilateral contact at 255, and sustained support loss at 260
 Pi lineage: no Pi exists for the successful source; later guarded-run Pi files and contact-free tri-camera files are auxiliary, same-run-only evidence
-Pi evidence: OR22A passes on 3/4 contact-free runs; D1 exact-v4 visual alignment is sharp but misses joint corroboration by 20 ms, and C2 exact-v1 has too few outcome-excluded setup transitions, so both target applications remain fail-closed
-Remaining: derive OR22 image-plane proxies; freeze OR23 discriminator; admit at most one independent OR24 correction; run OR25 only after every prerequisite passes
+Retained RGB evidence: OR22 yields 23 jaw and 10 crown proxies; contact/lift/carry timing corresponds, but no accepted pawn-base observation exists and pawn-axis orientation remains unknown
+Remaining: freeze OR23 discriminator result; admit at most one independent OR24 correction; run OR25 only after every prerequisite passes
 Blockers: physical capture and all transfer claims remain false; Pi host process bounds are not exposure synchronization; metric physical orientation and known contact force remain unavailable
-Next step: reduce the accepted successful-source C922/D405 observations into jaw/crown/support proxies with explicit orientation abstention
+Next step: evaluate samples 210–300 and select one causal branch only if the retained physical proxy directly discriminates it; otherwise return MECHANISM_NOT_IDENTIFIABLE
 ```
 
 ## Stop conditions
