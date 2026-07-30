@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "complete_software_ready_external_service_authority_and_fresh_route_boundary",
+  "status": "active_or10_zero_new_data_c922_pixel_refinement_frozen",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "35c03558957434c542192c6682818262b9d7d2a30f80d1997e72426374f500bc",
+      "sha256": "b3034c7fc63d70abddeb3493093592603842ffbd62e5a050b480f778431ca2a6",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -135,6 +135,11 @@
       "path": "configs/decisions/observable_spatial_validation_acquisition_v1_closeout.json",
       "sha256": "dd1757e9a93ff69c15ed05ae64657230cfa7ed1fe183ce44e0f75a217c011987",
       "proof_class": "prospective_motion_free_post_service_validation_acquisition_readiness"
+    },
+    "or10_contract": {
+      "path": "configs/evaluations/observable_c922_pixel_lattice_refinement_v1.json",
+      "sha256": "4aa4d65df5c71fdc0563bd285c6c9b943bccf43edf035d2c9c21b0e94efdca24",
+      "proof_class": "retrospective_outcome_informed_retained_pixel_board_plane_camera_diagnostic"
     }
   },
   "nodes": [
@@ -148,7 +153,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "complete_software_ready_external_boundary",
+      "status": "active_zero_new_data_camera_pixel_refinement",
       "source_binding": "queue"
     },
     {
@@ -318,6 +323,22 @@
       }
     },
     {
+      "id": "mapping:or10-retained-pixel-camera-challenger",
+      "type": "mapping_candidate",
+      "label": "Retained-pixel C922 board-plane challenger",
+      "status": "frozen_retrospective_protocol_official_receipt_pending",
+      "source_binding": "or10_contract",
+      "data": {
+        "new_physical_data_rows": 0,
+        "camera_opened": false,
+        "camera_family_count": 3,
+        "reviewed_visible_intersection_count": 14,
+        "exact_intrinsics_approved": false,
+        "global_mapping_approved": false,
+        "canonical_camera_replacement_authorized": false
+      }
+    },
+    {
       "id": "counterexample:or5-v1-per-view-sensitivity",
       "type": "counterexample",
       "label": "OR5 v1 every-view sensitivity gate",
@@ -465,6 +486,16 @@
       "type": "predicts"
     },
     {
+      "source": "mapping:or1-camera-world",
+      "target": "mapping:or10-retained-pixel-camera-challenger",
+      "type": "counterexample-to"
+    },
+    {
+      "source": "observation:c922",
+      "target": "mapping:or10-retained-pixel-camera-challenger",
+      "type": "observed-by"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -480,6 +511,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": null,
-  "next_transition": "external_elbow_service_current_authority_fresh_torque_off_limits_and_cpu_fp64_route_review_then_versioned_successor"
+  "active_card": "OR10",
+  "next_transition": "run_deterministic_retained_pixel_refinement_once_then_close_and_publish_diagnostic_boundary"
 }

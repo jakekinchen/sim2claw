@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `COMPLETE_SOFTWARE_READY_EXTERNAL_SERVICE_AUTHORITY_AND_FRESH_ROUTE_BOUNDARY`
+Status: `ACTIVE_OR10_ZERO_NEW_DATA_C922_PIXEL_REFINEMENT_FROZEN`
 
 Created: `2026-07-29`
 
@@ -96,10 +96,14 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR7D | `NOT_RUN_PREREQUISITE_FAILED` | Run another exact-action replay only if OR7C passes prospectively frozen static gates. | New write-once experiment; exact C6 identity; one declared spatial change on top of OR6; natural contact only. | OR7C did not run; no spatial candidate or replay authority exists. |
 | OR8 | `PASS` | Publish and close the evidence chain. | Studio exposes physical/simulator camera alignment, tracks, missingness, residuals, first divergence, mechanism change, C6-versus-successor outcome, proof limits, and mobile/desktop acceptance. Focused and broad relevant tests pass; queue/graph/GOAL agree; `HEAD == origin/main`; worktree clean. | Closeout SHA `815384a834061bc9ee2387537a6e72c5e1a573f48a50f4ce95b6931b8527fff5`; publication receipt artifact `22e1b8102bf3f629a2a6c0b1b030910493fe34604d521ea4e64121506e858657`; supplement artifact `59215118ae4c6c2829d852c6e26db4099e8aaa9ef7f56befaec559e2c4d602ce`; desktop and `390×844` mobile acceptance pass; `51` broad tests pass. |
 | OR9 | `PASS_DESIGN_READY_BLOCKED_EXTERNAL_INPUTS` | Freeze the exact post-service four-pose validation acquisition seam without opening hardware. | Four fresh validation-only joint targets are prospectively fixed inside the modeled visibility envelope; pan span is at least `10°`, lift span at least `3°`; both distal jaw endpoints and board lattice are required; D405 depth is optional; prior images, annotations, outcomes, and action arrays are excluded. The readiness evaluator must pass design gates and fail closed before route/action compilation on service, authority, fresh torque-off limits, and a fresh CPU/fp64 route review. | Closeout SHA `dd1757e9a93ff69c15ed05ae64657230cfa7ed1fe183ce44e0f75a217c011987`; artifact `da04d93eda4313d8be121e0299b1e887b13cd27f10e76f6c58efbf60f73003b1`; `16/16` design gates pass; four targets span `20°` pan and `3°` lift; actions/images/motion/attempts remain zero; `54` broad tests pass. |
+| OR10 | `ACTIVE_PROTOCOL_BOUND_NO_OFFICIAL_RECEIPT` | Reconcile the prior homography-generated board lattice with actual retained C922 pixels and fit the richest identifiable zero-new-data board-plane camera challenger. | Bind two exact-mode fixed-mount fit cohorts; extract only a reviewed visible interior-board mask without simulator or task residuals; require at least `12` cross-cohort points, `≤0.75 px` agreement RMS, and `≤1.5 px` max; compare centered square-pixel zero-distortion, `k1`, and `k1+k2` families; radial complexity requires at least `5%` no-refit validation gain and no bound hit. The result remains an outcome-informed retrospective diagnostic with no exact-intrinsic, distortion, global-mapping, canonical-camera-replacement, hardware, replay, or transfer authority. | Contract and implementation are frozen for the official deterministic run. No camera was opened and no new physical data was collected. |
 
 ## Retained-data campaign closeout and acquisition continuation
 
-All retained-data fitting/replay cards are terminal. The campaign improved the validated
+The earlier retained-data fitting/replay cards are terminal. OR10 is a bounded
+exception opened by the owner specifically to use already-retained image pixels
+more faithfully; it does not reopen any sealed heldout or task outcome. The
+campaign improved the validated
 jaw-aperture projection but did not improve the exact-action task result:
 aperture fit/validation RMS moved from `21.259→1.848 px` and
 `24.045→3.828 px`, while the two exact-action simulator replays remain `0/2`
@@ -109,7 +113,10 @@ bounded shoulder-pan/shoulder-lift family is locally identifiable on fit poses,
 but no admissible untouched validation cohort remains, so no spatial values
 were fit and no successor replay was authorized.
 
-The next admissible step is not another outcome-tuned replay. OR9 now freezes
+The next admissible step is not another outcome-tuned replay. OR10 first
+evaluates the actual retained board pixels under a proof-limited retrospective
+protocol; after that, OR9 remains the prospective path for exact calibration
+and spatial validation. OR9 freezes
 the four new no-contact C922 static targets and the fail-closed requirements
 that must precede route compilation. It does not reuse prior action arrays or
 grant authority. Until post-service inputs exist and a versioned successor
@@ -171,11 +178,11 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: COMPLETE_SOFTWARE_READY_EXTERNAL_SERVICE_AUTHORITY_AND_FRESH_ROUTE_BOUNDARY
-Active card: none
+Current state: ACTIVE_OR10_ZERO_NEW_DATA_C922_PIXEL_REFINEMENT_FROZEN
+Active card: OR10
 Completed: immutable predecessor C0-C9; OR0-OR9; OR7C/OR7D not run because their prerequisite failed; camera endpoint REAL-to-SIM 1/1
-Evidence: OR9 artifact da04d93eda4313d8be121e0299b1e887b13cd27f10e76f6c58efbf60f73003b1 passes 16/16 design gates and reserves four new validation-only targets spanning 20 deg pan and 3 deg lift; 54 broad tests pass
-Remaining: no safe software or retained-data card
+Evidence: OR10 binds two retained exact-mode C922 fixed-mount fit cohorts and a reviewed 14-intersection visible board mask; protocol tests pass before the official receipt
+Remaining: run OR10 exactly once, close its diagnostic result, and publish its limitations
 Physical boundary: follower elbow service, fresh current authority, torque-off identity/limits, and fresh CPU/fp64 route review; hardware authority false
-Next step: after those external inputs exist, create a versioned successor that binds them, requalifies the route, captures the four validation members without opening them early, freezes one pan/lift candidate, and performs the single no-refit validation open
+Next step: build the deterministic OR10 receipt without opening hardware; then preserve OR9 as the exact-calibration/spatial-validation continuation
 ```

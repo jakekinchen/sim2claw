@@ -1,0 +1,195 @@
+{
+  "schema_version": "sim2claw.observable_c922_pixel_lattice_refinement_contract.v1",
+  "experiment_id": "observable-c922-pixel-lattice-refinement-v1",
+  "frozen_date": "2026-07-29",
+  "evidence_role": "retrospective_outcome_informed_protocol_diagnostic",
+  "sources": {
+    "fit_annotations": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+      "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3"
+    },
+    "prior_camera_contract": {
+      "path": "configs/evaluations/observable_c922_camera_world_v1.json",
+      "sha256": "9af4ed8f8f205522d24481df77d380da8421b609d0d8d916ccd4bf658af7f853"
+    },
+    "prior_camera_closeout": {
+      "path": "configs/decisions/observable_c922_camera_world_v1_closeout.json",
+      "sha256": "42fb05f07184dcf3d0fc71de85d8c47771d932692c54096895fc5f43c4faeb36"
+    },
+    "v3_fit_manifest": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit_manifest.json",
+      "sha256": "341db2264aa3ee486c6cdc4b61330dabe8b376f3a848aea87b550c4aa0c47537"
+    },
+    "v4_fit_manifest": {
+      "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit_manifest.json",
+      "sha256": "71f704ee95a2c1966f23f1ff96db04d6448bb409a86b209ea54b06e25e9f1f46"
+    }
+  },
+  "cohorts": [
+    {
+      "cohort_id": "registration_fit_v3",
+      "fixed_mount_token": "current-workcell-fixed-mount-20260728-v2-registration",
+      "camera_identity": {
+        "name": "C922 Pro Stream Webcam",
+        "unique_id": "0x8310000046d085c",
+        "width": 640,
+        "height": 480,
+        "pixel_format": "420v",
+        "fps": 30.00003000003
+      },
+      "images": [
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm19-liftm85/selected.png",
+          "sha256": "993b70383c4811859c16619bafaee116ddc66033f747fbd68167c58172067387"
+        },
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm19-liftm90/selected.png",
+          "sha256": "a57a2da6303ce4fd5a45bcb5c9021893e71270919f6e567d4e03209e887e2676"
+        },
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm05-liftm90/selected.png",
+          "sha256": "00b073055efc76b1907e53ff2618315e2f4161bfa7ae07e02866cb1dc67c8bc1"
+        },
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v3/execution-v3/fit/v2r3-fit-panm05-liftm85/selected.png",
+          "sha256": "384c1651a6b3c4fdd0aeef7c42a795b99ab2bf6e17a84cec73a1f81df77895b8"
+        }
+      ]
+    },
+    {
+      "cohort_id": "registration_fit_v4",
+      "fixed_mount_token": "current-workcell-fixed-mount-20260728-v2-registration",
+      "camera_identity": {
+        "name": "C922 Pro Stream Webcam",
+        "unique_id": "0x8310000046d085c",
+        "width": 640,
+        "height": 480,
+        "pixel_format": "420v",
+        "fps": 30.00003000003
+      },
+      "images": [
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit/v2r4-fit-panm11-liftm87/selected.png",
+          "sha256": "7247729ff7aba6f88d8a4ef1eaccdf2cc3db9ac1d9253f2d8340e7b177bba399"
+        },
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit/v2r4-fit-panp07-liftm85/selected.png",
+          "sha256": "0299a09c2b398d23257940fc0b0510d968c0dcad040e83e4f1eb5d075f22b0e4"
+        },
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit/v2r4-fit-panp07-liftm90/selected.png",
+          "sha256": "d67569445bcdb19a00828f0595b4a0d24e65a4d1c6d1d3c3553e9128601f5066"
+        },
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit/v2r4-fit-panm11-liftm89/selected.png",
+          "sha256": "dcbf40e0679e00f9fa976594fb34b267a9ef478a63f58906534812983f1cdccf"
+        },
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit/v2r4-fit-panm20-liftm90/selected.png",
+          "sha256": "72498cbc7ab026b7324ab3b5aa41af48cc8bfefb27b1a7d2b6c9c7c320ffd4e8"
+        },
+        {
+          "path": "runs/bidirectional-pawn-push-v2/20260728-v04-registration-recapture-v4/execution-v4/fit/v2r4-fit-panm20-liftm85/selected.png",
+          "sha256": "4b21e0a7409f4e7077f7c1a1216f65005ad47d9e9726e3aaeb531781b9d31582"
+        }
+      ]
+    }
+  ],
+  "board_gauge": {
+    "playing_side_m": 0.3556,
+    "seed_corner_order": ["a8_outer", "h8_outer", "h1_outer", "a1_outer"],
+    "seed_source": "four_manual_playing_corners_from_fit_annotations"
+  },
+  "pixel_extraction": {
+    "protocol_status": "developed_after_retained_fit_image_inspection",
+    "seed_use": "search_initialization_only_not_an_observation",
+    "canonical_side_px": 720,
+    "interior_indices": [
+      [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1],
+      [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
+      [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3], [7, 3],
+      [1, 4], [2, 4], [3, 4], [4, 4], [5, 4], [6, 4], [7, 4],
+      [1, 5], [2, 5], [3, 5], [4, 5], [5, 5], [6, 5], [7, 5],
+      [1, 6], [2, 6], [3, 6], [4, 6], [5, 6], [6, 6], [7, 6],
+      [1, 7], [2, 7], [3, 7], [4, 7], [5, 7], [6, 7], [7, 7]
+    ],
+    "reviewed_unoccluded_indices": [
+      [1, 1], [2, 1], [3, 1], [4, 1],
+      [2, 2],
+      [1, 3], [2, 3],
+      [1, 4], [2, 4],
+      [1, 5], [2, 5],
+      [1, 6], [2, 6],
+      [2, 7]
+    ],
+    "review_basis": "retained_pixel_visibility_and_extraction_stability_only",
+    "reviewed_mask_limit": "The finite mask was selected after retained-image inspection and before the formal receipt; it excludes robot, cable, pawn, and unreliable board regions and is not pristine heldout evidence.",
+    "search_radius_px": 12,
+    "quadrant_inner_radius_px": 4,
+    "quadrant_outer_radius_px": 16,
+    "top_images_per_intersection": 3,
+    "minimum_median_saddle_score": 50.0,
+    "maximum_rms_dispersion_px": 1.6
+  },
+  "camera_families": [
+    {
+      "family_id": "centered_square_pixel_zero_distortion",
+      "principal_point_px": [320.0, 240.0],
+      "square_pixels": true,
+      "skew_px": 0.0,
+      "radial_term_count": 0,
+      "radial_bound": 0.5,
+      "minimum_focal_px": 250.0,
+      "maximum_focal_px": 1500.0
+    },
+    {
+      "family_id": "centered_square_pixel_k1",
+      "principal_point_px": [320.0, 240.0],
+      "square_pixels": true,
+      "skew_px": 0.0,
+      "radial_term_count": 1,
+      "radial_bound": 0.5,
+      "minimum_focal_px": 250.0,
+      "maximum_focal_px": 1500.0
+    },
+    {
+      "family_id": "centered_square_pixel_k1_k2",
+      "principal_point_px": [320.0, 240.0],
+      "square_pixels": true,
+      "skew_px": 0.0,
+      "radial_term_count": 2,
+      "radial_bound": 0.5,
+      "minimum_focal_px": 250.0,
+      "maximum_focal_px": 1500.0
+    }
+  ],
+  "selection_gates": {
+    "minimum_overlap_intersections": 12,
+    "maximum_cohort_agreement_rms_px": 0.75,
+    "maximum_cohort_agreement_max_px": 1.5,
+    "maximum_cross_cohort_validation_rms_px": 2.0,
+    "maximum_cross_cohort_validation_max_px": 3.0,
+    "minimum_prior_model_rms_improvement_fraction": 0.5,
+    "minimum_radial_validation_gain_fraction": 0.05
+  },
+  "proof_boundaries": {
+    "retrospective_protocol_is_pristine_heldout_validation": false,
+    "board_plane_diagnostic_is_exact_intrinsic_calibration": false,
+    "selected_zero_distortion_family_is_measured_distortion": false,
+    "partial_board_coverage_is_global_image_validation": false,
+    "camera_diagnostic_may_approve_robot_mapping": false,
+    "camera_diagnostic_may_approve_contact_or_task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "simulator_canonical_camera_replacement": false,
+    "training": false,
+    "paid_compute": false
+  }
+}

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Goal Loop
 
-Status: `COMPLETE_SOFTWARE_READY_EXTERNAL_SERVICE_AUTHORITY_AND_FRESH_ROUTE_BOUNDARY`
+Status: `ACTIVE_OR10_ZERO_NEW_DATA_C922_PIXEL_REFINEMENT_FROZEN`
 
 Created: `2026-07-29`
 
@@ -98,13 +98,13 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: COMPLETE_SOFTWARE_READY
-Active card: none
+Current state: ACTIVE_OR10_ZERO_NEW_DATA_C922_PIXEL_REFINEMENT_FROZEN
+Active card: OR10
 Completed: predecessor evidence; OR0-OR9; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
-Evidence: OR9 artifact da04d93eda4313d8be121e0299b1e887b13cd27f10e76f6c58efbf60f73003b1; 16/16 design gates pass; four new validation targets span 20 deg pan and 3 deg lift; no action, image, motion, or attempt; 54 broad tests pass
-Remaining: no safe software or retained-data card
+Evidence: OR10 binds two retained exact-mode fixed-mount C922 cohorts and separates four manually measured board corners from their 25 homography-generated lattice points
+Remaining: run and close the deterministic retrospective pixel-refinement diagnostic, then publish the exact residual and identifiability frontier
 Blockers: physical capture remains gated on follower-elbow service, fresh authority, torque-off identity/limits, and fresh CPU/fp64 route review
-Next step: bind those inputs only in a versioned successor, requalify the route, capture the four sealed validation members, freeze one candidate, and perform the single no-refit validation open
+Next step: run OR10 without any camera, gateway, serial, or hardware use; retain OR9 as the prospective exact-calibration and spatial-validation continuation
 ```
 
 ## Stop conditions
