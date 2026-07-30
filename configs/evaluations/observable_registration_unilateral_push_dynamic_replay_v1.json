@@ -1,0 +1,74 @@
+{
+  "schema_version": "sim2claw.observable_registration_unilateral_push_dynamic_replay_contract.v1",
+  "experiment_id": "OR19_UNILATERAL_PUSH_DYNAMIC_REPLAY_V1",
+  "proof_class": "retrospective_outcome_informed_exact_action_simulator_diagnostic",
+  "sources": {
+    "or18_receipt": {
+      "path": "outputs/observable_registration_unilateral_push_contact_v1/receipt.json",
+      "sha256": "04f0953eed9590af8c736e690c0b727566a592de64fb053beb061f2537e3e922"
+    },
+    "or18_scene": {
+      "path": "outputs/observable_registration_unilateral_push_contact_v1/derived_scene_config.json",
+      "sha256": "afc1b762041c9e660de54f3a1dd82343f3184d7333da99c929619d19632497e0"
+    },
+    "or13_contract": {
+      "path": "configs/evaluations/post_hackathon_home_workspace_geometry_camera_v2.json",
+      "sha256": "b8ea91021fe849ec4b79dcbfa96731fb83cc278d2697ef033f275f96fa421aef"
+    },
+    "c6_contract": {
+      "path": "configs/evaluations/realized_action_outcome_mission_v1.json",
+      "sha256": "f406149f51578b7ecae646c46b35c9237693b4f172c66dbb271cee67b9728b77"
+    },
+    "historical_mapping_receipt": {
+      "path": "outputs/retrospective_real_to_sim_support_handoff_v1/receipt.json",
+      "sha256": "1af33c78d2a5846e009ff1d14561afd648df687bcb48a29a6b61089f7c33db51"
+    },
+    "or6_candidate": {
+      "path": "outputs/observable_jaw_aperture_fit_v1/candidate_manifest.json",
+      "sha256": "e8c27ef3118c3383d2d2312371a54b6c40d749880b5ab73aa9a14e0305dd17e5"
+    }
+  },
+  "replay": {
+    "one_run_only": true,
+    "canonical_rank1_near_piece_reset_required": true,
+    "settle_then_replace_selected_at_retained_initial_xy": true,
+    "reuse_exact_c6_requested_gateway_sent_timestamps_and_identified_applied": true,
+    "preserve_source_row_order": true,
+    "preserve_source_timestamps": true,
+    "natural_contact_only": true,
+    "action_change_allowed": false,
+    "camera_change_allowed": false,
+    "contact_parameter_change_allowed": false,
+    "object_parameter_change_allowed": false,
+    "endpoint_injection_allowed": false,
+    "latch_or_attachment_allowed": false
+  },
+  "candidate": {
+    "left_robot_yaw_delta_degrees": 6.0,
+    "body_joint_zero_offsets_source": "historical_mapping_receipt",
+    "joint_range_envelope_source": "historical_mapping_receipt",
+    "gripper_zero_offset_rad": -0.17453,
+    "selection_used_task_contact_rows": true,
+    "global_mapping_approved": false
+  },
+  "reporting": {
+    "motion_threshold_m": 0.001,
+    "required_progress_m": 0.036025,
+    "use_c6_task_gates": true,
+    "target_square_center_uses_or18_scene_geometry": true,
+    "transfer_claim_allowed": false
+  },
+  "authority": {
+    "simulator_replay": true,
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

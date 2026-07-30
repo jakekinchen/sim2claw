@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR16_HISTORICAL_MAPPING_COMPOSITION`
+Status: `IN_PROGRESS_OR19_CANONICAL_RESET_DYNAMIC_REPLAY`
 
 ## Active mission
 
@@ -9,17 +9,19 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR16_COMPOSE_HISTORICAL_BODY_MAPPING_AND_OR13_GEOMETRY`
+`OR19_EXACT_ACTION_DYNAMIC_REPLAY_AFTER_CANONICAL_RESET_REPAIR`
 
 ## Current card
 
-`OR16` — quarantined historical mapping and exact kinematic contact-phase gate
+`OR19` — canonical rank-1-near reset plus exact-action dynamic consequence
 
 ## Current evidence
 
-- OR15 artifact: `d4ffb2c9e8cdf8042935f2a7c405b97b696baac5d34dcdd132b07f11e7b41db8`.
-- Frozen contract: `configs/evaluations/observable_registration_historical_mapping_composition_v1.json`.
-- Proof class: `quarantined_outcome_informed_historical_mapping_composed_with_new_static_metrology`.
+- OR18 artifact: `36057bb69f0da745418c4d61b44d6ff76480539aa806fe36de779d715bf9f37e`.
+- Frozen contract: `configs/evaluations/observable_registration_unilateral_push_dynamic_replay_v1.json`.
+- Proof class: `retrospective_outcome_informed_exact_action_simulator_diagnostic`.
+- Static contact is clear through sample `224`; the named moving jaw first contacts the pawn at sample `231`.
+- The legacy reset-layout composition placed `tan_pawn_e8` at canonical D1; OR19 uses the hardcutover current-workcell reset and fails closed on any initial non-board overlap.
 
 ## Authority
 
@@ -34,7 +36,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`run_frozen_historical_mapping_static_contact_gate_then_stop_before_dynamics`
+`run_formal_write_once_exact_action_dynamic_replay_and_bind_contact_progress_outcome`
 
 ## Stop conditions
 

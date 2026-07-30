@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or16_historical_mapping_composition",
+  "status": "in_progress_or19_canonical_reset_dynamic_replay",
   "active_card": "OR16",
   "next_transition": "run_frozen_historical_mapping_static_contact_gate_then_stop_before_dynamics",
   "node_types": [
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "2fa0d4cf0e48bca1bb160523ee6d90a371ce922c8be99402ddf0a965427d047a",
+      "sha256": "d80e3840cc3b33ecfc1b8d05c5ee56225b2944ec8d01f3e8de02b56bbe87f562",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -625,14 +625,62 @@
       "id": "intervention:or16-historical-body-mapping-composition",
       "type": "intervention",
       "label": "Quarantined historical body mapping under OR13 geometry",
-      "status": "in_progress_frozen_contract",
+      "status": "terminal_negative_no_phase_correct_named_contact",
       "source_binding": "configs/evaluations/observable_registration_historical_mapping_composition_v1.json",
       "data": {
         "shoulder_lift_zero_offset_degrees": 18.701248448127163,
         "mapping_refit_allowed": false,
         "physics_integration_allowed": false,
         "dynamic_replay_authorized": false,
+        "artifact_sha256": "66dbfedec16a8e614ef994751e5f813fe7bc1002d71dddd87b815c54b25f4d80",
+        "sample_232_fixed_jaw_gap_m": 0.0031937359348727583,
+        "sample_232_vertical_body_origin_residual_m": -0.02024272493445778,
         "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "counterexample:or17-board-yaw-gauge",
+      "type": "counterexample",
+      "label": "Canonical-rank-migrated board yaw under direct world-XY task initialization",
+      "status": "terminal_negative_gauge_no_effect",
+      "source_binding": "configs/evaluations/observable_registration_orientation_migrated_yaw_v1.json",
+      "data": {
+        "artifact_sha256": "a2ba9d44c9bfcda2a22c2b29ea0af123262d4ed054fd494ec68eb0eea362ef6d",
+        "migrated_board_yaw_degrees": 4.90822632428709,
+        "contact_metrics_changed": false,
+        "global_mapping_approved": false
+      }
+    },
+    {
+      "id": "intervention:or18-unilateral-push-contact",
+      "type": "intervention",
+      "label": "Outcome-informed task-specific unilateral named push contact",
+      "status": "pass_quarantined_unilateral_named_contact_no_dynamics",
+      "source_binding": "configs/evaluations/observable_registration_unilateral_push_contact_v1.json",
+      "data": {
+        "artifact_sha256": "36057bb69f0da745418c4d61b44d6ff76480539aa806fe36de779d715bf9f37e",
+        "precontact_minimum_clearance_m": 0.006475394536211107,
+        "first_named_unilateral_contact_source_sample": 231,
+        "task_rows_used_for_candidate_selection": true,
+        "actions_changed": false,
+        "physics_integration_steps": 0,
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "intervention:or19-canonical-reset-dynamic-replay",
+      "type": "intervention",
+      "label": "Exact-action dynamic replay after canonical rank-1-near reset repair",
+      "status": "in_progress_frozen_contract",
+      "source_binding": "configs/evaluations/observable_registration_unilateral_push_dynamic_replay_v1.json",
+      "data": {
+        "row_count": 531,
+        "canonical_piece_reset_required": true,
+        "natural_contact_only": true,
+        "actions_changed": false,
+        "global_mapping_approved": false,
+        "transfer_claim": false
       }
     }
   ],
@@ -811,6 +859,21 @@
       "source": "intervention:or15-retained-camera-static-composition",
       "target": "intervention:or16-historical-body-mapping-composition",
       "type": "predicts"
+    },
+    {
+      "source": "intervention:or16-historical-body-mapping-composition",
+      "target": "counterexample:or17-board-yaw-gauge",
+      "type": "evaluated-on"
+    },
+    {
+      "source": "counterexample:or17-board-yaw-gauge",
+      "target": "intervention:or18-unilateral-push-contact",
+      "type": "motivates"
+    },
+    {
+      "source": "intervention:or18-unilateral-push-contact",
+      "target": "intervention:or19-canonical-reset-dynamic-replay",
+      "type": "admitted-to"
     }
   ]
 }

@@ -29,6 +29,7 @@ from .observable_contact_phase_registration import (
     _initialize_kinematic_state,
     load_contact_phase_contract,
 )
+from .current_workcell import build_current_workcell_spec
 from .paths import DEFAULT_EXTERNAL_ROOT, REPO_ROOT
 from .realized_action_outcome_mission import _tensor, physical_to_model
 from .scene import CURRENT_TASK_PIECE_LAYOUT, build_scene_spec, scene_geometry
@@ -222,12 +223,20 @@ def _candidate_spec(
     *,
     pawn_height_m: float,
     workcell_camera: dict[str, Any] | None = None,
+    canonical_piece_reset: bool = False,
 ) -> mujoco.MjSpec:
     _require(pawn_height_m > 0.0, "pawn height must be positive")
-    spec = build_scene_spec(
-        config_path=scene_path,
-        external_root=DEFAULT_EXTERNAL_ROOT,
-        piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+    spec = (
+        build_current_workcell_spec(
+            config_path=scene_path,
+            external_root=DEFAULT_EXTERNAL_ROOT,
+        )
+        if canonical_piece_reset
+        else build_scene_spec(
+            config_path=scene_path,
+            external_root=DEFAULT_EXTERNAL_ROOT,
+            piece_layout=CURRENT_TASK_PIECE_LAYOUT,
+        )
     )
     z_scale = pawn_height_m / PRIOR_DETAILED_PAWN_HEIGHT_M
     pawn_body_count = 0
@@ -383,7 +392,7 @@ def _contact_phase_candidate(
     if joint_zero_overrides:
         joints = candidate["physical_adapter"]["joint_transform"]["joints"]
         for index, value in joint_zero_overrides.items():
-            _require(index in range(5), "only frozen body-joint offsets are allowed")
+            _require(index in range(6), "only frozen joint offsets are allowed")
             joints[index]["zero_offset"] = float(value)
     or7 = _bound_json(
         contract["sources"]["or7_receipt"], root=root, label="OR7"
