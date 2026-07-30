@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Goal Loop
 
-Status: `IN_PROGRESS_OR21_EXACT_REPLAY_CONTACT_CAUSALITY_INTROSPECTION`
+Status: `IN_PROGRESS_OR22A_PI_ACTION_MOTION_ALIGNMENT`
 
 Created: `2026-07-29`
 
@@ -119,14 +119,14 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: IN_PROGRESS_OR21_EXACT_REPLAY_CONTACT_CAUSALITY_INTROSPECTION
-Active card: OR21
-Completed: predecessor evidence; OR0-OR20; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
-Evidence: OR19 artifact f33198841ce3e70a11dfc7f2e617174248e436bd18474b3bb626700b6674e184 reaches contact at 231, pawn motion at 248, and 47.513 mm D2 progress; OR20 artifact 4374827196aae08617b9899387cbdd31e5bfcd625e773efadbf95229ac908668 localizes the residual to object orientation/contact consequence
+Current state: IN_PROGRESS_OR22A_PI_ACTION_MOTION_ALIGNMENT
+Active card: OR22A
+Completed: predecessor evidence; OR0-OR21; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
+Evidence: OR21 artifact 18d9ba676efa53d3c845972bcd8dd4e26aecf9fe06e6ab80f9e5167f272a09fc reproduces OR19 exactly and localizes unilateral contact/slip at 231, tilt over 5 degrees at 248, bilateral contact at 255, and sustained support loss at 260
 Pi lineage: no Pi exists for the successful source; later guarded-run Pi files and contact-free tri-camera files are auxiliary, same-run-only evidence
-Remaining: execute OR21; validate OR22A frame/action interval alignment; derive OR22 image-plane proxies; freeze OR23 discriminator; admit at most one independent OR24 correction; run OR25 only after every prerequisite passes
+Remaining: validate OR22A frame/action interval alignment; derive OR22 image-plane proxies; freeze OR23 discriminator; admit at most one independent OR24 correction; run OR25 only after every prerequisite passes
 Blockers: physical capture and all transfer claims remain false; Pi host process bounds are not exposure synchronization; metric physical orientation and known contact force remain unavailable
-Next step: execute the frozen model-identical, byte-identical OR21 introspection and reproduce OR19 before opening OR22A
+Next step: align Pi motion-energy curves against host-timestamped joint motion on contact-free runs, validate without task outcomes, and publish bounded intervals or a fail-closed negative
 ```
 
 ## Stop conditions

@@ -2,19 +2,19 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or21_exact_replay_contact_causality_introspection",
-  "active_card": "OR21",
+  "status": "in_progress_or22a_pi_action_motion_alignment",
+  "active_card": "OR22A",
   "active_card_contract": {
-    "card_id": "OR21",
-    "proof_target": "deterministic_model_identical_byte_identical_or19_contact_causality_trace_without_parameter_selection",
+    "card_id": "OR22A",
+    "proof_target": "same_run_fail_closed_pi_frame_to_action_interval_alignment_from_precontact_and_contact_free_motion_only",
     "allowed_paths": [
-      "configs/evaluations/observable_registration_exact_replay_contact_introspection_v1.json",
-      "src/sim2claw/observable_registration_exact_replay_contact_introspection.py",
-      "scripts/build_observable_registration_exact_replay_contact_introspection.py",
-      "tests/test_observable_registration_exact_replay_contact_introspection.py",
-      "configs/decisions/observable_registration_exact_replay_contact_introspection_v1_closeout.json",
-      "outputs/observable_registration_exact_replay_contact_introspection_v1",
-      "docs/session-logs/092-executor-observable-registration-or21.md",
+      "configs/evaluations/pi_action_motion_alignment_v1.json",
+      "src/sim2claw/pi_action_motion_alignment.py",
+      "scripts/build_pi_action_motion_alignment.py",
+      "tests/test_pi_action_motion_alignment.py",
+      "configs/decisions/pi_action_motion_alignment_v1_closeout.json",
+      "outputs/pi_action_motion_alignment_v1",
+      "docs/session-logs/093-executor-observable-registration-or22a.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
@@ -28,14 +28,14 @@
       "commit"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_observable_registration_exact_replay_contact_introspection.py",
+      "uv run --locked pytest -q tests/test_pi_action_motion_alignment.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "run_model_identical_byte_identical_or19_introspection_then_freeze_result_before_pi_proxy_analysis",
+  "next_transition": "build_and_validate_same_run_pi_motion_energy_to_joint_motion_action_interval_alignment",
   "node_types": [
     "workcell",
     "session",
@@ -76,7 +76,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "e9ffc437c576574291865d209a172f2b187eb8e6356bb30c7355b31967ea77ef",
+      "sha256": "101b7795fbec38d875bb6ec66abaf25b8b7e408d97d3de5b32c0101b08efe5c3",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -213,6 +213,11 @@
       "path": "configs/decisions/post_hackathon_home_workspace_geometry_camera_v2_closeout.json",
       "sha256": "9c32891753a61d407db68467bddc9eac6893e9c86e880528524ae2538697b956",
       "proof_class": "owner_reported_board_object_camera_center_metrology_static_geometry_successor_and_retrospective_orientation_diagnostic"
+    },
+    "or21": {
+      "path": "configs/decisions/observable_registration_exact_replay_contact_introspection_v1_closeout.json",
+      "sha256": "80511a5e3b5080a85a7f73fd4da713226aa4f671faaff5b07b897db9c1a6d776",
+      "proof_class": "retrospective_outcome_informed_model_identical_byte_identical_simulator_introspection_no_parameter_selection"
     }
   },
   "nodes": [
@@ -746,13 +751,20 @@
       "id": "mechanism:or21-exact-replay-contact-introspection",
       "type": "mechanism",
       "label": "Model-identical exact-action OR19 contact-causality introspection",
-      "status": "active_frozen_pending_run",
+      "status": "pass_exact_reproduction_contact_trace",
+      "source_binding": "or21",
       "data": {
         "predecessor_artifact_sha256": "f33198841ce3e70a11dfc7f2e617174248e436bd18474b3bb626700b6674e184",
         "action_row_count": 531,
         "requested_sent_timestamp_applied_identity_required": true,
         "model_and_configuration_identity_required": true,
         "internal_step_seconds": 0.005,
+        "first_unilateral_contact_source_sample": 231,
+        "first_slip_over_threshold_source_sample": 231,
+        "first_orientation_over_5_degrees_source_sample": 248,
+        "first_bilateral_contact_source_sample": 255,
+        "first_sustained_support_loss_source_sample": 260,
+        "localized_interval": "unilateral_contact_and_slip_before_bilateral_enclosure",
         "parameter_fit_allowed": false,
         "simulator_mutation_allowed": false,
         "global_mapping_approved": false,
@@ -763,7 +775,7 @@
       "id": "evidence:or22a-pi-auxiliary-action-sync",
       "type": "evidence",
       "label": "Same-run Pi IMX708 auxiliary action-interval association",
-      "status": "frozen_pending_or21",
+      "status": "active_frozen_pending_run",
       "data": {
         "original_successful_d1_d2_pi_available": false,
         "d1_d2_exact_v4_pi_browser_sha256": "ca1505972f2b2830ca16c02e163604fb48d85abb32906560ef3f4e6db6482d0b",

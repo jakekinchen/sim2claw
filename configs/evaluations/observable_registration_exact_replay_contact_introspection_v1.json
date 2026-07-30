@@ -1,0 +1,56 @@
+{
+  "schema_version": "sim2claw.observable_registration_exact_replay_contact_introspection_contract.v1",
+  "experiment_id": "OR21_EXACT_REPLAY_CONTACT_INTROSPECTION_V1",
+  "proof_class": "retrospective_outcome_informed_model_identical_byte_identical_simulator_introspection_no_parameter_selection",
+  "sources": {
+    "or19_contract": {
+      "path": "configs/evaluations/observable_registration_unilateral_push_dynamic_replay_v1.json",
+      "sha256": "df7cf58cf277054aff5727ce4f8364707b29cc1c2ad2181efbb19a4bb657b440"
+    },
+    "or19_receipt": {
+      "path": "outputs/observable_registration_unilateral_push_dynamic_replay_v1/receipt.json",
+      "sha256": "8eb1547b1b91620b5e80f36ca1de6787840b0c65dd217159879f4f62164d6475"
+    },
+    "or19_trace": {
+      "path": "outputs/observable_registration_unilateral_push_dynamic_replay_v1/trace.json",
+      "sha256": "8d0a5d461428a55a2469acefaaf79699c959e106ed52e609b5ec77b9652b763b"
+    }
+  },
+  "introspection": {
+    "one_run_only": true,
+    "internal_step_seconds": 0.005,
+    "capture_all_task_and_terminal_settle_steps": true,
+    "capture_selected_pawn_pose_and_velocity": true,
+    "capture_named_contact_position_frame_and_wrench": true,
+    "capture_support_and_unilateral_or_bilateral_jaw_state": true,
+    "capture_relative_contact_velocity_and_tangential_slip": true,
+    "model_change_allowed": false,
+    "configuration_change_allowed": false,
+    "action_change_allowed": false,
+    "parameter_selection_allowed": false,
+    "camera_fit_allowed": false
+  },
+  "reporting": {
+    "analysis_source_sample_start": 210,
+    "analysis_source_sample_end": 300,
+    "orientation_event_threshold_degrees": 5.0,
+    "support_loss_minimum_consecutive_steps": 3,
+    "slip_event_threshold_m_s": 0.02,
+    "require_exact_or19_receipt_reproduction": true,
+    "global_mapping_approval_allowed": false,
+    "transfer_claim_allowed": false
+  },
+  "authority": {
+    "simulator_replay": true,
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

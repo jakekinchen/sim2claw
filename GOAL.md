@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR21_EXACT_REPLAY_CONTACT_CAUSALITY_INTROSPECTION`
+Status: `IN_PROGRESS_OR22A_PI_ACTION_MOTION_ALIGNMENT`
 
 ## Active mission
 
@@ -9,15 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR21_EXACT_REPLAY_CONTACT_CAUSALITY_INTROSPECTION`
+`OR22A_PI_ACTION_MOTION_ALIGNMENT`
 
 ## Current card
 
-`OR21`
+`OR22A`
 
 ## Current evidence
 
-- Proof class: `retrospective_outcome_informed_exact_action_simulator_introspection_no_parameter_selection_no_promotion_authority`.
+- Proof class: `retained_same_run_pi_motion_energy_to_host_joint_motion_interval_alignment_no_task_outcome_fit`.
 
 ## Authority
 
@@ -32,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`run_model_identical_byte_identical_or19_introspection_then_freeze_result_before_pi_proxy_analysis`
+`build_and_validate_same_run_pi_motion_energy_to_joint_motion_action_interval_alignment`
 
 ## Stop conditions
 
