@@ -1,0 +1,159 @@
+{
+  "schema_version": "sim2claw.observable_spatial_validation_acquisition_contract.v1",
+  "transaction_id": "observable-spatial-validation-acquisition-v1",
+  "status": "frozen_before_post_service_inputs",
+  "proof_class": "prospective_motion_free_post_service_validation_acquisition_readiness",
+  "mission_scope": {
+    "purpose": "Reserve four fresh no-contact C922 static poses for no-refit validation of one later-frozen shoulder-pan and shoulder-lift zero-offset candidate.",
+    "registration_only": true,
+    "task_action": false,
+    "pawn_contact": false,
+    "counted_physical_attempt": false,
+    "fit_parameter_values_produced": false,
+    "validation_images_opened": false,
+    "transfer_claim": false
+  },
+  "sources": {
+    "or7b_closeout": {
+      "path": "configs/decisions/observable_body_joint_zero_offset_mechanism_v1_closeout.json",
+      "sha256": "f0d7d2b7966b8183356a91f121c70aaa2c613b89ade18a5707338076688f50f7",
+      "use": "identifiability result and exact fresh-validation requirement"
+    },
+    "or8_closeout": {
+      "path": "configs/decisions/observable_registration_studio_publication_v1_closeout.json",
+      "sha256": "815384a834061bc9ee2387537a6e72c5e1a573f48a50f4ce95b6931b8527fff5",
+      "use": "published evidence boundary and unchanged transfer ledger"
+    },
+    "v4_acquisition_design_basis": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_acquisition_v4.json",
+      "sha256": "605f8973553e14d488dd43a5aab51e2b6915215553033878aba6a2577d0e01da",
+      "use": "current-repository modeled joint and empirical C922 visibility envelope only; no prior image or outcome is admitted"
+    },
+    "v4_route_design_basis": {
+      "path": "configs/hardware/bidirectional_pawn_push_v2_registration_route_v4.json",
+      "sha256": "a18e263a380f091ae98c84c77d7da5e0bfe4a4210dada7ce7d5012113c1b4d0b",
+      "use": "current-repository route-review requirements only; prior action arrays and physical authority are not reused"
+    }
+  },
+  "camera_contract": {
+    "role": "fixed_c922",
+    "camera_name": "C922 Pro Stream Webcam",
+    "camera_unique_id": "0x8310000046d085c",
+    "camera_model_id": "UVC Camera VendorID_1133 ProductID_2140",
+    "format_index": 16,
+    "range_index": 0,
+    "width": 640,
+    "height": 480,
+    "pixel_format": "420v",
+    "supported_fps": 30.00003000003,
+    "fixed_mount_token": "current-workcell-fixed-mount-20260728-v2-registration",
+    "both_distal_jaw_endpoints_visible_required": true,
+    "board_lattice_visible_required": true,
+    "d405_rgb_required": false,
+    "d405_depth_required": false,
+    "metric_wrist_depth_may_be_imputed": false
+  },
+  "pose_design": {
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "units": "degrees_percent",
+    "design_envelope": {
+      "shoulder_pan_degrees": [-21.0, 9.0],
+      "shoulder_lift_degrees": [-90.0, -85.0]
+    },
+    "fixed_values": {
+      "elbow_flex_degrees": 99.47252747252747,
+      "wrist_flex_degrees": -20.0,
+      "wrist_roll_degrees": -102.81318681318682,
+      "gripper_percent": 2.494061757719715
+    },
+    "minimum_shoulder_pan_span_degrees": 10.0,
+    "minimum_shoulder_lift_span_degrees": 3.0,
+    "targets": [
+      {
+        "opaque_id": "or9-validation-01",
+        "target_id": "or9-val-panm18-liftm86",
+        "physical_degrees_percent": [-18.0, -86.0, 99.47252747252747, -20.0, -102.81318681318682, 2.494061757719715]
+      },
+      {
+        "opaque_id": "or9-validation-02",
+        "target_id": "or9-val-panm18-liftm89",
+        "physical_degrees_percent": [-18.0, -89.0, 99.47252747252747, -20.0, -102.81318681318682, 2.494061757719715]
+      },
+      {
+        "opaque_id": "or9-validation-03",
+        "target_id": "or9-val-panp02-liftm86",
+        "physical_degrees_percent": [2.0, -86.0, 99.47252747252747, -20.0, -102.81318681318682, 2.494061757719715]
+      },
+      {
+        "opaque_id": "or9-validation-04",
+        "target_id": "or9-val-panp02-liftm89",
+        "physical_degrees_percent": [2.0, -89.0, 99.47252747252747, -20.0, -102.81318681318682, 2.494061757719715]
+      }
+    ],
+    "prohibited_prior_target_ids": [
+      "v2r4-heldout-panm16-liftm88",
+      "v2r4-heldout-panm07-liftm86",
+      "v2r4-heldout-panp00-liftm89",
+      "v2r4-heldout-panp04-liftm87"
+    ],
+    "prior_images_annotations_outcomes_and_action_arrays_reused": false
+  },
+  "role_separation": {
+    "existing_six_open_poses_remain_fit_identifiability_only": true,
+    "all_four_new_targets_are_validation_only": true,
+    "candidate_must_be_frozen_before_any_validation_image_open": true,
+    "all_four_validation_members_open_together_once": true,
+    "postopen_refit_or_threshold_change_forbidden": true,
+    "task_episode_excluded": true
+  },
+  "required_external_inputs": {
+    "follower_elbow_service_receipt": null,
+    "fresh_torque_off_identity_and_limits_receipt": null,
+    "fresh_current_physical_authority_receipt": null,
+    "fresh_cpu_fp64_route_collision_camera_review": null
+  },
+  "successor_binding_policy": {
+    "this_contract_may_be_edited_after_freeze": false,
+    "versioned_successor_required_to_bind_external_inputs": true,
+    "route_or_action_compilation_allowed_by_this_contract": false,
+    "camera_open_allowed_by_this_contract": false,
+    "gateway_construction_allowed_by_this_contract": false,
+    "physical_motion_allowed_by_this_contract": false,
+    "validation_open_allowed_by_this_contract": false
+  },
+  "future_route_gates": {
+    "reviewed_gateway_only": true,
+    "fresh_post_service_start_anchor_required": true,
+    "fresh_calibrated_joint_limits_required": true,
+    "cpu_fp64_joint_collision_and_camera_review_required": true,
+    "maximum_body_slew_degrees_per_second": 3.0,
+    "pawn_board_table_and_self_contact_forbidden": true,
+    "camera_ready_before_gateway_open": true,
+    "stop_on_tracking_camera_stall_contact_or_identity_error": true,
+    "torque_off_every_exit": true,
+    "exact_requested_mapped_sent_bytes_required": true,
+    "rate_limiting_clamping_smoothing_retiming_and_action_repair_forbidden": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway_construction": false,
+    "serial": false,
+    "torque": false,
+    "physical_motion": false,
+    "validation_open": false,
+    "fit": false,
+    "simulator_replay": false,
+    "counted_task_action": false,
+    "transfer": false,
+    "training": false,
+    "promotion": false,
+    "paid_compute": false
+  }
+}

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `COMPLETE_EVIDENCE_LIMITED_EXTERNAL_SERVICE_AND_FRESH_VALIDATION_BOUNDARY`
+Status: `ACTIVE_OR9_POST_SERVICE_VALIDATION_ACQUISITION_READINESS`
 
 Created: `2026-07-29`
 
@@ -95,10 +95,11 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR7C | `NOT_RUN_PREREQUISITE_FAILED` | Fit and no-refit validate the spatial mechanism. | Static fit and newly opened validation pass; aperture remains fixed; camera, action, plant, contact, and object remain unchanged. | OR7B has no admissible untouched validation cohort; fitting is prohibited. |
 | OR7D | `NOT_RUN_PREREQUISITE_FAILED` | Run another exact-action replay only if OR7C passes prospectively frozen static gates. | New write-once experiment; exact C6 identity; one declared spatial change on top of OR6; natural contact only. | OR7C did not run; no spatial candidate or replay authority exists. |
 | OR8 | `PASS` | Publish and close the evidence chain. | Studio exposes physical/simulator camera alignment, tracks, missingness, residuals, first divergence, mechanism change, C6-versus-successor outcome, proof limits, and mobile/desktop acceptance. Focused and broad relevant tests pass; queue/graph/GOAL agree; `HEAD == origin/main`; worktree clean. | Closeout SHA `815384a834061bc9ee2387537a6e72c5e1a573f48a50f4ce95b6931b8527fff5`; publication receipt artifact `22e1b8102bf3f629a2a6c0b1b030910493fe34604d521ea4e64121506e858657`; supplement artifact `59215118ae4c6c2829d852c6e26db4099e8aaa9ef7f56befaec559e2c4d602ce`; desktop and `390×844` mobile acceptance pass; `51` broad tests pass. |
+| OR9 | `ACTIVE` | Freeze the exact post-service four-pose validation acquisition seam without opening hardware. | Four fresh validation-only joint targets are prospectively fixed inside the modeled visibility envelope; pan span is at least `10°`, lift span at least `3°`; both distal jaw endpoints and board lattice are required; D405 depth is optional; prior images, annotations, outcomes, and action arrays are excluded. The readiness evaluator must pass design gates and fail closed before route/action compilation on service, authority, fresh torque-off limits, and a fresh CPU/fp64 route review. | Contract `configs/acquisition/observable_spatial_validation_acquisition_v1.json`, SHA `94b482298f6db49facc930a9bec8205a33de7a152a756817361dcb973424aae0`; four new targets span `20°` pan and `3°` lift; implementation and tests frozen before the official readiness receipt. |
 
-## Campaign closeout
+## Retained-data campaign closeout and acquisition continuation
 
-All safe retained-data cards are terminal. The campaign improved the validated
+All retained-data fitting/replay cards are terminal. The campaign improved the validated
 jaw-aperture projection but did not improve the exact-action task result:
 aperture fit/validation RMS moved from `21.259→1.848 px` and
 `24.045→3.828 px`, while the two exact-action simulator replays remain `0/2`
@@ -108,12 +109,12 @@ bounded shoulder-pan/shoulder-lift family is locally identifiable on fit poses,
 but no admissible untouched validation cohort remains, so no spatial values
 were fit and no successor replay was authorized.
 
-The next admissible step is not another outcome-tuned replay. It is four new
-no-contact C922 static poses after follower-elbow service and fresh authority,
-with the same fixed camera mount/mode, both distal jaw endpoints visible,
-`≥10°` shoulder-pan span, and `≥3°` shoulder-lift span. That capture is not a
-physical pawn-task attempt. Until it exists, global mapping, metric wrist depth,
-matching action-to-task transfer, and physical transfer remain unapproved.
+The next admissible step is not another outcome-tuned replay. OR9 now freezes
+the four new no-contact C922 static targets and the fail-closed requirements
+that must precede route compilation. It does not reuse prior action arrays or
+grant authority. Until post-service inputs exist and a versioned successor
+passes a fresh route review, global mapping, metric wrist depth, matching
+action-to-task transfer, and physical transfer remain unapproved.
 
 ## Milestone invariants
 
@@ -170,11 +171,11 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: COMPLETE_EVIDENCE_LIMITED_EXTERNAL_SERVICE_AND_FRESH_VALIDATION_BOUNDARY
-Active card: none
+Current state: ACTIVE_OR9_POST_SERVICE_VALIDATION_ACQUISITION_READINESS
+Active card: OR9
 Completed: immutable predecessor C0-C9; OR0-OR8; OR7C/OR7D not run because their prerequisite failed; camera endpoint REAL-to-SIM 1/1
-Evidence: OR8 receipt artifact 22e1b8102bf3f629a2a6c0b1b030910493fe34604d521ea4e64121506e858657; supplement artifact 59215118ae4c6c2829d852c6e26db4099e8aaa9ef7f56befaec559e2c4d602ce; desktop and mobile acceptance pass; 51 broad tests pass
-Remaining: no safe retained-data card
-Physical boundary: follower elbow service, fresh authority, and four new no-contact C922 validation poses; hardware authority false
-Next step: after service and fresh authority, capture the four-pose static validation cohort and freeze one pan/lift candidate before opening validation
+Evidence: OR9 contract 94b482298f6db49facc930a9bec8205a33de7a152a756817361dcb973424aae0 freezes four new validation-only targets spanning 20 deg pan and 3 deg lift with all hardware authority false
+Remaining: freeze commit, official motion-free readiness receipt, closeout verification
+Physical boundary: follower elbow service, fresh current authority, torque-off identity/limits, and fresh CPU/fp64 route review; hardware authority false
+Next step: commit the frozen OR9 design, compile its write-once readiness receipt, and close the remaining software seam
 ```

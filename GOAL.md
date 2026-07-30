@@ -1,10 +1,10 @@
 # sim2claw Goal
 
-Status: `OBSERVABLE ALIGNMENT SUCCESSOR COMPLETE; EXTERNAL SERVICE AND FRESH VALIDATION BOUNDARY`
+Status: `OBSERVABLE ALIGNMENT SUCCESSOR ACTIVE; OR9 POST-SERVICE VALIDATION ACQUISITION READINESS`
 
-## Completed long-horizon alignment successor
+## Active long-horizon alignment successor
 
-The authoritative completed queue is
+The authoritative queue is
 `docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md`.
 It preserves the immutable C6 `0/1` action-to-outcome result and directly
 evaluates the missing causal evidence: held-out camera/world registration,
@@ -45,8 +45,16 @@ poses: earlier heldouts are reuse-forbidden, v4 has already been opened, and
 the task episode is sealed from calibration. No offset values were produced,
 no validation image was opened, and no successor replay is authorized. OR8
 publishes this exact boundary in the read-only Studio on desktop and phone.
-The safe retained-data campaign is complete; the next admissible input is four
-post-service, no-contact C922 validation poses under fresh authority.
+The retained-data fitting/replay campaign is complete. OR9 now freezes the
+four post-service, no-contact C922 validation targets and a fail-closed
+readiness evaluator before any fresh authority, route compilation, camera
+open, or motion. The new targets span `20°` shoulder pan and `3°` shoulder
+lift, require both distal jaw endpoints and the board lattice to be visible,
+and do not require D405 depth. Prior images, annotations, outcomes, and action
+arrays are excluded. The official readiness receipt must remain blocked until
+elbow service, fresh torque-off identity/limits, current authority, and a
+fresh CPU/fp64 collision-camera route review are bound in a versioned
+successor.
 
 ## Latest realized-action outcome result
 

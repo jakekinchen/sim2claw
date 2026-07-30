@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Goal Loop
 
-Status: `COMPLETE_EVIDENCE_LIMITED_EXTERNAL_SERVICE_AND_FRESH_VALIDATION_BOUNDARY`
+Status: `ACTIVE_OR9_POST_SERVICE_VALIDATION_ACQUISITION_READINESS`
 
 Created: `2026-07-29`
 
@@ -98,13 +98,13 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: COMPLETE_EVIDENCE_LIMITED
-Active card: none
+Current state: ACTIVE
+Active card: OR9
 Completed: predecessor evidence; OR0-OR8; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
-Evidence: OR8 receipt artifact 22e1b8102bf3f629a2a6c0b1b030910493fe34604d521ea4e64121506e858657; supplement artifact 59215118ae4c6c2829d852c6e26db4099e8aaa9ef7f56befaec559e2c4d602ce; desktop and 390x844 mobile acceptance pass; 51 broad tests pass
-Remaining: no safe retained-data card
-Blockers: follower-elbow service, fresh authority, and four new no-contact C922 static validation poses
-Next step: after service and fresh authority, capture four no-contact poses with both jaw endpoints visible, >=10 deg pan span, and >=3 deg lift span; then freeze one candidate before opening validation
+Evidence: OR9 contract 94b482298f6db49facc930a9bec8205a33de7a152a756817361dcb973424aae0 freezes four validation-only targets spanning 20 deg pan and 3 deg lift; prior images, outcomes, and action arrays are excluded
+Remaining: OR9 freeze commit, official motion-free readiness receipt, and tracked closeout
+Blockers: physical capture remains gated on follower-elbow service, fresh authority, torque-off identity/limits, and fresh CPU/fp64 route review
+Next step: commit the OR9 design before official evaluation, then compile the write-once fail-closed readiness receipt
 ```
 
 ## Stop conditions

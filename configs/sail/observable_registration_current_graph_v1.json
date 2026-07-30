@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "complete_evidence_limited_external_service_and_fresh_validation_boundary",
+  "status": "active_or9_post_service_validation_acquisition_readiness",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "98f33f8266a3df717e4c30c480b2bde5cba7ecdf019feab3cbc58addecdf6cb3",
+      "sha256": "83f4a487b7a47e5b54de69ddf85c97af54b062cfb6cb7c8ee59be65324eefc87",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -125,6 +125,11 @@
       "path": "configs/decisions/observable_registration_studio_publication_v1_closeout.json",
       "sha256": "815384a834061bc9ee2387537a6e72c5e1a573f48a50f4ce95b6931b8527fff5",
       "proof_class": "read_only_hash_bound_observable_registration_and_exact_action_replay_publication"
+    },
+    "or9_contract": {
+      "path": "configs/acquisition/observable_spatial_validation_acquisition_v1.json",
+      "sha256": "94b482298f6db49facc930a9bec8205a33de7a152a756817361dcb973424aae0",
+      "proof_class": "prospective_motion_free_post_service_validation_acquisition_readiness"
     }
   },
   "nodes": [
@@ -138,7 +143,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "complete_evidence_limited",
+      "status": "active_or9",
       "source_binding": "queue"
     },
     {
@@ -294,6 +299,20 @@
       "source_binding": "or8"
     },
     {
+      "id": "session:or9-spatial-validation-acquisition-readiness",
+      "type": "session",
+      "label": "Post-service four-pose spatial validation acquisition readiness",
+      "status": "active",
+      "source_binding": "or9_contract",
+      "data": {
+        "validation_target_count": 4,
+        "shoulder_pan_span_degrees": 20.0,
+        "shoulder_lift_span_degrees": 3.0,
+        "d405_depth_required": false,
+        "hardware_authority": false
+      }
+    },
+    {
       "id": "counterexample:or5-v1-per-view-sensitivity",
       "type": "counterexample",
       "label": "OR5 v1 every-view sensitivity gate",
@@ -436,6 +455,11 @@
       "type": "admitted-to"
     },
     {
+      "source": "session:or8-publication-closeout",
+      "target": "session:or9-spatial-validation-acquisition-readiness",
+      "type": "predicts"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -451,6 +475,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": null,
-  "next_transition": "external_follower_elbow_service_then_four_fresh_no_contact_c922_validation_poses_under_fresh_authority"
+  "active_card": "OR9",
+  "next_transition": "freeze_or9_then_compile_motion_free_fail_closed_readiness_receipt"
 }
