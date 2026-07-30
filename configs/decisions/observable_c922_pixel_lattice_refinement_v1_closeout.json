@@ -1,0 +1,99 @@
+{
+  "schema_version": "sim2claw.observable_c922_pixel_lattice_refinement_closeout.v1",
+  "decision_id": "observable-c922-pixel-lattice-refinement-v1-closeout",
+  "result": "BOARD_PLANE_DIAGNOSTIC_IMPROVED_EXACT_INTRINSICS_UNIDENTIFIED",
+  "proof_class": "retrospective_outcome_informed_retained_pixel_board_plane_camera_diagnostic",
+  "freeze_commit": "21c7bf7",
+  "contract": {
+    "path": "configs/evaluations/observable_c922_pixel_lattice_refinement_v1.json",
+    "sha256": "4aa4d65df5c71fdc0563bd285c6c9b943bccf43edf035d2c9c21b0e94efdca24"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_c922_pixel_lattice_refinement.py",
+    "sha256": "56e9b49a63cb789b0ded63d958c8d5dd3bec534417a1d861e1d0135328c87063"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_c922_pixel_lattice_refinement_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "bf29c29b1160de6e0c48f81f40b7f52d11e09825e95a4beae7f77aa9df4934b7",
+    "artifact_sha256": "520998b716b2d5f42123f21502c37b145ba398f1f3238aa524da5dd9ef0eda13"
+  },
+  "source_reconciliation": {
+    "new_physical_data_rows": 0,
+    "new_camera_opens": 0,
+    "retained_cohort_count": 2,
+    "retained_image_count": 10,
+    "same_camera_identity_and_mode": true,
+    "same_fixed_mount_token": true,
+    "prior_manual_playing_corner_count": 4,
+    "prior_homography_generated_fit_intersection_count": 25,
+    "prior_reported_2_270_px_rms_was_not_25_independent_pixel_measurements": true,
+    "reviewed_visible_intersection_count": 14,
+    "review_mask_used_simulator_residuals": false,
+    "review_mask_used_task_outcomes": false
+  },
+  "cross_cohort_agreement": {
+    "intersection_count": 14,
+    "rms_px": 0.36607697312272947,
+    "max_px": 1.1445370617460184,
+    "passed": true
+  },
+  "camera_comparison_on_observed_pixels": {
+    "prior_model_mean_rms_px": 4.214148143908705,
+    "selected_family_mean_cross_cohort_validation_rms_px": 0.9732522138726536,
+    "selected_family_max_cross_cohort_validation_px": 2.0457383358573025,
+    "rms_improvement_fraction": 0.7690512576594085,
+    "selected_family": "centered_square_pixel_zero_distortion",
+    "pooled_board_plane_fit_rms_px": 0.9394711315690745,
+    "pooled_board_plane_fit_max_px": 1.8991965245094156,
+    "focal_px": 736.8020907010612,
+    "principal_point_px": [320.0, 240.0],
+    "vertical_fov_degrees": 36.08417177815771,
+    "camera_center_task_world_m": [
+      0.29882985282344166,
+      1.0124999986132797,
+      1.1587809968735399
+    ]
+  },
+  "radial_family_decision": {
+    "k1_validation_gain_fraction": -0.00000479552399747677,
+    "k1_promotable": false,
+    "k1_k2_validation_gain_fraction": 0.0027886955896527683,
+    "k1_k2_k2_hit_bound_in_both_cohorts": true,
+    "k1_k2_promotable": false,
+    "distortion_measured": false
+  },
+  "adoption": {
+    "inspection_only_board_plane_camera_candidate": true,
+    "canonical_simulator_camera_replaced": false,
+    "exact_intrinsic_calibration_approved": false,
+    "global_camera_or_robot_mapping_approved": false,
+    "contact_or_task_transfer_approved": false
+  },
+  "limitations": [
+    "The pixel-extraction protocol and finite visible-region mask were developed after retained fit-image inspection, so the result is an outcome-informed retrospective diagnostic rather than pristine heldout validation.",
+    "The 14 accepted intersections are concentrated in the board region not occluded by robot, cable, and pieces; global image coverage is absent.",
+    "Centered principal point, square pixels, and zero distortion remain selected assumptions, not fully measured lens intrinsics.",
+    "A distinct post-freeze pose or exact calibration target corpus is still required for exact/global promotion."
+  ],
+  "verification": {
+    "focused_tests": "6 passed",
+    "deterministic_rebuild": true,
+    "official_receipt_run_count": 1
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "canonical_simulator_camera_replacement": false,
+    "training": false,
+    "paid_compute": false,
+    "global_mapping_approved": false,
+    "transfer_claim": false
+  },
+  "next_card": "OR9_POST_SERVICE_PROSPECTIVE_VALIDATION"
+}

@@ -46,6 +46,10 @@
     "or7b_closeout": {
       "path": "configs/decisions/observable_body_joint_zero_offset_mechanism_v1_closeout.json",
       "sha256": "f0d7d2b7966b8183356a91f121c70aaa2c613b89ade18a5707338076688f50f7"
+    },
+    "or10_closeout": {
+      "path": "configs/decisions/observable_c922_pixel_lattice_refinement_v1_closeout.json",
+      "sha256": "8099deba2fe4dbf51abc7eeb72a5ee95a34098815b5b085dc53520d2a0cea91b"
     }
   },
   "rules": {
@@ -54,6 +58,7 @@
     "proof_class_may_be_promoted": false,
     "missing_metric_depth_may_be_imputed": false,
     "global_mapping_must_remain_unapproved": true,
+    "or10_canonical_camera_replacement_must_remain_false": true,
     "exact_replay_successes_must_equal": 0,
     "exact_replay_attempts_must_equal": 2,
     "validation_required_pose_count": 4,

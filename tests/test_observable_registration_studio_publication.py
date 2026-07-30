@@ -34,6 +34,8 @@ def test_publication_compiler_is_deterministic_and_explicit(tmp_path) -> None:
     assert first["acceptance"]["exact_replay_denominator"] == 2
     assert first["acceptance"]["validation_boundary_explicit"] is True
     assert first["acceptance"]["global_mapping_approved"] is False
+    assert first["acceptance"]["camera_pixel_refinement_present"] is True
+    assert first["acceptance"]["canonical_simulator_camera_replaced"] is False
 
 
 def test_publication_loader_merges_registration_without_timeline_change(
@@ -52,6 +54,13 @@ def test_publication_loader_merges_registration_without_timeline_change(
         "enclosure_fixed_jaw_gap_mm"
     ] > 60.0
     assert registration["spatial_mechanism"]["jacobian_rank"] == 2
+    refinement = registration["camera_pixel_refinement"]
+    assert refinement["reviewed_visible_intersection_count"] == 14
+    assert refinement["cross_cohort_agreement_rms_px"] < 0.4
+    assert refinement["candidate_cross_cohort_validation_rms_px"] < 1.0
+    assert refinement["rms_improvement_fraction"] > 0.75
+    assert refinement["exact_intrinsics_approved"] is False
+    assert refinement["canonical_simulator_camera_replaced"] is False
     assert (
         registration["spatial_mechanism"]["validation_admissible_pose_count"]
         == 0

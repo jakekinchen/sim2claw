@@ -1430,8 +1430,11 @@ function renderProofRegistration() {
   const event = successor.first_contact_divergence;
   const aperture = successor.aperture_correction;
   const replay = successor.exact_replay;
+  const cameraRefinement = successor.camera_pixel_refinement;
   const rows = [
-    ["Camera / board", `${Number(initial.camera_board_reprojection_rms_px).toFixed(3)} px RMS · bounded pinhole`],
+    ["Prior camera / board", `${Number(initial.camera_board_reprojection_rms_px).toFixed(3)} px RMS · four corners + generated lattice`],
+    ["Retained-pixel camera", `${Number(cameraRefinement.prior_model_observed_pixel_rms_px).toFixed(3)} → ${Number(cameraRefinement.candidate_cross_cohort_validation_rms_px).toFixed(3)} px · ${(Number(cameraRefinement.rms_improvement_fraction) * 100).toFixed(1)}% lower`],
+    ["Camera evidence ceiling", `${cameraRefinement.reviewed_visible_intersection_count} points · ${Number(cameraRefinement.cross_cohort_agreement_rms_px).toFixed(3)} px cohort agreement · exact intrinsics NO`],
     ["Robot / jaw", `${Number(initial.robot_jaw_fit_rms_px).toFixed(3)} px fit · mapping not approved`],
     ["Physical enclosure", `#${event.physical_enclosure_sample} · ${event.channel.replaceAll("_", " ")}`],
     ["Simulator consequence", `#${event.simulator_first_pawn_motion_sample} · ${event.gap_samples} samples / ${Number(event.gap_seconds).toFixed(3)} s late`],

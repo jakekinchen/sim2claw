@@ -76,7 +76,11 @@ def load_publication_contract(
         and rules.get("base_timeline_may_be_changed") is False
         and rules.get("proof_class_may_be_promoted") is False
         and rules.get("missing_metric_depth_may_be_imputed") is False
-        and rules.get("global_mapping_must_remain_unapproved") is True,
+        and rules.get("global_mapping_must_remain_unapproved") is True
+        and rules.get(
+            "or10_canonical_camera_replacement_must_remain_false"
+        )
+        is True,
         "registration publication rules widened",
     )
     authority = contract.get("authority")
@@ -114,6 +118,7 @@ def compile_observable_registration_publication(
     or7 = payloads["or7_closeout"]
     or7a = payloads["or7a_closeout"]
     or7b = payloads["or7b_closeout"]
+    or10 = payloads["or10_closeout"]
     rules = contract["rules"]
     _require(
         or2["global_physical_model_mapping_approved"] is False
@@ -129,7 +134,10 @@ def compile_observable_registration_publication(
         and or7b["next_evidence_requirement"][
             "minimum_new_no_contact_static_pose_count"
         ]
-        == int(rules["validation_required_pose_count"]),
+        == int(rules["validation_required_pose_count"])
+        and or10["adoption"]["canonical_simulator_camera_replaced"] is False
+        and or10["adoption"]["exact_intrinsic_calibration_approved"] is False
+        and or10["adoption"]["global_camera_or_robot_mapping_approved"] is False,
         "registration successor proof boundary changed",
     )
     camera = or1["bounded_physical_pinhole"]
@@ -158,6 +166,63 @@ def compile_observable_registration_publication(
                 "tip_reprojection_rms_px"
             ],
             "global_mapping_approved": False,
+        },
+        "camera_pixel_refinement": {
+            "result": or10["result"],
+            "proof_class": or10["proof_class"],
+            "new_physical_data_rows": or10["source_reconciliation"][
+                "new_physical_data_rows"
+            ],
+            "new_camera_opens": or10["source_reconciliation"][
+                "new_camera_opens"
+            ],
+            "prior_fit_was_four_manual_corners_plus_homography_lattice": True,
+            "reviewed_visible_intersection_count": or10[
+                "source_reconciliation"
+            ]["reviewed_visible_intersection_count"],
+            "cross_cohort_agreement_rms_px": or10[
+                "cross_cohort_agreement"
+            ]["rms_px"],
+            "cross_cohort_agreement_max_px": or10[
+                "cross_cohort_agreement"
+            ]["max_px"],
+            "prior_model_observed_pixel_rms_px": or10[
+                "camera_comparison_on_observed_pixels"
+            ]["prior_model_mean_rms_px"],
+            "candidate_cross_cohort_validation_rms_px": or10[
+                "camera_comparison_on_observed_pixels"
+            ]["selected_family_mean_cross_cohort_validation_rms_px"],
+            "candidate_pooled_fit_rms_px": or10[
+                "camera_comparison_on_observed_pixels"
+            ]["pooled_board_plane_fit_rms_px"],
+            "candidate_pooled_fit_max_px": or10[
+                "camera_comparison_on_observed_pixels"
+            ]["pooled_board_plane_fit_max_px"],
+            "rms_improvement_fraction": or10[
+                "camera_comparison_on_observed_pixels"
+            ]["rms_improvement_fraction"],
+            "focal_px": or10["camera_comparison_on_observed_pixels"][
+                "focal_px"
+            ],
+            "vertical_fov_degrees": or10[
+                "camera_comparison_on_observed_pixels"
+            ]["vertical_fov_degrees"],
+            "selected_family": or10["camera_comparison_on_observed_pixels"][
+                "selected_family"
+            ],
+            "distortion_measured": or10["radial_family_decision"][
+                "distortion_measured"
+            ],
+            "exact_intrinsics_approved": or10["adoption"][
+                "exact_intrinsic_calibration_approved"
+            ],
+            "global_mapping_approved": or10["adoption"][
+                "global_camera_or_robot_mapping_approved"
+            ],
+            "canonical_simulator_camera_replaced": or10["adoption"][
+                "canonical_simulator_camera_replaced"
+            ],
+            "limitations": or10["limitations"],
         },
         "physical_observation": {
             "c922_frame_count": or0["camera_streams"]["c922"]["frame_count"],
@@ -272,9 +337,11 @@ def compile_observable_registration_publication(
         "next_evidence_requirement": or7b["next_evidence_requirement"],
         "claim_boundary": (
             "This supplement projects retained OR0-OR7B evidence beside the "
-            "immutable C6 Studio proof. It performs no fit, replay, validation "
-            "open, promotion, or physical action. Global mapping, matching "
-            "action-to-task transfer, and metric wrist depth remain unapproved."
+            "immutable C6 Studio proof. OR10 adds a retrospective retained-pixel "
+            "board-plane challenger, not pristine validation. It performs no "
+            "replay, promotion, or physical action. Exact intrinsics, global "
+            "mapping, matching action-to-task transfer, and metric wrist depth "
+            "remain unapproved."
         ),
         "hashes": {
             label: {
@@ -319,6 +386,8 @@ def compile_observable_registration_publication(
             "validation_boundary_explicit": True,
             "missing_depth_explicit": True,
             "global_mapping_approved": False,
+            "camera_pixel_refinement_present": True,
+            "canonical_simulator_camera_replaced": False,
             "desktop_and_mobile_surface_required": True,
         },
         "authority": contract["authority"],
