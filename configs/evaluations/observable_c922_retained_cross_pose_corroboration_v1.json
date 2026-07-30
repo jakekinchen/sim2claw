@@ -1,0 +1,171 @@
+{
+  "schema_version": "sim2claw.observable_c922_retained_cross_pose_corroboration_contract.v1",
+  "experiment_id": "observable-c922-retained-cross-pose-corroboration-v1",
+  "card_id": "OR10B",
+  "frozen_date": "2026-07-29",
+  "evidence_role": "retrospective_retained_cross_pose_intrinsics_corroboration_diagnostic",
+  "one_run_only": true,
+  "sources": {
+    "historical_sysid_split": {
+      "path": "configs/sysid/physical_pawn_sysid_split_v1.json",
+      "sha256": "1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08"
+    },
+    "historical_board_seed": {
+      "path": "configs/experiments/pawn_bg_c922_angle_transfer_v1.json",
+      "sha256": "4179694f20bc1e5aa6270bb20f0b2a616d99845d15cdb00773bac9f1aec24f71"
+    },
+    "or10_contract": {
+      "path": "configs/evaluations/observable_c922_pixel_lattice_refinement_v1.json",
+      "sha256": "4aa4d65df5c71fdc0563bd285c6c9b943bccf43edf035d2c9c21b0e94efdca24"
+    },
+    "or10_closeout": {
+      "path": "configs/decisions/observable_c922_pixel_lattice_refinement_v1_closeout.json",
+      "sha256": "8099deba2fe4dbf51abc7eeb72a5ee95a34098815b5b085dc53520d2a0cea91b"
+    }
+  },
+  "historical_episode_selection": {
+    "source_split": "train",
+    "included_episode_ids": [
+      "20260719T030206Z-af661460",
+      "20260719T031324Z-bf91502b",
+      "20260719T031615Z-0e058ca2",
+      "20260719T031715Z-61ebb199",
+      "20260719T031813Z-b147b429",
+      "20260719T032315Z-d3c3cf0b",
+      "20260719T032400Z-052d5137",
+      "20260719T032440Z-f728a18c",
+      "20260719T032531Z-06be393c",
+      "20260719T032620Z-0c7e3d86",
+      "20260719T032853Z-1ee203e8",
+      "20260719T032935Z-66894edc",
+      "20260719T033023Z-fd7005f3",
+      "20260719T035413Z-5ab5603f"
+    ],
+    "quarantined_advisory_inspection": {
+      "episode_id": "20260719T030059Z-a26f8400",
+      "reason": "one_pre_action_frame_was_opened_only_to_validate_fable_advice_before_this_contract_froze"
+    },
+    "preserved_historical_held_out_episode_ids": [
+      "20260719T031518Z-34bff0dd",
+      "20260719T032810Z-9e623c5e",
+      "20260719T035317Z-2a332ab7"
+    ],
+    "held_out_pixels_may_be_opened": false,
+    "task_outcomes_may_be_used": false
+  },
+  "camera_identity_contract": {
+    "historical_workspace": "hackathon_era_workspace",
+    "current_or10_workspace": "post_hackathon_home_workspace",
+    "workspace_and_mount_match": false,
+    "camera_angle_match": false,
+    "recorded_name": "C922 Pro Stream Webcam",
+    "configured_width": 640,
+    "configured_height": 480,
+    "configured_fps": 30,
+    "configured_pixel_format": "nv12",
+    "or10_unique_id": "0x8310000046d085c",
+    "historical_unique_id_present": false,
+    "same_physical_device_claimed": false,
+    "same_model_name_and_image_size_required": true,
+    "identity_limitation": "Historical receipts bind only the model name, image size, configured fps, and pixel format. The hackathon-era workspace, mount, and camera angle differ from the post-hackathon home workspace. Cross-pose agreement can corroborate only the focal/lens family and cannot prove the historical and current captures came from the same physical unit or validate current extrinsics."
+  },
+  "board_seed": {
+    "calibration_id": "c922_board_grid_homography_proposal_20260719_v1",
+    "use": "search_initialization_only_not_an_observation",
+    "pixel_to_board_homography_sha256": "3252c0a3aa8b57d643880ed17ff589db56670be3522cd2f92d288ce9b6c442e1",
+    "playing_side_m": 0.3556,
+    "playing_corner_order": [
+      "a8_outer",
+      "h8_outer",
+      "h1_outer",
+      "a1_outer"
+    ],
+    "metric_pose_authority": false
+  },
+  "frame_sampling": {
+    "stored_video_orientation": "raw_unrotated_pixels",
+    "receipt_orientation_rotation_degrees": 180,
+    "apply_receipt_rotation_before_extraction": false,
+    "reason": "the frozen proposal homography is expressed in stored raw-video pixels; a 180-degree image rotation leaves centered focal magnitude unchanged",
+    "start_seconds": 1.0,
+    "end_field": "overhead_video.action_start_video_offset_seconds",
+    "end_inclusive": false,
+    "frames_per_episode": 12,
+    "time_rule": "linspace_start_to_action_start_with_endpoint_excluded",
+    "frame_index_rule": "floor(sample_time_seconds_times_decoded_fps)",
+    "post_action_frames_allowed": false
+  },
+  "pixel_extraction": {
+    "protocol_source": "observable_c922_pixel_lattice_refinement_v1",
+    "protocol_source_freeze_commit": "21c7bf7",
+    "manual_mask_iteration_after_run_allowed": false,
+    "canonical_side_px": 720,
+    "interior_indices": [
+      [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1],
+      [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2],
+      [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3], [7, 3],
+      [1, 4], [2, 4], [3, 4], [4, 4], [5, 4], [6, 4], [7, 4],
+      [1, 5], [2, 5], [3, 5], [4, 5], [5, 5], [6, 5], [7, 5],
+      [1, 6], [2, 6], [3, 6], [4, 6], [5, 6], [6, 6], [7, 6],
+      [1, 7], [2, 7], [3, 7], [4, 7], [5, 7], [6, 7], [7, 7]
+    ],
+    "search_radius_px": 12,
+    "quadrant_inner_radius_px": 4,
+    "quadrant_outer_radius_px": 16,
+    "top_frames_per_episode_per_intersection": 3,
+    "minimum_median_saddle_score": 50.0,
+    "maximum_within_episode_rms_dispersion_px": 1.6,
+    "minimum_seed_source_margin_px": 18.0
+  },
+  "reference_model": {
+    "family_id": "centered_square_pixel_zero_distortion",
+    "focal_px": 736.8020907010612,
+    "principal_point_px": [320.0, 240.0],
+    "square_pixels": true,
+    "skew_px": 0.0,
+    "radial_term_count": 0,
+    "minimum_focal_px": 250.0,
+    "maximum_focal_px": 1500.0,
+    "radial_bound": 0.5,
+    "or10_observed_radial_interval_span_px": 106.33521510467263
+  },
+  "acceptance_gates": {
+    "minimum_accepted_intersections": 12,
+    "minimum_episode_support_per_intersection": 3,
+    "maximum_cross_episode_rms_dispersion_px": 0.75,
+    "minimum_historical_to_or10_radial_span_ratio": 2.0,
+    "maximum_relative_focal_delta": 0.03,
+    "minimum_radial_family_rms_gain_fraction_for_diagnostic_interest": 0.05,
+    "minimum_positive_depth_fraction": 1.0
+  },
+  "decision_contract": {
+    "pass_result": "RETAINED_CROSS_POSE_FOCAL_FAMILY_CORROBORATED",
+    "negative_result": "TERMINAL_INSUFFICIENT_OR_DISAGREEING_RETAINED_CROSS_POSE_EVIDENCE",
+    "one_run_closes_zero_new_data_camera_lane": true,
+    "disagreement_attribution": "ambiguous_between_camera_identity_autofocus_workspace_mount_state_seed_bias_and_model_error",
+    "radial_result_may_measure_distortion": false
+  },
+  "proof_boundaries": {
+    "retained_historical_pixels_are_pristine_heldout": false,
+    "cross_pose_agreement_is_exact_intrinsic_calibration": false,
+    "cross_pose_agreement_proves_same_physical_camera_unit": false,
+    "radial_residual_trend_is_measured_distortion": false,
+    "hackathon_workspace_pose_validates_home_workspace_pose": false,
+    "historical_pose_calibrates_current_extrinsics": false,
+    "camera_diagnostic_may_approve_global_robot_mapping": false,
+    "camera_diagnostic_may_replace_canonical_simulator_camera": false,
+    "camera_diagnostic_may_approve_contact_or_task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "simulator_canonical_camera_replacement": false,
+    "training": false,
+    "paid_compute": false
+  }
+}
