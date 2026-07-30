@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "complete_or10_board_plane_diagnostic_improved_exact_intrinsics_external_boundary",
+  "status": "complete_or10b_terminal_cross_workspace_focal_disagreement_zero_data_lane_closed",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "8029cefcd114cff866d3073579e41616affb804520c8a414f4c469e0566693a2",
+      "sha256": "f0fec25c4db802f600f37052fbbbed58d82d142c6e1c95469fbdf2c65bcdf18b",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -150,6 +150,11 @@
       "path": "configs/decisions/observable_registration_studio_publication_v2_closeout.json",
       "sha256": "67ff39a19c4199348503dd3334050ced865a3ebd96325f274292e3898b47d423",
       "proof_class": "read_only_hash_bound_observable_registration_exact_action_replay_and_retrospective_camera_diagnostic_publication"
+    },
+    "or10b": {
+      "path": "configs/decisions/observable_c922_retained_cross_pose_corroboration_v1_closeout.json",
+      "sha256": "69e776797c1183bce710588a92f01c988209d3d1ff9fc8a5b03b028a16169874",
+      "proof_class": "retrospective_retained_cross_workspace_focal_family_corroboration_terminal_disagreement"
     }
   },
   "nodes": [
@@ -163,7 +168,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "complete_board_plane_camera_improved_exact_intrinsics_external_boundary",
+      "status": "complete_cross_workspace_focal_disagreement_zero_data_lane_closed",
       "source_binding": "queue"
     },
     {
@@ -357,6 +362,33 @@
       }
     },
     {
+      "id": "counterexample:or10b-cross-workspace-focal",
+      "type": "counterexample",
+      "label": "Hackathon-to-home C922 focal-family corroboration",
+      "status": "terminal_disagreement_zero_data_camera_lane_closed",
+      "source_binding": "or10b",
+      "data": {
+        "historical_workspace": "hackathon_era_workspace",
+        "current_workspace": "post_hackathon_home_workspace",
+        "workspace_mount_and_camera_angle_match": false,
+        "same_physical_camera_unit_proven": false,
+        "historical_train_video_count": 14,
+        "historical_held_out_video_count_opened": 0,
+        "accepted_intersection_count": 30,
+        "cross_episode_dispersion_mean_px": 0.6322116340315139,
+        "historical_to_or10_radial_span_ratio": 2.3764505001229876,
+        "historical_focal_px": 623.2519702286993,
+        "or10_focal_px": 736.8020907010612,
+        "relative_focal_delta": 0.1541121040581194,
+        "maximum_allowed_relative_focal_delta": 0.03,
+        "focal_family_corroborated": false,
+        "distortion_measured": false,
+        "exact_intrinsics_approved": false,
+        "current_extrinsics_approved": false,
+        "global_mapping_approved": false
+      }
+    },
+    {
       "id": "session:or10-camera-publication-closeout",
       "type": "session",
       "label": "Retained-pixel camera diagnostic Studio publication",
@@ -412,7 +444,7 @@
       "id": "observation:c922",
       "type": "observation_channel",
       "label": "Fixed overhead C922 RGB",
-      "status": "retained_1029_frames_30_fps_intrinsics_unapproved"
+      "status": "current_intrinsics_unapproved_historical_cross_workspace_focal_disagrees"
     },
     {
       "id": "observation:d405-rgb",
@@ -526,6 +558,11 @@
       "type": "admitted-to"
     },
     {
+      "source": "mapping:or10-retained-pixel-camera-challenger",
+      "target": "counterexample:or10b-cross-workspace-focal",
+      "type": "evaluated-on"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -542,5 +579,5 @@
     }
   ],
   "active_card": null,
-  "next_transition": "external_elbow_service_current_authority_fresh_torque_off_limits_and_cpu_fp64_route_review_then_or9_prospective_four_pose_validation"
+  "next_transition": "zero_new_data_camera_lane_closed_then_external_elbow_service_current_authority_fresh_torque_off_limits_and_cpu_fp64_route_review_then_or9_prospective_four_pose_validation"
 }

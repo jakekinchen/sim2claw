@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `ACTIVE_OR10B_RETAINED_CROSS_POSE_FOCAL_CORROBORATION_FROZEN`
+Status: `COMPLETE_OR10B_TERMINAL_CROSS_WORKSPACE_FOCAL_DISAGREEMENT_ZERO_DATA_LANE_CLOSED`
 
 Created: `2026-07-29`
 
@@ -97,7 +97,7 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR8 | `PASS` | Publish and close the evidence chain. | Studio exposes physical/simulator camera alignment, tracks, missingness, residuals, first divergence, mechanism change, C6-versus-successor outcome, proof limits, and mobile/desktop acceptance. Focused and broad relevant tests pass; queue/graph/GOAL agree; `HEAD == origin/main`; worktree clean. | Closeout SHA `815384a834061bc9ee2387537a6e72c5e1a573f48a50f4ce95b6931b8527fff5`; publication receipt artifact `22e1b8102bf3f629a2a6c0b1b030910493fe34604d521ea4e64121506e858657`; supplement artifact `59215118ae4c6c2829d852c6e26db4099e8aaa9ef7f56befaec559e2c4d602ce`; desktop and `390×844` mobile acceptance pass; `51` broad tests pass. |
 | OR9 | `PASS_DESIGN_READY_BLOCKED_EXTERNAL_INPUTS` | Freeze the exact post-service four-pose validation acquisition seam without opening hardware. | Four fresh validation-only joint targets are prospectively fixed inside the modeled visibility envelope; pan span is at least `10°`, lift span at least `3°`; both distal jaw endpoints and board lattice are required; D405 depth is optional; prior images, annotations, outcomes, and action arrays are excluded. The readiness evaluator must pass design gates and fail closed before route/action compilation on service, authority, fresh torque-off limits, and a fresh CPU/fp64 route review. | Closeout SHA `dd1757e9a93ff69c15ed05ae64657230cfa7ed1fe183ce44e0f75a217c011987`; artifact `da04d93eda4313d8be121e0299b1e887b13cd27f10e76f6c58efbf60f73003b1`; `16/16` design gates pass; four targets span `20°` pan and `3°` lift; actions/images/motion/attempts remain zero; `54` broad tests pass. |
 | OR10 | `PASS_BOARD_PLANE_DIAGNOSTIC_EXACT_INTRINSICS_UNIDENTIFIED` | Reconcile the prior homography-generated board lattice with actual retained C922 pixels and fit the richest identifiable zero-new-data board-plane camera challenger. | Bind two exact-mode fixed-mount fit cohorts; extract only a reviewed visible interior-board mask without simulator or task residuals; require at least `12` cross-cohort points, `≤0.75 px` agreement RMS, and `≤1.5 px` max; compare centered square-pixel zero-distortion, `k1`, and `k1+k2` families; radial complexity requires at least `5%` no-refit validation gain and no bound hit. The result remains an outcome-informed retrospective diagnostic with no exact-intrinsic, distortion, global-mapping, canonical-camera-replacement, hardware, replay, or transfer authority. | Artifact `520998b716b2d5f42123f21502c37b145ba398f1f3238aa524da5dd9ef0eda13`; `14` points agree across cohorts at `0.366 px` RMS / `1.145 px` max; prior model scores `4.214 px` RMS on those pixels versus `0.973 px` cross-cohort for the selected zero-distortion challenger, a `76.905%` reduction. Pooled focal is `736.802 px` / vertical FOV `36.084°`. `k1` has no gain; `k1+k2` gains only `0.279%` and hits the `k2` bound. Exact intrinsics, distortion, global mapping, and canonical replacement remain false. |
-| OR10B | `FROZEN_READY` | Run the final zero-new-data camera successor: a focal/lens-family corroboration against retained hackathon-era C922 videos from a different workspace, mount, and camera angle. | Use only the 14 frozen historical train videos not opened for this advisory, preserve all three historical held-outs, apply the frozen OR10 saddle protocol without mask iteration, require at least `12` intersections, `≤0.75 px` cross-episode dispersion, at least `2×` OR10 radial-span coverage, and focal agreement within `3%`. One run closes the zero-new-data camera lane. | Contract `configs/evaluations/observable_c922_retained_cross_pose_corroboration_v1.json`; the previously opened `20260719T030059Z-a26f8400` advisory frame is quarantined. Historical receipts lack the current C922 unique ID, and the hackathon workspace angle cannot validate home-workspace extrinsics. Pass or negative remains a retrospective cross-pose focal diagnostic only. |
+| OR10B | `TERMINAL_DISAGREEMENT_ZERO_DATA_LANE_CLOSED` | Run the final zero-new-data camera successor: a focal/lens-family corroboration against retained hackathon-era C922 videos from a different workspace, mount, and camera angle. | Use only the 14 frozen historical train videos not opened for this advisory, preserve all three historical held-outs, apply the frozen OR10 saddle protocol without mask iteration, require at least `12` intersections, `≤0.75 px` cross-episode dispersion, at least `2×` OR10 radial-span coverage, and focal agreement within `3%`. One run closes the zero-new-data camera lane. | Artifact `5cf7db1d5d7633ceec66885ecaa94f5e92db754cb77785c53c4c5a00f28df145`; `30` intersections pass at `0.632 px` mean / `0.741 px` max cross-episode dispersion and `2.376×` OR10 radial span. Historical focal is `623.252 px` at `0.432 px` RMS with all 14 episode fits spanning `620.128–625.962 px`; OR10 is `736.802 px`, a `15.411%` disagreement that fails the frozen `3%` gate. Historical camera-unit identity and focus/FOV state are unresolved; no exact intrinsic, distortion, current-extrinsic, mapping, camera-replacement, replay, or transfer claim is promoted. |
 
 ## Retained-data campaign closeout and acquisition continuation
 
@@ -120,7 +120,11 @@ evaluated the actual retained board pixels under a proof-limited retrospective
 protocol and publishes the resulting inspection camera in Studio. OR10B is the
 single final retained-data focal-family corroboration: it uses a different
 hackathon-era workspace, mount, and camera angle, so it cannot validate current
-extrinsics or camera center. OR9 remains
+extrinsics or camera center. OR10B exhausted that lane with a well-supported
+negative: historical pixels were plentiful and repeatable, but their focal
+estimate disagreed with OR10 by `15.411%`. The result cannot identify whether
+the cause is camera-unit identity, autofocus or digital FOV state, workspace
+mount state, seed bias, principal point, or lens-model error. OR9 remains
 the prospective path for exact calibration and spatial validation. OR9 freezes
 the four new no-contact C922 static targets and the fail-closed requirements
 that must precede route compilation. It does not reuse prior action arrays or
@@ -183,11 +187,11 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: ACTIVE_OR10B_RETAINED_CROSS_POSE_FOCAL_CORROBORATION_FROZEN
-Active card: OR10B
-Completed: immutable predecessor C0-C9; OR0-OR10; OR7C/OR7D not run because their prerequisite failed; camera endpoint REAL-to-SIM 1/1
-Evidence: OR10 artifact 520998b716b2d5f42123f21502c37b145ba398f1f3238aa524da5dd9ef0eda13; 14 retained pixel observations; 0.366 px cohort agreement; observed-pixel RMS 4.214 to 0.973 px (76.905% lower); selected centered square-pixel zero-distortion challenger; 57 campaign tests plus 27 Studio tests pass
-Remaining: OR10B may corroborate focal across workspace poses but cannot supply pristine global coverage or independently identify principal point, distortion, current extrinsics, or camera identity
+Current state: COMPLETE_OR10B_TERMINAL_CROSS_WORKSPACE_FOCAL_DISAGREEMENT_ZERO_DATA_LANE_CLOSED
+Active card: none
+Completed: immutable predecessor C0-C9; OR0-OR10B; OR7C/OR7D not run because their prerequisite failed; camera endpoint REAL-to-SIM 1/1
+Evidence: OR10B artifact 5cf7db1d5d7633ceec66885ecaa94f5e92db754cb77785c53c4c5a00f28df145; 30 historical intersections; 0.632 px mean / 0.741 px max cross-episode dispersion; 2.376x OR10 radial span; hackathon focal 623.252 px versus home-workspace OR10 736.802 px (15.411% disagreement); all 14 historical episode fits span 620.128-625.962 px
+Remaining: zero-new-data camera corroboration is exhausted; retained evidence cannot identify camera-unit/focus/FOV state, principal point, distortion, current extrinsics, or global mapping
 Physical boundary: follower elbow service, fresh current authority, torque-off identity/limits, and fresh CPU/fp64 route review; hardware authority false
-Next step: execute OR10B exactly once; then close the zero-new-data camera lane and wait for OR9's prospective four-pose validation seam
+Next step: after external service and authority inputs exist, execute OR9's prospective four-pose validation seam; until then preserve both focal estimates as proof-limited diagnostics and do not replace the canonical simulator camera
 ```

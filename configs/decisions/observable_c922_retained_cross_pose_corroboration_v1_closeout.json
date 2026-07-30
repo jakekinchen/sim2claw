@@ -1,0 +1,129 @@
+{
+  "schema_version": "sim2claw.observable_c922_retained_cross_pose_corroboration_closeout.v1",
+  "decision_id": "observable-c922-retained-cross-pose-corroboration-v1-closeout",
+  "card_id": "OR10B",
+  "result": "TERMINAL_INSUFFICIENT_OR_DISAGREEING_RETAINED_CROSS_POSE_EVIDENCE",
+  "proof_class": "retrospective_retained_cross_workspace_focal_family_corroboration_terminal_disagreement",
+  "freeze_commit": "605db68",
+  "implementation_commit": "77085de",
+  "contract": {
+    "path": "configs/evaluations/observable_c922_retained_cross_pose_corroboration_v1.json",
+    "sha256": "2fefc0e6c5c2e3c4e7fa6a9de3dde0d1771ad2a668ede42c471638dffbee5b39"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_c922_retained_cross_pose_corroboration.py",
+    "sha256": "fb8fd3b94bf8a6681b277afd1b7a33383167677fafd47abf0f071145ea7a860d"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_c922_retained_cross_pose_corroboration_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "9d7e81cb4a0dc6181d49c17a23361614b49e2fe371f7b414897dc17be708cd34",
+    "artifact_sha256": "5cf7db1d5d7633ceec66885ecaa94f5e92db754cb77785c53c4c5a00f28df145"
+  },
+  "source_reconciliation": {
+    "historical_workspace": "hackathon_era_workspace",
+    "current_workspace": "post_hackathon_home_workspace",
+    "workspace_mount_and_camera_angle_match": false,
+    "historical_train_videos_evaluated": 14,
+    "advisory_opened_train_video_quarantined": "20260719T030059Z-a26f8400",
+    "historical_held_out_videos_preserved_unopened": 3,
+    "task_outcomes_used": false,
+    "new_physical_data_rows": 0,
+    "new_camera_opens": 0,
+    "historical_unique_camera_id_present": false,
+    "same_physical_camera_unit_proven": false
+  },
+  "retained_pixel_result": {
+    "accepted_intersection_count": 30,
+    "cross_episode_dispersion_mean_px": 0.6322116340315139,
+    "cross_episode_dispersion_max_px": 0.7409279101318113,
+    "historical_radial_interval_span_px": 252.70037511618474,
+    "or10_radial_interval_span_px": 106.33521510467263,
+    "historical_to_or10_radial_span_ratio": 2.3764505001229876,
+    "coverage_and_repeatability_gates_passed": true
+  },
+  "focal_comparison": {
+    "or10_home_workspace_focal_px": 736.8020907010612,
+    "or10_home_workspace_vertical_fov_degrees": 36.08417177815771,
+    "historical_hackathon_workspace_focal_px": 623.2519702286993,
+    "historical_hackathon_workspace_vertical_fov_degrees": 42.12109566585928,
+    "absolute_focal_delta_px": 113.55012047236187,
+    "relative_focal_delta": 0.1541121040581194,
+    "maximum_allowed_relative_focal_delta": 0.03,
+    "focal_agreement_gate_passed": false,
+    "historical_reprojection_rms_px": 0.43191199486597454,
+    "historical_reprojection_max_px": 0.9068816164407586,
+    "historical_solver_condition_number": 66035.76296252165,
+    "per_episode_fit_count": 14,
+    "per_episode_focal_mean_px": 622.9449898560887,
+    "per_episode_focal_standard_deviation_px": 1.657676990303781,
+    "per_episode_focal_minimum_px": 620.127780947404,
+    "per_episode_focal_maximum_px": 625.9618402826154
+  },
+  "radial_diagnostic": {
+    "k1_focal_px": 630.0201775588068,
+    "k1": 0.0429906508274081,
+    "k1_reprojection_rms_px": 0.36175468851585,
+    "k1_in_sample_rms_gain_fraction": 0.16243426249806941,
+    "k1_solver_condition_number": 72771.48738487209,
+    "descriptive_only": true,
+    "distortion_measured": false,
+    "reason": "The radial challenger is an in-sample fit on outcome-informed historical pixels with unresolved camera-unit, autofocus, workspace, mount-state, principal-point, and seed confounds. It has no no-refit validation authority."
+  },
+  "gate_results": {
+    "minimum_intersections": true,
+    "cross_episode_dispersion": true,
+    "radial_span": true,
+    "positive_depth": true,
+    "focal_agreement": false
+  },
+  "decision": {
+    "focal_family_corroborated": false,
+    "zero_new_data_camera_lane_closed": true,
+    "disagreement_attribution": "unresolved_between_camera_unit_identity_autofocus_or_digital_fov_state_workspace_mount_state_seed_bias_principal_point_and_lens_model_error",
+    "or10_board_plane_diagnostic_retracted": false,
+    "or10_current_camera_intrinsics_promoted": false,
+    "exact_intrinsic_calibration_approved": false,
+    "current_home_workspace_extrinsics_approved": false,
+    "global_camera_or_robot_mapping_approved": false,
+    "canonical_simulator_camera_replaced": false,
+    "contact_or_task_transfer_approved": false
+  },
+  "publication_corrections": [
+    "OR10 cross-cohort validation is same-pose repeatability, not an accuracy estimate.",
+    "OR10's 76.905% observed-pixel reduction is conditioned on its outcome-informed extraction protocol and mask.",
+    "OR10's metric camera-center coordinates are inspection-only and require uncertainty; OR10B cannot validate them across workspaces.",
+    "The 0.939 px OR10 pooled residual remains above its 0.366 px repeatability floor, so an unresolved systematic remains.",
+    "The earlier Stage-F simulator playing-side fit and the later measured registration use different evidence roles; neither authorizes OR10B to alter the physical board gauge."
+  ],
+  "limitations": [
+    "The historical videos and their initial frames were used by earlier retrospective work and are not pristine heldout evidence.",
+    "The hackathon-era workspace, mount, and camera angle differ from the current home workspace.",
+    "Historical receipts identify only a C922 model name and mode, not the current camera unique ID.",
+    "A camera angle change does not itself change focal length, but focus, digital field-of-view mode, camera unit, and driver state are not identified by the retained receipts.",
+    "The result cannot choose between the historical and current focal estimates as exact truth.",
+    "Only a new calibration target corpus with varied poses and bound camera state can approve exact current intrinsics and extrinsics."
+  ],
+  "verification": {
+    "focused_tests_before_official_run": "6 passed",
+    "quarantined_source_rehearsal_only": true,
+    "official_receipt_run_count": 1,
+    "included_evidence_videos_opened_after_contract_freeze": 14,
+    "held_out_videos_opened": 0
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "canonical_simulator_camera_replacement": false,
+    "training": false,
+    "paid_compute": false,
+    "global_mapping_approved": false,
+    "transfer_claim": false
+  },
+  "next_card": "OR9_POST_SERVICE_PROSPECTIVE_VALIDATION"
+}
