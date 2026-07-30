@@ -1,0 +1,141 @@
+{
+  "schema_version": "sim2claw.post_hackathon_home_workspace_geometry_camera_contract.v2",
+  "experiment_id": "post-hackathon-home-workspace-geometry-camera-v2",
+  "frozen_date": "2026-07-30",
+  "proof_class": "owner_reported_board_object_camera_center_metrology_static_geometry_successor_and_retrospective_orientation_diagnostic",
+  "sources": {
+    "measurement": {
+      "path": "configs/measurements/post_hackathon_home_workspace_geometry_camera_manual_metrology_v2.json",
+      "sha256": "bf92707efaaae6bf8872e4ba450090a511d4053625931b37ff08623af15c9606"
+    },
+    "or12_closeout": {
+      "path": "configs/decisions/post_hackathon_home_workspace_metrology_v1_closeout.json",
+      "sha256": "a90cc5ff58b6a28dc9d0b6550b22521ab08d86bac16db7a8b867ea576cee404d"
+    },
+    "or12_derived_scene": {
+      "path": "outputs/post_hackathon_home_workspace_metrology_v1/derived_scene_config.json",
+      "sha256": "e36a7ce8f6a2975559b0ae26dc923b0065ded2b95c38395c69f33a45d702d96a"
+    },
+    "or12_receipt": {
+      "path": "outputs/post_hackathon_home_workspace_metrology_v1/receipt.json",
+      "sha256": "fcb10774c2427c638c07740b28dd48d78f04e731354643ccece26c9bc47505bc"
+    },
+    "baseline_scene": {
+      "path": "configs/polycam/8873B66C-774C-48B1-B51D-338645867009.json",
+      "sha256": "0dbe0c95fe50f84a8ff8e60f9727f7123c15c921ace55a0460b49ffa4c34dc05"
+    },
+    "or10_receipt": {
+      "path": "outputs/observable_c922_pixel_lattice_refinement_v1/receipt.json",
+      "sha256": "bf29c29b1160de6e0c48f81f40b7f52d11e09825e95a4beae7f77aa9df4934b7"
+    },
+    "or1_receipt": {
+      "path": "outputs/observable_c922_camera_world_v1/receipt.json",
+      "sha256": "a2fda1032ad70c026fb8e82f3849896926ee92f07a14f5ecdf8e827141324614"
+    },
+    "or11_contract": {
+      "path": "configs/evaluations/observable_contact_phase_registration_v1.json",
+      "sha256": "a037dbc6002a8fbee64b8ac8e2d48aec8c78d2812ac7f68d6021fb9239dc96a5"
+    },
+    "or11_receipt": {
+      "path": "outputs/observable_contact_phase_registration_v1/receipt.json",
+      "sha256": "6b45e5a4b97ff650d46e460ea3844f869abc84f9adc500a7c7914cc8917aa08d"
+    },
+    "or6_candidate": {
+      "path": "outputs/observable_jaw_aperture_fit_v1/candidate_manifest.json",
+      "sha256": "e8c27ef3118c3383d2d2312371a54b6c40d749880b5ab73aa9a14e0305dd17e5",
+      "candidate_config_sha256": "dd03853d957192062b6cfd9b23a6f973c516efaad87f162b29e6f8136492a693"
+    },
+    "or7_receipt": {
+      "path": "outputs/observable_jaw_aperture_replay_v1/receipt.json",
+      "sha256": "edaece18101c331a4437cad1781bd4ccf48b9b52dd566839b93f4fc0280c7ddd"
+    },
+    "c6_contract": {
+      "path": "configs/evaluations/realized_action_outcome_mission_v1.json",
+      "sha256": "f406149f51578b7ecae646c46b35c9237693b4f172c66dbb271cee67b9728b77"
+    },
+    "initial_endpoint_receipt": {
+      "path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+      "sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011"
+    }
+  },
+  "stage_order": [
+    "board_and_pawn_static_geometry",
+    "camera_center_from_manual_ranges",
+    "camera_orientation_from_retained_nonheldout_pixels"
+  ],
+  "board_object_geometry": {
+    "outside_side_m": 0.3937,
+    "square_side_m": 0.0405,
+    "playing_side_formula": "8*square_side",
+    "frame_width_formula": "(outside_side-playing_side)/2",
+    "maximum_border_diagnostic_residual_m": 0.01,
+    "pawn_height_m": 0.034,
+    "maximum_compiled_pawn_height_error_m": 0.0001,
+    "pawn_horizontal_profile_change_allowed": false,
+    "board_center_changed": false,
+    "board_yaw_changed": false,
+    "base_transform_changed": false
+  },
+  "contact_phase_gate": {
+    "schedule_source": "or11_contract",
+    "physics_integration_allowed": false,
+    "candidate_contact_samples": [
+      228,
+      232
+    ],
+    "last_definitely_separate_sample": 224,
+    "named_contact_required_for_contact_pass": true,
+    "dynamics_authorized": false
+  },
+  "camera_center_fit": {
+    "board_corner_plane": "outside_board_top_surface",
+    "camera_side": "operator_front_robotward_and_operator_left",
+    "fit_parameters": [
+      "camera_center_board_x_m",
+      "camera_center_board_y_m",
+      "camera_center_height_above_desk_m"
+    ],
+    "maximum_planar_distance_consistency_residual_m": 0.015,
+    "camera_orientation_fit_in_this_stage": false,
+    "camera_intrinsics_fit_in_this_stage": false
+  },
+  "retained_pixel_orientation_diagnostic": {
+    "source": "or10_receipt",
+    "overlap_indices_frozen_by_source": true,
+    "camera_center_fixed_from_manual_metrology": true,
+    "playing_side_fixed_from_board_object_geometry": true,
+    "family": "centered_square_pixel_zero_distortion",
+    "fit_parameters": [
+      "focal_px",
+      "rotation_vector_board_to_camera"
+    ],
+    "minimum_focal_px": 200.0,
+    "maximum_focal_px": 1500.0,
+    "maximum_cross_cohort_validation_rms_px": 10.0,
+    "principal_point_px": [
+      320.0,
+      240.0
+    ],
+    "exact_intrinsics_claim_allowed": false,
+    "heldout_claim_allowed": false
+  },
+  "promotion": {
+    "derived_scene_publishable": true,
+    "canonical_scene_replacement_allowed": false,
+    "global_mapping_approved": false,
+    "reason": "manual camera center is single-pass and orientation uses retrospective nonheldout pixels with exact intrinsics unresolved"
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "serial": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "simulator_dynamic_replay": false,
+    "simulator_promotion": false,
+    "training": false,
+    "paid_compute": false,
+    "transfer_claim": false
+  }
+}

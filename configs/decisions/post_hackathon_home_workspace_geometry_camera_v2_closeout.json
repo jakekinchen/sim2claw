@@ -1,0 +1,118 @@
+{
+  "schema_version": "sim2claw.post_hackathon_home_workspace_geometry_camera_closeout.v2",
+  "decision_id": "post-hackathon-home-workspace-geometry-camera-v2-closeout",
+  "card_id": "OR13",
+  "result": "STATIC_GEOMETRY_AND_CAMERA_CENTER_CANDIDATE_PASS_NO_CONTACT_NO_GLOBAL_MAPPING",
+  "proof_class": "owner_reported_board_object_camera_center_metrology_static_geometry_successor_and_retrospective_orientation_diagnostic",
+  "measurement": {
+    "path": "configs/measurements/post_hackathon_home_workspace_geometry_camera_manual_metrology_v2.json",
+    "sha256": "bf92707efaaae6bf8872e4ba450090a511d4053625931b37ff08623af15c9606"
+  },
+  "contract": {
+    "path": "configs/evaluations/post_hackathon_home_workspace_geometry_camera_v2.json",
+    "sha256": "b8ea91021fe849ec4b79dcbfa96731fb83cc278d2697ef033f275f96fa421aef"
+  },
+  "implementation": {
+    "path": "src/sim2claw/post_hackathon_home_workspace_geometry_camera.py",
+    "sha256": "e7573d3431f15311bbc7fe1c829bdbcf9e83033e48dbab7a49a6b93bae7bacb4"
+  },
+  "generated_receipt": {
+    "path": "outputs/post_hackathon_home_workspace_geometry_camera_v2/receipt.json",
+    "git_ignored": true,
+    "sha256": "4b029081910ef5168fb1819ba649e64d0d8bab3ee02c9a4a2c3eb10dc1da81fa",
+    "artifact_sha256": "91a7c68e743d13532ecb7a796b53970f3b877efc917ce15b86db8b9db15e2474"
+  },
+  "generated_trace": {
+    "path": "outputs/post_hackathon_home_workspace_geometry_camera_v2/contact_phase_trace.json",
+    "git_ignored": true,
+    "sha256": "db321190794696065503d7baca6b5f1b42d941cb6f7778520c8d8da53bd10b01",
+    "physics_integration_steps": 0
+  },
+  "derived_scene": {
+    "path": "outputs/post_hackathon_home_workspace_geometry_camera_v2/derived_scene_config.json",
+    "git_ignored": true,
+    "sha256": "9298ca9f70a3cff87c06cf73b6b343f5bbb927d13f6c9a5427242c2fabf7ed03",
+    "compiler": "sim2claw.post_hackathon_home_workspace_geometry_camera.build_geometry_camera_model",
+    "canonical_replacement_allowed": false
+  },
+  "board_object_geometry": {
+    "outside_side_m": 0.3937,
+    "prior_square_side_m": 0.04445,
+    "candidate_square_side_m": 0.0405,
+    "candidate_playing_side_m": 0.324,
+    "candidate_frame_width_m": 0.03485,
+    "reported_border_each_side_m": 0.03,
+    "border_residual_m": 0.00485,
+    "prior_pawn_height_m": 0.0532,
+    "candidate_pawn_height_m": 0.034,
+    "compiled_pawn_height_error_m": 0.0,
+    "pawn_horizontal_profile_changed": false,
+    "board_center_changed": false,
+    "board_yaw_changed": false,
+    "base_transform_changed": false
+  },
+  "camera_center": {
+    "lens_height_above_desk_m": 0.305,
+    "vertical_lens_to_board_top_m": 0.281,
+    "left_corner_ray_m": 0.43,
+    "right_corner_ray_m": 0.565,
+    "derived_planar_board_distance_m": 0.3244219085381609,
+    "reported_planar_board_distance_m": 0.32,
+    "planar_residual_m": 0.004421908538160879,
+    "centered_outer_board_xy_m": [
+      -0.17059309118618227,
+      0.3244219085381609
+    ],
+    "maximum_standard_uncertainty_m": 0.018034483246472874,
+    "camera_position_world_m": [
+      0.18091648480974756,
+      0.7430200876923874,
+      1.0888839412854516
+    ],
+    "compiled_position_error_m": 0.0,
+    "center_gate_passed": true
+  },
+  "retained_pixel_orientation_diagnostic": {
+    "overlap_intersection_count": 14,
+    "camera_center_fixed": true,
+    "playing_side_fixed": true,
+    "focal_px": 363.3333121501136,
+    "vertical_fov_degrees": 66.89355268793118,
+    "mean_cross_cohort_validation_rms_px": 6.857092150640758,
+    "retrospective_nonheldout": true,
+    "exact_intrinsics_approved": false,
+    "orientation_gate_passed": true
+  },
+  "contact_phase": {
+    "prior_sample_232_fixed_jaw_gap_m": 0.02657975636028604,
+    "candidate_sample_232_fixed_jaw_gap_m": 0.045473094660366184,
+    "fixed_jaw_gap_delta_m": 0.018893338300080144,
+    "named_contact": false,
+    "physics_integration_steps": 0,
+    "dynamic_replays": 0,
+    "interpretation": "the shorter measured pawn is more physically faithful but increases the existing jaw-to-pawn gap; do not undo the measurement to optimize contact"
+  },
+  "decision": {
+    "board_playing_scale_candidate_admitted": true,
+    "pawn_height_candidate_admitted": true,
+    "camera_center_candidate_admitted": true,
+    "camera_orientation_diagnostic_admitted": true,
+    "canonical_scene_replaced": false,
+    "global_mapping_approved": false,
+    "dynamic_replay_authorized": false,
+    "next_mechanism": "independent robot base height or articulated wrist vertical registration; preserve the measured shorter pawn even though it worsens contact clearance"
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "training": false,
+    "paid_compute": false,
+    "global_mapping_approved": false,
+    "transfer_claim": false
+  }
+}

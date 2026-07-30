@@ -1,0 +1,108 @@
+{
+  "schema_version": "sim2claw.post_hackathon_home_workspace_geometry_camera_manual_metrology.v2",
+  "measurement_id": "post-hackathon-home-workspace-geometry-camera-manual-metrology-v2",
+  "reported_date": "2026-07-30",
+  "reporter": "workspace_owner",
+  "workspace": "post_hackathon_home_workspace",
+  "method": "manual_ruler_or_tape_measurement_reported_in_conversation",
+  "proof_class": "owner_reported_manual_static_board_object_and_camera_center_metrology_with_declared_uncertainty",
+  "board": {
+    "outside_side_source": {
+      "measurement_id": "post-hackathon-home-workspace-manual-metrology-v1",
+      "value_m": 0.3937,
+      "role": "preserved_exact_primary"
+    },
+    "square_side": {
+      "reported_range": [
+        4.0,
+        4.1
+      ],
+      "reported_unit": "centimetre",
+      "selected_value_m": 0.0405,
+      "uncertainty_m": 0.0005,
+      "role": "fit_playing_surface_scale",
+      "semantic": "width and length of each of the eight checkerboard squares"
+    },
+    "border_each_side": {
+      "reported_value": 3.0,
+      "reported_unit": "centimetre",
+      "value_m": 0.03,
+      "uncertainty_m": 0.005,
+      "role": "consistency_diagnostic_only",
+      "semantic": "rough visible border outside the checkerboard squares"
+    },
+    "thickness_source": {
+      "measurement_id": "post-hackathon-home-workspace-manual-metrology-v1",
+      "value_m": 0.024,
+      "uncertainty_m": 0.002,
+      "role": "preserved_primary"
+    }
+  },
+  "pawn": {
+    "height": {
+      "reported_value": 3.4,
+      "reported_unit": "centimetre",
+      "value_m": 0.034,
+      "uncertainty_m": 0.002,
+      "role": "fit_detailed_pawn_vertical_scale",
+      "semantic": "support surface to highest point of the pawn"
+    },
+    "width_directly_measured": false,
+    "horizontal_profile_change_allowed": false
+  },
+  "logitech_camera": {
+    "identity": "post_hackathon_logitech_c922_overhead",
+    "lens_height_above_desk": {
+      "reported_value": 30.5,
+      "reported_unit": "centimetre",
+      "value_m": 0.305,
+      "uncertainty_m": 0.005,
+      "role": "fit_camera_center_z",
+      "semantic": "vertical lens-center height above the desk surface directly below it"
+    },
+    "planar_distance_to_board_column": {
+      "reported_value": 32.0,
+      "reported_unit": "centimetre",
+      "value_m": 0.32,
+      "uncertainty_m": 0.01,
+      "role": "camera_center_consistency_diagnostic",
+      "semantic": "shortest horizontal XY distance from the lens projection to the extruded board footprint"
+    },
+    "ray_distance_to_front_left_outer_corner": {
+      "reported_value": 43.0,
+      "reported_unit": "centimetre",
+      "value_m": 0.43,
+      "uncertainty_m": 0.01,
+      "role": "fit_camera_center_xy",
+      "semantic": "straight three-dimensional lens-center to operator-front-left outside board corner distance"
+    },
+    "ray_distance_to_front_right_outer_corner": {
+      "reported_value": 56.5,
+      "reported_unit": "centimetre",
+      "value_m": 0.565,
+      "uncertainty_m": 0.01,
+      "role": "fit_camera_center_xy",
+      "semantic": "straight three-dimensional lens-center to operator-front-right outside board corner distance"
+    },
+    "side_assumption": "camera_projection_is_on_the_operator_front_robotward_side_and_nearer_the_operator_left_edge",
+    "orientation_directly_measured": false,
+    "intrinsics_directly_measured": false
+  },
+  "fit_exclusions": {
+    "task_episode_actions": true,
+    "task_outcome": true,
+    "contact_timing": true,
+    "dynamic_replay": true,
+    "camera_open": true,
+    "hardware_motion": true,
+    "pawn_horizontal_rescaling": true
+  },
+  "limitations": {
+    "repeat_measurements_available": false,
+    "instrument_identity_recorded": false,
+    "camera_mount_state_hash_bound_to_retained_pixels": false,
+    "camera_orientation_directly_measured": false,
+    "exact_intrinsics_available": false,
+    "global_mapping_approval_allowed": false
+  }
+}

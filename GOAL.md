@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `COMPLETE_OR12_TRANSLATION_CANDIDATE_MATERIAL_GAP_REDUCTION_NO_CONTACT`
+Status: `COMPLETE_OR13_STATIC_GEOMETRY_AND_CAMERA_CENTER_CANDIDATE_NO_CONTACT`
 
 ## Active mission
 
@@ -9,7 +9,7 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR12_COMPLETE_TRANSLATION_CANDIDATE_MATERIAL_GAP_REDUCTION_NO_CONTACT`
+`OR13_COMPLETE_STATIC_GEOMETRY_AND_CAMERA_CENTER_CANDIDATE_NO_CONTACT`
 
 ## Current card
 
@@ -17,9 +17,9 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current evidence
 
-- Closeout: `configs/decisions/post_hackathon_home_workspace_metrology_v1_closeout.json`.
-- Closeout SHA-256: `a90cc5ff58b6a28dc9d0b6550b22521ab08d86bac16db7a8b867ea576cee404d`.
-- Proof class: `owner_reported_manual_metrology_translation_only_static_scene_candidate_and_exact_contact_phase_diagnostic`.
+- Closeout: `configs/decisions/post_hackathon_home_workspace_geometry_camera_v2_closeout.json`.
+- Closeout SHA-256: `9c32891753a61d407db68467bddc9eac6893e9c86e880528524ae2538697b956`.
+- Proof class: `owner_reported_board_object_camera_center_metrology_static_geometry_successor_and_retrospective_orientation_diagnostic`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`independent_base_height_or_articulated_wrist_vertical_registration_then_one_frozen_static_candidate_before_any_dynamics`
+`independent_robot_base_height_or_articulated_wrist_vertical_registration_then_one_frozen_static_candidate_before_any_dynamics`
 
 ## Stop conditions
 

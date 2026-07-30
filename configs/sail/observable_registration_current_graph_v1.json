@@ -2,9 +2,9 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "complete_or12_translation_candidate_material_gap_reduction_no_contact",
+  "status": "complete_or13_static_geometry_and_camera_center_candidate_no_contact",
   "active_card": null,
-  "next_transition": "independent_base_height_or_articulated_wrist_vertical_registration_then_one_frozen_static_candidate_before_any_dynamics",
+  "next_transition": "independent_robot_base_height_or_articulated_wrist_vertical_registration_then_one_frozen_static_candidate_before_any_dynamics",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "0c70d0f8a123c720e3646bbc6a86c15c7f8aa1594c417cf1ad8eb063c90d059d",
+      "sha256": "f1cd324652f586900a37561d4b11efe2ad2fd98eee822fea3aded9fc9dcae222",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -177,6 +177,11 @@
       "path": "configs/decisions/post_hackathon_home_workspace_metrology_v1_closeout.json",
       "sha256": "a90cc5ff58b6a28dc9d0b6550b22521ab08d86bac16db7a8b867ea576cee404d",
       "proof_class": "owner_reported_manual_metrology_translation_only_static_scene_candidate_and_exact_contact_phase_diagnostic"
+    },
+    "or13": {
+      "path": "configs/decisions/post_hackathon_home_workspace_geometry_camera_v2_closeout.json",
+      "sha256": "9c32891753a61d407db68467bddc9eac6893e9c86e880528524ae2538697b956",
+      "proof_class": "owner_reported_board_object_camera_center_metrology_static_geometry_successor_and_retrospective_orientation_diagnostic"
     }
   },
   "nodes": [
@@ -553,6 +558,30 @@
         "yaw_approved": false,
         "global_mapping_approved": false
       }
+    },
+    {
+      "id": "mapping:or13-home-workspace-geometry-camera",
+      "type": "mapping_candidate",
+      "label": "Owner-measured board, pawn, and post-hackathon Logitech camera center",
+      "status": "pass_static_geometry_and_camera_center_candidate_no_named_contact",
+      "source_binding": "or13",
+      "data": {
+        "square_side_m": 0.0405,
+        "playing_side_m": 0.324,
+        "frame_width_m": 0.03485,
+        "pawn_height_m": 0.034,
+        "camera_height_above_desk_m": 0.305,
+        "derived_camera_planar_board_distance_m": 0.3244219085381609,
+        "camera_planar_measurement_residual_m": 0.004421908538160879,
+        "camera_center_maximum_standard_uncertainty_m": 0.018034483246472874,
+        "camera_compiled_position_error_m": 0.0,
+        "retrospective_orientation_validation_rms_px": 6.857092150640758,
+        "sample_232_fixed_jaw_gap_m": 0.045473094660366184,
+        "named_contact": false,
+        "dynamic_replays": 0,
+        "exact_intrinsics_approved": false,
+        "global_mapping_approved": false
+      }
     }
   ],
   "edges": [
@@ -688,6 +717,21 @@
     },
     {
       "source": "mapping:or12-home-workspace-translation",
+      "target": "counterexample:or11-exact-contact-phase",
+      "type": "evaluated-on"
+    },
+    {
+      "source": "mapping:or12-home-workspace-translation",
+      "target": "mapping:or13-home-workspace-geometry-camera",
+      "type": "admitted-to"
+    },
+    {
+      "source": "observation:c922",
+      "target": "mapping:or13-home-workspace-geometry-camera",
+      "type": "observed-by"
+    },
+    {
+      "source": "mapping:or13-home-workspace-geometry-camera",
       "target": "counterexample:or11-exact-contact-phase",
       "type": "evaluated-on"
     }
