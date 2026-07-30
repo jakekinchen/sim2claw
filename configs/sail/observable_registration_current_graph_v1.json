@@ -2,7 +2,7 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-29",
-  "status": "active_or10_zero_new_data_c922_pixel_refinement_frozen",
+  "status": "complete_or10_board_plane_diagnostic_improved_exact_intrinsics_external_boundary",
   "node_types": [
     "workcell",
     "session",
@@ -43,7 +43,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "b3034c7fc63d70abddeb3493093592603842ffbd62e5a050b480f778431ca2a6",
+      "sha256": "8029cefcd114cff866d3073579e41616affb804520c8a414f4c469e0566693a2",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -140,6 +140,16 @@
       "path": "configs/evaluations/observable_c922_pixel_lattice_refinement_v1.json",
       "sha256": "4aa4d65df5c71fdc0563bd285c6c9b943bccf43edf035d2c9c21b0e94efdca24",
       "proof_class": "retrospective_outcome_informed_retained_pixel_board_plane_camera_diagnostic"
+    },
+    "or10": {
+      "path": "configs/decisions/observable_c922_pixel_lattice_refinement_v1_closeout.json",
+      "sha256": "8099deba2fe4dbf51abc7eeb72a5ee95a34098815b5b085dc53520d2a0cea91b",
+      "proof_class": "retrospective_outcome_informed_retained_pixel_board_plane_camera_diagnostic"
+    },
+    "or10_publication": {
+      "path": "configs/decisions/observable_registration_studio_publication_v2_closeout.json",
+      "sha256": "67ff39a19c4199348503dd3334050ced865a3ebd96325f274292e3898b47d423",
+      "proof_class": "read_only_hash_bound_observable_registration_exact_action_replay_and_retrospective_camera_diagnostic_publication"
     }
   },
   "nodes": [
@@ -153,7 +163,7 @@
       "id": "session:observable-registration-v1",
       "type": "session",
       "label": "Observable registration and contact causality",
-      "status": "active_zero_new_data_camera_pixel_refinement",
+      "status": "complete_board_plane_camera_improved_exact_intrinsics_external_boundary",
       "source_binding": "queue"
     },
     {
@@ -326,17 +336,32 @@
       "id": "mapping:or10-retained-pixel-camera-challenger",
       "type": "mapping_candidate",
       "label": "Retained-pixel C922 board-plane challenger",
-      "status": "frozen_retrospective_protocol_official_receipt_pending",
-      "source_binding": "or10_contract",
+      "status": "pass_inspection_only_exact_intrinsics_unidentified",
+      "source_binding": "or10",
       "data": {
         "new_physical_data_rows": 0,
         "camera_opened": false,
         "camera_family_count": 3,
         "reviewed_visible_intersection_count": 14,
+        "cross_cohort_agreement_rms_px": 0.36607697312272947,
+        "prior_model_observed_pixel_rms_px": 4.214148143908705,
+        "candidate_cross_cohort_validation_rms_px": 0.9732522138726536,
+        "rms_improvement_fraction": 0.7690512576594085,
+        "selected_family": "centered_square_pixel_zero_distortion",
+        "focal_px": 736.8020907010612,
+        "vertical_fov_degrees": 36.08417177815771,
+        "distortion_measured": false,
         "exact_intrinsics_approved": false,
         "global_mapping_approved": false,
         "canonical_camera_replacement_authorized": false
       }
+    },
+    {
+      "id": "session:or10-camera-publication-closeout",
+      "type": "session",
+      "label": "Retained-pixel camera diagnostic Studio publication",
+      "status": "pass_read_only_exact_intrinsics_unidentified",
+      "source_binding": "or10_publication"
     },
     {
       "id": "counterexample:or5-v1-per-view-sensitivity",
@@ -496,6 +521,11 @@
       "type": "observed-by"
     },
     {
+      "source": "mapping:or10-retained-pixel-camera-challenger",
+      "target": "session:or10-camera-publication-closeout",
+      "type": "admitted-to"
+    },
+    {
       "source": "mapping:or2-robot-jaw-rigid",
       "target": "residual:jaw-aperture-underprediction",
       "type": "generated-from"
@@ -511,6 +541,6 @@
       "type": "constrained-by"
     }
   ],
-  "active_card": "OR10",
-  "next_transition": "run_deterministic_retained_pixel_refinement_once_then_close_and_publish_diagnostic_boundary"
+  "active_card": null,
+  "next_transition": "external_elbow_service_current_authority_fresh_torque_off_limits_and_cpu_fp64_route_review_then_or9_prospective_four_pose_validation"
 }

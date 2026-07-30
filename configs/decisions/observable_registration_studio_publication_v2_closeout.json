@@ -1,0 +1,81 @@
+{
+  "schema_version": "sim2claw.observable_registration_studio_publication_closeout.v2",
+  "decision_id": "observable-registration-studio-publication-v2-closeout",
+  "result": "PASS_EVIDENCE_LIMITED_CAMPAIGN_PUBLICATION_WITH_OR10_CAMERA_DIAGNOSTIC",
+  "proof_class": "read_only_hash_bound_observable_registration_exact_action_replay_and_retrospective_camera_diagnostic_publication",
+  "publication_revision_commit": "55f79cf",
+  "predecessor_closeout": {
+    "path": "configs/decisions/observable_registration_studio_publication_v1_closeout.json",
+    "sha256": "815384a834061bc9ee2387537a6e72c5e1a573f48a50f4ce95b6931b8527fff5",
+    "immutable": true
+  },
+  "or10_closeout": {
+    "path": "configs/decisions/observable_c922_pixel_lattice_refinement_v1_closeout.json",
+    "sha256": "8099deba2fe4dbf51abc7eeb72a5ee95a34098815b5b085dc53520d2a0cea91b"
+  },
+  "contract": {
+    "path": "configs/evaluations/observable_registration_studio_publication_v1.json",
+    "sha256": "b0a17c4ab40a6ff4ae74373eaf8015be2179933c90d160d292277e0414872d51"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_studio_publication.py",
+    "sha256": "d2ad2c9e7bb695fb3b38e34f7b9fd694a275f527f8dda5e0e9b679a09d723872"
+  },
+  "studio_surface": {
+    "html_path": "src/sim2claw/studio_web/index.html",
+    "html_sha256": "298444a16e0b13cb3897c4e0dade9a0a203252ffaf0466d81f4e6be2308b90ad",
+    "javascript_path": "src/sim2claw/studio_web/studio.js",
+    "javascript_sha256": "5444e7fbd434e96ee4281e2c26693224207a7cbe32f34ac49c5cb0687197c4bd"
+  },
+  "generated_receipt": {
+    "path": "outputs/observable_registration_studio_publication_v1/receipt.json",
+    "git_ignored": true,
+    "sha256": "a5ea60588fe2b72265b87cb0b74fd8b486bd8c3d5314cb4efb3a23a11d877604",
+    "artifact_sha256": "d6b6477a7be4f4c4595ea22a6711329c4281fb40ca0a5b401e24c519fd36a294"
+  },
+  "generated_supplement": {
+    "path": "outputs/observable_registration_studio_publication_v1/supplement.json",
+    "git_ignored": true,
+    "sha256": "919f1daf1053aa78e9d43184e35cff3ea90e5ca4790eee1602c0b141983f46a1",
+    "artifact_sha256": "b066f576f41059cc461ee9c290ac111320cbdaeeddc233c0c2a2c6ce08fc1ccb"
+  },
+  "published_camera_ledger": {
+    "prior_generated_lattice_rms_px": 2.2703078871460747,
+    "prior_model_observed_pixel_rms_px": 4.214148143908705,
+    "retained_pixel_cross_cohort_validation_rms_px": 0.9732522138726536,
+    "retained_pixel_rms_improvement_fraction": 0.7690512576594085,
+    "retained_pixel_intersection_count": 14,
+    "cross_cohort_agreement_rms_px": 0.36607697312272947,
+    "selected_focal_px": 736.8020907010612,
+    "selected_vertical_fov_degrees": 36.08417177815771,
+    "exact_intrinsics_approved": false,
+    "canonical_simulator_camera_replaced": false,
+    "global_mapping_approved": false
+  },
+  "verification": {
+    "focused_studio_and_camera_tests": "9 passed",
+    "broad_observable_registration_tests": "57 passed",
+    "studio_server_and_surface_tests": "27 passed plus 2 subtests",
+    "javascript_syntax": "PASS",
+    "python_compile": "PASS",
+    "json_parse": "PASS"
+  },
+  "proof_boundaries": {
+    "retained_pixel_camera_is_retrospective_inspection_only": true,
+    "exact_intrinsics_approved": false,
+    "distortion_measured": false,
+    "canonical_simulator_camera_replaced": false,
+    "global_mapping_approved": false,
+    "matching_action_to_task_transfer_proved": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "serial_used": false,
+    "hardware_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_dynamic_replay": false,
+    "paid_compute": false
+  }
+}

@@ -1,8 +1,8 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-29T20:10:00-05:00",
+  "updated_at": "2026-07-29T20:25:00-05:00",
   "active_campaign": "observable_registration_contact_causality_v1",
-  "current_milestone": "OR10_ACTIVE_ZERO_NEW_DATA_C922_PIXEL_REFINEMENT_FROZEN",
+  "current_milestone": "OR10_COMPLETE_BOARD_PLANE_DIAGNOSTIC_IMPROVED_EXACT_INTRINSICS_EXTERNAL_BOUNDARY",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
   "proof_class": "retrospective_outcome_informed_retained_pixel_board_plane_camera_diagnostic_no_new_physical_or_transfer_authority",

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Goal Loop
 
-Status: `ACTIVE_OR10_ZERO_NEW_DATA_C922_PIXEL_REFINEMENT_FROZEN`
+Status: `COMPLETE_OR10_BOARD_PLANE_DIAGNOSTIC_IMPROVED_EXACT_INTRINSICS_EXTERNAL_BOUNDARY`
 
 Created: `2026-07-29`
 
@@ -98,13 +98,13 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: ACTIVE_OR10_ZERO_NEW_DATA_C922_PIXEL_REFINEMENT_FROZEN
-Active card: OR10
-Completed: predecessor evidence; OR0-OR9; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
-Evidence: OR10 binds two retained exact-mode fixed-mount C922 cohorts and separates four manually measured board corners from their 25 homography-generated lattice points
-Remaining: run and close the deterministic retrospective pixel-refinement diagnostic, then publish the exact residual and identifiability frontier
+Current state: COMPLETE_OR10_BOARD_PLANE_DIAGNOSTIC_IMPROVED_EXACT_INTRINSICS_EXTERNAL_BOUNDARY
+Active card: none
+Completed: predecessor evidence; OR0-OR10; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
+Evidence: OR10 artifact 520998b716b2d5f42123f21502c37b145ba398f1f3238aa524da5dd9ef0eda13; retained cohorts agree at 0.366 px RMS; selected challenger reduces observed-pixel RMS from 4.214 to 0.973 px; no new data or camera open
+Remaining: pristine global image coverage and an independently identifiable principal-point/distortion calibration are unavailable in retained evidence
 Blockers: physical capture remains gated on follower-elbow service, fresh authority, torque-off identity/limits, and fresh CPU/fp64 route review
-Next step: run OR10 without any camera, gateway, serial, or hardware use; retain OR9 as the prospective exact-calibration and spatial-validation continuation
+Next step: use OR10 for inspection only; execute OR9's frozen four-pose prospective validation seam only after its external gates are satisfied
 ```
 
 ## Stop conditions
