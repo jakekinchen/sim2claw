@@ -1,0 +1,69 @@
+{
+  "schema_version": "sim2claw.contact_consequence_mechanism_discriminator_contract.v1",
+  "experiment_id": "OR23_CONTACT_CONSEQUENCE_MECHANISM_DISCRIMINATOR_V1",
+  "proof_class": "frozen_contact_consequence_one_branch_or_insufficient_discriminator_no_parameter_fit",
+  "sources": {
+    "or21_closeout": {
+      "path": "configs/decisions/observable_registration_exact_replay_contact_introspection_v1_closeout.json",
+      "sha256": "80511a5e3b5080a85a7f73fd4da713226aa4f671faaff5b07b897db9c1a6d776"
+    },
+    "or22_closeout": {
+      "path": "configs/decisions/retained_rgb_contact_consequence_proxies_v1_closeout.json",
+      "sha256": "a73155e5af4f2904d30210b8f91d982ad3d3dbfd53f7cf10435ee7e057b18798"
+    }
+  },
+  "analysis": {
+    "source_sample_start": 210,
+    "source_sample_end": 300,
+    "terminal_task_outcome_allowed": false,
+    "parameter_fit_allowed": false,
+    "second_simulator_replay_allowed": false,
+    "exactly_one_branch_or_insufficient": true
+  },
+  "branches": [
+    {
+      "branch_id": "off_center_contact_moment",
+      "required_physical_channels": [
+        "metric_contact_point_relative_to_pawn_com",
+        "physical_pawn_orientation_path"
+      ]
+    },
+    {
+      "branch_id": "jaw_pawn_slip",
+      "required_physical_channels": [
+        "instrumented_or_visually_resolved_contact_state",
+        "relative_jaw_pawn_contact_velocity"
+      ]
+    },
+    {
+      "branch_id": "support_transition",
+      "required_physical_channels": [
+        "pixel_or_metric_board_support_contact_state"
+      ]
+    },
+    {
+      "branch_id": "downstream_collision",
+      "required_physical_channels": [
+        "named_physical_collision_witness_before_orientation_divergence"
+      ]
+    }
+  ],
+  "reporting": {
+    "global_mapping_approval_allowed": false,
+    "simulator_correction_allowed": false,
+    "task_success_claim_allowed": false,
+    "transfer_claim_allowed": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

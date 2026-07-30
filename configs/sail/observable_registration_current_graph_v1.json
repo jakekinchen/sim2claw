@@ -2,40 +2,9 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or23_contact_consequence_discriminator",
-  "active_card": "OR23",
-  "active_card_contract": {
-    "card_id": "OR23",
-    "proof_target": "one_branch_or_insufficient_contact_consequence_discriminator_over_frozen_samples_210_300_without_terminal_outcome",
-    "allowed_paths": [
-      "configs/evaluations/contact_consequence_mechanism_discriminator_v1.json",
-      "src/sim2claw/contact_consequence_mechanism_discriminator.py",
-      "scripts/build_contact_consequence_mechanism_discriminator.py",
-      "tests/test_contact_consequence_mechanism_discriminator.py",
-      "configs/decisions/contact_consequence_mechanism_discriminator_v1_closeout.json",
-      "outputs/contact_consequence_mechanism_discriminator_v1",
-      "docs/session-logs/095-executor-observable-registration-or23.md",
-      "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
-      "configs/sail/observable_registration_current_graph_v1.json",
-      "docs/autonomous-workflow/project_state.json",
-      "GOAL.md"
-    ],
-    "allowed_operations": [
-      "read",
-      "test",
-      "write",
-      "commit"
-    ],
-    "validation_commands": [
-      "uv run --locked pytest -q tests/test_contact_consequence_mechanism_discriminator.py",
-      "uv run --locked sim2claw check --profile agent",
-      "uv run --locked sim2claw agent-goal --check"
-    ],
-    "commit": true,
-    "push_origin_main": true
-  },
-  "next_transition": "evaluate_frozen_samples_210_300_and_select_exactly_one_supported_branch_or_insufficient",
+  "status": "complete_or23_aligned_event_timing_mechanism_not_identifiable",
+  "active_card": null,
+  "next_transition": "wait_for_independent_physical_pawn_orientation_support_or_contact_force_witness",
   "node_types": [
     "workcell",
     "session",
@@ -76,7 +45,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "7d7b25cb77597a1c913bf3b94355717ff57e9b682c3cd3b57ae2d60f4d8e42dc",
+      "sha256": "383c80175c731cb09cd3d81ef96ccdfa4f0904584159e7b3fbcdd724091cc636",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -228,6 +197,11 @@
       "path": "configs/decisions/retained_rgb_contact_consequence_proxies_v1_closeout.json",
       "sha256": "a73155e5af4f2904d30210b8f91d982ad3d3dbfd53f7cf10435ee7e057b18798",
       "proof_class": "retained_successful_episode_c922_d405_image_plane_jaw_crown_and_event_proxy_with_explicit_orientation_abstention"
+    },
+    "or23": {
+      "path": "configs/decisions/contact_consequence_mechanism_discriminator_v1_closeout.json",
+      "sha256": "c775f0d38594950430d7fc1f3e94dd2a1abcdab6591c4caa8f9d07cf9e166120",
+      "proof_class": "frozen_contact_consequence_one_branch_or_insufficient_discriminator_no_parameter_fit"
     }
   },
   "nodes": [
@@ -843,7 +817,8 @@
       "id": "mechanism:or23-contact-consequence-discriminator",
       "type": "mechanism",
       "label": "One-branch contact consequence discriminator",
-      "status": "active_frozen_pending_run",
+      "status": "mechanism_not_identifiable",
+      "source_binding": "or23",
       "data": {
         "analysis_source_sample_start": 210,
         "analysis_source_sample_end": 300,
@@ -855,7 +830,20 @@
           "downstream_collision"
         ],
         "exactly_one_or_insufficient": true,
+        "selected_branch": null,
+        "physical_event_timing_correspondence_passed": true,
+        "missing_physical_channels": [
+          "metric_contact_point_relative_to_pawn_com",
+          "physical_pawn_orientation_path",
+          "instrumented_or_visually_resolved_contact_state",
+          "relative_jaw_pawn_contact_velocity",
+          "pixel_or_metric_board_support_contact_state",
+          "named_physical_collision_witness_before_orientation_divergence"
+        ],
         "parameter_fit_allowed": false,
+        "simulator_correction_allowed": false,
+        "or24_status": "not_run_prerequisite_failed",
+        "or25_status": "not_run_prerequisite_failed",
         "transfer_claim": false
       }
     }

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Goal Loop
 
-Status: `IN_PROGRESS_OR23_CONTACT_CONSEQUENCE_DISCRIMINATOR`
+Status: `COMPLETE_OR23_ALIGNED_EVENT_TIMING_MECHANISM_NOT_IDENTIFIABLE`
 
 Created: `2026-07-29`
 
@@ -119,15 +119,16 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: IN_PROGRESS_OR23_CONTACT_CONSEQUENCE_DISCRIMINATOR
-Active card: OR23
-Completed: predecessor evidence; OR0-OR22; OR7C/OR7D not run because OR7B failed its untouched-validation prerequisite
+Current state: COMPLETE_OR23_ALIGNED_EVENT_TIMING_MECHANISM_NOT_IDENTIFIABLE
+Active card: none
+Completed: predecessor evidence; OR0–OR23; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed
 Evidence: OR21 artifact 18d9ba676efa53d3c845972bcd8dd4e26aecf9fe06e6ab80f9e5167f272a09fc reproduces OR19 exactly and localizes unilateral contact/slip at 231, tilt over 5 degrees at 248, bilateral contact at 255, and sustained support loss at 260
 Pi lineage: no Pi exists for the successful source; later guarded-run Pi files and contact-free tri-camera files are auxiliary, same-run-only evidence
 Retained RGB evidence: OR22 yields 23 jaw and 10 crown proxies; contact/lift/carry timing corresponds, but no accepted pawn-base observation exists and pawn-axis orientation remains unknown
-Remaining: freeze OR23 discriminator result; admit at most one independent OR24 correction; run OR25 only after every prerequisite passes
+OR23 result: physical contact/lift/carry-start timing corresponds, but no physical channel directly discriminates off-center moment, slip, support transition, or downstream collision
+Remaining: exact intrinsics, pristine heldout extrinsics, globally approved mapping, physical pawn orientation/contact mechanics, full matching task outcome, and transfer remain unapproved
 Blockers: physical capture and all transfer claims remain false; Pi host process bounds are not exposure synchronization; metric physical orientation and known contact force remain unavailable
-Next step: evaluate samples 210–300 and select one causal branch only if the retained physical proxy directly discriminates it; otherwise return MECHANISM_NOT_IDENTIFIABLE
+Next admissible input: one independently timestamped and calibrated physical pawn-orientation/support trace or a direct contact-force/contact-state witness
 ```
 
 ## Stop conditions

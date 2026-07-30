@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR23_CONTACT_CONSEQUENCE_DISCRIMINATOR`
+Status: `COMPLETE_OR23_ALIGNED_EVENT_TIMING_MECHANISM_NOT_IDENTIFIABLE`
 
 ## Active mission
 
@@ -9,14 +9,16 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR23_CONTACT_CONSEQUENCE_DISCRIMINATOR`
+`OR23_COMPLETE_ALIGNED_EVENT_TIMING_MECHANISM_NOT_IDENTIFIABLE`
 
 ## Current card
 
-`OR23`
+`none` — the campaign is at an external-input boundary
 
 ## Current evidence
 
+- Closeout: `configs/decisions/contact_consequence_mechanism_discriminator_v1_closeout.json`.
+- Closeout SHA-256: `c775f0d38594950430d7fc1f3e94dd2a1abcdab6591c4caa8f9d07cf9e166120`.
 - Proof class: `frozen_contact_consequence_one_branch_or_insufficient_discriminator_no_parameter_fit`.
 
 ## Authority
@@ -32,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`evaluate_frozen_samples_210_300_and_select_exactly_one_supported_branch_or_insufficient`
+`wait_for_independent_physical_pawn_orientation_support_or_contact_force_witness`
 
 ## Stop conditions
 

@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.contact_consequence_mechanism_discriminator_closeout.v1",
+  "experiment_id": "OR23_CONTACT_CONSEQUENCE_MECHANISM_DISCRIMINATOR_V1",
+  "status": "MECHANISM_NOT_IDENTIFIABLE",
+  "proof_class": "frozen_contact_consequence_one_branch_or_insufficient_discriminator_no_parameter_fit",
+  "contract": {
+    "path": "configs/evaluations/contact_consequence_mechanism_discriminator_v1.json",
+    "sha256": "db5590d275368b084624d0dea9a6eea44b13f3c5ce9ded7e91d8c4b0a017d947"
+  },
+  "implementation": {
+    "path": "src/sim2claw/contact_consequence_mechanism_discriminator.py",
+    "sha256": "487fca3bf1479b84ced00c5458449c122cbd5d058e5f8f882e425e2996d18e21"
+  },
+  "receipt": {
+    "path": "outputs/contact_consequence_mechanism_discriminator_v1/receipt.json",
+    "sha256": "77803a257253630d4bc49d7ceb5f219e73e0814343b1e59a810b6614148c69c9",
+    "artifact_sha256": "0e8dbd6dffa341a7f6cd26745c8a2ed93835a31bca654166dded4ec0cd1c38f0"
+  },
+  "result": {
+    "analysis_source_sample_window": [
+      210,
+      300
+    ],
+    "selected_branch": null,
+    "simulator_unilateral_contact_sample": 231,
+    "simulator_orientation_onset_sample": 248,
+    "simulator_bilateral_contact_sample": 255,
+    "simulator_support_loss_sample": 260,
+    "physical_contact_timing_corresponds": true,
+    "physical_lift_timing_corresponds": true,
+    "physical_carry_start_timing_corresponds": true,
+    "missing_physical_channels": [
+      "metric_contact_point_relative_to_pawn_com",
+      "physical_pawn_orientation_path",
+      "instrumented_or_visually_resolved_contact_state",
+      "relative_jaw_pawn_contact_velocity",
+      "pixel_or_metric_board_support_contact_state",
+      "named_physical_collision_witness_before_orientation_divergence"
+    ],
+    "qualitative_frame_review": {
+      "c922_contact_and_lift_frames": "wrist_assembly_occludes_the_pawn_contact_region",
+      "d405_contact_and_lift_frames": "pawn_appears_qualitatively_upright_between_the_jaws",
+      "metric_orientation_admissible": false,
+      "reason": "the dark pawn, board, and gripper housings merge without an accepted pawn-base point or calibrated D405 extrinsic"
+    },
+    "terminal_task_outcome_used": false,
+    "parameter_fit_performed": false,
+    "simulator_replay_performed": false,
+    "simulator_correction_allowed": false,
+    "global_mapping_approved": false,
+    "task_success_claim": false,
+    "transfer_claim": false
+  }
+}
