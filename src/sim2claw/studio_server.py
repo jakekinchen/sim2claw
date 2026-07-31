@@ -27,6 +27,10 @@ from .physical_sim_replay import replay_physical_recording
 from .observable_registration_studio_publication import (
     load_observable_registration_studio_proof,
 )
+from .visible_divergence_studio import (
+    VisibleDivergenceStudioError,
+    load_visible_divergence_studio,
+)
 from .studio_catalog import build_catalog, open_media_token
 from .studio_live import LiveWorkspaceError, LiveWorkspaceService, MJPEG_BOUNDARY
 from .studio_project_map import StudioProjectMapError, build_project_map
@@ -318,6 +322,27 @@ class StudioRequestHandler(BaseHTTPRequestHandler):
                 )
             except (
                 FactoryArtifactError,
+                OSError,
+                ValueError,
+                json.JSONDecodeError,
+            ) as error:
+                self._send_json(
+                    {
+                        "available": False,
+                        "read_only": True,
+                        "physical_authority": False,
+                        "error": str(error),
+                    },
+                    HTTPStatus.SERVICE_UNAVAILABLE,
+                )
+            return
+        if path == "/api/visible-divergence":
+            try:
+                self._send_json(
+                    load_visible_divergence_studio(repo_root=self.server.repo_root)
+                )
+            except (
+                VisibleDivergenceStudioError,
                 OSError,
                 ValueError,
                 json.JSONDecodeError,

@@ -1,0 +1,38 @@
+{
+  "schema_version": "sim2claw.observable_registration_visible_divergence_studio_closeout.v1",
+  "experiment_id": "OR27_VISIBLE_DIVERGENCE_STUDIO_V1",
+  "status": "PASS_HASH_VERIFIED_RESPONSIVE_STUDIO_PUBLICATION",
+  "proof_class": "read_only_hash_verified_synchronized_visible_divergence_publication",
+  "source": {
+    "path": "configs/decisions/observable_registration_visible_divergence_video_v1_closeout.json",
+    "sha256": "07bfad4071199dc0de6f27d00d5f3aed0a796aaaccbf8b7f0ebd39ccdf24bebd",
+    "artifact_sha256": "47e7822a48731364aaf2e1cd8b0c697e20b55064db731587e51f7f63c83afe36"
+  },
+  "implementation": {
+    "loader_sha256": "0181215f090fea23bb12a1f87046f242154a3e9b7bd2326d2f45abd3b80228d7",
+    "server_sha256": "1c9ab5a75091d5ba16df5832fc2aafc7c7320e24f8e767a9ac639b350d871da0",
+    "html_sha256": "6b278b3cad3f8a87aba6e0294a08a543f1566ec774d7b6ae8ece630e8c180566",
+    "css_sha256": "4ba58f3ce21033f5b7a875c2287347493ae714c800baa65f8372a05014c25601",
+    "javascript_sha256": "a43ed4203166c689170c95e48510849318fb270495557979b52c8411790a7c48",
+    "studio_index_sha256": "80218aabe2578173cca1e6fbe4edc043e7f041312f3ff34b1ed6a5764c965240"
+  },
+  "acceptance": {
+    "source_hashes_verified_before_media_urls": true,
+    "physical_and_simulator_lanes_separate": true,
+    "single_synchronized_playhead": true,
+    "frame_step_controls": true,
+    "divergence_jump_control": true,
+    "causal_event_markers": true,
+    "desktop_browser_inspected": true,
+    "mobile_390x844_inspected": true,
+    "play_pause_exercised": true,
+    "jump_to_sample_248_exercised": true,
+    "focused_tests_passed": 22,
+    "focused_subtests_passed": 2,
+    "global_mapping_approved": false,
+    "physics_success_claim": false,
+    "task_success_claim": false,
+    "transfer_claim": false,
+    "physical_authority": false
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": "sim2claw.observable_registration_visible_divergence_video_closeout.v1",
+  "experiment_id": "OR26_VISIBLE_DIVERGENCE_VIDEO_V1",
+  "status": "PASS_SYNCHRONIZED_VISIBLE_DIVERGENCE_VIDEO",
+  "proof_class": "retained_exact_trace_board_registered_synchronized_visual_divergence_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_visible_divergence_video_v1.json",
+    "sha256": "6b6dad2855788d8bd44c4ce26c8e6c68ce182d8159fea49e88d5abb3982a43d7"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_visible_divergence_video.py",
+    "sha256": "56e24d745edcea4b7517508e30c518fcd795a86a910ccb46cfb8ad70e5105743"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_visible_divergence_video_v1/receipt.json",
+    "sha256": "b6589ea2848749a91fda7ea7adfa7838e4f2a8f9f7089141e5570092cbdd9a4e",
+    "artifact_sha256": "47e7822a48731364aaf2e1cd8b0c697e20b55064db731587e51f7f63c83afe36"
+  },
+  "result": {
+    "frame_count": 531,
+    "output_fps": 20,
+    "duration_seconds": 26.55,
+    "comparison_video_sha256": "ecdf1e89957769597641ad2a3b22d90aa1de7f62f2dbe501a932c1a50412c7d0",
+    "physical_video_sha256": "00aaf4bed86e25d6a661643335ae577906bf436681fe7b1f09f76a60ea0ce1c8",
+    "simulator_video_sha256": "fb6fb32eca13e6990129269c91f404b52c6a2ff721cb1851f024060ef9a3a6ca",
+    "post_warp_board_corner_rms_px": 0.000008149758398700996,
+    "initial_planar_endpoint_error_px": 10.774220860855651,
+    "terminal_planar_endpoint_error_px": 12.583957847796755,
+    "simulator_first_unilateral_contact_sample": 231,
+    "simulator_first_tilt_over_5_degrees_sample": 248,
+    "simulator_first_bilateral_contact_sample": 255,
+    "simulator_first_sustained_support_loss_sample": 260,
+    "visible_divergence_sample_interval": [
+      248,
+      260
+    ],
+    "visible_divergence_seconds": [
+      12.402082500047982,
+      13.002207625075243
+    ],
+    "missing_physical_frame_count": 15,
+    "interpretation": "The registered planar path is close at both endpoints. The material visual and task mismatch begins in pawn orientation, height, support, and contact load path when the simulator pawn tips while the physical source carries it upright.",
+    "global_mapping_approved": false,
+    "physics_success_claim": false,
+    "task_success_claim": false,
+    "transfer_claim": false,
+    "physical_authority": false
+  }
+}

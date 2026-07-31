@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#dfe4e5">
+    <title>Physical ↔ physics — sim2claw</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/branding/logo-mark.svg">
+    <link rel="stylesheet" href="/visible-divergence.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#comparison">Skip to comparison</a>
+    <header class="masthead">
+      <a class="brand" href="/#/replay" aria-label="Back to sim2claw Studio">
+        <span aria-hidden="true">S↔C</span>
+        <b>sim2claw</b>
+      </a>
+      <div class="evidence-id">
+        <small>Exact-action visual diagnostic</small>
+        <code id="artifact-id">loading receipt…</code>
+      </div>
+      <a class="back-link" href="/#/replay">Studio <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main>
+      <section class="thesis">
+        <div>
+          <p class="eyebrow">One action. Two consequences.</p>
+          <h1>The paths agree.<br><em>The grasp does not.</em></h1>
+        </div>
+        <p class="thesis-copy">The real pawn and simulated pawn begin and end within a small registered image-plane distance. Scrub to the amber band to see the physics twin tip and lose support while reality carries the pawn upright.</p>
+      </section>
+
+      <section class="comparison" id="comparison" aria-label="Synchronized physical and simulator videos">
+        <article class="lane physical-lane">
+          <header><span>01</span><div><b>Physical footage</b><small>Native C922 · retained source</small></div></header>
+          <div class="video-shell">
+            <video id="physical-video" playsinline muted preload="auto"></video>
+            <span class="lane-state">REAL</span>
+          </div>
+        </article>
+        <div class="seam" aria-hidden="true"><i></i><span>same playhead</span></div>
+        <article class="lane simulator-lane">
+          <header><span>02</span><div><b>Physics replay</b><small>Exact OR21 state trace · MuJoCo</small></div></header>
+          <div class="video-shell">
+            <video id="simulator-video" playsinline muted preload="auto"></video>
+            <span class="lane-state">SIM</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="transport" aria-label="Synchronized playback controls">
+        <div class="transport-row">
+          <button id="step-back" type="button" aria-label="Step back one frame">−1f</button>
+          <button class="play" id="play-toggle" type="button" aria-label="Play both videos"><i></i><span>Play both</span></button>
+          <button id="step-forward" type="button" aria-label="Step forward one frame">+1f</button>
+          <button class="jump" id="jump-divergence" type="button">Jump to divergence</button>
+          <button class="speed" id="speed-toggle" type="button" aria-label="Change playback speed">1×</button>
+          <output id="timecode">00:00.00</output>
+        </div>
+        <div class="causal-ruler" id="causal-ruler">
+          <input id="scrubber" type="range" min="0" max="530" value="0" step="1" aria-label="Episode sample">
+          <div class="divergence-band" id="divergence-band" aria-hidden="true"></div>
+          <div class="marker-layer" id="marker-layer" aria-hidden="true"></div>
+          <div class="playhead" id="playhead" aria-hidden="true"></div>
+        </div>
+        <div class="ruler-caption">
+          <span>sample <b id="sample-number">0</b> / 530</span>
+          <span class="band-key"><i></i> causal split: samples 248–260</span>
+        </div>
+      </section>
+
+      <section class="readout" aria-live="polite">
+        <article>
+          <small>Registered start</small>
+          <strong id="start-error">—</strong>
+          <span>pawn-root pixel delta</span>
+        </article>
+        <article>
+          <small>Registered finish</small>
+          <strong id="finish-error">—</strong>
+          <span>pawn-root pixel delta</span>
+        </article>
+        <article class="primary-readout">
+          <small>First bounded split</small>
+          <strong id="split-time">—</strong>
+          <span>tilt → support loss</span>
+        </article>
+        <article>
+          <small>Proof boundary</small>
+          <strong>Diagnostic</strong>
+          <span>global mapping remains unapproved</span>
+        </article>
+      </section>
+
+      <aside class="interpretation" role="note">
+        <b>What this establishes</b>
+        <p id="interpretation-copy">Loading the receipt-bound diagnosis…</p>
+        <small>The board homography is display-only. It does not calibrate hidden depth, approve global mapping, or turn this retrospective episode into a transfer claim.</small>
+      </aside>
+
+      <section class="unavailable" id="unavailable" hidden>
+        <b>Comparison unavailable</b>
+        <p id="unavailable-detail">The evidence did not pass its hash checks.</p>
+      </section>
+    </main>
+
+    <script src="/visible-divergence.js" defer></script>
+  </body>
+</html>

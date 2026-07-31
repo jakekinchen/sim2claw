@@ -1,0 +1,125 @@
+{
+  "schema_version": "sim2claw.observable_registration_visible_divergence_video_contract.v1",
+  "experiment_id": "OR26_VISIBLE_DIVERGENCE_VIDEO_V1",
+  "proof_class": "retained_exact_trace_board_registered_synchronized_visual_divergence_diagnostic",
+  "sources": {
+    "or19_contract": {
+      "path": "configs/evaluations/observable_registration_unilateral_push_dynamic_replay_v1.json",
+      "sha256": "df7cf58cf277054aff5727ce4f8364707b29cc1c2ad2181efbb19a4bb657b440"
+    },
+    "or21_internal_trace": {
+      "path": "outputs/observable_registration_exact_replay_contact_introspection_v1/internal_trace.json",
+      "sha256": "7785ac484da04ef4f3b15d2bcccb21d22a3ad54c25b6a6f9318adbb1fa4bf6a0"
+    },
+    "or21_source_trace": {
+      "path": "outputs/observable_registration_exact_replay_contact_introspection_v1/or19_reproduction/trace.json",
+      "sha256": "8d0a5d461428a55a2469acefaaf79699c959e106ed52e609b5ec77b9652b763b"
+    },
+    "or10_camera_receipt": {
+      "path": "outputs/observable_c922_pixel_lattice_refinement_v1/receipt.json",
+      "sha256": "bf29c29b1160de6e0c48f81f40b7f52d11e09825e95a4beae7f77aa9df4934b7"
+    },
+    "or1_camera_receipt": {
+      "path": "outputs/observable_c922_camera_world_v1/receipt.json",
+      "sha256": "a2fda1032ad70c026fb8e82f3849896926ee92f07a14f5ecdf8e827141324614"
+    },
+    "or13_geometry_receipt": {
+      "path": "outputs/post_hackathon_home_workspace_geometry_camera_v2/receipt.json",
+      "sha256": "4b029081910ef5168fb1819ba649e64d0d8bab3ee02c9a4a2c3eb10dc1da81fa"
+    },
+    "or18_scene": {
+      "path": "outputs/observable_registration_unilateral_push_contact_v1/derived_scene_config.json",
+      "sha256": "afc1b762041c9e660de54f3a1dd82343f3184d7333da99c929619d19632497e0"
+    },
+    "physical_recording_receipt": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/recording_receipt.json",
+      "sha256": "74a3da30468922df00dfefd12e38ff346b2fd59fb5752458477be29360b9e0d3"
+    },
+    "physical_c922_video": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/native_dual_camera/overhead_c922.native.mov",
+      "sha256": "1de1cee6c30618df74e66e8d026d16f0699c4cdf22a0a60d0a93c6c81b852bdf"
+    },
+    "physical_episode_receipt": {
+      "path": "outputs/observable_physical_episode_observations_v1/receipt.json",
+      "sha256": "e8e76bf8f9d1f44789c647e967a313b57893770edb1d3570f3b4974cb4b94d1a"
+    },
+    "physical_endpoint_receipt": {
+      "path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+      "sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011"
+    },
+    "physical_board_projection": {
+      "path": "configs/evaluations/bidirectional_pawn_push_v2_registration_fit_annotations_v4.json",
+      "sha256": "2a22f21601ed8cafccdee1f2666ead7b9c194ab1af091610082597238dffe5b3"
+    }
+  },
+  "timeline": {
+    "source_row_count": 531,
+    "output_fps": 20,
+    "use_source_timestamps": true,
+    "use_recorded_action_start_video_offset": true,
+    "additional_display_lag_seconds": 0.0,
+    "camera_exposure_synchronized": false,
+    "missing_frames_must_remain_missing": true
+  },
+  "camera_and_display_registration": {
+    "measured_playing_side_m": 0.324,
+    "or10_playing_side_m": 0.3556,
+    "scale_or10_board_translation_only": true,
+    "preserve_or10_rotation_focal_and_principal_point": true,
+    "physical_playing_corner_order": [
+      "a8_outer",
+      "h8_outer",
+      "h1_outer",
+      "a1_outer"
+    ],
+    "apply_one_board_plane_display_homography": true,
+    "display_homography_is_metric_camera_calibration": false,
+    "simulator_camera_promotion_allowed": false
+  },
+  "trace_playback": {
+    "physics_rerun_allowed": false,
+    "action_change_allowed": false,
+    "state_fit_allowed": false,
+    "contact_or_object_parameter_change_allowed": false,
+    "selected_pawn_pose_from_or21_internal_trace": true,
+    "robot_pose_from_or19_identified_applied_actions": true,
+    "other_piece_dynamic_pose_available": false
+  },
+  "motion_analysis": {
+    "grayscale_gaussian_kernel": 5,
+    "physical_frame_difference_threshold": 12,
+    "simulator_frame_difference_threshold": 5,
+    "precontact_affine_fit_sample_start": 1,
+    "precontact_affine_fit_sample_end": 224,
+    "postcontact_search_sample_start": 225,
+    "robust_residual_mad_multiplier": 6.0,
+    "minimum_energy_residual_fraction": 0.002,
+    "minimum_sustained_rows": 5,
+    "static_appearance_enters_motion_metric": false
+  },
+  "reporting": {
+    "emit_physical_video": true,
+    "emit_simulator_video": true,
+    "emit_side_by_side_video": true,
+    "emit_poster": true,
+    "emit_motion_curves": true,
+    "report_registered_initial_and_terminal_pawn_pixels": true,
+    "global_mapping_approval_allowed": false,
+    "physics_success_claim_allowed": false,
+    "task_success_claim_allowed": false,
+    "transfer_claim_allowed": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "simulator_replay": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

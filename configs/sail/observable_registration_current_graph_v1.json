@@ -2,9 +2,39 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "complete_or23_aligned_event_timing_mechanism_not_identifiable",
-  "active_card": null,
-  "next_transition": "wait_for_independent_physical_pawn_orientation_support_or_contact_force_witness",
+  "status": "in_progress_or28_bilateral_aperture_composition",
+  "active_card": "OR28",
+  "active_card_contract": {
+    "card_id": "OR28",
+    "proof_target": "one_shot_exact_action_composition_of_prior_spatial_and_independently_fit_aperture_candidates",
+    "allowed_paths": [
+      "configs/evaluations/observable_registration_bilateral_aperture_composition_v1.json",
+      "scripts/run_observable_registration_bilateral_aperture_composition.py",
+      "tests/test_observable_registration_bilateral_aperture_composition.py",
+      "configs/decisions/observable_registration_bilateral_aperture_composition_v1_closeout.json",
+      "outputs/observable_registration_bilateral_aperture_composition_v1",
+      "docs/session-logs/098-executor-observable-registration-or28.md",
+      "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
+      "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
+      "configs/sail/observable_registration_current_graph_v1.json",
+      "docs/autonomous-workflow/project_state.json",
+      "GOAL.md"
+    ],
+    "allowed_operations": [
+      "read",
+      "test",
+      "write",
+      "commit"
+    ],
+    "validation_commands": [
+      "uv run --locked pytest -q tests/test_observable_registration_bilateral_aperture_composition.py",
+      "uv run --locked sim2claw check --profile agent",
+      "uv run --locked sim2claw agent-goal --check"
+    ],
+    "commit": true,
+    "push_origin_main": true
+  },
+  "next_transition": "run_one_shot_exact_action_prior_evidence_composition_and_compare_enclosure_and_upright_consequence",
   "node_types": [
     "workcell",
     "session",
@@ -45,7 +75,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "383c80175c731cb09cd3d81ef96ccdfa4f0904584159e7b3fbcdd724091cc636",
+      "sha256": "f24aacf8b63f49bb350d51cec45c370ff6e8a69d81e68ab6bf2dcb1be08e45c4",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -202,6 +232,16 @@
       "path": "configs/decisions/contact_consequence_mechanism_discriminator_v1_closeout.json",
       "sha256": "c775f0d38594950430d7fc1f3e94dd2a1abcdab6591c4caa8f9d07cf9e166120",
       "proof_class": "frozen_contact_consequence_one_branch_or_insufficient_discriminator_no_parameter_fit"
+    },
+    "or26": {
+      "path": "configs/decisions/observable_registration_visible_divergence_video_v1_closeout.json",
+      "sha256": "07bfad4071199dc0de6f27d00d5f3aed0a796aaaccbf8b7f0ebd39ccdf24bebd",
+      "proof_class": "retained_exact_trace_board_registered_synchronized_visual_divergence_diagnostic"
+    },
+    "or27": {
+      "path": "configs/decisions/observable_registration_visible_divergence_studio_v1_closeout.json",
+      "sha256": "ea7ea34298c4dfca1d57a1430e87a9ea67f3a5b704f4595a6524073b804f2f94",
+      "proof_class": "read_only_hash_verified_synchronized_visible_divergence_publication"
     }
   },
   "nodes": [
@@ -846,6 +886,23 @@
         "or25_status": "not_run_prerequisite_failed",
         "transfer_claim": false
       }
+    },
+    {
+      "id": "evidence:or26-visible-divergence-video",
+      "type": "evidence",
+      "label": "Board-registered physical and exact-physics trace comparison",
+      "status": "active_frozen_pending_run",
+      "data": {
+        "source_row_count": 531,
+        "output_fps": 20,
+        "physics_rerun_allowed": false,
+        "trace_playback_only": true,
+        "board_plane_display_homography_allowed": true,
+        "static_appearance_used_for_motion_divergence": false,
+        "channelized_first_divergence_required": true,
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
     }
   ],
   "edges": [
@@ -1063,6 +1120,11 @@
       "source": "observation:or22-retained-rgb-contact-proxies",
       "target": "mechanism:or23-contact-consequence-discriminator",
       "type": "predicts"
+    },
+    {
+      "source": "mechanism:or23-contact-consequence-discriminator",
+      "target": "evidence:or26-visible-divergence-video",
+      "type": "constrained-by"
     }
   ]
 }
