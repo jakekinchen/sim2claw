@@ -1,0 +1,60 @@
+{
+  "schema_version": "sim2claw.observable_registration_retained_full_range_gripper_mapping_closeout.v1",
+  "experiment_id": "OR41_RETAINED_FULL_RANGE_GRIPPER_MAPPING_V1",
+  "status": "TERMINAL_NEGATIVE_RETAINED_CROSS_EPISODE_DIRECTIONAL_PLAY",
+  "proof_class": "retained_contact_free_cross_episode_scale_free_directional_play_identification_with_task_clip_no_refit_validation",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_retained_full_range_gripper_mapping_v1.json",
+    "sha256": "bd653110578b10f157d6728c5a7e412073234d691051f671690a68d18e9858b6"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_retained_full_range_gripper_mapping.py",
+    "sha256": "ac608b1f19930dfc0105286d3b0f34727765dbe32b6eadc158ca4acd3bb518f3"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_retained_full_range_gripper_mapping_v1/receipt.json",
+    "sha256": "34b2a1f30b67bc129d27f8e1a967d5868b7a370fddee327366df071d19226e60",
+    "artifact_sha256": "d1c280b63cacd7b6f8b9b2f56028e6ded117acaa0121ed5d1770180402bb05f8"
+  },
+  "candidate_manifest": {
+    "path": "outputs/observable_registration_retained_full_range_gripper_mapping_v1/candidate_manifest.json",
+    "sha256": "c77bde6de71d8b94fc7bebe387aa8515824d9d3e60feb97358c9956cb31760c6"
+  },
+  "result": {
+    "source_recording": "full-range-of-motion-capture__20260727T041940Z-5b15dc6e",
+    "raw_measured_rows": 2401,
+    "wrist_frames": 642,
+    "candidate_frame_range": [140, 180],
+    "accepted_frames": 4,
+    "abstained_frames": 37,
+    "fit_opening_frames": 1,
+    "fit_closing_frames": 2,
+    "validation_opening_frames": 0,
+    "validation_closing_frames": 1,
+    "selected_play_half_width_raw_degrees": 0.0,
+    "selected_camera_lag_seconds": 0.11,
+    "fit_rms_px": 3.804886657471688,
+    "internal_validation_rms_px": 2.9573425696640996,
+    "or40_task_clip_validation_rms_px": 54.73669466645677,
+    "mapping_gate_passed": false,
+    "dynamic_replays_run": 0,
+    "interpretation": "The retained full-range episode contains the needed encoder opening/closing cycle, but the wall-facing wrist view keeps the red pad surfaces small, clipped, or below the prospectively frozen component gate. Only four of 41 candidate frames are admitted. The best candidate again selects zero play and transfers catastrophically to the untouched OR40 task-clip image-space observations. This retained recording cannot replace a deliberately observed load-side gripper calibration experiment."
+  },
+  "claim_limits": {
+    "metric_jaw_aperture": false,
+    "camera_calibrated": false,
+    "directional_play_identified": false,
+    "physical_contact_force_or_point": false,
+    "global_mapping_approved": false,
+    "full_physics_driven_replay": false,
+    "simulator_promoted": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replays": 0
+  }
+}

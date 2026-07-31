@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `ACTIVE_RETAINED_FULL_RANGE_GRIPPER_MAPPING`
+Status: `ACTIVE_NEXT_MECHANISM_RECONCILIATION`
 
 ## Active mission
 
@@ -9,15 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR41_RETAINED_FULL_RANGE_GRIPPER_MAPPING`
+`OR42_NEXT_MECHANISM_RECONCILIATION`
 
 ## Current card
 
-`OR41`
+`OR42`
 
 ## Current evidence
 
-- Proof class: `retained_cross_episode_scale_free_directional_play_identification_with_task_clip_no_refit_validation`.
+- Proof class: `advisory_reconciled_evidence_safe_next_mechanism_or_external_observation_boundary`.
 
 ## Authority
 
@@ -32,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`audit_and_compile_or41_retained_full_range_gripper_mapping`
+`reconcile_or42_next_mechanism_with_gpt_pro_at_retained_data_blocker`
 
 ## Stop conditions
 

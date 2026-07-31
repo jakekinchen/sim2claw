@@ -2,12 +2,14 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "active_retained_full_range_gripper_mapping",
-  "active_card": "OR41",
+  "status": "active_next_mechanism_reconciliation",
+  "active_card": "OR42",
   "active_card_contract": {
-    "card_id": "OR41",
-    "proof_target": "retained_cross_episode_scale_free_directional_play_identification_with_task_clip_no_refit_validation",
+    "card_id": "OR42",
+    "proof_target": "advisory_reconciled_evidence_safe_next_mechanism_or_external_observation_boundary",
     "allowed_paths": [
+      "docs/briefs/114-observable-registration-or42-next-mechanism.md",
+      "docs/session-logs/114-executor-observable-registration-or42.md",
       "configs/evaluations/observable_registration_retained_full_range_gripper_mapping_v1.json",
       "src/sim2claw/observable_registration_retained_full_range_gripper_mapping.py",
       "tests/test_observable_registration_retained_full_range_gripper_mapping.py",
@@ -104,7 +106,7 @@
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "audit_and_compile_or41_retained_full_range_gripper_mapping",
+  "next_transition": "reconcile_or42_next_mechanism_with_gpt_pro_at_retained_data_blocker",
   "node_types": [
     "workcell",
     "session",
@@ -145,7 +147,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "854c9da474ef210712132afd858715fc6275e6e64c1b7690fb4388d13a2e5e02",
+      "sha256": "12a0372e21a824df7735ac6da9ccc06c37cadad6b10cd8d8c66da1a8c177b960",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -387,6 +389,11 @@
       "path": "configs/decisions/observable_registration_retained_video_jaw_surface_mapping_v1_closeout.json",
       "sha256": "557e9af224e748b33b774e537f5536282d6e7867b240bfdaaa506fe80ef266ab",
       "proof_class": "retained_video_preterminal_scale_free_encoder_to_contact_surface_play_identification_with_no_refit_validation"
+    },
+    "or41": {
+      "path": "configs/decisions/observable_registration_retained_full_range_gripper_mapping_v1_closeout.json",
+      "sha256": "91a55fa44f2b3508232f62512afa4ac01411568eb82b82fb2ade740dc15b809a",
+      "proof_class": "retained_contact_free_cross_episode_scale_free_directional_play_identification_with_task_clip_no_refit_validation"
     }
   },
   "nodes": [
@@ -1266,7 +1273,8 @@
       "id": "mechanism:or41-retained-full-range-gripper-mapping",
       "type": "mechanism",
       "label": "Retained contact-free full-range gripper mapping",
-      "status": "active_observability_audit",
+      "status": "terminal_negative_retained_cross_episode_directional_play",
+      "source_binding": "or41",
       "data": {
         "retained_video_only": true,
         "source_recording": "full-range-of-motion-capture__20260727T041940Z-5b15dc6e",
@@ -1274,10 +1282,30 @@
         "wrist_frame_count": 642,
         "wrist_fps": 5.0,
         "raw_gripper_cycle_degrees": [1.0688836104513064, 99.5249406175772, 1.66270783847981],
-        "quantitative_pad_mapping_opened": false,
+        "accepted_candidate_frames": 4,
+        "candidate_frame_count": 41,
+        "selected_play_half_width_raw_degrees": 0.0,
+        "internal_validation_rms_px": 2.9573425696640996,
+        "or40_task_clip_validation_rms_px": 54.73669466645677,
+        "mapping_gate_passed": false,
         "task_outcome_fit_allowed": false,
         "metric_aperture_claim_allowed": false,
         "dynamic_replay_allowed": false,
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "mechanism:or42-next-mechanism-reconciliation",
+      "type": "mechanism",
+      "label": "Evidence-safe next-mechanism reconciliation",
+      "status": "active_advisory_reconciliation",
+      "data": {
+        "gpt_pro_allowed_at_genuine_blocker": true,
+        "repository_evidence_remains_authoritative": true,
+        "retained_directional_play_lane_closed": true,
+        "simulator_replay_allowed": false,
+        "physical_authority": false,
         "global_mapping_approved": false,
         "transfer_claim": false
       }
@@ -1552,6 +1580,11 @@
     {
       "source": "mechanism:or40-video-jaw-surface-mapping",
       "target": "mechanism:or41-retained-full-range-gripper-mapping",
+      "type": "motivates"
+    },
+    {
+      "source": "mechanism:or41-retained-full-range-gripper-mapping",
+      "target": "mechanism:or42-next-mechanism-reconciliation",
       "type": "motivates"
     }
   ]
