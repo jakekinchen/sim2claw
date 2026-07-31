@@ -1,0 +1,33 @@
+{
+  "schema_version": "sim2claw.observable_registration_sample232_base_xy_aperture_geometry_closeout.v1",
+  "experiment_id": "OR30_SAMPLE232_BASE_XY_APERTURE_GEOMETRY_V1",
+  "status": "NO_STATIC_BASE_XY_APERTURE_CANDIDATE",
+  "proof_class": "bounded_outcome_informed_static_base_xy_and_aperture_enclosure_geometry_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_sample232_base_xy_aperture_geometry_v1.json",
+    "sha256": "ed43e221f71d529cfe2d091b3b539e914fb319e63838a2c33e1e4f196b140119"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_sample232_base_xy_aperture_geometry_v1/receipt.json",
+    "sha256": "6086790d97fff792ef6e2da213f6c177cbe592dc045e071f51b0fad61920b309",
+    "artifact_sha256": "887dc1e98816d6fdc1fba57595f4fe32c695bf0c95e590331545dd21f38045e1"
+  },
+  "result": {
+    "candidate_count": 1377,
+    "eligible_candidate_count": 0,
+    "closest_base_world_xy_delta_m": [
+      -0.01,
+      -0.01
+    ],
+    "closest_gripper_zero_offset_rad": -0.17453,
+    "closest_fixed_jaw_gap_m": 0.0026628833544861882,
+    "closest_moving_jaw_gap_m": -0.001508452089856077,
+    "closest_precontact_penetration_m": 0.000810212496808399,
+    "local_basin_moving_gap_at_intermediate_aperture_m": 0.0006447170722777601,
+    "physics_integration_steps": 0,
+    "dynamic_outcomes_used_for_selection": false,
+    "global_mapping_approved": false,
+    "task_success_claim": false,
+    "transfer_claim": false
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "schema_version": "sim2claw.observable_registration_sample232_base_xy_aperture_refinement_contract.v1",
+  "experiment_id": "OR31_SAMPLE232_BASE_XY_APERTURE_REFINEMENT_V1",
+  "proof_class": "prospectively_frozen_static_local_refinement_of_outcome_informed_enclosure_geometry_basin",
+  "sources": {
+    "or30_contract": {
+      "path": "configs/evaluations/observable_registration_sample232_base_xy_aperture_geometry_v1.json",
+      "sha256": "ed43e221f71d529cfe2d091b3b539e914fb319e63838a2c33e1e4f196b140119"
+    },
+    "or30_closeout": {
+      "path": "configs/decisions/observable_registration_sample232_base_xy_aperture_geometry_v1_closeout.json",
+      "sha256": "7a9b5d0c7a653605bb4e0b71fcd417231dd92cb4ae99673f280d4b61a6ffc43d"
+    }
+  },
+  "grid": {
+    "left_base_world_x_delta_m": [
+      -0.015,
+      -0.014,
+      -0.013,
+      -0.012,
+      -0.011,
+      -0.01,
+      -0.009,
+      -0.008,
+      -0.007,
+      -0.006,
+      -0.005
+    ],
+    "left_base_world_y_delta_m": [
+      -0.015,
+      -0.014,
+      -0.013,
+      -0.012,
+      -0.011,
+      -0.01,
+      -0.009,
+      -0.008,
+      -0.007,
+      -0.006,
+      -0.005
+    ],
+    "gripper_zero_offset_rad": [
+      -0.16052922543320722,
+      -0.15852922543320722,
+      -0.15652922543320721,
+      -0.1545292254332072,
+      -0.1525292254332072,
+      -0.1505292254332072,
+      -0.1485292254332072,
+      -0.1465292254332072,
+      -0.14452922543320723,
+      -0.14252922543320723,
+      -0.14052922543320723,
+      -0.13852922543320723,
+      -0.13652922543320722,
+      -0.13452922543320722,
+      -0.13252922543320722
+    ]
+  },
+  "selection": {
+    "sample": 232,
+    "precontact_guard_interval": [
+      220,
+      227
+    ],
+    "minimum_each_jaw_gap_m": -0.001,
+    "maximum_each_jaw_gap_m": 0.001,
+    "maximum_precontact_penetration_m": 0.001,
+    "score": "maximum_absolute_fixed_or_moving_jaw_signed_gap_at_sample_232",
+    "tie_break": "smallest_translation_norm_then_smallest_absolute_aperture_offset"
+  },
+  "evaluation": {
+    "forward_kinematics_allowed": true,
+    "physics_integration_allowed": false,
+    "dynamic_replay_allowed": false,
+    "dynamic_outcomes_may_not_select_grid_row": true,
+    "global_mapping_promotion_allowed": false,
+    "transfer_claim_allowed": false
+  },
+  "authority": {
+    "simulator_static_evaluation": true,
+    "simulator_dynamic_replay": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "promotion": false,
+    "transfer_claim": false
+  }
+}
