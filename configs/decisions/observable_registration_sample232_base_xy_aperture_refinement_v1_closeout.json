@@ -1,0 +1,33 @@
+{
+  "schema_version": "sim2claw.observable_registration_sample232_base_xy_aperture_refinement_closeout.v1",
+  "experiment_id": "OR31_SAMPLE232_BASE_XY_APERTURE_REFINEMENT_V1",
+  "status": "NO_STATIC_REFINED_ENCLOSURE_CANDIDATE",
+  "proof_class": "prospectively_frozen_static_local_refinement_of_outcome_informed_enclosure_geometry_basin",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_sample232_base_xy_aperture_refinement_v1.json",
+    "sha256": "08f5b785aa7a8b1fd090b8c995d2464ae4e4d4afaef3d192ababa4a329704d98"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_sample232_base_xy_aperture_refinement_v1/receipt.json",
+    "sha256": "e8c55cb5993e8975a48562d18799a3d07c7eaebd0fcb416e078974ddad8d9863",
+    "artifact_sha256": "5e7ca7f739353b6ae6ecd29774cb19c3a2fff0e3fe59336f3265fa0401fcbc65"
+  },
+  "result": {
+    "candidate_count": 1815,
+    "eligible_candidate_count": 0,
+    "closest_base_world_xy_delta_m": [
+      -0.012,
+      -0.014
+    ],
+    "closest_gripper_zero_offset_rad": -0.16052922543320722,
+    "closest_fixed_jaw_gap_m": 0.0008611788238590285,
+    "closest_moving_jaw_gap_m": 0.0009672440194253577,
+    "closest_precontact_penetration_m": 0.0030914526161710224,
+    "interpretation": "XY plus aperture can match the enclosure snapshot but only by penetrating before the physical contact window. Approach orientation or path shape remains mismatched.",
+    "physics_integration_steps": 0,
+    "dynamic_outcomes_used_for_selection": false,
+    "global_mapping_approved": false,
+    "task_success_claim": false,
+    "transfer_claim": false
+  }
+}

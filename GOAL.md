@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR31_SAMPLE232_BASE_XY_APERTURE_REFINEMENT`
+Status: `IN_PROGRESS_OR32_SAMPLE232_BASE_YAW_PATH_GEOMETRY`
 
 ## Active mission
 
@@ -9,15 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR31_SAMPLE232_BASE_XY_APERTURE_REFINEMENT`
+`OR32_SAMPLE232_BASE_YAW_PATH_GEOMETRY`
 
 ## Current card
 
-`OR31`
+`OR32`
 
 ## Current evidence
 
-- Proof class: `prospectively_frozen_static_local_refinement_of_outcome_informed_enclosure_geometry_basin`.
+- Proof class: `prospectively_frozen_static_base_yaw_path_shape_refinement_of_quarantined_enclosure_basin`.
 
 ## Authority
 
@@ -32,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`run_one_frozen_static_local_refinement_and_admit_dynamic_successor_only_if_bilateral_gate_passes`
+`evaluate_static_base_yaw_path_shape_grid_and_admit_dynamic_successor_only_if_both_gates_pass`
 
 ## Stop conditions
 

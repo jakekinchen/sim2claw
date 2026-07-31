@@ -2,19 +2,19 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or31_sample232_base_xy_aperture_refinement",
-  "active_card": "OR31",
+  "status": "in_progress_or32_sample232_base_yaw_path_geometry",
+  "active_card": "OR32",
   "active_card_contract": {
-    "card_id": "OR31",
-    "proof_target": "one_frozen_local_static_refinement_of_sample232_base_xy_aperture_enclosure_basin",
+    "card_id": "OR32",
+    "proof_target": "bounded_static_base_yaw_path_shape_candidate_satisfying_precontact_and_enclosure_gates",
     "allowed_paths": [
-      "configs/evaluations/observable_registration_sample232_base_xy_aperture_refinement_v1.json",
-      "src/sim2claw/observable_registration_sample232_base_xy_aperture_refinement.py",
-      "scripts/run_observable_registration_sample232_base_xy_aperture_refinement.py",
-      "tests/test_observable_registration_sample232_base_xy_aperture_refinement.py",
-      "configs/decisions/observable_registration_sample232_base_xy_aperture_refinement_v1_closeout.json",
-      "outputs/observable_registration_sample232_base_xy_aperture_refinement_v1",
-      "docs/session-logs/101-executor-observable-registration-or31.md",
+      "configs/evaluations/observable_registration_sample232_base_yaw_path_geometry_v1.json",
+      "src/sim2claw/observable_registration_sample232_base_yaw_path_geometry.py",
+      "scripts/run_observable_registration_sample232_base_yaw_path_geometry.py",
+      "tests/test_observable_registration_sample232_base_yaw_path_geometry.py",
+      "configs/decisions/observable_registration_sample232_base_yaw_path_geometry_v1_closeout.json",
+      "outputs/observable_registration_sample232_base_yaw_path_geometry_v1",
+      "docs/session-logs/102-executor-observable-registration-or32.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
@@ -28,14 +28,14 @@
       "commit"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_observable_registration_sample232_base_xy_aperture_refinement.py",
+      "uv run --locked pytest -q tests/test_observable_registration_sample232_base_yaw_path_geometry.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "run_one_frozen_static_local_refinement_and_admit_dynamic_successor_only_if_bilateral_gate_passes",
+  "next_transition": "evaluate_static_base_yaw_path_shape_grid_and_admit_dynamic_successor_only_if_both_gates_pass",
   "node_types": [
     "workcell",
     "session",
@@ -76,7 +76,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "6bc6077109e019c4f7e8e5d64dad4cc0cbd6c1b122f2fc71336a63c698ac4576",
+      "sha256": "f1169c805bb468d43f49f79ac490105512d90bbcbb3256d60df80fefca9e7e9a",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -258,6 +258,11 @@
       "path": "configs/decisions/observable_registration_sample232_base_xy_aperture_geometry_v1_closeout.json",
       "sha256": "7a9b5d0c7a653605bb4e0b71fcd417231dd92cb4ae99673f280d4b61a6ffc43d",
       "proof_class": "bounded_outcome_informed_static_base_xy_and_aperture_enclosure_geometry_diagnostic"
+    },
+    "or31": {
+      "path": "configs/decisions/observable_registration_sample232_base_xy_aperture_refinement_v1_closeout.json",
+      "sha256": "f08b324f6309b637c618f70d62370852320fc1a6980df5c24eb0180704bd027e",
+      "proof_class": "prospectively_frozen_static_local_refinement_of_outcome_informed_enclosure_geometry_basin"
     }
   },
   "nodes": [

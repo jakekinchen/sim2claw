@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `IN_PROGRESS_OR31_SAMPLE232_BASE_XY_APERTURE_REFINEMENT`
+Status: `IN_PROGRESS_OR32_SAMPLE232_BASE_YAW_PATH_GEOMETRY`
 
 Created: `2026-07-29`
 
@@ -123,7 +123,8 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR28 | `UPRIGHT_CONSEQUENCE_PASS_PROGRESS_GATE_FAILED` | Test the smallest prior-evidence composition that could close the `232` physical enclosure versus `255` simulated bilateral-contact gap. | Keep the OR18 `6°` spatial/yaw candidate and exact OR19 action/model/timing/reset. Replace only OR19's canonical gripper baseline with the independently fit OR6 aperture offset `0.04948239306868429 rad`. Run exactly once with no contact/object parameter change. Require natural contact, preserve the `36.025 mm` progress gate, and report first bilateral contact, tilt/support consequence, height, collateral, and endpoint outcome. | Artifact `61f600b79fbf36413a124d9b2df73073c2bd493f8320f5a1b6e372ae772e2bad`. Tilt improves from `102.106°` to `0.000696°` and collateral becomes negligible, but first contact moves to `244` and D2 progress falls to `2.660 mm`; the progress gate fails. |
 | OR29 | `NO_STATIC_BILATERAL_CANDIDATE` | Derive at most one aperture successor from the retained physical definite-enclosure event without reading another dynamic outcome. | Evaluate a frozen 17-value grid bounded by the OR19 baseline and OR6 independently fit offset. At exact applied states `220–245`, use forward kinematics and separate fixed/moving-jaw signed gaps to the selected pawn. Require no precontact penetration above `1 mm` and both jaw gaps within `±1 mm` at physical enclosure sample `232`; select by minimum maximum absolute jaw gap. No physics integration. | Artifact `52772ef1d4548be0a057ecdffdacd625e0d542286bcb5a8f5807279117485f65`; no eligible row. At the closest candidate the moving jaw gap is `-0.021 mm` while the fixed jaw remains `13.995 mm` away, ruling out aperture-only correction. |
 | OR30 | `NO_STATIC_BASE_XY_APERTURE_CANDIDATE` | Test whether a bounded whole-base XY correction plus aperture can reproduce the retained sample-232 enclosure geometry. | Evaluate the exact OR29 aperture grid crossed with a frozen `[-20,+20] mm` world-XY base grid at `5 mm` spacing. Require no precontact penetration above `1 mm` and both jaw gaps within `±1 mm` at sample `232`. Select without dynamics by gap score, translation norm, then absolute aperture offset. | Artifact `887dc1e98816d6fdc1fba57595f4fe32c695bf0c95e590331545dd21f38045e1`; no row passes. The local basin is a `[-10,-10] mm` base shift: fixed gap `2.663 mm`, moving gap `0.645 mm` at an intermediate aperture, and precontact penetration `0.810 mm`. |
-| OR31 | `ACTIVE_PROSPECTIVELY_FROZEN_PENDING_STATIC_RUN` | Refine the single OR30 local basin once before deciding whether a dynamic successor exists. | Freeze world-X and world-Y deltas from `-15` to `-5 mm` at `1 mm` spacing and aperture offsets from `-0.160529` to `-0.132529 rad` at `0.002 rad` spacing. Preserve the OR30 sample-232 bilateral and precontact gates and outcome-blind selection order. | This is the final local static refinement. It remains quarantined and cannot promote base mapping. If no row passes, stop the base-XY/aperture lane. |
+| OR31 | `NO_STATIC_REFINED_ENCLOSURE_CANDIDATE` | Refine the single OR30 local basin once before deciding whether a dynamic successor exists. | Freeze world-X and world-Y deltas from `-15` to `-5 mm` at `1 mm` spacing and aperture offsets from `-0.160529` to `-0.132529 rad` at `0.002 rad` spacing. Preserve the OR30 sample-232 bilateral and precontact gates and outcome-blind selection order. | The closest snapshot passes bilateral gaps (`0.861/0.967 mm`) but penetrates `3.091 mm` before contact; no candidate is admitted. XY/aperture alone cannot match both approach and enclosure. |
+| OR32 | `ACTIVE_PROSPECTIVELY_FROZEN_PENDING_STATIC_RUN` | Test the remaining path-shape mechanism: bounded base yaw around the OR31 local basin. | Cross a `5×5` local XY grid, seven yaw deltas from `-6°` to `+6°`, and seven local aperture offsets. Preserve the same sample-232 bilateral and samples-220–227 precontact gates. Select without dynamics. | This is outcome-informed, quarantined, and cannot promote mapping. A dynamic replay is allowed only if both static gates pass prospectively. |
 
 ## Pi IMX708 auxiliary evidence and timing contract
 
@@ -262,13 +263,13 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: IN_PROGRESS_OR31_SAMPLE232_BASE_XY_APERTURE_REFINEMENT
-Active card: OR31; one static local refinement frozen
-Completed: immutable predecessor C0-C9; OR0-OR23 and OR26-OR30; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed; camera endpoint REAL-to-SIM 1/1
-Evidence: OR30 reduces the fixed-jaw gap from 13.995 mm to 2.663 mm around a [-10,-10] mm base shift while an intermediate aperture gives a 0.645 mm moving-jaw gap. The coarse 5 mm grid misses the strict bilateral gate.
+Current state: IN_PROGRESS_OR32_SAMPLE232_BASE_YAW_PATH_GEOMETRY
+Active card: OR32; static yaw/path-shape grid frozen
+Completed: immutable predecessor C0-C9; OR0-OR23 and OR26-OR31; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed; camera endpoint REAL-to-SIM 1/1
+Evidence: OR31 can match the enclosure snapshot but only with 3.091 mm precontact penetration. XY translation plus aperture cannot match the physical approach and enclosure simultaneously.
 Pi intake: the original successful source has no Pi view. OR22A validates the motion-curve method on 3/4 contact-free runs, but both guarded-run target applications fail their frozen gates and remain unsynchronized context only.
 Aligned and mapped: exact OR19 action/model reproduction and the contact/lift/carry-start event timeline are accepted; each candidate consequence mechanism and its missing physical discriminator is explicit in OR23.
 Remaining: full matching task outcome, exact intrinsics, pristine heldout extrinsics, globally approved mapping, and physical pawn/contact mechanics remain unapproved. No retained-data correction can be identified without outcome tuning.
 External boundary: hardware authority remains false; the retained four-pose validation is outcome-known and cannot promote a global mapping
-Next step: run the one frozen 1 mm static refinement around the OR30 basin; dynamically replay only if its unchanged bilateral gate passes
+Next step: evaluate the frozen base-yaw path-shape grid; dynamically replay only if both precontact separation and bilateral enclosure pass
 ```
