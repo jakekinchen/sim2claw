@@ -1,0 +1,60 @@
+{
+  "schema_version": "sim2claw.observable_registration_retained_video_jaw_surface_mapping_closeout.v1",
+  "experiment_id": "OR40_RETAINED_VIDEO_JAW_SURFACE_MAPPING_V1",
+  "status": "DIRECTIONAL_PLAY_UNIDENTIFIABLE_NO_REPLAY",
+  "proof_class": "retained_video_preterminal_scale_free_encoder_to_contact_surface_play_identification_with_no_refit_validation",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_retained_video_jaw_surface_mapping_v1.json",
+    "sha256": "87ed47ff90e1d536a4202cbb832b44b5d58c8f499b647ac0a37bbac00f8f9f99"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_retained_video_jaw_surface_mapping.py",
+    "sha256": "11c3e3abc1a63b999977d299a7f9add6ff63b40556d131ffffd8b7b1a16ae330"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_retained_video_jaw_surface_mapping_v1/receipt.json",
+    "sha256": "874daf824f39ef3c1066e8ccf90c3397e20465910452842431355881473581a0",
+    "artifact_sha256": "9ae3fd71729f899721e5153e4df937a045dcee9b576ed323893fe2b10f4acf2c"
+  },
+  "candidate_manifest": {
+    "path": "outputs/observable_registration_retained_video_jaw_surface_mapping_v1/candidate_manifest.json",
+    "sha256": "2c62e3e10f0a1d55065851c6946532c24136e4cefb49c363a1a7ab81d8ee4bbe"
+  },
+  "result": {
+    "wrist_video_sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c",
+    "mapping_sample_range_inclusive": [110, 224],
+    "accepted_preterminal_frames": 25,
+    "abstained_frame_indices": [60, 61, 62, 63, 89],
+    "selected_play_half_width_raw_degrees": 0.0,
+    "selected_camera_lag_seconds": -0.065,
+    "fit_rms_px": 1.7252985013715447,
+    "validation_rms_px": 2.280921659972917,
+    "zero_play_validation_rms_px": 2.280921659972917,
+    "validation_improvement_over_zero_play_fraction": 0.0,
+    "fit_opening_frames": 4,
+    "fit_closing_frames": 4,
+    "validation_opening_frames": 5,
+    "validation_closing_frames": 0,
+    "play_lag_near_optimum_correlation": 0.9861502215485471,
+    "mapping_gate_passed": false,
+    "dynamic_replays_run": 0,
+    "interpretation": "The retained D405 RGB makes both red pad surfaces observable in image space, but the prospectively frozen precontact split does not contain enough directionally independent validation excitation. The best fit selects zero directional play, exceeds the 2 px validation gate, provides no validation improvement over the zero-play null, and remains strongly confounded with camera lag. The retained task clip therefore cannot identify a directional encoder-to-surface play correction. No simulator replay, alternate lag, contact geometry, compliance, or terminal-outcome tuning is authorized."
+  },
+  "claim_limits": {
+    "metric_jaw_aperture": false,
+    "camera_calibrated": false,
+    "directional_play_identified": false,
+    "physical_contact_force_or_point": false,
+    "global_mapping_approved": false,
+    "full_physics_driven_replay": false,
+    "simulator_promoted": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replays": 0
+  }
+}

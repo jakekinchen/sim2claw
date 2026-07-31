@@ -2,12 +2,18 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "active_retained_video_jaw_surface_mapping",
-  "active_card": "OR40",
+  "status": "active_retained_full_range_gripper_mapping",
+  "active_card": "OR41",
   "active_card_contract": {
-    "card_id": "OR40",
-    "proof_target": "retained_video_preterminal_metric_encoder_to_contact_surface_mapping_with_no_refit_validation",
+    "card_id": "OR41",
+    "proof_target": "retained_cross_episode_scale_free_directional_play_identification_with_task_clip_no_refit_validation",
     "allowed_paths": [
+      "configs/evaluations/observable_registration_retained_full_range_gripper_mapping_v1.json",
+      "src/sim2claw/observable_registration_retained_full_range_gripper_mapping.py",
+      "tests/test_observable_registration_retained_full_range_gripper_mapping.py",
+      "outputs/observable_registration_retained_full_range_gripper_mapping_v1",
+      "configs/decisions/observable_registration_retained_full_range_gripper_mapping_v1_closeout.json",
+      "docs/session-logs/113-executor-observable-registration-or41.md",
       "configs/evaluations/observable_registration_retained_video_jaw_surface_mapping_v1.json",
       "src/sim2claw/observable_registration_retained_video_jaw_surface_mapping.py",
       "tests/test_observable_registration_retained_video_jaw_surface_mapping.py",
@@ -82,6 +88,8 @@
       "commit"
     ],
     "validation_commands": [
+      "uv run --locked pytest -q tests/test_observable_registration_retained_full_range_gripper_mapping.py",
+      "uv run --locked pytest -q tests/test_observable_registration_retained_video_jaw_surface_mapping.py",
       "uv run --locked pytest -q tests/test_observable_registration_measured_state_compliance.py",
       "uv run --locked pytest -q tests/test_observable_registration_measured_state_pad_bracket.py",
       "uv run --locked pytest -q tests/test_observable_registration_measured_state_prior_pad_position.py",
@@ -96,7 +104,7 @@
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "audit_and_compile_or40_retained_video_jaw_surface_mapping",
+  "next_transition": "audit_and_compile_or41_retained_full_range_gripper_mapping",
   "node_types": [
     "workcell",
     "session",
@@ -137,7 +145,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "5a4e0fab30fa515236657553d181e4c5df57a0d75a6cc04873b417b235c1a456",
+      "sha256": "854c9da474ef210712132afd858715fc6275e6e64c1b7690fb4388d13a2e5e02",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -374,6 +382,11 @@
       "path": "configs/decisions/observable_registration_measured_state_compliance_v1_closeout.json",
       "sha256": "618973b5ba5fde36cbe470c9d0ae389d98f74ca65d93ba06ba9c84fd58d22592",
       "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_zero_refit_cross_episode_passive_contact_compliance_challenger"
+    },
+    "or40": {
+      "path": "configs/decisions/observable_registration_retained_video_jaw_surface_mapping_v1_closeout.json",
+      "sha256": "557e9af224e748b33b774e537f5536282d6e7867b240bfdaaa506fe80ef266ab",
+      "proof_class": "retained_video_preterminal_scale_free_encoder_to_contact_surface_play_identification_with_no_refit_validation"
     }
   },
   "nodes": [
@@ -1217,32 +1230,54 @@
       "id": "mechanism:or40-video-jaw-surface-mapping",
       "type": "mechanism",
       "label": "Retained-video encoder-to-contact-surface mapping",
-      "status": "active_observability_audit",
+      "status": "directional_play_unidentifiable_no_replay",
       "source_binding": "or40",
       "data": {
         "retained_video_only": true,
         "terminal_task_outcome_fit_allowed": false,
-        "preliminary_observability_audit": {
+        "observability_audit": {
           "overhead_c922_contact_view": "insufficient_arm_and_cable_occlusion",
-          "wrist_d405_rgb_contact_view": "sufficient_for_image_space_jaw_and_pawn_surface_extraction",
+          "wrist_d405_rgb_contact_view": "sufficient_for_image_space_red_pad_surface_extraction",
           "wrist_video_sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c",
           "wrist_resolution": [424, 240],
           "wrist_fps": 5.0,
-          "reviewed_frame_interval": [95, 104],
+          "mapping_sample_range": [110, 224],
+          "accepted_preterminal_frames": 25,
           "metric_depth_available": false,
           "camera_exposure_synchronized": false,
           "metric_mapping_promoted": false
         },
-        "required_observations": [
-          "fixed_jaw_contact_surface",
-          "moving_jaw_contact_surface",
-          "pawn_silhouette",
-          "board_metric_scale",
-          "video_to_raw_telemetry_synchronization"
-        ],
+        "selected_play_half_width_raw_degrees": 0.0,
+        "fit_rms_px": 1.7252985013715447,
+        "validation_rms_px": 2.280921659972917,
+        "zero_play_validation_rms_px": 2.280921659972917,
+        "fit_opening_closing_frames": [4, 4],
+        "validation_opening_closing_frames": [5, 0],
+        "play_lag_near_optimum_correlation": 0.9861502215485471,
         "fit_mechanism_limit": 1,
         "no_refit_validation_required": true,
-        "dynamic_replay_allowed_after_mapping_gate_only": true,
+        "mapping_gate_passed": false,
+        "dynamic_replays_run": 0,
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "mechanism:or41-retained-full-range-gripper-mapping",
+      "type": "mechanism",
+      "label": "Retained contact-free full-range gripper mapping",
+      "status": "active_observability_audit",
+      "data": {
+        "retained_video_only": true,
+        "source_recording": "full-range-of-motion-capture__20260727T041940Z-5b15dc6e",
+        "raw_measured_row_count": 2401,
+        "wrist_frame_count": 642,
+        "wrist_fps": 5.0,
+        "raw_gripper_cycle_degrees": [1.0688836104513064, 99.5249406175772, 1.66270783847981],
+        "quantitative_pad_mapping_opened": false,
+        "task_outcome_fit_allowed": false,
+        "metric_aperture_claim_allowed": false,
+        "dynamic_replay_allowed": false,
         "global_mapping_approved": false,
         "transfer_claim": false
       }
@@ -1512,6 +1547,11 @@
     {
       "source": "counterexample:or39-passive-contact-compliance",
       "target": "mechanism:or40-video-jaw-surface-mapping",
+      "type": "motivates"
+    },
+    {
+      "source": "mechanism:or40-video-jaw-surface-mapping",
+      "target": "mechanism:or41-retained-full-range-gripper-mapping",
       "type": "motivates"
     }
   ]

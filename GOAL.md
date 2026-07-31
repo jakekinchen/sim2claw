@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `ACTIVE_RETAINED_VIDEO_JAW_SURFACE_MAPPING`
+Status: `ACTIVE_RETAINED_FULL_RANGE_GRIPPER_MAPPING`
 
 ## Active mission
 
@@ -9,15 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR40_RETAINED_VIDEO_JAW_SURFACE_MAPPING`
+`OR41_RETAINED_FULL_RANGE_GRIPPER_MAPPING`
 
 ## Current card
 
-`OR40`
+`OR41`
 
 ## Current evidence
 
-- Proof class: `retained_video_preterminal_metric_encoder_to_contact_surface_mapping_with_no_refit_validation`.
+- Proof class: `retained_cross_episode_scale_free_directional_play_identification_with_task_clip_no_refit_validation`.
 
 ## Authority
 
@@ -32,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`audit_and_compile_or40_retained_video_jaw_surface_mapping`
+`audit_and_compile_or41_retained_full_range_gripper_mapping`
 
 ## Stop conditions
 

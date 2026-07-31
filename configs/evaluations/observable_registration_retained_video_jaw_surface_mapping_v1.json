@@ -1,0 +1,148 @@
+{
+  "schema_version": "sim2claw.observable_registration_retained_video_jaw_surface_mapping_contract.v1",
+  "experiment_id": "OR40_RETAINED_VIDEO_JAW_SURFACE_MAPPING_V1",
+  "proof_class": "retained_video_preterminal_scale_free_encoder_to_contact_surface_play_identification_with_no_refit_validation",
+  "sources": {
+    "wrist_video": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_d405.browser.mp4",
+      "sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c"
+    },
+    "wrist_metadata": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_video.json",
+      "sha256": "95f4c29bf1e7eebc4ab46d46d943b3134d142f05eb742165c354533e7088a8cb"
+    },
+    "raw_samples": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+      "sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302"
+    },
+    "schedule_receipt": {
+      "path": "outputs/observable_physical_episode_schedule_v2/receipt.json",
+      "sha256": "47f3f2173ef42f4692f08d7e42f4390787370b1098dd968a4e79c72b5ff6e61e"
+    },
+    "physical_observation_contract": {
+      "path": "configs/evaluations/observable_physical_episode_observations_v1.json",
+      "sha256": "d6b6a8318375537a750b15bac8b2675eb9219b8d5f375035a1c475c161ab30b3"
+    },
+    "physical_observation_receipt": {
+      "path": "outputs/observable_physical_episode_observations_v1/receipt.json",
+      "sha256": "e8e76bf8f9d1f44789c647e967a313b57893770edb1d3570f3b4974cb4b94d1a"
+    },
+    "or36s_contract": {
+      "path": "configs/evaluations/observable_registration_measured_state_single_surface_v1.json",
+      "sha256": "007e5cbc80a3aa9e5d714bcdba4f92f8179983e95c2e3b9b4bfee183eb2df2bf"
+    },
+    "or36s_receipt": {
+      "path": "outputs/observable_registration_measured_state_single_surface_v1/receipt.json",
+      "sha256": "8c4c64dd856afa71bc2b0e3a4d4865ef8a1b585eeab3ad65c3e46f65b138fa10"
+    }
+  },
+  "estimand": {
+    "mechanism": "rate_independent_directional_play_between_raw_gripper_encoder_and_moving_contact_surface",
+    "parameter": "play_half_width_raw_gripper_degrees",
+    "metric_aperture_claim_allowed": false,
+    "camera_calibration_claim_allowed": false,
+    "force_stiffness_or_compliance_claim_allowed": false,
+    "gearbox_backlash_claim_allowed": false
+  },
+  "trajectory": {
+    "row_count": 531,
+    "raw_channel": "follower_actual_position_degrees[5]",
+    "timestamp_channel": "timestamp_monotonic_seconds",
+    "source_values_order_and_timestamps_immutable": true
+  },
+  "partition": {
+    "mapping_sample_range_inclusive": [110, 224],
+    "fit_frame_block_rule": "floor(frame_index / 2) modulo 2 equals 0",
+    "validation_frame_block_rule": "floor(frame_index / 2) modulo 2 equals 1",
+    "contact_holdout_sample_range_inclusive": [228, 260],
+    "terminal_sample_range_inclusive": [261, 530],
+    "contact_and_terminal_samples_available_to_fit_or_selection": false,
+    "validation_refit_allowed": false
+  },
+  "extraction": {
+    "algorithm": "deterministic_hsv_red_connected_components",
+    "frame_range_inclusive": [60, 89],
+    "hue_low_max": 12,
+    "hue_high_min": 168,
+    "minimum_saturation": 70,
+    "minimum_value": 45,
+    "minimum_y": 140,
+    "centroid_x_range": [180, 340],
+    "minimum_centroid_y": 155,
+    "minimum_component_area_px": 300,
+    "select_two_largest_then_order_left_to_right": true,
+    "observation": "moving_minus_fixed_red_pad_centroid_x_pixels",
+    "failed_frames_abstain": true,
+    "manual_metric_measurement_allowed": false,
+    "neural_segmentation_allowed": false,
+    "pawn_used_for_fit": false,
+    "board_used_as_off_plane_metric_scale": false
+  },
+  "fit": {
+    "play_half_width_bounds_raw_degrees": [0.0, 0.454549],
+    "play_half_width_grid_count": 92,
+    "camera_lag_seconds_bounds": [-0.11, 0.11],
+    "camera_lag_grid_count": 45,
+    "linear_nuisance_terms": ["intercept_px", "scale_px_per_raw_degree"],
+    "selection_loss": "fit_root_mean_square_pixels",
+    "direction_window_seconds": 0.1,
+    "direction_epsilon_raw_degrees": 0.05,
+    "candidate_manifest_written_before_validation": true
+  },
+  "mapping_gates": {
+    "minimum_extracted_frames": 20,
+    "minimum_fit_frames_per_direction": 5,
+    "minimum_validation_frames_per_direction": 3,
+    "maximum_validation_rms_px": 2.0,
+    "minimum_validation_improvement_over_zero_play_fraction": 0.3,
+    "maximum_play_lag_correlation": 0.85,
+    "minimum_upper_bound_margin_fraction": 0.1,
+    "all_gates_required": true
+  },
+  "replay": {
+    "permitted_only_if_mapping_gate_passes": true,
+    "maximum_dynamic_replays": 1,
+    "base_topology": "OR36S_MEASURED_STATE_SINGLE_SURFACE_V1",
+    "changed_mechanism": "encoder_to_moving_contact_surface_directional_play_only",
+    "raw_rows_values_order_and_timestamps_immutable": true,
+    "non_gripper_joint_mapping_immutable": true,
+    "existing_gripper_scale_sign_and_offset_immutable": true,
+    "contact_geometry_material_and_actuator_parameters_immutable": true,
+    "pawn_and_reset_immutable": true,
+    "object_pose_injection_allowed": false,
+    "latch_or_grasp_mode_allowed": false,
+    "terminal_refit_allowed": false
+  },
+  "verdicts": {
+    "insufficient_visual_observability": "INSUFFICIENT_VISUAL_OBSERVABILITY_NO_REPLAY",
+    "directional_excitation_or_rank_failure": "DIRECTIONAL_PLAY_UNIDENTIFIABLE_NO_REPLAY",
+    "timing_confound": "TIMING_CONFOUNDED_NO_REPLAY",
+    "validation_or_bound_failure": "PLAY_MECHANISM_REJECTED_NO_REPLAY",
+    "passed_mapping_failed_replay": "IDENTIFIED_MECHANISM_CAUSAL_REPLAY_NEGATIVE",
+    "passed_preterminal_only": "PARTIAL_CAUSAL_ADVANCEMENT_NO_PROMOTION",
+    "passed_preterminal_and_terminal": "FULL_PHYSICS_DRIVEN_EPISODE_REPLAY_PASS"
+  },
+  "claim_limits": {
+    "global_mapping_approval": false,
+    "metric_jaw_aperture": false,
+    "camera_calibration": false,
+    "physical_force_or_contact_point": false,
+    "simulator_promotion": false,
+    "action_only_transfer": false,
+    "bidirectional_transfer": false,
+    "physical_authority": false
+  },
+  "authority": {
+    "simulator_replay": true,
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}
