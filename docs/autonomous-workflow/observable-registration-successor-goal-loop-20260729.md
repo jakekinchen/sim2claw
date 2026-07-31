@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Goal Loop
 
-Status: `IN_PROGRESS_OR29_SAMPLE232_APERTURE_GEOMETRY`
+Status: `IN_PROGRESS_OR30_SAMPLE232_BASE_XY_APERTURE_GEOMETRY`
 
 Created: `2026-07-29`
 
@@ -119,16 +119,16 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: IN_PROGRESS_OR29_SAMPLE232_APERTURE_GEOMETRY
-Active card: OR29
-Completed: predecessor evidence; OR0–OR23 and OR26–OR28; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed
-Evidence: OR28 almost eliminates tilt and collateral but produces only 2.660 mm D2 progress. The prior aperture endpoints bracket upright/no-transport and transport/tip behavior.
+Current state: IN_PROGRESS_OR30_SAMPLE232_BASE_XY_APERTURE_GEOMETRY
+Active card: OR30
+Completed: predecessor evidence; OR0–OR23 and OR26–OR29; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed
+Evidence: OR29 proves aperture alone cannot close the retained enclosure geometry: moving jaw gap -0.021 mm, fixed jaw gap 13.995 mm at sample 232.
 Pi lineage: no Pi exists for the successful source; later guarded-run Pi files and contact-free tri-camera files are auxiliary, same-run-only evidence
 Retained RGB evidence: OR22 yields 23 jaw and 10 crown proxies; contact/lift/carry timing corresponds, but no accepted pawn-base observation exists and pawn-axis orientation remains unknown
 OR23 result: physical contact/lift/carry-start timing corresponds, but no physical channel directly discriminates off-center moment, slip, support transition, or downstream collision
 Remaining: exact intrinsics, pristine heldout extrinsics, globally approved mapping, physical pawn orientation/contact mechanics, full matching task outcome, and transfer remain unapproved
 Blockers: physical capture and all transfer claims remain false; Pi host process bounds are not exposure synchronization; metric physical orientation and known contact force remain unavailable
-Next step: evaluate the frozen static aperture grid at physical enclosure sample 232 and admit at most one geometry-selected successor
+Next step: evaluate the bounded static base-XY plus aperture grid at sample 232 and admit at most one quarantined geometry candidate
 ```
 
 ## Stop conditions

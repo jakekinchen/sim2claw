@@ -1,0 +1,81 @@
+{
+  "schema_version": "sim2claw.observable_registration_sample232_base_xy_aperture_geometry_contract.v1",
+  "experiment_id": "OR30_SAMPLE232_BASE_XY_APERTURE_GEOMETRY_V1",
+  "proof_class": "bounded_outcome_informed_static_base_xy_and_aperture_enclosure_geometry_diagnostic",
+  "sources": {
+    "or29_contract": {
+      "path": "configs/evaluations/observable_registration_sample232_aperture_geometry_v1.json",
+      "sha256": "b905a3c12627271c75fb419d836e4098a9c5fc1a472e6c5b39e184727c770919"
+    },
+    "or29_closeout": {
+      "path": "configs/decisions/observable_registration_sample232_aperture_geometry_v1_closeout.json",
+      "sha256": "7529e0dbdb23de8feead4e1463bee512560eebf9e3ea0a0028faef1429ab5252"
+    }
+  },
+  "grid": {
+    "left_base_world_x_delta_m": [
+      -0.02,
+      -0.015,
+      -0.01,
+      -0.005,
+      0.0,
+      0.005,
+      0.01,
+      0.015,
+      0.02
+    ],
+    "left_base_world_y_delta_m": [
+      -0.02,
+      -0.015,
+      -0.01,
+      -0.005,
+      0.0,
+      0.005,
+      0.01,
+      0.015,
+      0.02
+    ],
+    "gripper_zero_offset_source": "exact frozen OR29 17-value grid",
+    "translation_bound_reason": "bounded outcome-informed diagnostic around the manually derived unapproved base pose; exceeds metrology uncertainty and cannot promote mapping"
+  },
+  "selection": {
+    "sample": 232,
+    "precontact_guard_interval": [
+      220,
+      227
+    ],
+    "minimum_each_jaw_gap_m": -0.001,
+    "maximum_each_jaw_gap_m": 0.001,
+    "maximum_precontact_penetration_m": 0.001,
+    "score": "maximum_absolute_fixed_or_moving_jaw_signed_gap_at_sample_232",
+    "tie_break": "smallest_translation_norm_then_smallest_absolute_aperture_offset",
+    "require_one_eligible_candidate": true
+  },
+  "evaluation": {
+    "forward_kinematics_allowed": true,
+    "physics_integration_allowed": false,
+    "dynamic_replay_allowed": false,
+    "dynamic_outcomes_may_not_select_grid_row": true,
+    "action_change_allowed": false,
+    "contact_parameter_change_allowed": false,
+    "object_parameter_change_allowed": false,
+    "joint_mapping_change_allowed": false,
+    "camera_change_allowed": false,
+    "global_mapping_promotion_allowed": false,
+    "transfer_claim_allowed": false
+  },
+  "authority": {
+    "simulator_static_evaluation": true,
+    "simulator_dynamic_replay": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "promotion": false,
+    "transfer_claim": false
+  }
+}
