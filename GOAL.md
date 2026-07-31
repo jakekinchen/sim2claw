@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `TERMINAL_RETAINED_DATA_VISUAL_ALIGNMENT_BOUNDARY`
+Status: `TERMINAL_MEASURED_STATE_CONTACT_LOAD_PATH_BOUNDARY`
 
 ## Active mission
 
@@ -9,17 +9,17 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR33_TERMINAL_RETAINED_DATA_VISUAL_ALIGNMENT_BOUNDARY`
+`OR34_TERMINAL_MEASURED_STATE_CONTACT_LOAD_PATH_BOUNDARY`
 
 ## Current card
 
-`OR33`
+`OR34`
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_registration_sample232_wrist_path_geometry_v1_closeout.json`.
-- Closeout SHA-256: `1381e35644c7a17e35d2e3989eaeac54d25b234c087b3632ba6360d931d05b4b`.
-- Proof class: `prospectively_frozen_static_wrist_local_path_shape_diagnostic_in_quarantined_enclosure_basin`.
+- Closeout: `configs/decisions/observable_registration_measured_state_visual_twin_v1_closeout.json`.
+- Closeout SHA-256: `0e8d94ac0ed6ddc65ad57a2a46e1cc28fa2db257361b236142bfd4b255759bee`.
+- Proof class: `retained_raw_measured_state_observation_conditioned_natural_dynamics_visual_twin_diagnostic`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`owner_changes_proof_design_or_supplies_new_orientation_contact_evidence`
+`independently_constrained_jaw_contact_load_path_evidence_or_owner_changes_proof_design`
 
 ## Stop conditions
 

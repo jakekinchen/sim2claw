@@ -1,0 +1,70 @@
+{
+  "schema_version": "sim2claw.observable_registration_measured_state_visual_twin_closeout.v1",
+  "experiment_id": "OR34_MEASURED_STATE_VISUAL_TWIN_V1",
+  "status": "PASS_MEASURED_STATE_VISUAL_TWIN_DIAGNOSTIC",
+  "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_visual_twin_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_measured_state_visual_twin_v1.json",
+    "sha256": "ede7ca2a7f792c096014a90769bb9c024ededb264acb91b6173e97d55dc2011c"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_measured_state_visual_twin.py",
+    "sha256": "20ae6baf1d2e4768047d65f415584c49232cab0786758e1a30f257be55dedab4"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_measured_state_visual_twin_v1/receipt.json",
+    "sha256": "2548958515f98537446ee24295d33e7d5d4fe1ea2cedc128016c5099c44b2678",
+    "artifact_sha256": "fedcda50878fdca37d9e710fe7c4e92d4098e44bf3dc8cbb5c748dce2df02fe0"
+  },
+  "result": {
+    "row_count": 531,
+    "raw_measured_robot_driver": true,
+    "object_pose_injected": false,
+    "latch_or_attachment_used": false,
+    "identified_minus_measured_joint_rms_degrees": 0.8936675490378009,
+    "identified_minus_measured_end_effector_rms_mm": 7.3913996081347415,
+    "identified_minus_measured_end_effector_p95_mm": 15.173118696691928,
+    "raw_state_first_selected_jaw_contact_sample": 230,
+    "identified_plant_first_selected_jaw_contact_sample": 231,
+    "physical_contact_interval_samples": [
+      228,
+      232
+    ],
+    "raw_state_first_pawn_motion_over_1mm_sample": 232,
+    "identified_plant_first_pawn_motion_over_1mm_sample": 248,
+    "physical_lift_interval_samples": [
+      247,
+      260
+    ],
+    "raw_state_signed_progress_toward_d2_m": 0.08616473459195542,
+    "identified_plant_signed_progress_toward_d2_m": 0.047512685857362694,
+    "raw_state_terminal_planar_error_m": 0.03394622069649699,
+    "identified_plant_terminal_planar_error_m": 0.009944924550405172,
+    "raw_state_terminal_registered_pawn_error_px": 45.69260774311373,
+    "identified_plant_terminal_registered_pawn_error_px": 12.583957847796755,
+    "raw_state_final_tilt_degrees": 102.10499301968989,
+    "identified_plant_final_tilt_degrees": 102.10574823765309,
+    "raw_state_numeric_task_success": false,
+    "interpretation": "Using every raw follower joint row aligns simulated jaw contact with the retained physical 228-232 contact interval and exposes 7.391 mm RMS end-effector error in the fitted effective-plant proxy. The naturally simulated pawn then moves at sample 232, fifteen samples before the physical lift interval begins at 247, tips by about 102 degrees, and overshoots the destination. Command-versus-realized joint tracking materially affected contact timing and progress, but it does not explain the failed upright carry. The remaining first object-level discrepancy is the contact, jaw, and load-path response immediately after enclosure."
+  },
+  "claim_limits": {
+    "observation_conditioned": true,
+    "action_only_transfer": false,
+    "simulator_calibrated": false,
+    "simulator_promoted": false,
+    "global_mapping_approved": false,
+    "physical_link_pose_independently_observed": false,
+    "task_success_claim": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "serial_used": false,
+    "simulator_replays": 1
+  }
+}

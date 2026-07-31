@@ -21,6 +21,16 @@ EXPECTED_CLOSEOUT_SCHEMA = (
 EXPECTED_RECEIPT_SCHEMA = (
     "sim2claw.observable_registration_visible_divergence_video_receipt.v1"
 )
+MEASURED_CLOSEOUT_PATH = Path(
+    "configs/decisions/"
+    "observable_registration_measured_state_visual_twin_v1_closeout.json"
+)
+EXPECTED_MEASURED_CLOSEOUT_SCHEMA = (
+    "sim2claw.observable_registration_measured_state_visual_twin_closeout.v1"
+)
+EXPECTED_MEASURED_RECEIPT_SCHEMA = (
+    "sim2claw.observable_registration_measured_state_visual_twin_receipt.v1"
+)
 
 
 class VisibleDivergenceStudioError(ValueError):
@@ -60,6 +70,168 @@ def _verified_file(
             f"visible-divergence artifact is outside the repository: {relative_name}"
         )
     return path
+
+
+def _with_measured_state_variant(
+    *,
+    repo_root: Path,
+    baseline: dict[str, Any],
+) -> dict[str, Any]:
+    closeout_path = (repo_root / MEASURED_CLOSEOUT_PATH).resolve()
+    closeout = _json(closeout_path)
+    if (
+        closeout.get("schema_version") != EXPECTED_MEASURED_CLOSEOUT_SCHEMA
+        or closeout.get("status")
+        != "PASS_MEASURED_STATE_VISUAL_TWIN_DIAGNOSTIC"
+    ):
+        raise VisibleDivergenceStudioError(
+            "OR34 measured-state closeout is not admitted"
+        )
+    binding = closeout.get("receipt")
+    if not isinstance(binding, dict):
+        raise VisibleDivergenceStudioError(
+            "OR34 measured-state receipt binding is missing"
+        )
+    receipt_path = (repo_root / str(binding.get("path") or "")).resolve()
+    if (
+        not receipt_path.is_relative_to(repo_root)
+        or not receipt_path.is_file()
+        or _sha256(receipt_path) != binding.get("sha256")
+    ):
+        raise VisibleDivergenceStudioError(
+            "OR34 measured-state receipt hash does not verify"
+        )
+    receipt = _json(receipt_path)
+    if (
+        receipt.get("schema_version") != EXPECTED_MEASURED_RECEIPT_SCHEMA
+        or receipt.get("status")
+        != "PASS_MEASURED_STATE_VISUAL_TWIN_DIAGNOSTIC"
+        or receipt.get("artifact_sha256") != binding.get("artifact_sha256")
+    ):
+        raise VisibleDivergenceStudioError(
+            "OR34 measured-state receipt identity does not verify"
+        )
+    output_root = receipt_path.parent.resolve()
+    outputs = receipt.get("outputs")
+    if not isinstance(outputs, dict):
+        raise VisibleDivergenceStudioError(
+            "OR34 measured-state output bindings are missing"
+        )
+    measured_media: dict[str, dict[str, str]] = {}
+    for key, (path_key, sha_key) in {
+        "physical": ("physical_video_path", "physical_video_sha256"),
+        "simulator": ("simulator_video_path", "simulator_video_sha256"),
+        "comparison": ("comparison_video_path", "comparison_video_sha256"),
+        "poster": ("poster_path", "poster_sha256"),
+    }.items():
+        relative_name = str(outputs.get(path_key) or "")
+        expected_sha256 = str(outputs.get(sha_key) or "")
+        path = _verified_file(
+            repo_root=repo_root,
+            output_root=output_root,
+            relative_name=relative_name,
+            expected_sha256=expected_sha256,
+        )
+        measured_media[key] = {
+            "url": media_url(path, repo_root),
+            "sha256": expected_sha256,
+        }
+    dynamics = receipt.get("natural_dynamics")
+    trajectory = receipt.get("trajectory_comparison")
+    visible = receipt.get("visible_comparison")
+    timeline = receipt.get("timeline")
+    result = closeout.get("result")
+    if not all(
+        isinstance(value, dict)
+        for value in (dynamics, trajectory, visible, timeline, result)
+    ):
+        raise VisibleDivergenceStudioError(
+            "OR34 measured-state diagnostic fields are missing"
+        )
+    if (
+        int(timeline.get("frame_count") or 0) != 531
+        or float(timeline.get("output_fps") or 0) != 20
+        or receipt.get("observation_conditioned") is not True
+        or receipt.get("action_only_transfer") is not False
+    ):
+        raise VisibleDivergenceStudioError(
+            "OR34 measured-state proof boundary does not verify"
+        )
+    contact = int(dynamics["first_selected_jaw_contact_sample"])
+    pawn_motion = int(dynamics["first_motion_over_1mm_sample"])
+    physical_lift = int(result["physical_lift_interval_samples"][0])
+    measured_endpoints = {
+        "initial": {
+            "pixel_error": visible["registered_initial_pawn_error_px"],
+        },
+        "terminal": {
+            "pixel_error": visible["registered_terminal_pawn_error_px"],
+        },
+        "interpretation": result["interpretation"],
+    }
+    measured_markers = [
+        {
+            "sample": contact,
+            "seconds": contact / 20.0,
+            "label": "Raw-state jaw contact",
+            "tone": "contact",
+        },
+        {
+            "sample": pawn_motion,
+            "seconds": pawn_motion / 20.0,
+            "label": "Sim pawn motion > 1 mm",
+            "tone": "divergence",
+        },
+        {
+            "sample": physical_lift,
+            "seconds": physical_lift / 20.0,
+            "label": "Physical lift begins",
+            "tone": "contact",
+        },
+    ]
+    baseline_variant = {
+        "id": "identified_plant",
+        "label": "Identified plant",
+        "subtitle": "Gateway commands → fitted effective plant",
+        "artifact_sha256": baseline["artifact_sha256"],
+        "simulator": baseline["media"]["simulator"],
+        "markers": baseline["markers"],
+        "divergence_boundary": baseline["divergence_boundary"],
+        "registered_planar_endpoints": baseline[
+            "registered_planar_endpoints"
+        ],
+    }
+    measured_variant = {
+        "id": "measured_state",
+        "label": "Raw measured state",
+        "subtitle": "531 follower readings → natural MuJoCo object",
+        "artifact_sha256": receipt["artifact_sha256"],
+        "simulator": measured_media["simulator"],
+        "markers": measured_markers,
+        "divergence_boundary": {
+            "sample_interval": [pawn_motion, physical_lift],
+            "seconds": [pawn_motion / 20.0, physical_lift / 20.0],
+            "interpretation": result["interpretation"],
+        },
+        "registered_planar_endpoints": measured_endpoints,
+    }
+    return {
+        **baseline,
+        "schema_version": "sim2claw.visible_divergence_studio_projection.v2",
+        "artifact_sha256": receipt["artifact_sha256"],
+        "media": measured_media,
+        "markers": measured_markers,
+        "divergence_boundary": measured_variant["divergence_boundary"],
+        "registered_planar_endpoints": measured_endpoints,
+        "default_variant": "measured_state",
+        "variants": {
+            "measured_state": measured_variant,
+            "identified_plant": baseline_variant,
+        },
+        "trajectory_comparison": trajectory,
+        "observation_conditioned": True,
+        "action_only_transfer": False,
+    }
 
 
 def load_visible_divergence_studio(
@@ -175,7 +347,7 @@ def load_visible_divergence_studio(
     for marker in markers:
         marker["seconds"] = marker["sample"] / fps
 
-    return {
+    baseline = {
         "schema_version": "sim2claw.visible_divergence_studio_projection.v1",
         "available": True,
         "read_only": True,
@@ -211,3 +383,7 @@ def load_visible_divergence_studio(
             "global_mapping_approved": registration["global_mapping_approved"],
         },
     }
+    return _with_measured_state_variant(
+        repo_root=repo_root,
+        baseline=baseline,
+    )

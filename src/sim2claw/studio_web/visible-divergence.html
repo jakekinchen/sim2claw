@@ -16,7 +16,7 @@
         <b>sim2claw</b>
       </a>
       <div class="evidence-id">
-        <small>Exact-action visual diagnostic</small>
+        <small>Measured-state visual diagnostic</small>
         <code id="artifact-id">loading receipt…</code>
       </div>
       <a class="back-link" href="/#/replay">Studio <span aria-hidden="true">↗</span></a>
@@ -25,11 +25,16 @@
     <main>
       <section class="thesis">
         <div>
-          <p class="eyebrow">One action. Two consequences.</p>
-          <h1>The paths agree.<br><em>The grasp does not.</em></h1>
+          <p class="eyebrow">One episode. Two replay semantics.</p>
+          <h1>The contact aligns.<br><em>The carry does not.</em></h1>
         </div>
-        <p class="thesis-copy">The real pawn and simulated pawn begin and end within a small registered image-plane distance. Scrub to the amber band to see the physics twin tip and lose support while reality carries the pawn upright.</p>
+        <p class="thesis-copy">The default replay drives the simulated robot with every retained follower joint reading. Contact now lands inside the physical contact interval, but natural MuJoCo motion starts too early and tips the pawn while reality carries it upright.</p>
       </section>
+
+      <nav class="trajectory-switch" aria-label="Simulator trajectory source">
+        <button class="is-active" data-variant="measured_state" type="button"><b>Raw measured state</b><small>Best robot-motion diagnosis</small></button>
+        <button data-variant="identified_plant" type="button"><b>Identified plant</b><small>Command-derived proxy</small></button>
+      </nav>
 
       <section class="comparison" id="comparison" aria-label="Synchronized physical and simulator videos">
         <article class="lane physical-lane">
@@ -41,7 +46,7 @@
         </article>
         <div class="seam" aria-hidden="true"><i></i><span>same playhead</span></div>
         <article class="lane simulator-lane">
-          <header><span>02</span><div><b>Physics replay</b><small>Exact OR21 state trace · MuJoCo</small></div></header>
+          <header><span>02</span><div><b>Physics replay</b><small id="simulator-subtitle">Raw follower readings · natural MuJoCo object</small></div></header>
           <div class="video-shell">
             <video id="simulator-video" playsinline muted preload="auto"></video>
             <span class="lane-state">SIM</span>
@@ -66,7 +71,7 @@
         </div>
         <div class="ruler-caption">
           <span>sample <b id="sample-number">0</b> / 530</span>
-          <span class="band-key"><i></i> causal split: samples 248–260</span>
+          <span class="band-key"><i></i> <span id="band-label">causal split</span></span>
         </div>
       </section>
 
@@ -84,7 +89,7 @@
         <article class="primary-readout">
           <small>First bounded split</small>
           <strong id="split-time">—</strong>
-          <span>tilt → support loss</span>
+          <span id="split-caption">sim pawn motion → physical lift</span>
         </article>
         <article>
           <small>Proof boundary</small>

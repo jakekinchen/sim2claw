@@ -4,6 +4,7 @@ const state = {
   speedIndex: 1,
   speeds: [0.5, 1, 2],
   syncing: false,
+  variant: "measured_state",
 };
 
 const physical = document.querySelector("#physical-video");
@@ -87,23 +88,42 @@ function seekFrame(frame) {
 function renderProof(proof) {
   state.proof = proof;
   physical.src = proof.media.physical.url;
-  simulator.src = proof.media.simulator.url;
-  document.querySelector("#artifact-id").textContent = proof.artifact_sha256.slice(0, 16);
+  applyVariant(proof.default_variant || "measured_state");
+}
 
-  const start = proof.registered_planar_endpoints.initial.pixel_error;
-  const finish = proof.registered_planar_endpoints.terminal.pixel_error;
+function applyVariant(variantId) {
+  if (!state.proof) return;
+  const proof = state.proof;
+  const variant = proof.variants?.[variantId];
+  if (!variant) return;
+  const wasPlaying = state.playing;
+  const currentFrame = frameFromTime(physical.currentTime);
+  state.variant = variantId;
+  simulator.src = variant.simulator.url;
+  simulator.currentTime = currentFrame / proof.timeline.fps;
+  document.querySelector("#artifact-id").textContent =
+    variant.artifact_sha256.slice(0, 16);
+  document.querySelector("#simulator-subtitle").textContent = variant.subtitle;
+  document.querySelectorAll("[data-variant]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.variant === variantId);
+  });
+
+  const start = variant.registered_planar_endpoints.initial.pixel_error;
+  const finish = variant.registered_planar_endpoints.terminal.pixel_error;
   document.querySelector("#start-error").textContent = `${start.toFixed(2)} px`;
   document.querySelector("#finish-error").textContent = `${finish.toFixed(2)} px`;
   document.querySelector("#split-time").textContent =
-    `${proof.divergence_boundary.seconds[0].toFixed(2)}–${proof.divergence_boundary.seconds[1].toFixed(2)} s`;
+    `${variant.divergence_boundary.seconds[0].toFixed(2)}–${variant.divergence_boundary.seconds[1].toFixed(2)} s`;
   document.querySelector("#interpretation-copy").textContent =
-    proof.registered_planar_endpoints.interpretation;
+    variant.registered_planar_endpoints.interpretation;
 
   const denominator = proof.timeline.frame_count - 1;
-  const [startSample, endSample] = proof.divergence_boundary.sample_interval;
+  const [startSample, endSample] = variant.divergence_boundary.sample_interval;
   divergenceBand.style.left = `${startSample / denominator * 100}%`;
   divergenceBand.style.width = `${(endSample - startSample) / denominator * 100}%`;
-  markerLayer.replaceChildren(...proof.markers.map((marker) => {
+  document.querySelector("#band-label").textContent =
+    `causal split: samples ${startSample}–${endSample}`;
+  markerLayer.replaceChildren(...variant.markers.map((marker) => {
     const element = document.createElement("i");
     element.className = `marker ${marker.tone}`;
     element.style.left = `${marker.sample / denominator * 100}%`;
@@ -111,6 +131,9 @@ function renderProof(proof) {
     return element;
   }));
   renderPlayhead();
+  if (wasPlaying) {
+    simulator.addEventListener("canplay", () => setPlaying(true), { once: true });
+  }
 }
 
 async function loadProof() {
@@ -140,7 +163,14 @@ document.querySelector("#step-forward").addEventListener("click", () => {
 });
 document.querySelector("#jump-divergence").addEventListener("click", () => {
   setPlaying(false);
-  seekFrame(state.proof?.divergence_boundary.sample_interval[0] || 0);
+  const boundary = state.proof?.variants?.[state.variant]?.divergence_boundary;
+  seekFrame(boundary?.sample_interval[0] || 0);
+});
+document.querySelectorAll("[data-variant]").forEach((button) => {
+  button.addEventListener("click", () => {
+    setPlaying(false);
+    applyVariant(button.dataset.variant);
+  });
 });
 scrubber.addEventListener("input", () => {
   setPlaying(false);

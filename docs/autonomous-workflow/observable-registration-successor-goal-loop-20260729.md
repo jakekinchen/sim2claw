@@ -119,8 +119,8 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: TERMINAL_RETAINED_DATA_VISUAL_ALIGNMENT_BOUNDARY
-Active card: none; OR33 terminal closeout
+Current state: TERMINAL_MEASURED_STATE_CONTACT_LOAD_PATH_BOUNDARY
+Active card: none; OR34 terminal closeout
 Completed: predecessor evidence; OR0–OR23 and OR26–OR33; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed
 Evidence: OR26/OR27 provide the synchronized comparison and samples-248–260 visual split. OR28 isolates aperture as the upright/transport lever; OR29–OR33 reject bounded aperture, base XY, base yaw, and wrist-local corrections under unchanged gates.
 Pi lineage: no Pi exists for the successful source; later guarded-run Pi files and contact-free tri-camera files are auxiliary, same-run-only evidence
@@ -128,7 +128,7 @@ Retained RGB evidence: OR22 yields 23 jaw and 10 crown proxies; contact/lift/car
 OR23 result: physical contact/lift/carry-start timing corresponds, but no physical channel directly discriminates off-center moment, slip, support transition, or downstream collision
 Remaining: exact intrinsics, pristine heldout extrinsics, globally approved mapping, physical pawn orientation/contact mechanics, full matching task outcome, and transfer remain unapproved
 Blockers: physical capture and all transfer claims remain false; Pi host process bounds are not exposure synchronization; metric physical orientation and known contact force remain unavailable
-Next step: preserve the honest visual artifact; require an explicit proof-design change or new physical orientation/contact evidence before a wider path fit
+Next step: preserve OR34 as the correct observation-conditioned visual twin; require independent jaw/contact/load-path evidence before a simulator mechanism correction
 ```
 
 ## Stop conditions

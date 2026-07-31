@@ -22,9 +22,22 @@ def test_visible_divergence_projection_is_hash_verified_and_read_only() -> None:
     assert projection["transfer_claim"] is False
     assert projection["timeline"]["frame_count"] == 531
     assert projection["timeline"]["fps"] == 20
-    assert projection["divergence_boundary"]["sample_interval"] == [248, 260]
+    assert projection["default_variant"] == "measured_state"
+    assert projection["observation_conditioned"] is True
+    assert projection["action_only_transfer"] is False
+    assert set(projection["variants"]) == {
+        "measured_state",
+        "identified_plant",
+    }
+    assert projection["divergence_boundary"]["sample_interval"] == [232, 247]
     assert projection["registered_planar_endpoints"]["initial"]["pixel_error"] < 11
-    assert projection["registered_planar_endpoints"]["terminal"]["pixel_error"] < 13
+    assert projection["registered_planar_endpoints"]["terminal"]["pixel_error"] > 45
+    assert (
+        projection["trajectory_comparison"][
+            "identified_minus_measured_end_effector_rms_mm"
+        ]
+        > 7
+    )
     assert all(row["url"].startswith("/media/") for row in projection["media"].values())
 
 
@@ -43,6 +56,9 @@ def test_visible_divergence_surface_has_shared_controls_and_mobile_layout() -> N
     assert 'id="simulator-video"' in html
     assert 'id="scrubber"' in html
     assert 'id="jump-divergence"' in html
+    assert 'data-variant="measured_state"' in html
+    assert 'data-variant="identified_plant"' in html
     assert "@media (max-width: 760px)" in css
     assert 'fetch("/api/visible-divergence"' in script
     assert "synchronize(true)" in script
+    assert "applyVariant" in script
