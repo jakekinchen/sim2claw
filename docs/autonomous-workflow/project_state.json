@@ -1,11 +1,11 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-07-30T19:10:00-05:00",
+  "updated_at": "2026-07-30T19:25:00-05:00",
   "active_campaign": "observable_registration_contact_causality_v1",
-  "current_milestone": "OR32_SAMPLE232_BASE_YAW_PATH_GEOMETRY",
+  "current_milestone": "OR33_SAMPLE232_WRIST_PATH_GEOMETRY",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
-  "proof_class": "prospectively_frozen_static_base_yaw_path_shape_refinement_of_quarantined_enclosure_basin",
+  "proof_class": "prospectively_frozen_static_wrist_local_path_shape_diagnostic_in_quarantined_enclosure_basin",
   "four_hour_hil_transaction": {
     "schema_version": "sim2claw.four_hour_hil_transaction.v1",
     "status": "four_physical_attempts_complete_two_admitted_two_rejected_simulator_candidate_rejected_offline_decomposition_frozen_closeout_verification_active",

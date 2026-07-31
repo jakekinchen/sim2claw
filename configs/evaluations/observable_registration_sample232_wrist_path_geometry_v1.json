@@ -1,0 +1,80 @@
+{
+  "schema_version": "sim2claw.observable_registration_sample232_wrist_path_geometry_contract.v1",
+  "experiment_id": "OR33_SAMPLE232_WRIST_PATH_GEOMETRY_V1",
+  "proof_class": "prospectively_frozen_static_wrist_local_path_shape_diagnostic_in_quarantined_enclosure_basin",
+  "sources": {
+    "or32_contract": {
+      "path": "configs/evaluations/observable_registration_sample232_base_yaw_path_geometry_v1.json",
+      "sha256": "0ed214c70c12703ab29a6d5cd18bb0ad4988e7247b7366e42595300eb2174c65"
+    },
+    "or32_closeout": {
+      "path": "configs/decisions/observable_registration_sample232_base_yaw_path_geometry_v1_closeout.json",
+      "sha256": "4cbd6e84a3c692e825dedcae813aecb8f372b6b9ed0d6ae21967de77bbf2646d"
+    }
+  },
+  "grid": {
+    "left_base_world_x_delta_m": [
+      -0.012,
+      -0.011,
+      -0.01
+    ],
+    "left_base_world_y_delta_m": [
+      -0.013,
+      -0.012,
+      -0.011
+    ],
+    "gripper_zero_offset_rad": [
+      -0.16852922543320722,
+      -0.16652922543320722,
+      -0.16452922543320722
+    ],
+    "wrist_flex_zero_offset_delta_degrees": [
+      -4,
+      -2,
+      0,
+      2,
+      4
+    ],
+    "wrist_roll_zero_offset_delta_degrees": [
+      -4,
+      -2,
+      0,
+      2,
+      4
+    ]
+  },
+  "selection": {
+    "sample": 232,
+    "precontact_guard_interval": [
+      220,
+      227
+    ],
+    "minimum_each_jaw_gap_m": -0.001,
+    "maximum_each_jaw_gap_m": 0.001,
+    "maximum_precontact_penetration_m": 0.001,
+    "score": "maximum_absolute_sample232_gap_plus_precontact_penetration",
+    "tie_break": "smallest_wrist_offset_norm_then_translation_norm"
+  },
+  "evaluation": {
+    "forward_kinematics_allowed": true,
+    "physics_integration_allowed": false,
+    "dynamic_replay_allowed": false,
+    "dynamic_outcomes_may_not_select_grid_row": true,
+    "global_mapping_promotion_allowed": false,
+    "transfer_claim_allowed": false
+  },
+  "authority": {
+    "simulator_static_evaluation": true,
+    "simulator_dynamic_replay": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "promotion": false,
+    "transfer_claim": false
+  }
+}

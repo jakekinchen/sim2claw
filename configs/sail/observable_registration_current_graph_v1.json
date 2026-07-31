@@ -2,19 +2,19 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or32_sample232_base_yaw_path_geometry",
-  "active_card": "OR32",
+  "status": "in_progress_or33_sample232_wrist_path_geometry",
+  "active_card": "OR33",
   "active_card_contract": {
-    "card_id": "OR32",
-    "proof_target": "bounded_static_base_yaw_path_shape_candidate_satisfying_precontact_and_enclosure_gates",
+    "card_id": "OR33",
+    "proof_target": "bounded_static_wrist_flex_roll_path_candidate_satisfying_precontact_and_enclosure_gates",
     "allowed_paths": [
-      "configs/evaluations/observable_registration_sample232_base_yaw_path_geometry_v1.json",
-      "src/sim2claw/observable_registration_sample232_base_yaw_path_geometry.py",
-      "scripts/run_observable_registration_sample232_base_yaw_path_geometry.py",
-      "tests/test_observable_registration_sample232_base_yaw_path_geometry.py",
-      "configs/decisions/observable_registration_sample232_base_yaw_path_geometry_v1_closeout.json",
-      "outputs/observable_registration_sample232_base_yaw_path_geometry_v1",
-      "docs/session-logs/102-executor-observable-registration-or32.md",
+      "configs/evaluations/observable_registration_sample232_wrist_path_geometry_v1.json",
+      "src/sim2claw/observable_registration_sample232_wrist_path_geometry.py",
+      "scripts/run_observable_registration_sample232_wrist_path_geometry.py",
+      "tests/test_observable_registration_sample232_wrist_path_geometry.py",
+      "configs/decisions/observable_registration_sample232_wrist_path_geometry_v1_closeout.json",
+      "outputs/observable_registration_sample232_wrist_path_geometry_v1",
+      "docs/session-logs/103-executor-observable-registration-or33.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
@@ -28,14 +28,14 @@
       "commit"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_observable_registration_sample232_base_yaw_path_geometry.py",
+      "uv run --locked pytest -q tests/test_observable_registration_sample232_wrist_path_geometry.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "evaluate_static_base_yaw_path_shape_grid_and_admit_dynamic_successor_only_if_both_gates_pass",
+  "next_transition": "evaluate_final_static_wrist_path_grid_and_admit_dynamic_successor_only_if_both_gates_pass",
   "node_types": [
     "workcell",
     "session",
@@ -76,7 +76,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "f1169c805bb468d43f49f79ac490105512d90bbcbb3256d60df80fefca9e7e9a",
+      "sha256": "b862912d344d76eb40985e8e69d74e11f2478c7f57358272b0b78cc967f2d8ca",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -263,6 +263,11 @@
       "path": "configs/decisions/observable_registration_sample232_base_xy_aperture_refinement_v1_closeout.json",
       "sha256": "f08b324f6309b637c618f70d62370852320fc1a6980df5c24eb0180704bd027e",
       "proof_class": "prospectively_frozen_static_local_refinement_of_outcome_informed_enclosure_geometry_basin"
+    },
+    "or32": {
+      "path": "configs/decisions/observable_registration_sample232_base_yaw_path_geometry_v1_closeout.json",
+      "sha256": "4cbd6e84a3c692e825dedcae813aecb8f372b6b9ed0d6ae21967de77bbf2646d",
+      "proof_class": "prospectively_frozen_static_base_yaw_path_shape_refinement_of_quarantined_enclosure_basin"
     }
   },
   "nodes": [
