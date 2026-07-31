@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.observable_registration_measured_state_contact_skin_closeout.v1",
+  "experiment_id": "OR37A_MEASURED_STATE_CONTACT_SKIN_V1",
+  "status": "PARTIAL_CROSS_EPISODE_CONTACT_SKIN_ADVANCEMENT",
+  "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_zero_refit_cross_episode_contact_skin_challenger",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_measured_state_contact_skin_v1.json",
+    "sha256": "733f392a14b40b63fe343108ac3a9bf4da8e7c8d72a86af94dd966438608d6cc"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_measured_state_contact_skin.py",
+    "sha256": "66443f95564ba2515625aa7ee401ec111a71a3de921479fbef430445781d85f8"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_measured_state_contact_skin_v1/receipt.json",
+    "sha256": "8a742bca69488e3d036d66f98432a7ac3b0473d2979a3507fb1ed9128ca9e4db",
+    "artifact_sha256": "6827a9e5afe8dc38ce8ff671ce2d3fb8a281fd4d4b566d3800cafe09cd292f16"
+  },
+  "result": {
+    "baseline_exactly_reproduced_or34": true,
+    "raw_measured_row_count": 531,
+    "object_pose_injected": false,
+    "single_changed_mechanism": "frozen_c2_two_sided_rubber_contact_skin",
+    "destination_episode_refit": false,
+    "candidate_contact_skin_pad_count": 2,
+    "candidate_contact_bearing_surfaces": [
+      "left_rubber_tip_moving_coordinate_efacc621291a7e51_geom"
+    ],
+    "first_contact_sample": 229,
+    "first_motion_over_1mm_sample": 252,
+    "first_sustained_support_loss_sample": 252,
+    "physical_contact_interval_samples": [228, 232],
+    "physical_lift_interval_samples": [247, 260],
+    "candidate_first_bilateral_contact": null,
+    "candidate_tilt_at_sample_260_degrees": 37.045105370242055,
+    "candidate_signed_progress_m": 0.00801644612274447,
+    "candidate_terminal_planar_error_m": 0.04755934890298996,
+    "candidate_terminal_tilt_degrees": 102.10418480636768,
+    "candidate_early_causal_gates_pass": false,
+    "candidate_terminal_task_gates_pass": false,
+    "full_physics_driven_replay_pass": false,
+    "interpretation": "The zero-refit C2 contact skin naturally aligns D1-to-D2 first contact, first motion, and sustained support loss with the physical contact/lift intervals. Only the moving pad loads, so the upright carry remains absent. The C2 contract separately records a fixed-rubber center at local z -0.1205 m while this fixed-cover candidate compiles at -0.0805 m. A single exact prior-position successor may test that recorded C2 diagnosis-anchor location without fitting to D1 terminal outcome."
+  },
+  "claim_limits": {
+    "physical_contact_skin_calibrated_on_destination": false,
+    "simulator_promoted": false,
+    "global_mapping_approved": false,
+    "full_physics_driven_replay": false,
+    "action_only_transfer": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "serial_used": false,
+    "simulator_replays": 2
+  }
+}

@@ -151,10 +151,12 @@ def _contact_counts(
     data: mujoco.MjData,
     *,
     selected_body: int,
+    jaw_names: set[str] | None = None,
 ) -> tuple[int, list[list[str]]]:
     count = 0
     pairs: set[tuple[str, str]] = set()
-    jaw_names = {"left_gripper", "left_moving_jaw_so101_v1"}
+    if jaw_names is None:
+        jaw_names = {"left_gripper", "left_moving_jaw_so101_v1"}
     for index in range(data.ncon):
         contact = data.contact[index]
         body_a = int(model.geom_bodyid[int(contact.geom1)])

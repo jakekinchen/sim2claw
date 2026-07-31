@@ -2,12 +2,62 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "terminal_measured_state_contact_load_path_boundary",
-  "active_card": "OR34",
+  "status": "active_retained_video_jaw_surface_mapping",
+  "active_card": "OR40",
   "active_card_contract": {
-    "card_id": "OR34",
-    "proof_target": "raw_follower_measured_state_natural_dynamics_synchronized_visual_twin",
+    "card_id": "OR40",
+    "proof_target": "retained_video_preterminal_metric_encoder_to_contact_surface_mapping_with_no_refit_validation",
     "allowed_paths": [
+      "configs/evaluations/observable_registration_retained_video_jaw_surface_mapping_v1.json",
+      "src/sim2claw/observable_registration_retained_video_jaw_surface_mapping.py",
+      "tests/test_observable_registration_retained_video_jaw_surface_mapping.py",
+      "outputs/observable_registration_retained_video_jaw_surface_mapping_v1",
+      "configs/decisions/observable_registration_retained_video_jaw_surface_mapping_v1_closeout.json",
+      "docs/session-logs/112-executor-observable-registration-or40.md",
+      "configs/evaluations/observable_registration_measured_state_compliance_v1.json",
+      "src/sim2claw/observable_registration_measured_state_compliance.py",
+      "tests/test_observable_registration_measured_state_compliance.py",
+      "outputs/observable_registration_measured_state_compliance_v1",
+      "configs/decisions/observable_registration_measured_state_compliance_v1_closeout.json",
+      "docs/session-logs/111-executor-observable-registration-or39.md",
+      "configs/evaluations/observable_registration_measured_state_pad_bracket_v1.json",
+      "src/sim2claw/observable_registration_measured_state_pad_bracket.py",
+      "tests/test_observable_registration_measured_state_pad_bracket.py",
+      "outputs/observable_registration_measured_state_pad_bracket_v1",
+      "configs/decisions/observable_registration_measured_state_pad_bracket_v1_closeout.json",
+      "docs/session-logs/110-executor-observable-registration-or38.md",
+      "configs/evaluations/observable_registration_measured_state_prior_pad_position_v1.json",
+      "src/sim2claw/observable_registration_measured_state_prior_pad_position.py",
+      "tests/test_observable_registration_measured_state_prior_pad_position.py",
+      "outputs/observable_registration_measured_state_prior_pad_position_v1",
+      "configs/decisions/observable_registration_measured_state_prior_pad_position_v1_closeout.json",
+      "docs/session-logs/109-executor-observable-registration-or37b.md",
+      "configs/evaluations/observable_registration_measured_state_contact_skin_v1.json",
+      "src/sim2claw/observable_registration_measured_state_contact_skin.py",
+      "tests/test_observable_registration_measured_state_contact_skin.py",
+      "outputs/observable_registration_measured_state_contact_skin_v1",
+      "configs/decisions/observable_registration_measured_state_contact_skin_v1_closeout.json",
+      "docs/session-logs/108-executor-observable-registration-or37a.md",
+      "configs/evaluations/observable_registration_measured_state_single_surface_v1.json",
+      "src/sim2claw/observable_registration_measured_state_single_surface.py",
+      "tests/test_observable_registration_measured_state_single_surface.py",
+      "outputs/observable_registration_measured_state_single_surface_v1",
+      "configs/decisions/observable_registration_measured_state_single_surface_v1_closeout.json",
+      "docs/session-logs/107-executor-observable-registration-or36s.md",
+      "configs/evaluations/observable_registration_measured_state_contact_topology_v1.json",
+      "src/sim2claw/observable_registration_measured_state_contact_topology.py",
+      "tests/test_observable_registration_measured_state_contact_topology.py",
+      "outputs/observable_registration_measured_state_contact_topology_v1",
+      "configs/decisions/observable_registration_measured_state_contact_topology_v1_closeout.json",
+      "docs/session-logs/106-executor-observable-registration-or36b.md",
+      "configs/evaluations/observable_registration_measured_state_load_path_v1.json",
+      "src/sim2claw/observable_registration_measured_state_load_path.py",
+      "src/sim2claw/observable_registration_exact_replay_contact_introspection.py",
+      "src/sim2claw/realized_action_outcome_mission.py",
+      "tests/test_observable_registration_measured_state_load_path.py",
+      "outputs/observable_registration_measured_state_load_path_v1",
+      "configs/decisions/observable_registration_measured_state_load_path_v1_closeout.json",
+      "docs/session-logs/105-executor-observable-registration-or35.md",
       "configs/evaluations/observable_registration_measured_state_visual_twin_v1.json",
       "src/sim2claw/observable_registration_measured_state_visual_twin.py",
       "tests/test_observable_registration_measured_state_visual_twin.py",
@@ -32,6 +82,13 @@
       "commit"
     ],
     "validation_commands": [
+      "uv run --locked pytest -q tests/test_observable_registration_measured_state_compliance.py",
+      "uv run --locked pytest -q tests/test_observable_registration_measured_state_pad_bracket.py",
+      "uv run --locked pytest -q tests/test_observable_registration_measured_state_prior_pad_position.py",
+      "uv run --locked pytest -q tests/test_observable_registration_measured_state_contact_skin.py",
+      "uv run --locked pytest -q tests/test_observable_registration_measured_state_single_surface.py",
+      "uv run --locked pytest -q tests/test_observable_registration_measured_state_contact_topology.py",
+      "uv run --locked pytest -q tests/test_observable_registration_measured_state_load_path.py",
       "uv run --locked pytest -q tests/test_observable_registration_measured_state_visual_twin.py tests/test_visible_divergence_studio.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
@@ -39,7 +96,7 @@
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "independently_constrained_jaw_contact_load_path_evidence_or_owner_changes_proof_design",
+  "next_transition": "audit_and_compile_or40_retained_video_jaw_surface_mapping",
   "node_types": [
     "workcell",
     "session",
@@ -80,7 +137,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "1d3457724c034b02a389601ce696ceb4a9bd0d5f24485450e2403d3d4aa0587e",
+      "sha256": "5a4e0fab30fa515236657553d181e4c5df57a0d75a6cc04873b417b235c1a456",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -282,6 +339,41 @@
       "path": "configs/decisions/observable_registration_measured_state_visual_twin_v1_closeout.json",
       "sha256": "0e8d94ac0ed6ddc65ad57a2a46e1cc28fa2db257361b236142bfd4b255759bee",
       "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_visual_twin_diagnostic"
+    },
+    "or35": {
+      "path": "configs/decisions/observable_registration_measured_state_load_path_v1_closeout.json",
+      "sha256": "4e5c999bb9cd991f906a81961a2889c35dae1c0980bd224bb969c6abed55f101",
+      "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_single_force_envelope_challenger"
+    },
+    "or36b": {
+      "path": "configs/decisions/observable_registration_measured_state_contact_topology_v1_closeout.json",
+      "sha256": "44e98e806561cd286b127abcbc86346cfe3884616471b69b5a81e9a71a181f70",
+      "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_single_contact_topology_challenger"
+    },
+    "or36s": {
+      "path": "configs/decisions/observable_registration_measured_state_single_surface_v1_closeout.json",
+      "sha256": "453b9925908f4921689f2a2bc24ba83f2cb9afb1bd7cc73c4dad28979f4639b1",
+      "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_one_contact_bearing_mesh_per_jaw_challenger"
+    },
+    "or37a": {
+      "path": "configs/decisions/observable_registration_measured_state_contact_skin_v1_closeout.json",
+      "sha256": "696b0bd2a313e4a5cac4f18ace683074ffa852212c7e93d906b9bdf186dff18b",
+      "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_zero_refit_cross_episode_contact_skin_challenger"
+    },
+    "or37b": {
+      "path": "configs/decisions/observable_registration_measured_state_prior_pad_position_v1_closeout.json",
+      "sha256": "16643969dbbaf825c0f88a493b8273ac7c98dba3e0e1fa31e48cf2a87d62c514",
+      "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_exact_prior_fixed_pad_position_challenger"
+    },
+    "or38": {
+      "path": "configs/decisions/observable_registration_measured_state_pad_bracket_v1_closeout.json",
+      "sha256": "9d66c27645e5fd7941adf4082647420e4cc10217d884fb0c9496221dd962b4a0",
+      "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_bounded_preterminal_contact_event_calibration"
+    },
+    "or39": {
+      "path": "configs/decisions/observable_registration_measured_state_compliance_v1_closeout.json",
+      "sha256": "618973b5ba5fde36cbe470c9d0ae389d98f74ca65d93ba06ba9c84fd58d22592",
+      "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_zero_refit_cross_episode_passive_contact_compliance_challenger"
     }
   },
   "nodes": [
@@ -968,6 +1060,192 @@
         "global_mapping_approved": false,
         "transfer_claim": false
       }
+    },
+    {
+      "id": "counterexample:or35-force-envelope",
+      "type": "counterexample",
+      "label": "Manufacturer-bounded STS3215 force-envelope challenger",
+      "status": "terminal_negative_with_endpoint_advancement",
+      "source_binding": "or35",
+      "data": {
+        "source_row_count": 531,
+        "raw_state_identity_preserved": true,
+        "single_changed_mechanism": "sts3215_actuator_force_envelope",
+        "baseline_force_limit_nm": 2.94,
+        "candidate_force_limit_nm": 1.91229675,
+        "first_contact_sample": 230,
+        "first_motion_over_1mm_sample": 232,
+        "baseline_terminal_planar_error_m": 0.03394622069649699,
+        "candidate_terminal_planar_error_m": 0.015218413810175531,
+        "candidate_terminal_tilt_degrees": 102.1039830996532,
+        "early_causal_gates_pass": false,
+        "full_physics_driven_replay_pass": false,
+        "simultaneous_moving_jaw_mesh_and_primitive_contact_observed": true,
+        "maximum_selected_pawn_contact_points_per_internal_step": 20,
+        "next_mechanism": "jaw_collision_topology",
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "intervention:or36b-primitive-only-jaws",
+      "type": "intervention",
+      "label": "Primitive-only jaw contact topology",
+      "status": "partial_topology_advancement",
+      "source_binding": "or36b",
+      "data": {
+        "source_row_count": 531,
+        "single_changed_mechanism": "disable_collision_bearing_jaw_mesh_cores",
+        "mesh_plus_primitive_overlap_rows_baseline": 448,
+        "mesh_plus_primitive_overlap_rows_candidate": 0,
+        "terminal_tilt_degrees_baseline": 102.10499301968989,
+        "terminal_tilt_degrees_candidate": 0.0025492545929530807,
+        "candidate_first_bilateral_contact": null,
+        "candidate_signed_progress_m": 0.010651314028057057,
+        "candidate_terminal_planar_error_m": 0.044248277148440325,
+        "full_physics_driven_replay_pass": false,
+        "next_mechanism": "one_contact_bearing_mesh_surface_per_jaw",
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "intervention:or36s-one-mesh-per-jaw",
+      "type": "intervention",
+      "label": "One exact contact-bearing mesh per jaw",
+      "status": "partial_causal_timing_advancement",
+      "source_binding": "or36s",
+      "data": {
+        "source_row_count": 531,
+        "single_changed_mechanism": "one_contact_bearing_mesh_surface_per_jaw",
+        "first_contact_sample": 231,
+        "first_motion_over_1mm_sample": 255,
+        "physical_contact_interval_samples": [228, 232],
+        "physical_lift_interval_samples": [247, 260],
+        "candidate_first_bilateral_contact": null,
+        "candidate_tilt_at_sample_260_degrees": 38.174162610274564,
+        "full_physics_driven_replay_pass": false,
+        "next_mechanism": "cross_episode_c2_anchored_two_sided_rubber_contact_skin",
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "intervention:or37a-c2-contact-skin",
+      "type": "intervention",
+      "label": "Frozen C2 two-sided rubber contact skin",
+      "status": "partial_cross_episode_contact_skin_advancement",
+      "source_binding": "or37a",
+      "data": {
+        "source_row_count": 531,
+        "destination_episode_refit": false,
+        "first_contact_sample": 229,
+        "first_motion_over_1mm_sample": 252,
+        "first_sustained_support_loss_sample": 252,
+        "candidate_first_bilateral_contact": null,
+        "candidate_tilt_at_sample_260_degrees": 37.045105370242055,
+        "full_physics_driven_replay_pass": false,
+        "next_mechanism": "exact_c2_diagnosis_anchor_fixed_pad_position",
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "intervention:or37b-prior-fixed-pad-position",
+      "type": "intervention",
+      "label": "Exact C2 diagnosis-anchor fixed-pad position",
+      "status": "partial_prior_pad_position_advancement",
+      "source_binding": "or37b",
+      "data": {
+        "source_row_count": 531,
+        "destination_terminal_outcome_selected_candidate": false,
+        "fixed_pad_local_z_m": -0.1205,
+        "first_contact_sample": 229,
+        "first_motion_over_1mm_sample": 230,
+        "first_sustained_support_loss_sample": 230,
+        "first_bilateral_contact_sample": 269,
+        "tilt_at_sample_260_degrees": 102.10412763318925,
+        "full_physics_driven_replay_pass": false,
+        "next_mechanism": "bounded_preterminal_fixed_pad_position_bracket",
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "counterexample:or38-fixed-pad-position-bracket",
+      "type": "counterexample",
+      "label": "Bounded preterminal fixed-pad position bracket",
+      "status": "partial_bounded_contact_event_calibration",
+      "source_binding": "or38",
+      "data": {
+        "source_row_count": 531,
+        "candidate_count": 9,
+        "terminal_position_or_task_outcome_used_for_selection": false,
+        "bilateral_regime_last_local_z_m": -0.1155,
+        "moving_only_regime_first_local_z_m": -0.1105,
+        "position_only_solution_exists": false,
+        "full_physics_driven_replay_pass": false,
+        "next_mechanism": "cross_episode_passive_contact_compliance",
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "counterexample:or39-passive-contact-compliance",
+      "type": "counterexample",
+      "label": "Frozen C2 passive contact-compliance challenger",
+      "status": "terminal_negative_passive_compliance",
+      "source_binding": "or39",
+      "data": {
+        "source_row_count": 531,
+        "zero_refit_on_destination_episode": true,
+        "compliance_travel_m": 0.001,
+        "compliance_stiffness_n_per_m": 300.0,
+        "compliance_damping_n_s_per_m": 1.095,
+        "first_contact_sample": 252,
+        "first_motion_over_1mm_sample": 259,
+        "first_bilateral_contact_sample": null,
+        "tilt_at_sample_260_degrees": 20.745576681228133,
+        "numerical_instability_observed": true,
+        "full_physics_driven_replay_pass": false,
+        "next_mechanism": "retained_video_encoder_to_contact_surface_mapping",
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "mechanism:or40-video-jaw-surface-mapping",
+      "type": "mechanism",
+      "label": "Retained-video encoder-to-contact-surface mapping",
+      "status": "active_observability_audit",
+      "source_binding": "or40",
+      "data": {
+        "retained_video_only": true,
+        "terminal_task_outcome_fit_allowed": false,
+        "preliminary_observability_audit": {
+          "overhead_c922_contact_view": "insufficient_arm_and_cable_occlusion",
+          "wrist_d405_rgb_contact_view": "sufficient_for_image_space_jaw_and_pawn_surface_extraction",
+          "wrist_video_sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c",
+          "wrist_resolution": [424, 240],
+          "wrist_fps": 5.0,
+          "reviewed_frame_interval": [95, 104],
+          "metric_depth_available": false,
+          "camera_exposure_synchronized": false,
+          "metric_mapping_promoted": false
+        },
+        "required_observations": [
+          "fixed_jaw_contact_surface",
+          "moving_jaw_contact_surface",
+          "pawn_silhouette",
+          "board_metric_scale",
+          "video_to_raw_telemetry_synchronization"
+        ],
+        "fit_mechanism_limit": 1,
+        "no_refit_validation_required": true,
+        "dynamic_replay_allowed_after_mapping_gate_only": true,
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
     }
   ],
   "edges": [
@@ -1195,6 +1473,46 @@
       "source": "evidence:or26-visible-divergence-video",
       "target": "evidence:or34-measured-state-visual-twin",
       "type": "predicts"
+    },
+    {
+      "source": "evidence:or34-measured-state-visual-twin",
+      "target": "counterexample:or35-force-envelope",
+      "type": "evaluated-on"
+    },
+    {
+      "source": "counterexample:or35-force-envelope",
+      "target": "intervention:or36b-primitive-only-jaws",
+      "type": "predicts"
+    },
+    {
+      "source": "intervention:or36b-primitive-only-jaws",
+      "target": "intervention:or36s-one-mesh-per-jaw",
+      "type": "predicts"
+    },
+    {
+      "source": "intervention:or36s-one-mesh-per-jaw",
+      "target": "intervention:or37a-c2-contact-skin",
+      "type": "predicts"
+    },
+    {
+      "source": "intervention:or37a-c2-contact-skin",
+      "target": "intervention:or37b-prior-fixed-pad-position",
+      "type": "predicts"
+    },
+    {
+      "source": "intervention:or37b-prior-fixed-pad-position",
+      "target": "counterexample:or38-fixed-pad-position-bracket",
+      "type": "motivates"
+    },
+    {
+      "source": "counterexample:or38-fixed-pad-position-bracket",
+      "target": "counterexample:or39-passive-contact-compliance",
+      "type": "motivates"
+    },
+    {
+      "source": "counterexample:or39-passive-contact-compliance",
+      "target": "mechanism:or40-video-jaw-surface-mapping",
+      "type": "motivates"
     }
   ]
 }

@@ -1,0 +1,61 @@
+{
+  "schema_version": "sim2claw.observable_registration_measured_state_prior_pad_position_closeout.v1",
+  "experiment_id": "OR37B_MEASURED_STATE_PRIOR_PAD_POSITION_V1",
+  "status": "PARTIAL_PRIOR_PAD_POSITION_ADVANCEMENT",
+  "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_exact_prior_fixed_pad_position_challenger",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_measured_state_prior_pad_position_v1.json",
+    "sha256": "956f1069981cc6535f315e5d0c51fc40c373a0bedad3404e03a19de60a7b9b85"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_measured_state_prior_pad_position.py",
+    "sha256": "9295f4146f11206043c757df3d137ae37cfe854274e725ba1850343593c3e9d8"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_measured_state_prior_pad_position_v1/receipt.json",
+    "sha256": "85945a37941a75d0e2d7b0b5c90208541150baa58f8150b2e9d21c52bfa13b30",
+    "artifact_sha256": "beb946663480178aa8b973b4e8a8873dc2aab482c0322844240ddc542f4bb3a4"
+  },
+  "result": {
+    "baseline_exactly_reproduced_or34": true,
+    "raw_measured_row_count": 531,
+    "object_pose_injected": false,
+    "single_changed_mechanism": "fixed_contact_skin_longitudinal_position",
+    "destination_terminal_outcome_selected_candidate": false,
+    "fixed_pad_local_z_m": -0.1205,
+    "candidate_contact_bearing_surfaces": [
+      "left_rubber_tip_fixed_coordinate_2ae9c83ab986cb21_geom",
+      "left_rubber_tip_moving_coordinate_2ae9c83ab986cb21_geom"
+    ],
+    "first_contact_sample": 229,
+    "first_motion_over_1mm_sample": 230,
+    "first_sustained_support_loss_sample": 230,
+    "first_bilateral_contact_sample": 269,
+    "candidate_tilt_at_sample_260_degrees": 102.10412763318925,
+    "candidate_signed_progress_m": 0.07718739165587804,
+    "candidate_terminal_planar_error_m": 0.02240930619732088,
+    "candidate_terminal_tilt_degrees": 102.10359119803795,
+    "candidate_early_causal_gates_pass": false,
+    "candidate_terminal_task_gates_pass": false,
+    "full_physics_driven_replay_pass": false,
+    "interpretation": "The independently recorded C2 fixed-pad center closes the missing bilateral load path, proving that both jaw contact surfaces can naturally load under the immutable D1-to-D2 measured-state replay. Its moving-side impact launches and tips the pawn at sample 230, well before the physical 247-260 lift interval, and fixed-side load arrives only at sample 269. Together with OR37A, this creates an explicit zero-terminal-outcome longitudinal bracket from -0.1205 to -0.0805 m for a bounded contact-event-only successor."
+  },
+  "claim_limits": {
+    "physical_contact_skin_calibrated_on_destination": false,
+    "simulator_promoted": false,
+    "global_mapping_approved": false,
+    "full_physics_driven_replay": false,
+    "action_only_transfer": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "serial_used": false,
+    "simulator_replays": 2
+  }
+}

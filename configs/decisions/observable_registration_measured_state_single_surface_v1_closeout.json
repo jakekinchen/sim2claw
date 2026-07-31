@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.observable_registration_measured_state_single_surface_closeout.v1",
+  "experiment_id": "OR36S_MEASURED_STATE_SINGLE_SURFACE_V1",
+  "status": "PARTIAL_SINGLE_SURFACE_CAUSAL_TIMING_ADVANCEMENT",
+  "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_one_contact_bearing_mesh_per_jaw_challenger",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_measured_state_single_surface_v1.json",
+    "sha256": "007e5cbc80a3aa9e5d714bcdba4f92f8179983e95c2e3b9b4bfee183eb2df2bf"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_measured_state_single_surface.py",
+    "sha256": "d0364d48adbb5d06fffcf113d64a6b33dd8a37c66de6be18e7c3ac778390e400"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_measured_state_single_surface_v1/receipt.json",
+    "sha256": "8c4c64dd856afa71bc2b0e3a4d4865ef8a1b585eeab3ad65c3e46f65b138fa10",
+    "artifact_sha256": "5fb68545420ec2d1158c58b6ee7afa6c3b95776327111860bf80d02b8aea11b5"
+  },
+  "result": {
+    "baseline_exactly_reproduced_or34": true,
+    "raw_measured_row_count": 531,
+    "object_pose_injected": false,
+    "single_changed_mechanism": "one_contact_bearing_mesh_surface_per_jaw",
+    "preserved_collision_surfaces": [
+      "mjobj_geom-483",
+      "mjobj_geom-494"
+    ],
+    "candidate_contact_bearing_surfaces": [
+      "mjobj_geom-494"
+    ],
+    "baseline_maximum_jaw_pawn_contacts_per_step": 22,
+    "candidate_maximum_jaw_pawn_contacts_per_step": 15,
+    "first_contact_sample_baseline": 230,
+    "first_contact_sample_candidate": 231,
+    "first_motion_over_1mm_sample_baseline": 232,
+    "first_motion_over_1mm_sample_candidate": 255,
+    "physical_contact_interval_samples": [228, 232],
+    "physical_lift_interval_samples": [247, 260],
+    "candidate_first_bilateral_contact": null,
+    "candidate_tilt_at_sample_260_degrees": 38.174162610274564,
+    "candidate_signed_progress_m": 0.014372153761270667,
+    "candidate_terminal_planar_error_m": 0.10504594266421743,
+    "candidate_terminal_tilt_degrees": 37.56667445242777,
+    "candidate_early_causal_gates_pass": false,
+    "candidate_terminal_task_gates_pass": false,
+    "full_physics_driven_replay_pass": false,
+    "interpretation": "An exact one-mesh-per-jaw topology eliminates duplicate contact contributors and moves the first pawn displacement from sample 232 to sample 255, inside the physical 247-260 lift interval, while preserving contact at sample 231. This is the first natural-dynamics replay with both contact and motion timing aligned to the retained physical intervals. Only the moving-jaw mesh ever loads; absent fixed-jaw outer-skin contact causes tip and unstable terminal motion. The next bounded zero-refit candidate is the separate C2-anchored 1 mm two-sided rubber contact skin, whose parameters were frozen on another physical episode and are not selected from the D1-to-D2 terminal outcome."
+  },
+  "claim_limits": {
+    "physical_contact_topology_calibrated": false,
+    "simulator_promoted": false,
+    "global_mapping_approved": false,
+    "full_physics_driven_replay": false,
+    "action_only_transfer": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "serial_used": false,
+    "simulator_replays": 2
+  }
+}

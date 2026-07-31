@@ -1,0 +1,125 @@
+{
+  "schema_version": "sim2claw.observable_registration_measured_state_single_surface_contract.v1",
+  "experiment_id": "OR36S_MEASURED_STATE_SINGLE_SURFACE_V1",
+  "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_one_contact_bearing_mesh_per_jaw_challenger",
+  "sources": {
+    "or34_contract": {
+      "path": "configs/evaluations/observable_registration_measured_state_visual_twin_v1.json",
+      "sha256": "ede7ca2a7f792c096014a90769bb9c024ededb264acb91b6173e97d55dc2011c"
+    },
+    "or34_receipt": {
+      "path": "outputs/observable_registration_measured_state_visual_twin_v1/receipt.json",
+      "sha256": "2548958515f98537446ee24295d33e7d5d4fe1ea2cedc128016c5099c44b2678"
+    },
+    "or36b_receipt": {
+      "path": "outputs/observable_registration_measured_state_contact_topology_v1/receipt.json",
+      "sha256": "8f2f5eb85f95811c3367be5a61b540b4ad44e6a4b3763fb3958f7d20dc6a1e6a"
+    },
+    "so101_model": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+      "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+    }
+  },
+  "trajectory": {
+    "row_count": 531,
+    "robot_driver": "raw_follower_actual_position_degrees",
+    "preserve_source_values_order_timestamps_and_interpolation": true,
+    "action_or_state_assistance_allowed": false
+  },
+  "variants": [
+    {
+      "variant_id": "canonical_mesh_plus_primitive_jaws",
+      "role": "identity_regression_baseline",
+      "sts3215_force_limit_nm": 2.94,
+      "one_contact_bearing_mesh_per_jaw": false
+    },
+    {
+      "variant_id": "one_contact_bearing_mesh_per_jaw",
+      "role": "single_prospective_challenger",
+      "sts3215_force_limit_nm": 2.94,
+      "one_contact_bearing_mesh_per_jaw": true
+    }
+  ],
+  "single_surface_intervention": {
+    "target_bodies": ["left_gripper", "left_moving_jaw_so101_v1"],
+    "preserved_collision_mesh_by_body": {
+      "left_gripper": "mjobj_geom-483",
+      "left_moving_jaw_so101_v1": "mjobj_geom-494"
+    },
+    "selection_source": "OR36B internal contact trace samples 210-300; one exact contact-bearing mesh per physical jaw side",
+    "disable_every_other_collision_enabled_geom_on_target_bodies": true,
+    "preserve_selected_mesh_geometry_pose_material_friction_solref_solimp_and_condim": true,
+    "candidate_selected_without_terminal_task_outcome": true
+  },
+  "simulation": {
+    "natural_pawn_dynamics_only": true,
+    "selected_pawn_pose_written_only_during_initialization": true,
+    "object_pose_injection_allowed": false,
+    "latch_attachment_or_grasp_mode_allowed": false,
+    "contact_geometry_size_pose_or_material_change_allowed": false,
+    "pawn_mass_com_or_inertia_change_allowed": false,
+    "actuator_force_gain_or_driver_change_allowed": false,
+    "camera_mapping_or_reset_change_allowed": false,
+    "terminal_result_may_select_or_revise_candidate": false,
+    "post_action_settle_seconds": 1.0
+  },
+  "trace": {
+    "internal_step_seconds": 0.005,
+    "analysis_source_sample_start": 210,
+    "analysis_source_sample_end": 300,
+    "physical_contact_interval_samples": [228, 232],
+    "physical_lift_interval_samples": [247, 260],
+    "physical_carry_start_sample": 260,
+    "physical_release_interval_samples": [400, 407],
+    "motion_threshold_m": 0.001,
+    "tilt_threshold_degrees": 5.0,
+    "slip_threshold_m_s": 0.001,
+    "support_loss_minimum_internal_steps": 3,
+    "emit_all_internal_rows": true,
+    "contact_force_is_simulator_internal_not_physical_force": true
+  },
+  "baseline_regression": {
+    "first_selected_jaw_contact_sample": 230,
+    "first_motion_over_1mm_sample": 232,
+    "signed_progress_toward_d2_m": 0.08616473459195542,
+    "final_upright_tilt_degrees": 102.10499301968989,
+    "final_planar_center_error_m": 0.03394622069649699,
+    "absolute_tolerance": 1e-9
+  },
+  "candidate_gates": {
+    "no_selected_jaw_contact_through_sample": 224,
+    "first_selected_jaw_contact_interval_samples": [228, 232],
+    "no_motion_over_1mm_before_sample": 247,
+    "sustained_support_loss_interval_samples": [247, 260],
+    "maximum_tilt_at_sample_260_degrees": 10.0,
+    "final_planar_center_error_m": 0.006,
+    "final_upright_tilt_degrees": 10.0,
+    "final_height_error_m": 0.006,
+    "maximum_other_piece_displacement_m": 0.005,
+    "final_linear_speed_m_s": 0.02,
+    "final_angular_speed_rad_s": 1.0
+  },
+  "claim_limits": {
+    "global_mapping_approval": false,
+    "physical_contact_topology_calibration": false,
+    "unique_mechanism_identification": false,
+    "action_only_transfer": false,
+    "simulator_promotion": false,
+    "policy_transfer": false,
+    "bidirectional_transfer": false,
+    "physical_authority": false
+  },
+  "authority": {
+    "simulator_replay": true,
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

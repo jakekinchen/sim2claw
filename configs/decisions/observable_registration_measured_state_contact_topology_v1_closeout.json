@@ -1,0 +1,65 @@
+{
+  "schema_version": "sim2claw.observable_registration_measured_state_contact_topology_closeout.v1",
+  "experiment_id": "OR36B_MEASURED_STATE_CONTACT_TOPOLOGY_V1",
+  "status": "PARTIAL_TOPOLOGY_ADVANCEMENT",
+  "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_single_contact_topology_challenger",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_measured_state_contact_topology_v1.json",
+    "sha256": "744f3790e35135ac15cbd337315b82dd671cf698a9d66431a271d53bd565c068"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_measured_state_contact_topology.py",
+    "sha256": "012991a6acf7e394cd18cbbe987600152f64238c394b3b49bd5ef2d6398fdbd9"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_measured_state_contact_topology_v1/receipt.json",
+    "sha256": "8f2f5eb85f95811c3367be5a61b540b4ad44e6a4b3763fb3958f7d20dc6a1e6a",
+    "artifact_sha256": "103e3bdf3ff74db3f9a14f7647cc1cba53bf0579e4948d46624eb00ff6ae7cea"
+  },
+  "result": {
+    "baseline_exactly_reproduced_or34": true,
+    "raw_measured_row_count": 531,
+    "object_pose_injected": false,
+    "single_changed_mechanism": "disable_collision_bearing_jaw_mesh_cores",
+    "disabled_collision_mesh_geoms": 3,
+    "baseline_mesh_plus_primitive_overlap_rows": 448,
+    "candidate_mesh_plus_primitive_overlap_rows": 0,
+    "baseline_maximum_unique_jaw_geoms_per_step": 8,
+    "candidate_maximum_unique_jaw_geoms_per_step": 4,
+    "baseline_maximum_jaw_pawn_contacts_per_step": 22,
+    "candidate_maximum_jaw_pawn_contacts_per_step": 21,
+    "first_contact_sample_baseline_and_candidate": 230,
+    "first_motion_over_1mm_sample_baseline_and_candidate": 232,
+    "candidate_first_bilateral_contact": null,
+    "tilt_at_sample_260_degrees_baseline": 45.92871503369366,
+    "tilt_at_sample_260_degrees_candidate": 34.270596709479,
+    "terminal_planar_error_m_baseline": 0.03394622069649699,
+    "terminal_planar_error_m_candidate": 0.044248277148440325,
+    "terminal_tilt_degrees_baseline": 102.10499301968989,
+    "terminal_tilt_degrees_candidate": 0.0025492545929530807,
+    "terminal_height_error_m_candidate": 6.28158708382287e-8,
+    "candidate_signed_progress_m": 0.010651314028057057,
+    "candidate_early_causal_gates_pass": false,
+    "candidate_terminal_task_gates_pass": false,
+    "full_physics_driven_replay_pass": false,
+    "interpretation": "Removing collision mesh cores eliminates the duplicate mesh-plus-primitive manifold and preserves a naturally upright, settled pawn, proving collision topology drives the 102-degree terminal tip. The remaining primitive collection never establishes bilateral contact and transports only 10.65 mm, so primitive-only topology is not a complete outer jaw surface. A prospectively frozen exact one-mesh-per-jaw successor is admitted: retain only the baseline contact-bearing mesh surface on each jaw and disable the enclosed primitives and the non-contact-bearing moving mesh, with all mesh geometry and material parameters unchanged."
+  },
+  "claim_limits": {
+    "physical_contact_topology_calibrated": false,
+    "simulator_promoted": false,
+    "global_mapping_approved": false,
+    "full_physics_driven_replay": false,
+    "action_only_transfer": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "serial_used": false,
+    "simulator_replays": 2
+  }
+}

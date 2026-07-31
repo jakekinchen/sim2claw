@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.observable_registration_measured_state_load_path_closeout.v1",
+  "experiment_id": "OR35_MEASURED_STATE_LOAD_PATH_V1",
+  "status": "TERMINAL_NEGATIVE_FORCE_ENVELOPE_WITH_ENDPOINT_ADVANCEMENT",
+  "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_single_force_envelope_challenger",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_measured_state_load_path_v1.json",
+    "sha256": "bd32b6614e2d1e968ec33fa5695d7a3a5330c71e16b5e6af8a85c6722a72f96c"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_measured_state_load_path.py",
+    "sha256": "10c0d8945fffa63edba0ee7e404485ca2097954cc1a1f3c34d9edb7f1cd6f62e"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_measured_state_load_path_v1/receipt.json",
+    "sha256": "63288a76672f2ab3223779f140f028d878986e23a862301b36b1f00116215b07",
+    "artifact_sha256": "cb1c362e15b48193a3acb6d1a8c50f047d237d9764511fcadbc77452a546d0f5"
+  },
+  "result": {
+    "baseline_exactly_reproduced_or34": true,
+    "raw_measured_row_count": 531,
+    "object_pose_injected": false,
+    "single_changed_mechanism": "sts3215_actuator_force_envelope",
+    "baseline_force_limit_nm": 2.94,
+    "manufacturer_force_limit_nm": 1.91229675,
+    "first_contact_sample_baseline_and_candidate": 230,
+    "first_motion_over_1mm_sample_baseline_and_candidate": 232,
+    "first_sustained_support_loss_sample_baseline": 263,
+    "first_sustained_support_loss_sample_candidate": 266,
+    "tilt_at_sample_260_degrees_baseline": 45.92871503369366,
+    "tilt_at_sample_260_degrees_candidate": 44.454615917938646,
+    "maximum_named_jaw_normal_force_raw_baseline": 5.835562386671423,
+    "maximum_named_jaw_normal_force_raw_candidate": 5.131255319748509,
+    "maximum_named_jaw_slip_m_s_baseline": 0.07911721213361346,
+    "maximum_named_jaw_slip_m_s_candidate": 0.05596122830994652,
+    "terminal_planar_error_m_baseline": 0.03394622069649699,
+    "terminal_planar_error_m_candidate": 0.015218413810175531,
+    "terminal_planar_error_reduction_fraction": 0.551694898572685,
+    "terminal_tilt_degrees_baseline": 102.10499301968989,
+    "terminal_tilt_degrees_candidate": 102.1039830996532,
+    "candidate_early_causal_gates_pass": false,
+    "candidate_terminal_task_gates_pass": false,
+    "full_physics_driven_replay_pass": false,
+    "interpretation": "The independently fixed actuator envelope materially reduces simulated contact force, slip, and terminal planar error but does not delay first pawn motion, restore upright carry, or pass the frozen task evaluator. Force-envelope mismatch is a real model defect and a measurable endpoint advancement, but it is not the dominant early causal mechanism. The raw trace exposes simultaneous moving-jaw mesh and primitive contacts with up to 20 pawn contact points per internal step, admitting a bounded collision-topology successor without changing material, trajectory, actuator, or pawn inertial parameters."
+  },
+  "claim_limits": {
+    "physical_force_calibrated": false,
+    "simulator_promoted": false,
+    "global_mapping_approved": false,
+    "full_physics_driven_replay": false,
+    "action_only_transfer": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_opened": false,
+    "gateway_used": false,
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "serial_used": false,
+    "simulator_replays": 2
+  }
+}

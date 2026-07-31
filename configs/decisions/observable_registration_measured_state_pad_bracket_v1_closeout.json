@@ -1,0 +1,47 @@
+{
+  "schema_version": "sim2claw.observable_registration_measured_state_pad_bracket_closeout.v1",
+  "experiment_id": "OR38_MEASURED_STATE_PAD_BRACKET_V1",
+  "status": "PARTIAL_BOUNDED_CONTACT_EVENT_CALIBRATION",
+  "proof_class": "retained_raw_measured_state_observation_conditioned_natural_dynamics_bounded_preterminal_contact_event_calibration",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_measured_state_pad_bracket_v1.json",
+    "sha256": "1372fb1aff8b2ab93e079cb4c6e0f9369565cf5bead7507634ed7885587300f0"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_measured_state_pad_bracket.py",
+    "sha256": "ef441c7aabfef34b0c0d42a2b14ecfe8fc28d6c2d27c935a135b8f6210126cf1"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_measured_state_pad_bracket_v1/receipt.json",
+    "sha256": "c36f22e82c41dea849c551d230517230380a72432121e27cc21ebe4b3d380738",
+    "artifact_sha256": "31847df6a9e56b459b4a37eea7baf18a6f069b194759da218496e717ef336247"
+  },
+  "result": {
+    "candidate_count": 9,
+    "terminal_position_or_task_outcome_used_for_selection": false,
+    "selected_fixed_pad_local_z_m": -0.1005,
+    "selected_contact_sample": 229,
+    "selected_motion_sample": 252,
+    "selected_support_loss_sample": 252,
+    "selected_bilateral_contact_sample": null,
+    "selected_tilt_at_sample_260_degrees": 37.045105370242055,
+    "preterminal_gate_count": 3,
+    "preterminal_gate_pass": false,
+    "full_physics_driven_replay_pass": false,
+    "boundary": "The fixed-pad longitudinal interval has a contact-topology discontinuity. At local z -0.1155 m, bilateral contact exists at sample 258 but motion begins at 231 and tilt reaches 104.96 degrees. At -0.1105 m, fixed-side contact disappears, motion begins at 243, and tilt remains 16.55 degrees. Every less-distal coordinate is the same moving-side-only regime. Fixed-pad position alone cannot recover timely bilateral upright carry."
+  },
+  "claim_limits": {
+    "physical_contact_skin_calibrated": false,
+    "simulator_promoted": false,
+    "global_mapping_approved": false,
+    "full_physics_driven_replay": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replays": 9
+  }
+}

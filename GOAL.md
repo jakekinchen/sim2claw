@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `TERMINAL_MEASURED_STATE_CONTACT_LOAD_PATH_BOUNDARY`
+Status: `ACTIVE_RETAINED_VIDEO_JAW_SURFACE_MAPPING`
 
 ## Active mission
 
@@ -9,17 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR34_TERMINAL_MEASURED_STATE_CONTACT_LOAD_PATH_BOUNDARY`
+`OR40_RETAINED_VIDEO_JAW_SURFACE_MAPPING`
 
 ## Current card
 
-`OR34`
+`OR40`
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_registration_measured_state_visual_twin_v1_closeout.json`.
-- Closeout SHA-256: `0e8d94ac0ed6ddc65ad57a2a46e1cc28fa2db257361b236142bfd4b255759bee`.
-- Proof class: `retained_raw_measured_state_observation_conditioned_natural_dynamics_visual_twin_diagnostic`.
+- Proof class: `retained_video_preterminal_metric_encoder_to_contact_surface_mapping_with_no_refit_validation`.
 
 ## Authority
 
@@ -34,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`independently_constrained_jaw_contact_load_path_evidence_or_owner_changes_proof_design`
+`audit_and_compile_or40_retained_video_jaw_surface_mapping`
 
 ## Stop conditions
 

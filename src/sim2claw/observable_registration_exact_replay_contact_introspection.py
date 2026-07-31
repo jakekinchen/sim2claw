@@ -128,7 +128,10 @@ def _contact_observations(
     data: mujoco.MjData,
     *,
     selected_body: int,
+    jaw_body_names: set[str] | None = None,
 ) -> tuple[list[dict[str, Any]], set[str], bool]:
+    if jaw_body_names is None:
+        jaw_body_names = JAW_BODY_NAMES
     observations: list[dict[str, Any]] = []
     jaw_bodies: set[str] = set()
     support = False
@@ -147,7 +150,7 @@ def _contact_observations(
         )
         if other_name == "chess_board":
             support = True
-        if other_name in JAW_BODY_NAMES:
+        if other_name in jaw_body_names:
             jaw_bodies.add(other_name)
 
         force = np.zeros(6, dtype=np.float64)
