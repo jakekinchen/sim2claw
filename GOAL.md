@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `ACTIVE_LOAD_SIDE_GRIPPER_CALIBRATION_PREFLIGHT`
+Status: `ACTIVE_D405_STATIC_METRIC_CAPTURE`
 
 ## Active mission
 
@@ -9,15 +9,17 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR43_LOAD_SIDE_GRIPPER_CALIBRATION_PREFLIGHT`
+`OR45_D405_STATIC_METRIC_CAPTURE`
 
 ## Current card
 
-`OR43`
+`OR45`
 
 ## Current evidence
 
-- Proof class: `hardware_free_load_side_gripper_calibration_packet_and_capability_preflight`.
+- Closeout: `configs/evaluations/observable_registration_d405_static_metric_capture_v1.json`.
+- Closeout SHA-256: `a8e249b2ff4786fa241df211032e6783f4b93240a081f48efddce18e6947ae36`.
+- Proof class: `preregistered_zero_motion_d405_static_metric_depth_capture_blocked_agent_camera_authority`.
 
 ## Authority
 
@@ -32,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`compile_or43_load_side_gripper_calibration_packet_and_static_preflight`
+`admit_or45_through_hardware_capable_control_plane_then_execute_once`
 
 ## Stop conditions
 

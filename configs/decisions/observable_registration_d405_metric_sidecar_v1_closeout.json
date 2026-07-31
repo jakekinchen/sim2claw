@@ -1,0 +1,59 @@
+{
+  "schema_version": "sim2claw.observable_registration_d405_metric_sidecar_closeout.v1",
+  "experiment_id": "OR44_D405_METRIC_SIDECAR_V1",
+  "status": "PASS_COMPILED_D405_METRIC_SIDECAR_NO_DEVICE_ACCESS",
+  "proof_class": "hardware_unopened_librealsense_d405_metric_depth_and_frame_metadata_sidecar",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_d405_metric_sidecar_v1.json",
+    "sha256": "ed012326b0a05a733e6c448a8b4e53cda35e9e1144512353d962ebfc21eeb8a0"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_d405_metric_sidecar.py",
+    "sha256": "62ef242c8ee96be732792097456b873eeabfa39abb9171aac5cc3f27ea1eba06"
+  },
+  "native_recorder": {
+    "path": "tools/macos/RealSenseD405MetricRecorder.cpp",
+    "sha256": "d6fd57f70fc8095d1689292e25bc0a0ccd42fa2ab1eb2b61d92e2b0d5f10f36c"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_d405_metric_sidecar_v1/receipt.json",
+    "sha256": "18b30aa8d1d5cd616e60ea129c53935e1f27ff6df8adb9d1fe2e175eb30dcf90",
+    "artifact_sha256": "20337dda0251cf249aa57034cfd14240bb15e55705b49d781ecdd0804545a77d"
+  },
+  "result": {
+    "librealsense_version": "2.58.3",
+    "compiler": "Apple clang 21",
+    "compile_and_link_passed": true,
+    "help_exit_code": 0,
+    "help_precedes_context_creation": true,
+    "binary_sha256": "7a53f8d02d02e7d457ed0d5ee3e7662a34ffa3786d870d9ba3d08981db2d9736",
+    "help_sha256": "d4e64a99215997e3cc76f559b75d1a692b92c76f7fdd43aa49988e6479787b70",
+    "raw_z16_schema_compiled": true,
+    "depth_scale_and_intrinsics_schema_compiled": true,
+    "sensor_timestamp_domain_and_host_arrival_schema_compiled": true,
+    "frame_counter_exposure_gain_and_actual_fps_schema_compiled": true,
+    "interpretation": "The repository now contains a compiled native D405 metric-depth and frame-metadata lane suitable for the OR43 load-side calibration packet. This is a software capability proof only. OR44 did not inspect device presence, enumerate or open a camera, start a stream, capture metric depth, or execute calibration."
+  },
+  "claim_limits": {
+    "d405_device_present": false,
+    "metric_depth_captured": false,
+    "load_side_gripper_mapping_acquired": false,
+    "physical_calibration_executed": false,
+    "physical_task_attempt": false,
+    "global_mapping_approved": false,
+    "simulator_replay": false,
+    "simulator_promoted": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "hardware_used": false,
+    "device_enumeration_performed": false,
+    "camera_opened": false,
+    "stream_started": false,
+    "serial_opened": false,
+    "torque_enabled": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replays": 0
+  }
+}

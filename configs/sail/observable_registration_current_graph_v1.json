@@ -2,12 +2,25 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "active_load_side_gripper_calibration_preflight",
-  "active_card": "OR43",
+  "status": "active_d405_static_metric_capture",
+  "active_card": "OR45",
   "active_card_contract": {
-    "card_id": "OR43",
-    "proof_target": "hardware_free_load_side_gripper_calibration_packet_and_capability_preflight",
+    "card_id": "OR45",
+    "proof_target": "preregistered_zero_motion_d405_static_metric_depth_capture_blocked_agent_camera_authority",
     "allowed_paths": [
+      "configs/evaluations/observable_registration_d405_static_metric_capture_v1.json",
+      "src/sim2claw/observable_registration_d405_static_metric_capture.py",
+      "tests/test_observable_registration_d405_static_metric_capture.py",
+      "outputs/observable_registration_d405_static_metric_capture_v1",
+      "configs/decisions/observable_registration_d405_static_metric_capture_v1_closeout.json",
+      "docs/session-logs/117-executor-observable-registration-or45.md",
+      "configs/evaluations/observable_registration_d405_metric_sidecar_v1.json",
+      "src/sim2claw/observable_registration_d405_metric_sidecar.py",
+      "tools/macos/RealSenseD405MetricRecorder.cpp",
+      "tests/test_observable_registration_d405_metric_sidecar.py",
+      "outputs/observable_registration_d405_metric_sidecar_v1",
+      "configs/decisions/observable_registration_d405_metric_sidecar_v1_closeout.json",
+      "docs/session-logs/116-executor-observable-registration-or44.md",
       "configs/evaluations/observable_registration_load_side_gripper_calibration_v1.json",
       "src/sim2claw/observable_registration_load_side_gripper_calibration.py",
       "tests/test_observable_registration_load_side_gripper_calibration.py",
@@ -112,7 +125,7 @@
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "compile_or43_load_side_gripper_calibration_packet_and_static_preflight",
+  "next_transition": "admit_or45_through_hardware_capable_control_plane_then_execute_once",
   "node_types": [
     "workcell",
     "session",
@@ -153,7 +166,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "b4c882974d0820df9ef2830adcf8dd3478b9270e643769fc5a43d81bae5806d9",
+      "sha256": "1eca35ee53e197b9ffaf2d254b87674c19f7e040e0161094b4c4dcf47d4ba727",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -400,6 +413,21 @@
       "path": "configs/decisions/observable_registration_retained_full_range_gripper_mapping_v1_closeout.json",
       "sha256": "91a55fa44f2b3508232f62512afa4ac01411568eb82b82fb2ade740dc15b809a",
       "proof_class": "retained_contact_free_cross_episode_scale_free_directional_play_identification_with_task_clip_no_refit_validation"
+    },
+    "or43": {
+      "path": "configs/decisions/observable_registration_load_side_gripper_calibration_v1_closeout.json",
+      "sha256": "625a18cf823d3cec010a9e6ea84f214be5431ca79fe782bf6742bf1de30d175d",
+      "proof_class": "hardware_free_load_side_gripper_calibration_packet_and_capability_preflight"
+    },
+    "or44": {
+      "path": "configs/decisions/observable_registration_d405_metric_sidecar_v1_closeout.json",
+      "sha256": "08f1da2a1c0f64517fb3f762ebb1d1472ee1d58aad52a625d77eab390c7def8a",
+      "proof_class": "hardware_unopened_librealsense_d405_metric_depth_and_frame_metadata_sidecar"
+    },
+    "or45_contract": {
+      "path": "configs/evaluations/observable_registration_d405_static_metric_capture_v1.json",
+      "sha256": "a8e249b2ff4786fa241df211032e6783f4b93240a081f48efddce18e6947ae36",
+      "proof_class": "preregistered_zero_motion_d405_static_metric_depth_capture_blocked_agent_camera_authority"
     }
   },
   "nodes": [
@@ -1321,17 +1349,62 @@
       "id": "mechanism:or43-load-side-gripper-calibration",
       "type": "mechanism",
       "label": "Load-side gripper calibration packet and static preflight",
-      "status": "active_hardware_free_compilation",
+      "status": "pass_packet_compiled_blocked_metric_load_side_sensor",
+      "source_binding": "or43",
       "data": {
         "no_object_repeated_reversal_packet": true,
+        "packet_row_count": 442,
+        "packet_duration_seconds": 22.1,
+        "requested_float64_sha256": "3ab970c0bcb5310e9a3939accce09eb281c9daac939e989749655b91ca8f3aa0",
         "independent_metric_load_side_observation_required": true,
         "device_timestamp_and_exposure_metadata_required": true,
-        "synthetic_fixture_required": true,
-        "real_device_preflight_must_not_open_camera_or_serial": true,
+        "librealsense_version": "2.58.3",
+        "current_metric_depth_lane_ready": false,
         "simulator_replay_allowed": false,
         "physical_authority": false,
         "physical_task_attempts": 0,
         "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "mechanism:or44-d405-metric-depth-sidecar",
+      "type": "mechanism",
+      "label": "D405 metric depth and frame metadata sidecar",
+      "status": "pass_compiled_d405_metric_sidecar_no_device_access",
+      "source_binding": "or44",
+      "data": {
+        "librealsense_version": "2.58.3",
+        "binary_sha256": "7a53f8d02d02e7d457ed0d5ee3e7662a34ffa3786d870d9ba3d08981db2d9736",
+        "raw_z16_required": true,
+        "depth_scale_and_intrinsics_required": true,
+        "device_timestamp_exposure_frame_counter_required": true,
+        "help_path_must_return_before_device_enumeration": true,
+        "camera_open_allowed": false,
+        "device_presence_checked": false,
+        "physical_authority": false,
+        "simulator_replay_allowed": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "observation:or45-d405-static-metric-capture",
+      "type": "observation_channel",
+      "label": "Zero-motion D405 static metric-depth capture",
+      "status": "active_ready_blocked_agent_camera_authority",
+      "data": {
+        "frame_count": 30,
+        "width": 424,
+        "height": 240,
+        "fps": 30,
+        "camera_open_allowed": false,
+        "owner_future_authorization_recorded": true,
+        "agent_context_hardware_authority_ceiling": false,
+        "serial_allowed": false,
+        "torque_allowed": false,
+        "robot_motion_allowed": false,
+        "physical_task_attempt_allowed": false,
+        "simulator_replay_allowed": false,
         "transfer_claim": false
       }
     }
@@ -1615,6 +1688,16 @@
     {
       "source": "mechanism:or42-next-mechanism-reconciliation",
       "target": "mechanism:or43-load-side-gripper-calibration",
+      "type": "admitted-to"
+    },
+    {
+      "source": "mechanism:or43-load-side-gripper-calibration",
+      "target": "mechanism:or44-d405-metric-depth-sidecar",
+      "type": "admitted-to"
+    },
+    {
+      "source": "mechanism:or44-d405-metric-depth-sidecar",
+      "target": "observation:or45-d405-static-metric-capture",
       "type": "admitted-to"
     }
   ]

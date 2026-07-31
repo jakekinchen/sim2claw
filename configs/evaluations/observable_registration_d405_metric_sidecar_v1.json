@@ -1,0 +1,93 @@
+{
+  "schema_version": "sim2claw.observable_registration_d405_metric_sidecar_contract.v1",
+  "experiment_id": "OR44_D405_METRIC_SIDECAR_V1",
+  "proof_class": "hardware_unopened_librealsense_d405_metric_depth_and_frame_metadata_sidecar",
+  "sources": {
+    "or43_closeout": {
+      "path": "configs/decisions/observable_registration_load_side_gripper_calibration_v1_closeout.json",
+      "sha256": "625a18cf823d3cec010a9e6ea84f214be5431ca79fe782bf6742bf1de30d175d"
+    }
+  },
+  "native_source": "tools/macos/RealSenseD405MetricRecorder.cpp",
+  "build": {
+    "compiler": "clang++",
+    "cpp_standard": "c++17",
+    "minimum_librealsense_version": "2.58.3",
+    "include_directory": "/opt/homebrew/opt/librealsense/include",
+    "library_directory": "/opt/homebrew/opt/librealsense/lib",
+    "library": "realsense2"
+  },
+  "capture_contract": {
+    "device_family": "Intel RealSense D405",
+    "stream": "depth",
+    "format": "Z16",
+    "default_width": 424,
+    "default_height": 240,
+    "default_fps": 30,
+    "raw_depth_suffix": ".z16",
+    "frame_metadata_suffix": ".metadata.jsonl",
+    "manifest_suffix": ".manifest.json",
+    "depth_scale_required": true,
+    "intrinsics_required": true,
+    "sensor_timestamp_and_domain_required": true,
+    "host_steady_arrival_required": true,
+    "frame_number_required": true,
+    "metadata_when_supported": [
+      "frame_counter",
+      "actual_exposure_us",
+      "gain_level",
+      "actual_fps_x1000"
+    ]
+  },
+  "static_acceptance": {
+    "compile_and_link_required": true,
+    "help_exit_code": 0,
+    "help_must_precede_context_creation": true,
+    "help_schema_tokens_required": [
+      "PATH.z16",
+      "PATH.metadata.jsonl",
+      "PATH.manifest.json",
+      "depth_scale_meters",
+      "sensor_timestamp_ms",
+      "sensor_timestamp_domain",
+      "host_arrival_steady_ns",
+      "frame_counter",
+      "actual_exposure_us",
+      "gain_level",
+      "actual_fps_x1000"
+    ]
+  },
+  "forbidden_during_or44": {
+    "device_enumeration": true,
+    "camera_open": true,
+    "stream_start": true,
+    "serial_open": true,
+    "torque_enable": true,
+    "robot_motion": true,
+    "physical_task_attempt": true,
+    "simulator_replay": true
+  },
+  "claim_limits": {
+    "d405_device_present": false,
+    "metric_depth_captured": false,
+    "load_side_gripper_mapping_acquired": false,
+    "physical_calibration_executed": false,
+    "global_mapping_approval": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

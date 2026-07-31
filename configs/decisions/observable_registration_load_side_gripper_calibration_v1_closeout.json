@@ -1,0 +1,56 @@
+{
+  "schema_version": "sim2claw.observable_registration_load_side_gripper_calibration_closeout.v1",
+  "experiment_id": "OR43_LOAD_SIDE_GRIPPER_CALIBRATION_V1",
+  "status": "PASS_PACKET_COMPILED_BLOCKED_METRIC_LOAD_SIDE_SENSOR",
+  "proof_class": "hardware_free_load_side_gripper_calibration_packet_and_capability_preflight",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_load_side_gripper_calibration_v1.json",
+    "sha256": "bf08a40f2193f3525c1815d4049645af7ac1eec9e718a3381e1a07bdf899714b"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_load_side_gripper_calibration.py",
+    "sha256": "d596c10fe4b1b1ed1c29d3428b4248b6d2076d78671b161b51dfc45ff237b62c"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_load_side_gripper_calibration_v1/receipt.json",
+    "sha256": "6be27fedb06fae97577c34df5a4718fd3963fa4af6cbeb31a4f94d3923f9816b",
+    "artifact_sha256": "db013550a9537515589352793209eb80e4320e3658435c04af1f973088b9544f"
+  },
+  "result": {
+    "packet_rows": 442,
+    "packet_duration_seconds": 22.1,
+    "requested_float64_sha256": "3ab970c0bcb5310e9a3939accce09eb281c9daac939e989749655b91ca8f3aa0",
+    "maximum_compiled_slew_degrees_per_second": 14.864864864864984,
+    "task_range_repetitions": 3,
+    "wide_range_repetitions": 1,
+    "rs_enumerate_devices_executable_present": true,
+    "librealsense_version": "2.58.3",
+    "pyrealsense2_module_present": false,
+    "current_native_capture_retains_metric_depth": false,
+    "current_native_capture_retains_device_timestamp": false,
+    "current_native_capture_retains_exposure_metadata": false,
+    "current_native_capture_retains_frame_counter": false,
+    "configured_metric_fiducial_lane": false,
+    "configured_secondary_encoder_lane": false,
+    "physical_packet_admitted": false,
+    "interpretation": "The exact no-object repeated-reversal packet is compiled and test-covered. The installed Mac has librealsense tooling, but sim2claw has no integrated metric depth/device-metadata lane and no alternative metric jaw sensor. Physical motion remains correctly blocked until one independent load-side metric observation lane is compiled and statically admitted."
+  },
+  "claim_limits": {
+    "metric_gripper_mapping_acquired": false,
+    "physical_calibration_executed": false,
+    "physical_task_attempt": false,
+    "global_mapping_approved": false,
+    "simulator_replay": false,
+    "simulator_promoted": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "hardware_used": false,
+    "camera_opened": false,
+    "serial_opened": false,
+    "torque_enabled": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replays": 0
+  }
+}

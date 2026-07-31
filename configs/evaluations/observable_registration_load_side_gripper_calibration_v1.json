@@ -1,0 +1,107 @@
+{
+  "schema_version": "sim2claw.observable_registration_load_side_gripper_calibration_contract.v1",
+  "experiment_id": "OR43_LOAD_SIDE_GRIPPER_CALIBRATION_V1",
+  "proof_class": "hardware_free_load_side_gripper_calibration_packet_and_capability_preflight",
+  "sources": {
+    "or42_brief": {
+      "path": "docs/briefs/114-observable-registration-or42-next-mechanism.md",
+      "sha256": "b1f0bfa5ba3a7c4cbca8a5579784251beb8261e944322bcaf07c7b5cfbe2c800"
+    },
+    "or41_closeout": {
+      "path": "configs/decisions/observable_registration_retained_full_range_gripper_mapping_v1_closeout.json",
+      "sha256": "91a55fa44f2b3508232f62512afa4ac01411568eb82b82fb2ade740dc15b809a"
+    },
+    "native_dual_camera": {
+      "path": "src/sim2claw/native_dual_camera.py",
+      "sha256": "aa159fc858ca1622ea687f932c257f858e92818d6d19471c77b08d47a3c9cdca"
+    },
+    "teleop_recording": {
+      "path": "src/sim2claw/teleop_recording.py",
+      "sha256": "3d21fb25b6944fedf256d0a9430dc6aee99265e7e544ef85baa9e20eb8f93dac"
+    },
+    "project_dependencies": {
+      "path": "pyproject.toml",
+      "sha256": "c2a11324b8b6533e8245dc0e6c0d660a9ceeac22c0fbc5bbbadac8fa265c2abc"
+    }
+  },
+  "packet": {
+    "robot_role": "follower",
+    "joint": "gripper",
+    "object_present": false,
+    "sample_hz": 20.0,
+    "maximum_slew_degrees_per_second": 15.0,
+    "dwell_seconds_at_reversal": 0.5,
+    "task_interval_degrees": [5.0, 30.0],
+    "task_interval_repetitions": 3,
+    "wide_diagnostic_interval_degrees": [5.0, 60.0],
+    "wide_diagnostic_repetitions": 1,
+    "requested_sent_measured_traces_required": true,
+    "host_timestamps_required": true,
+    "actuator_ack_timestamp_claim_allowed": false,
+    "zero_other_joint_motion_required": true
+  },
+  "observation": {
+    "minimum_metric_frames_per_direction_per_partition": 5,
+    "direction_stratified_fit_validation_required": true,
+    "independent_load_side_metric_observation_required": true,
+    "accepted_metric_lanes_in_priority_order": [
+      "d405_metric_depth_with_two_visible_jaw_markers",
+      "fixed_camera_metric_fiducial_rigidly_associated_with_each_jaw",
+      "secondary_load_side_encoder_or_displacement_gauge"
+    ],
+    "d405_device_timestamp_required": true,
+    "d405_exposure_metadata_required": true,
+    "d405_frame_counter_required": true,
+    "rgb_only_claims_metric_aperture": false,
+    "servo_encoder_is_independent_load_side_observation": false
+  },
+  "fit_gates": {
+    "minimum_validation_improvement_over_zero_play_fraction": 0.3,
+    "maximum_validation_rms_mm": 0.75,
+    "maximum_play_lag_correlation": 0.85,
+    "maximum_condition_number": 50.0,
+    "minimum_upper_bound_margin_fraction": 0.1,
+    "validation_refit_allowed": false
+  },
+  "static_preflight": {
+    "may_check_executable_presence": true,
+    "may_check_python_module_presence": true,
+    "may_read_bound_source_capabilities": true,
+    "may_invoke_realsense_device_enumeration": false,
+    "may_open_camera": false,
+    "may_open_serial": false,
+    "may_enable_torque": false,
+    "may_move_robot": false,
+    "may_run_simulator_replay": false
+  },
+  "current_capture_stack_facts": {
+    "native_dual_camera_retains_rgb": true,
+    "native_dual_camera_retains_metric_depth": false,
+    "native_dual_camera_retains_device_timestamp": false,
+    "native_dual_camera_retains_exposure_metadata": false,
+    "native_dual_camera_retains_frame_counter": false,
+    "configured_metric_fiducial_lane": false,
+    "configured_secondary_encoder_lane": false
+  },
+  "claim_limits": {
+    "metric_gripper_mapping_acquired": false,
+    "global_mapping_approval": false,
+    "physical_calibration_executed": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}
