@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR28_BILATERAL_APERTURE_COMPOSITION`
+Status: `IN_PROGRESS_OR29_SAMPLE232_APERTURE_GEOMETRY`
 
 ## Active mission
 
@@ -9,15 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR28_BILATERAL_APERTURE_COMPOSITION`
+`OR29_SAMPLE232_APERTURE_GEOMETRY`
 
 ## Current card
 
-`OR28`
+`OR29`
 
 ## Current evidence
 
-- Proof class: `prospectively_frozen_prior_evidence_spatial_and_aperture_exact_action_composition`.
+- Proof class: `bounded_static_exact_applied_state_aperture_geometry_selection_from_retained_enclosure_event`.
 
 ## Authority
 
@@ -32,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`run_one_shot_exact_action_prior_evidence_composition_and_compare_enclosure_and_upright_consequence`
+`evaluate_static_sample232_bilateral_gap_grid_and_admit_at_most_one_successor`
 
 ## Stop conditions
 

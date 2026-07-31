@@ -1,0 +1,96 @@
+{
+  "schema_version": "sim2claw.observable_registration_sample232_aperture_geometry_contract.v1",
+  "experiment_id": "OR29_SAMPLE232_APERTURE_GEOMETRY_V1",
+  "proof_class": "bounded_static_exact_applied_state_aperture_geometry_selection_from_retained_enclosure_event",
+  "sources": {
+    "or28_contract": {
+      "path": "configs/evaluations/observable_registration_bilateral_aperture_composition_v1.json",
+      "sha256": "a2931f5b38a81ec9689c998d63194731bfb2c16cc42f8d8cd677ab1895be04a8"
+    },
+    "or28_closeout": {
+      "path": "configs/decisions/observable_registration_bilateral_aperture_composition_v1_closeout.json",
+      "sha256": "cd1733d576f60981b934f27f15df7ea09ee00a249e8bb6e40bd48d0bb26c3425"
+    },
+    "or3_closeout": {
+      "path": "configs/decisions/observable_physical_episode_observations_v1_closeout.json",
+      "sha256": "4d64346dfbf671e04a6d05ac204f2381abfc650a2c7bbe2418b471b26c6469bf"
+    }
+  },
+  "identity": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "row_count": 531,
+    "selected_piece": "brown_pawn_d1",
+    "static_sample_interval": [
+      220,
+      245
+    ],
+    "precontact_guard_interval": [
+      220,
+      227
+    ],
+    "physical_candidate_contact_interval": [
+      228,
+      232
+    ],
+    "physical_first_definite_enclosure_sample": 232
+  },
+  "grid": {
+    "gripper_zero_offset_rad": [
+      -0.17453,
+      -0.16052922543320722,
+      -0.14652845086641444,
+      -0.1325276762996217,
+      -0.11852690173282893,
+      -0.10452612716603615,
+      -0.09052535259924338,
+      -0.07652457803245062,
+      -0.06252380346565785,
+      -0.04852302889886509,
+      -0.034522254332072316,
+      -0.020521479765279543,
+      -0.00652070519848677,
+      0.007480069368306003,
+      0.021480843935098748,
+      0.03548161850189152,
+      0.049482393068684294
+    ],
+    "bounds_source": "OR19 canonical baseline and OR6 independently fit aperture candidate",
+    "dynamic_outcomes_may_not_select_grid_row": true
+  },
+  "selection": {
+    "sample": 232,
+    "maximum_each_jaw_gap_m": 0.001,
+    "minimum_each_jaw_gap_m": -0.001,
+    "maximum_precontact_penetration_m": 0.001,
+    "score": "maximum_absolute_fixed_or_moving_jaw_signed_gap_at_sample_232",
+    "tie_break": "smallest_absolute_offset_then_numeric_offset",
+    "require_one_eligible_candidate": true
+  },
+  "evaluation": {
+    "forward_kinematics_allowed": true,
+    "physics_integration_allowed": false,
+    "dynamic_replay_allowed": false,
+    "action_change_allowed": false,
+    "contact_parameter_change_allowed": false,
+    "object_parameter_change_allowed": false,
+    "body_mapping_change_allowed": false,
+    "scene_change_allowed": false,
+    "camera_change_allowed": false,
+    "global_mapping_promotion_allowed": false,
+    "transfer_claim_allowed": false
+  },
+  "authority": {
+    "simulator_static_evaluation": true,
+    "simulator_dynamic_replay": false,
+    "camera_open": false,
+    "gateway": false,
+    "serial": false,
+    "hardware": false,
+    "physical_motion": false,
+    "physical_task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "promotion": false,
+    "transfer_claim": false
+  }
+}

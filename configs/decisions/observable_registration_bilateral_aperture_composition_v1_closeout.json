@@ -1,0 +1,34 @@
+{
+  "schema_version": "sim2claw.observable_registration_bilateral_aperture_composition_closeout.v1",
+  "experiment_id": "OR28_BILATERAL_APERTURE_COMPOSITION_V1",
+  "status": "UPRIGHT_CONSEQUENCE_PASS_PROGRESS_GATE_FAILED",
+  "proof_class": "prospectively_frozen_composition_of_prior_outcome_informed_spatial_candidate_and_independently_fit_aperture_candidate",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_bilateral_aperture_composition_v1.json",
+    "sha256": "a2931f5b38a81ec9689c998d63194731bfb2c16cc42f8d8cd677ab1895be04a8"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_bilateral_aperture_composition_v1/receipt.json",
+    "sha256": "65fcb0298d74b20ed643ed23329001cee0b813b8f6aa0e9c53d56a3bab88ac7b",
+    "artifact_sha256": "61f600b79fbf36413a124d9b2df73073c2bd493f8320f5a1b6e372ae772e2bad"
+  },
+  "result": {
+    "dynamic_replays": 1,
+    "actions_changed": false,
+    "first_selected_jaw_contact_sample": 244,
+    "first_motion_over_1mm_sample": 249,
+    "signed_progress_toward_d2_m": 0.0026604384510982414,
+    "required_progress_m": 0.036025,
+    "required_progress_passed": false,
+    "final_planar_center_error_m": 0.05224133930693688,
+    "final_upright_tilt_degrees": 0.000696307762890451,
+    "final_height_error_m": 7.314311145645291e-8,
+    "maximum_other_piece_displacement_m": 4.128933718799728e-8,
+    "numeric_task_success": false,
+    "interpretation": "The independently fit aperture mapping almost completely removes tilt and collateral motion but also removes transport. Aperture is therefore a causal consequence lever, but neither prior endpoint matches both uprightness and D2 progress.",
+    "global_mapping_approved": false,
+    "task_success_claim": false,
+    "transfer_claim": false,
+    "physical_authority": false
+  }
+}
