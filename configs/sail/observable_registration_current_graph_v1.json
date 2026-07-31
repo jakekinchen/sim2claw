@@ -2,12 +2,18 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "active_next_mechanism_reconciliation",
-  "active_card": "OR42",
+  "status": "active_load_side_gripper_calibration_preflight",
+  "active_card": "OR43",
   "active_card_contract": {
-    "card_id": "OR42",
-    "proof_target": "advisory_reconciled_evidence_safe_next_mechanism_or_external_observation_boundary",
+    "card_id": "OR43",
+    "proof_target": "hardware_free_load_side_gripper_calibration_packet_and_capability_preflight",
     "allowed_paths": [
+      "configs/evaluations/observable_registration_load_side_gripper_calibration_v1.json",
+      "src/sim2claw/observable_registration_load_side_gripper_calibration.py",
+      "tests/test_observable_registration_load_side_gripper_calibration.py",
+      "outputs/observable_registration_load_side_gripper_calibration_v1",
+      "configs/decisions/observable_registration_load_side_gripper_calibration_v1_closeout.json",
+      "docs/session-logs/115-executor-observable-registration-or43.md",
       "docs/briefs/114-observable-registration-or42-next-mechanism.md",
       "docs/session-logs/114-executor-observable-registration-or42.md",
       "configs/evaluations/observable_registration_retained_full_range_gripper_mapping_v1.json",
@@ -106,7 +112,7 @@
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "reconcile_or42_next_mechanism_with_gpt_pro_at_retained_data_blocker",
+  "next_transition": "compile_or43_load_side_gripper_calibration_packet_and_static_preflight",
   "node_types": [
     "workcell",
     "session",
@@ -147,7 +153,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "12a0372e21a824df7735ac6da9ccc06c37cadad6b10cd8d8c66da1a8c177b960",
+      "sha256": "b4c882974d0820df9ef2830adcf8dd3478b9270e643769fc5a43d81bae5806d9",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -1299,13 +1305,32 @@
       "id": "mechanism:or42-next-mechanism-reconciliation",
       "type": "mechanism",
       "label": "Evidence-safe next-mechanism reconciliation",
-      "status": "active_advisory_reconciliation",
+      "status": "pass_external_load_side_observation_contract_selected",
       "data": {
         "gpt_pro_allowed_at_genuine_blocker": true,
         "repository_evidence_remains_authoritative": true,
         "retained_directional_play_lane_closed": true,
+        "selected_successor": "or43_load_side_gripper_calibration_packet",
         "simulator_replay_allowed": false,
         "physical_authority": false,
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "mechanism:or43-load-side-gripper-calibration",
+      "type": "mechanism",
+      "label": "Load-side gripper calibration packet and static preflight",
+      "status": "active_hardware_free_compilation",
+      "data": {
+        "no_object_repeated_reversal_packet": true,
+        "independent_metric_load_side_observation_required": true,
+        "device_timestamp_and_exposure_metadata_required": true,
+        "synthetic_fixture_required": true,
+        "real_device_preflight_must_not_open_camera_or_serial": true,
+        "simulator_replay_allowed": false,
+        "physical_authority": false,
+        "physical_task_attempts": 0,
         "global_mapping_approved": false,
         "transfer_claim": false
       }
@@ -1586,6 +1611,11 @@
       "source": "mechanism:or41-retained-full-range-gripper-mapping",
       "target": "mechanism:or42-next-mechanism-reconciliation",
       "type": "motivates"
+    },
+    {
+      "source": "mechanism:or42-next-mechanism-reconciliation",
+      "target": "mechanism:or43-load-side-gripper-calibration",
+      "type": "admitted-to"
     }
   ]
 }

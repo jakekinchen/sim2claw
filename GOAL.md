@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `ACTIVE_NEXT_MECHANISM_RECONCILIATION`
+Status: `ACTIVE_LOAD_SIDE_GRIPPER_CALIBRATION_PREFLIGHT`
 
 ## Active mission
 
@@ -9,15 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR42_NEXT_MECHANISM_RECONCILIATION`
+`OR43_LOAD_SIDE_GRIPPER_CALIBRATION_PREFLIGHT`
 
 ## Current card
 
-`OR42`
+`OR43`
 
 ## Current evidence
 
-- Proof class: `advisory_reconciled_evidence_safe_next_mechanism_or_external_observation_boundary`.
+- Proof class: `hardware_free_load_side_gripper_calibration_packet_and_capability_preflight`.
 
 ## Authority
 
@@ -32,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`reconcile_or42_next_mechanism_with_gpt_pro_at_retained_data_blocker`
+`compile_or43_load_side_gripper_calibration_packet_and_static_preflight`
 
 ## Stop conditions
 
