@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `IN_PROGRESS_OR33_SAMPLE232_WRIST_PATH_GEOMETRY`
+Status: `TERMINAL_RETAINED_DATA_VISUAL_ALIGNMENT_BOUNDARY`
 
 ## Active mission
 
@@ -9,7 +9,7 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR33_SAMPLE232_WRIST_PATH_GEOMETRY`
+`OR33_TERMINAL_RETAINED_DATA_VISUAL_ALIGNMENT_BOUNDARY`
 
 ## Current card
 
@@ -17,6 +17,8 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current evidence
 
+- Closeout: `configs/decisions/observable_registration_sample232_wrist_path_geometry_v1_closeout.json`.
+- Closeout SHA-256: `1381e35644c7a17e35d2e3989eaeac54d25b234c087b3632ba6360d931d05b4b`.
 - Proof class: `prospectively_frozen_static_wrist_local_path_shape_diagnostic_in_quarantined_enclosure_basin`.
 
 ## Authority
@@ -32,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`evaluate_final_static_wrist_path_grid_and_admit_dynamic_successor_only_if_both_gates_pass`
+`owner_changes_proof_design_or_supplies_new_orientation_contact_evidence`
 
 ## Stop conditions
 

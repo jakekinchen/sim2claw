@@ -1,0 +1,36 @@
+{
+  "schema_version": "sim2claw.observable_registration_sample232_wrist_path_geometry_closeout.v1",
+  "experiment_id": "OR33_SAMPLE232_WRIST_PATH_GEOMETRY_V1",
+  "status": "NO_STATIC_WRIST_PATH_CANDIDATE",
+  "proof_class": "prospectively_frozen_static_wrist_local_path_shape_diagnostic_in_quarantined_enclosure_basin",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_sample232_wrist_path_geometry_v1.json",
+    "sha256": "028c320edd4bab021b93fbb883ce46ca6ffd0ee683f644c8c2d65376d6ffcdac"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_sample232_wrist_path_geometry_v1/receipt.json",
+    "sha256": "5e7fafbdcd0434178c30de12b7ece2f8eda58c62f0e3f76099c2ad47eeb7cafe",
+    "artifact_sha256": "01ac187cd5d6a1057095568c58f9822b00a63008555b8da5eab309186b072ecf"
+  },
+  "result": {
+    "candidate_count": 675,
+    "eligible_candidate_count": 0,
+    "closest_base_world_xy_delta_m": [
+      -0.011,
+      -0.011
+    ],
+    "closest_gripper_zero_offset_rad": -0.16852922543320722,
+    "closest_wrist_flex_delta_degrees": 4.0,
+    "closest_wrist_roll_delta_degrees": 4.0,
+    "closest_fixed_jaw_gap_m": 0.0010247301894990193,
+    "closest_moving_jaw_gap_m": -0.00017331968814337048,
+    "closest_precontact_penetration_m": 0.001348968409287294,
+    "interpretation": "The closest task-local pose sits just outside both frozen gates and at the wrist-angle grid boundary. Retained data localizes the residual to wrist-local approach orientation but does not admit a dynamic correction without post-outcome gate weakening.",
+    "physics_integration_steps": 0,
+    "dynamic_outcomes_used_for_selection": false,
+    "global_mapping_approved": false,
+    "task_success_claim": false,
+    "transfer_claim": false,
+    "physical_authority": false
+  }
+}

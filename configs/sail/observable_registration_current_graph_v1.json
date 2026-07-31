@@ -2,18 +2,13 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-07-30",
-  "status": "in_progress_or33_sample232_wrist_path_geometry",
+  "status": "terminal_retained_data_visual_alignment_boundary",
   "active_card": "OR33",
   "active_card_contract": {
     "card_id": "OR33",
-    "proof_target": "bounded_static_wrist_flex_roll_path_candidate_satisfying_precontact_and_enclosure_gates",
+    "proof_target": "terminal_closeout_of_retained_data_visual_alignment_and_bounded_spatial_mechanism_search",
     "allowed_paths": [
-      "configs/evaluations/observable_registration_sample232_wrist_path_geometry_v1.json",
-      "src/sim2claw/observable_registration_sample232_wrist_path_geometry.py",
-      "scripts/run_observable_registration_sample232_wrist_path_geometry.py",
-      "tests/test_observable_registration_sample232_wrist_path_geometry.py",
       "configs/decisions/observable_registration_sample232_wrist_path_geometry_v1_closeout.json",
-      "outputs/observable_registration_sample232_wrist_path_geometry_v1",
       "docs/session-logs/103-executor-observable-registration-or33.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
@@ -28,14 +23,14 @@
       "commit"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_observable_registration_sample232_wrist_path_geometry.py",
+      "uv run --locked pytest -q tests/test_observable_registration_sample232_wrist_path_geometry.py tests/test_visible_divergence_studio.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "evaluate_final_static_wrist_path_grid_and_admit_dynamic_successor_only_if_both_gates_pass",
+  "next_transition": "owner_changes_proof_design_or_supplies_new_orientation_contact_evidence",
   "node_types": [
     "workcell",
     "session",
@@ -76,7 +71,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "b862912d344d76eb40985e8e69d74e11f2478c7f57358272b0b78cc967f2d8ca",
+      "sha256": "99648757db5c286e7faa9c8b8312ca2410e752e5e2995d57fcbce08965ad2d4c",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -268,6 +263,11 @@
       "path": "configs/decisions/observable_registration_sample232_base_yaw_path_geometry_v1_closeout.json",
       "sha256": "4cbd6e84a3c692e825dedcae813aecb8f372b6b9ed0d6ae21967de77bbf2646d",
       "proof_class": "prospectively_frozen_static_base_yaw_path_shape_refinement_of_quarantined_enclosure_basin"
+    },
+    "or33": {
+      "path": "configs/decisions/observable_registration_sample232_wrist_path_geometry_v1_closeout.json",
+      "sha256": "1381e35644c7a17e35d2e3989eaeac54d25b234c087b3632ba6360d931d05b4b",
+      "proof_class": "prospectively_frozen_static_wrist_local_path_shape_diagnostic_in_quarantined_enclosure_basin"
     }
   },
   "nodes": [
