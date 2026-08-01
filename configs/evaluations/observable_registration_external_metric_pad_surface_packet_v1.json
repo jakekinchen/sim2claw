@@ -1,0 +1,121 @@
+{
+  "schema_version": "sim2claw.observable_registration_external_metric_pad_surface_packet_contract.v1",
+  "experiment_id": "OR48_EXTERNAL_METRIC_PAD_SURFACE_PACKET_V1",
+  "proof_class": "static_fail_closed_external_metric_pad_surface_experiment_packet_and_sensor_preflight",
+  "sources": {
+    "or43_contract": {
+      "path": "configs/evaluations/observable_registration_load_side_gripper_calibration_v1.json",
+      "sha256": "bf08a40f2193f3525c1815d4049645af7ac1eec9e718a3381e1a07bdf899714b"
+    },
+    "or43_closeout": {
+      "path": "configs/decisions/observable_registration_load_side_gripper_calibration_v1_closeout.json",
+      "sha256": "625a18cf823d3cec010a9e6ea84f214be5431ca79fe782bf6742bf1de30d175d"
+    },
+    "or43_packet": {
+      "path": "outputs/observable_registration_load_side_gripper_calibration_v1/packet.json",
+      "sha256": "3d732cfe5aecc5229932ac4f4dde346525ea3643b9cdae1728841443372bcdd5"
+    },
+    "or45_closeout": {
+      "path": "configs/decisions/observable_registration_d405_static_metric_capture_v1_closeout.json",
+      "sha256": "411dbb52646cad561255ee142f9e98e348d167df24676b6ff04d03137b440d0c"
+    },
+    "or46_closeout": {
+      "path": "configs/decisions/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1_closeout.json",
+      "sha256": "f65ecfec10b6aa1efcd444f3913138dd0f80b7243ba7bb3bce4f3ab0e1b772a3"
+    },
+    "d405_metric_sidecar_implementation": {
+      "path": "src/sim2claw/observable_registration_d405_metric_sidecar.py",
+      "sha256": "62ef242c8ee96be732792097456b873eeabfa39abb9171aac5cc3f27ea1eba06"
+    }
+  },
+  "motion_packet": {
+    "reuse_or43_requested_action_bytes_exactly": true,
+    "row_count": 442,
+    "duration_seconds": 22.1,
+    "sample_hz": 20.0,
+    "requested_float64_sha256": "3ab970c0bcb5310e9a3939accce09eb281c9daac939e989749655b91ca8f3aa0",
+    "object_or_pawn_present": false,
+    "zero_non_gripper_joint_motion_required": true,
+    "requested_sent_measured_traces_required": true,
+    "physical_execution_allowed_by_this_card": false
+  },
+  "prospective_partition": {
+    "fit_task_cycles": [1, 2],
+    "untouched_validation_task_cycle": 3,
+    "derived_observable_stress_cycle": "wide_cycle_1",
+    "validation_refit_allowed": false,
+    "terminal_task_outcome_available": false
+  },
+  "selected_sensor_route": {
+    "route_id": "new_d405_rgbd_two_jaw_metric_landmarks",
+    "new_experiment_id_and_new_lease_required": true,
+    "or45_retry": false,
+    "sdk_serial_allowlist": ["130322273474"],
+    "depth_profile": {"width": 848, "height": 480, "fps": 30, "format": "Z16"},
+    "color_profile": {"width": 848, "height": 480, "fps": 30, "format": "RGB8"},
+    "positive_depth_scale_required": true,
+    "finite_exact_profile_intrinsics_required": true,
+    "depth_to_color_extrinsics_required": true,
+    "device_timestamp_and_domain_required": true,
+    "frame_number_required": true,
+    "host_arrival_timestamp_required": true,
+    "exposure_gain_and_actual_fps_support_or_missingness_required": true,
+    "both_load_side_contact_surfaces_or_rigidly_associated_metric_landmarks_visible_required": true,
+    "jaw_marker_identity_and_metric_geometry_receipt_required": true,
+    "minimum_metric_frames_per_direction_per_partition": 5,
+    "raw_depth_preservation_required": true
+  },
+  "fit_and_admission_gates": {
+    "minimum_repeated_open_close_cycles": 3,
+    "untouched_repetition_required": true,
+    "both_jaws_visible_in_fit_validation_and_stress": true,
+    "maximum_validation_rms_mm": 0.75,
+    "minimum_validation_improvement_over_zero_cant_fraction": 0.3,
+    "maximum_condition_number": 50.0,
+    "maximum_geometry_encoder_lag_correlation": 0.85,
+    "rank_separates_geometry_from_encoder_offset_scale_and_camera_extrinsic": true,
+    "outcome_force_friction_compliance_or_material_fit_allowed": false,
+    "one_frozen_model_mutation_and_one_replay_only_after_mapping_pass": true
+  },
+  "current_preflight_facts": {
+    "or45_lease_consumed": true,
+    "d405_matching_device_found_at_or45": false,
+    "d405_stream_started_at_or45": false,
+    "metric_frames_currently_available_for_new_packet": 0,
+    "jaw_marker_identity_and_metric_geometry_receipt_present": false,
+    "both_load_side_surfaces_currently_verified_visible": false,
+    "physical_packet_admitted": false
+  },
+  "static_preflight": {
+    "may_read_bound_sources": true,
+    "may_compile_manifest": true,
+    "may_enumerate_device": false,
+    "may_open_camera": false,
+    "may_open_serial": false,
+    "may_enable_torque": false,
+    "may_move_robot": false,
+    "may_run_simulator": false
+  },
+  "claim_limits": {
+    "metric_pad_surface_mapping_acquired": false,
+    "physical_calibration_executed": false,
+    "global_mapping_approved": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

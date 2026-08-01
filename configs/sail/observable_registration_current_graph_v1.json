@@ -2,12 +2,24 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-08-01",
-  "status": "active_camera_only_lease_control_plane",
-  "active_card": "OR45L",
+  "status": "blocked_external_metric_sensor_and_jaw_markers",
+  "active_card": "OR48",
   "active_card_contract": {
-    "card_id": "OR45L",
-    "proof_target": "one_shot_camera_only_capability_lease_with_persistent_campaign_authority_false",
+    "card_id": "OR48",
+    "proof_target": "static_fail_closed_external_metric_pad_surface_experiment_packet_and_sensor_preflight",
     "allowed_paths": [
+      "configs/evaluations/observable_registration_external_metric_pad_surface_packet_v1.json",
+      "src/sim2claw/observable_registration_external_metric_pad_surface_packet.py",
+      "tests/test_observable_registration_external_metric_pad_surface_packet.py",
+      "outputs/observable_registration_external_metric_pad_surface_packet_v1",
+      "configs/decisions/observable_registration_external_metric_pad_surface_packet_v1_closeout.json",
+      "docs/session-logs/120-executor-observable-registration-or48.md",
+      "configs/evaluations/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1.json",
+      "src/sim2claw/observable_registration_retained_d405_rigid_cad_cant_identifiability.py",
+      "tests/test_observable_registration_retained_d405_rigid_cad_cant_identifiability.py",
+      "outputs/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1",
+      "configs/decisions/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1_closeout.json",
+      "docs/session-logs/119-executor-observable-registration-or46.md",
       "configs/evaluations/observable_registration_d405_camera_capability_v1.json",
       "src/sim2claw/observable_registration_d405_camera_capability.py",
       "tests/test_observable_registration_d405_camera_capability.py",
@@ -131,7 +143,7 @@
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "compile_commit_and_revalidate_one_shot_camera_lease_then_execute_or45_once",
+  "next_transition": "owner_reconnects_or_replaces_d405_and_provides_two_rigid_jaw_bound_metric_landmarks_then_new_or48_zero_motion_lease_review",
   "node_types": [
     "workcell",
     "session",
@@ -172,7 +184,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "c8cb79633130141a88af0c5561e1985fa48f041b08d4f7fc6c9f2ca9ed9823fc",
+      "sha256": "b43ab3aa69fc2d817cc55f3e7f87dfc68684b63d96fd07fa38f5d1506a1aff81",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -434,6 +446,21 @@
       "path": "configs/evaluations/observable_registration_d405_static_metric_capture_v1.json",
       "sha256": "a8e249b2ff4786fa241df211032e6783f4b93240a081f48efddce18e6947ae36",
       "proof_class": "preregistered_zero_motion_d405_static_metric_depth_capture_blocked_agent_camera_authority"
+    },
+    "or45": {
+      "path": "configs/decisions/observable_registration_d405_static_metric_capture_v1_closeout.json",
+      "sha256": "411dbb52646cad561255ee142f9e98e348d167df24676b6ff04d03137b440d0c",
+      "proof_class": "zero_motion_d405_static_metric_capture_terminal_device_absent"
+    },
+    "or46": {
+      "path": "configs/decisions/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1_closeout.json",
+      "sha256": "f65ecfec10b6aa1efcd444f3913138dd0f80b7243ba7bb3bce4f3ab0e1b772a3",
+      "proof_class": "retained_preterminal_rgb_rigid_jaw_cad_camera_mode_gauge_identifiability_screen_only"
+    },
+    "or48": {
+      "path": "configs/decisions/observable_registration_external_metric_pad_surface_packet_v1_closeout.json",
+      "sha256": "f6b774da2ea7e09ec1ee5ec34f927390f5a4f913a4cafd994308f53716752c34",
+      "proof_class": "static_fail_closed_external_metric_pad_surface_experiment_packet_and_sensor_preflight"
     }
   },
   "nodes": [
@@ -1397,7 +1424,7 @@
       "id": "observation:or45-d405-static-metric-capture",
       "type": "observation_channel",
       "label": "Zero-motion D405 static metric-depth capture",
-      "status": "software_ready_camera_only_lease_control_plane_active",
+      "status": "terminal_d405_device_not_enumerated_no_retry",
       "data": {
         "frame_count": 30,
         "width": 424,
@@ -1406,14 +1433,94 @@
         "camera_open_allowed": false,
         "owner_future_authorization_recorded": true,
         "evaluator_and_runner_commit": "a266f07",
+        "camera_capability_commit": "f8ee596",
+        "lease_consumed_exactly_once": true,
+        "capture_exit_code": 2,
+        "capture_stderr": "error: no matching Intel RealSense D405 found",
+        "frames_captured": 0,
+        "matching_device_found": false,
+        "camera_stream_started": false,
+        "adaptive_retries": 0,
         "persistent_campaign_authority_remains_false": true,
-        "one_shot_camera_capability_required": true,
+        "one_shot_camera_capability_required": false,
+        "one_shot_camera_capability_consumed": true,
         "agent_context_hardware_authority_ceiling": false,
         "serial_allowed": false,
         "torque_allowed": false,
         "robot_motion_allowed": false,
         "physical_task_attempt_allowed": false,
         "simulator_replay_allowed": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "mechanism:or46-retained-d405-rigid-cad-cant-identifiability",
+      "type": "mechanism",
+      "label": "Retained D405 rigid-jaw CAD cant identifiability screen",
+      "status": "retained_rgb_cant_practically_unidentifiable",
+      "data": {
+        "retained_or40_frames": [64, 88],
+        "accepted_frame_count": 25,
+        "contact_and_terminal_samples_excluded": true,
+        "positive_target": "cad_trusted_non_red_rigid_jaw_edges_only",
+        "red_boot_masks_are_exclusion_and_unknown_shape_adversary": true,
+        "same_device_intrinsics_are_unpromoted_profile_prior": true,
+        "camera_joint_zero_and_boot_shape_gauges_required": true,
+        "direction_counts": {
+          "opening": 9,
+          "closing": 5,
+          "hold": 11
+        },
+        "fold_frame_counts": [11, 8, 4, 1, 1],
+        "validation_and_stress_each_have_only_one_hold_frame": true,
+        "prerender_gates_passed": false,
+        "cad_renders_run": 0,
+        "optimizer_runs": 0,
+        "candidate_parameter_emitted": false,
+        "simulator_replay_allowed": false,
+        "contact_surface_cant_identified": false,
+        "camera_open_allowed": false,
+        "physical_authority": false,
+        "physical_task_attempts": 0,
+        "global_mapping_approved": false,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "intervention:or48-external-metric-pad-surface-packet",
+      "type": "intervention",
+      "label": "External metric pad-surface packet and sensor preflight",
+      "status": "pass_packet_compiled_blocked_external_metric_sensor_and_jaw_markers",
+      "data": {
+        "new_experiment_id_required": true,
+        "or45_retry_allowed": false,
+        "one_independently_metric_sensor_route_required": true,
+        "both_load_side_contact_surfaces_required": true,
+        "jaw_bound_fiducials_or_metric_landmarks_required": true,
+        "minimum_repeated_cycles": 3,
+        "untouched_repetition_required": true,
+        "packet_row_count": 442,
+        "packet_duration_seconds": 22.1,
+        "requested_float64_sha256": "3ab970c0bcb5310e9a3939accce09eb281c9daac939e989749655b91ca8f3aa0",
+        "requested_action_bytes_changed": false,
+        "fit_cycles": [1, 2],
+        "untouched_validation_cycle": 3,
+        "stress_cycle": "wide_cycle_1",
+        "missing_capabilities": [
+          "new_packet_d405_device_presence",
+          "new_packet_synchronized_rgbd_stream",
+          "new_packet_metric_frames",
+          "two_jaw_marker_identity_and_metric_geometry_receipt",
+          "both_load_side_surfaces_visible_in_all_partitions"
+        ],
+        "pawn_present": false,
+        "physical_task_attempt_allowed": false,
+        "camera_open_allowed": false,
+        "serial_allowed": false,
+        "torque_allowed": false,
+        "robot_motion_allowed": false,
+        "simulator_replay_allowed": false,
+        "global_mapping_approved": false,
         "transfer_claim": false
       }
     }

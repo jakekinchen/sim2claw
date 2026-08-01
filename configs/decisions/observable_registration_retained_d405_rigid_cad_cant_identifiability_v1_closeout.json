@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.observable_registration_retained_d405_rigid_cad_cant_identifiability_closeout.v1",
+  "experiment_id": "OR46_RETAINED_D405_RIGID_CAD_CANT_IDENTIFIABILITY_V1",
+  "status": "RETAINED_RGB_CANT_PRACTICALLY_UNIDENTIFIABLE",
+  "proof_class": "retained_preterminal_rgb_rigid_jaw_cad_camera_mode_gauge_identifiability_screen_only",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1.json",
+    "sha256": "b9f4ecf8c92e074a6c792261feda749a0142305972ecbfc2ec82929c798dd697"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_retained_d405_rigid_cad_cant_identifiability.py",
+    "sha256": "211d0aa12455f9af97b95e79ddfa1dea4309a2742fcef86eddfe63fba4daa63b"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1/receipt.json",
+    "sha256": "cc932bc882fa8041447f1355cb7c0f5a12136ae4580737dcc9d7153bea367f90",
+    "artifact_sha256": "8b73482f60015fe07b9d0c4c188ebc2106642cdad9a7d524999e5f2863fb48f7"
+  },
+  "derived_partition": {
+    "path": "outputs/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1/derived_observable_partition.json",
+    "sha256": "6dabc98bbbfc8e7cc7fe844dddc2160260019990d8b64e1452bc0d8312851ac2",
+    "direction_counts": {
+      "closing": 5,
+      "hold": 11,
+      "opening": 9
+    },
+    "fold_frame_counts": [11, 8, 4, 1, 1],
+    "validation_direction_counts": {"hold": 1},
+    "stress_direction_counts": {"hold": 1},
+    "joint_validation_stress_distinct_gripper_values": 1
+  },
+  "result": {
+    "minimum_fit_frames_gate": true,
+    "validation_opening_gate": false,
+    "validation_closing_gate": false,
+    "stress_opening_gate": false,
+    "stress_closing_gate": false,
+    "joint_validation_stress_aperture_diversity_gate": false,
+    "failed_before_cad_render": true,
+    "failed_before_optimization": true,
+    "cad_renders_run": 0,
+    "optimizer_runs": 0,
+    "simulator_replays_run": 0,
+    "interpretation": "The 25 retained accepted frames contain opening and closing motion in aggregate, but the frozen direction-and-aperture-stratified round-robin split leaves both no-refit folds with one hold frame at the same aperture. Rigid-jaw cant cannot be validated independently of the nuisance family from this corpus."
+  },
+  "claim_limits": {
+    "candidate_parameter_emitted": false,
+    "rigid_jaw_body_cant_identified": false,
+    "contact_surface_cant_identified": false,
+    "camera_calibration_approved": false,
+    "global_mapping_approved": false,
+    "simulator_replay": false,
+    "simulator_promoted": false,
+    "physical_task_attempt": false,
+    "transfer_claim": false
+  },
+  "next_boundary": "TERMINAL_EXTERNAL_METRIC_PAD_OBSERVATION_REQUIRED",
+  "authority": {
+    "camera_open": false,
+    "serial_opened": false,
+    "gateway_opened": false,
+    "torque_enabled": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replays": 0
+  }
+}

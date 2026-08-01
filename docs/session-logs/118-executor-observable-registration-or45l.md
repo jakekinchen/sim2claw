@@ -27,5 +27,16 @@ lease-control tests. No device was enumerated or opened and no camera stream,
 robot access, serial access, task attempt, or simulator replay occurred during
 this card.
 
-The next action is to commit and push OR45L, re-run the agent workspace check,
-mint one ignored five-minute lease, and consume it exactly once.
+After commit `f8ee596`, the workspace check passed with clean synchronized
+`main`. The compiler minted lease artifact
+`ad0d0d4c2faadc3d0ed2d5fe78a47f2d846af1e268f0fe13da3c1818a71f0ca0`
+and consumed it exactly once. The recorder exited `2` with
+`no matching Intel RealSense D405 found`; it produced zero frames. Consumption
+artifact `0b530293471592ace990085987f88a0a588709f00f6925150448e2cc1d971a4f`
+records one invocation and zero retries.
+
+The result is `TERMINAL_D405_DEVICE_NOT_ENUMERATED_NO_RETRY`. It localizes the
+boundary to current librealsense device presence before stream start. It does
+not reject pad cant, approve a mapping, or admit a replay. Persistent campaign
+authority remained false; serial, gateway, torque, motion, task, and simulation
+counts stayed zero.

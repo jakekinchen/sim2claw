@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `ACTIVE_CAMERA_ONLY_LEASE_CONTROL_PLANE`
+Status: `BLOCKED_EXTERNAL_METRIC_SENSOR_AND_JAW_MARKERS`
 
 ## Active mission
 
@@ -9,15 +9,17 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR45L_CAMERA_ONLY_LEASE_CONTROL_PLANE`
+`OR48_EXTERNAL_METRIC_PAD_SURFACE_PACKET`
 
 ## Current card
 
-`OR45L`
+`OR48`
 
 ## Current evidence
 
-- Proof class: `one_shot_camera_only_capability_lease_with_persistent_campaign_authority_false`.
+- Closeout: `configs/decisions/observable_registration_external_metric_pad_surface_packet_v1_closeout.json`.
+- Closeout SHA-256: `f6b774da2ea7e09ec1ee5ec34f927390f5a4f913a4cafd994308f53716752c34`.
+- Proof class: `static_fail_closed_external_metric_pad_surface_experiment_packet_and_sensor_preflight`.
 
 ## Authority
 
@@ -32,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`compile_commit_and_revalidate_one_shot_camera_lease_then_execute_or45_once`
+`owner_reconnects_or_replaces_d405_and_provides_two_rigid_jaw_bound_metric_landmarks_then_new_or48_zero_motion_lease_review`
 
 ## Stop conditions
 

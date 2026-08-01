@@ -1,3 +1,4 @@
+import copy
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,31 @@ def _clean_state() -> dict[str, object]:
         "branch": "main",
         "worktree_clean": True,
     }
+
+
+def _frozen_or45l_graph() -> dict[str, object]:
+    return {
+        "campaign_id": "observable_registration_contact_causality_v1",
+        "active_card": "OR45L",
+        "authority": {
+            "camera_open": False,
+            "gateway": False,
+            "heldout_open": False,
+            "paid_compute": False,
+            "physical_motion": False,
+            "serial": False,
+            "simulator_promotion": False,
+            "task_attempt": False,
+            "training": False,
+            "transfer_claim": False,
+        },
+    }
+
+
+def _isolated_contract(output_directory: Path) -> dict[str, object]:
+    contract = copy.deepcopy(capability.load_d405_camera_capability_contract())
+    contract["lease"]["output_directory"] = str(output_directory)
+    return contract
 
 
 def test_contract_keeps_persistent_authority_false_and_scope_camera_only() -> None:
@@ -54,6 +80,13 @@ def test_compiled_lease_binds_commit_binary_command_and_expiration(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(capability, "_repository_state", lambda root: _clean_state())
+    monkeypatch.setattr(capability, "_persistent_graph", lambda root: _frozen_or45l_graph())
+    isolated = _isolated_contract(tmp_path / "capture")
+    monkeypatch.setattr(
+        capability,
+        "load_d405_camera_capability_contract",
+        lambda *args, **kwargs: isolated,
+    )
     lease = capability.compile_d405_camera_capability_lease(
         tmp_path / "lease.json", now_unix_ns=1_000_000_000
     )
@@ -70,6 +103,13 @@ def test_execute_consumes_lease_once_and_never_grants_robot_authority(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(capability, "_repository_state", lambda root: _clean_state())
+    monkeypatch.setattr(capability, "_persistent_graph", lambda root: _frozen_or45l_graph())
+    isolated = _isolated_contract(tmp_path / "capture")
+    monkeypatch.setattr(
+        capability,
+        "load_d405_camera_capability_contract",
+        lambda *args, **kwargs: isolated,
+    )
     lease_path = tmp_path / "lease.json"
     capability.compile_d405_camera_capability_lease(
         lease_path, now_unix_ns=1_000_000_000

@@ -1,0 +1,74 @@
+{
+  "schema_version": "sim2claw.observable_registration_d405_static_metric_capture_closeout.v1",
+  "experiment_id": "OR45_D405_STATIC_METRIC_CAPTURE_V1",
+  "status": "TERMINAL_D405_DEVICE_NOT_ENUMERATED_NO_RETRY",
+  "proof_class": "zero_motion_d405_static_metric_capture_terminal_device_absent",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_d405_static_metric_capture_v1.json",
+    "sha256": "a8e249b2ff4786fa241df211032e6783f4b93240a081f48efddce18e6947ae36"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_d405_static_metric_capture.py",
+    "sha256": "6b33c00d35c0641101d78afaced72e4c12dee666f89a4364038c8456d9b8dc58"
+  },
+  "capability_contract": {
+    "path": "configs/evaluations/observable_registration_d405_camera_capability_v1.json",
+    "sha256": "7a4f5479e19c542d5cfcb842ac194aaf5809bfa0606b782b1da54abe0604f544"
+  },
+  "capability_implementation": {
+    "path": "src/sim2claw/observable_registration_d405_camera_capability.py",
+    "sha256": "2a866c0fd822174b67ed356ccbd11ecc01d11b74aa6b6a584bca8bb8a6d6ce6c"
+  },
+  "lease": {
+    "path": "outputs/observable_registration_d405_camera_capability_v1/lease.json",
+    "sha256": "722facd7b5fcd20c65b49bca8fa4ca9ce56944062b66166ab36f6b37479e5ce6",
+    "artifact_sha256": "ad0d0d4c2faadc3d0ed2d5fe78a47f2d846af1e268f0fe13da3c1818a71f0ca0",
+    "repository_head": "f8ee596affc7abe5717d0a44a4624f75989cdf6c",
+    "maximum_invocations": 1,
+    "adaptive_retry_allowed": false
+  },
+  "consumption": {
+    "path": "outputs/observable_registration_d405_camera_capability_v1/consumed.json",
+    "sha256": "9b3fc0e7ee480d67a1d0f22367d7e0f0e78b2c07ec6986a61fd42f02583059b7",
+    "artifact_sha256": "0b530293471592ace990085987f88a0a588709f00f6925150448e2cc1d971a4f",
+    "status": "TERMINAL_CAMERA_CAPABILITY_CONSUMED_CAPTURE_FAILED",
+    "invocations_used": 1,
+    "adaptive_retries": 0
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_d405_static_metric_capture_v1/receipt.json",
+    "sha256": "ded0204d0dbf385d267f553a94f4da8e8f03a6f0f714e7dcc73869bdf00bbe33",
+    "artifact_sha256": "82693a08d18ade4a4fc8dc4c63950b195450e270675a5684c4cdfc430b6d0f90"
+  },
+  "result": {
+    "recorder_binary_sha256": "7a53f8d02d02e7d457ed0d5ee3e7662a34ffa3786d870d9ba3d08981db2d9736",
+    "requested_sdk_serial": "130322273474",
+    "exit_code": 2,
+    "stderr": "error: no matching Intel RealSense D405 found",
+    "device_enumeration_attempted": true,
+    "matching_device_found": false,
+    "camera_stream_started": false,
+    "frames_captured": 0,
+    "metric_depth_captured": false,
+    "interpretation": "The exact one-shot camera-only packet reached the committed recorder and terminally found no matching D405 through librealsense. The consumed packet cannot be retried. This is a current device-presence boundary, not evidence about pad geometry or the simulator mechanism."
+  },
+  "claim_limits": {
+    "load_side_gripper_mapping_acquired": false,
+    "relative_pad_cant_identified": false,
+    "physical_calibration_executed": false,
+    "global_mapping_approved": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "simulator_promoted": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "persistent_campaign_camera_open": false,
+    "serial_opened": false,
+    "gateway_opened": false,
+    "torque_enabled": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replays": 0
+  }
+}
