@@ -1,13 +1,18 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
-  "generated_at": "2026-07-30",
-  "status": "active_d405_static_metric_capture",
-  "active_card": "OR45",
+  "generated_at": "2026-08-01",
+  "status": "active_camera_only_lease_control_plane",
+  "active_card": "OR45L",
   "active_card_contract": {
-    "card_id": "OR45",
-    "proof_target": "preregistered_zero_motion_d405_static_metric_depth_capture_blocked_agent_camera_authority",
+    "card_id": "OR45L",
+    "proof_target": "one_shot_camera_only_capability_lease_with_persistent_campaign_authority_false",
     "allowed_paths": [
+      "configs/evaluations/observable_registration_d405_camera_capability_v1.json",
+      "src/sim2claw/observable_registration_d405_camera_capability.py",
+      "tests/test_observable_registration_d405_camera_capability.py",
+      "outputs/observable_registration_d405_camera_capability_v1",
+      "docs/session-logs/118-executor-observable-registration-or45l.md",
       "configs/evaluations/observable_registration_d405_static_metric_capture_v1.json",
       "src/sim2claw/observable_registration_d405_static_metric_capture.py",
       "tests/test_observable_registration_d405_static_metric_capture.py",
@@ -119,13 +124,14 @@
       "uv run --locked pytest -q tests/test_observable_registration_measured_state_contact_topology.py",
       "uv run --locked pytest -q tests/test_observable_registration_measured_state_load_path.py",
       "uv run --locked pytest -q tests/test_observable_registration_measured_state_visual_twin.py tests/test_visible_divergence_studio.py",
+      "uv run --locked pytest -q tests/test_observable_registration_d405_camera_capability.py tests/test_observable_registration_d405_static_metric_capture.py tests/test_observable_registration_d405_metric_sidecar.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "admit_or45_through_hardware_capable_control_plane_then_execute_once",
+  "next_transition": "compile_commit_and_revalidate_one_shot_camera_lease_then_execute_or45_once",
   "node_types": [
     "workcell",
     "session",
@@ -166,7 +172,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "1eca35ee53e197b9ffaf2d254b87674c19f7e040e0161094b4c4dcf47d4ba727",
+      "sha256": "c8cb79633130141a88af0c5561e1985fa48f041b08d4f7fc6c9f2ca9ed9823fc",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -1391,7 +1397,7 @@
       "id": "observation:or45-d405-static-metric-capture",
       "type": "observation_channel",
       "label": "Zero-motion D405 static metric-depth capture",
-      "status": "active_ready_blocked_agent_camera_authority",
+      "status": "software_ready_camera_only_lease_control_plane_active",
       "data": {
         "frame_count": 30,
         "width": 424,
@@ -1399,6 +1405,9 @@
         "fps": 30,
         "camera_open_allowed": false,
         "owner_future_authorization_recorded": true,
+        "evaluator_and_runner_commit": "a266f07",
+        "persistent_campaign_authority_remains_false": true,
+        "one_shot_camera_capability_required": true,
         "agent_context_hardware_authority_ceiling": false,
         "serial_allowed": false,
         "torque_allowed": false,

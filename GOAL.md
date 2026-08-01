@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `ACTIVE_D405_STATIC_METRIC_CAPTURE`
+Status: `ACTIVE_CAMERA_ONLY_LEASE_CONTROL_PLANE`
 
 ## Active mission
 
@@ -9,17 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR45_D405_STATIC_METRIC_CAPTURE`
+`OR45L_CAMERA_ONLY_LEASE_CONTROL_PLANE`
 
 ## Current card
 
-`OR45`
+`OR45L`
 
 ## Current evidence
 
-- Closeout: `configs/evaluations/observable_registration_d405_static_metric_capture_v1.json`.
-- Closeout SHA-256: `a8e249b2ff4786fa241df211032e6783f4b93240a081f48efddce18e6947ae36`.
-- Proof class: `preregistered_zero_motion_d405_static_metric_depth_capture_blocked_agent_camera_authority`.
+- Proof class: `one_shot_camera_only_capability_lease_with_persistent_campaign_authority_false`.
 
 ## Authority
 
@@ -34,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`admit_or45_through_hardware_capable_control_plane_then_execute_once`
+`compile_commit_and_revalidate_one_shot_camera_lease_then_execute_or45_once`
 
 ## Stop conditions
 

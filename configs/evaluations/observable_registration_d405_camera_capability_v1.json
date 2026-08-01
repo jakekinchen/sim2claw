@@ -1,0 +1,63 @@
+{
+  "schema_version": "sim2claw.observable_registration_d405_camera_capability_contract.v1",
+  "capability_id": "OR45L_D405_CAMERA_ONLY_ONE_SHOT_V1",
+  "proof_class": "one_shot_camera_only_capability_lease_with_persistent_campaign_authority_false",
+  "owner_authorization": {
+    "date": "2026-08-01",
+    "instruction": "continue advancing to resolve the divergence",
+    "scope_interpretation": "execute the already-frozen zero-motion OR45 D405 packet after the lease implementation is committed and revalidated"
+  },
+  "sources": {
+    "or45_contract": {
+      "path": "configs/evaluations/observable_registration_d405_static_metric_capture_v1.json",
+      "sha256": "a8e249b2ff4786fa241df211032e6783f4b93240a081f48efddce18e6947ae36"
+    },
+    "or44_closeout": {
+      "path": "configs/decisions/observable_registration_d405_metric_sidecar_v1_closeout.json",
+      "sha256": "08f1da2a1c0f64517fb3f762ebb1d1472ee1d58aad52a625d77eab390c7def8a"
+    },
+    "device_identity": {
+      "path": "configs/acquisition/current_static_tricam_capture_v1.json",
+      "sha256": "54acf4a2b4eed47036c2229c9ba4c15786584eb5e6cbc278816ac12c35c03115"
+    }
+  },
+  "lease": {
+    "sdk_serial_allowlist": ["130322273474"],
+    "frame_count": 30,
+    "width": 424,
+    "height": 240,
+    "fps": 30,
+    "stream": "depth",
+    "format": "Z16",
+    "maximum_invocations": 1,
+    "adaptive_retry_allowed": false,
+    "maximum_lease_seconds": 300,
+    "output_directory": "outputs/observable_registration_d405_static_metric_capture_v1"
+  },
+  "persistent_campaign_authority_required": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  },
+  "capability_scope": {
+    "camera_device_enumeration": true,
+    "camera_stream_start": true,
+    "camera_frames": 30,
+    "camera_stream_stop": true,
+    "serial": false,
+    "gateway": false,
+    "torque": false,
+    "robot_motion": false,
+    "object_interaction": false,
+    "physical_task_attempt": false,
+    "simulator_replay": false,
+    "transfer_claim": false
+  }
+}
