@@ -40,7 +40,8 @@ whether that correction improves natural-contact task consequence.
 - The original successful physical D1-to-D2 episode is never described as
   having a Pi view.
 - Contact or task outcome is never used to align Pi frames or select a
-  simulator mechanism.
+  promotable simulator mechanism. OR49 may use the known exact-episode outcome
+  only inside its permanent simulator-diagnostic quarantine.
 - OR23 selects exactly one causal branch or returns insufficient evidence;
   OR24 cannot fit an independently unmeasured contact/object property.
 - Studio and tracked closeouts show exact advancements and limitations.
@@ -119,16 +120,16 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: TERMINAL_MEASURED_STATE_CONTACT_LOAD_PATH_BOUNDARY
-Active card: none; OR34 terminal closeout
+Current state: OR50_PASS_QUARANTINED_NUMERIC_TASK_REPLAY_EVENT_MISMATCH_REMAINS
+Active card: none; OR50 terminal consequence success closed
 Completed: predecessor evidence; OR0–OR23 and OR26–OR33; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed
 Evidence: OR26/OR27 provide the synchronized comparison and samples-248–260 visual split. OR28 isolates aperture as the upright/transport lever; OR29–OR33 reject bounded aperture, base XY, base yaw, and wrist-local corrections under unchanged gates.
 Pi lineage: no Pi exists for the successful source; later guarded-run Pi files and contact-free tri-camera files are auxiliary, same-run-only evidence
 Retained RGB evidence: OR22 yields 23 jaw and 10 crown proxies; contact/lift/carry timing corresponds, but no accepted pawn-base observation exists and pawn-axis orientation remains unknown
 OR23 result: physical contact/lift/carry-start timing corresponds, but no physical channel directly discriminates off-center moment, slip, support transition, or downstream collision
-Remaining: exact intrinsics, pristine heldout extrinsics, globally approved mapping, physical pawn orientation/contact mechanics, full matching task outcome, and transfer remain unapproved
-Blockers: physical capture and all transfer claims remain false; Pi host process bounds are not exposure synchronization; metric physical orientation and known contact force remain unavailable
-Next step: preserve OR34 as the correct observation-conditioned visual twin; require independent jaw/contact/load-path evidence before a simulator mechanism correction
+Remaining: event-shape matching, exact intrinsics, pristine heldout extrinsics, globally approved mapping, physical pawn orientation/contact mechanics, promotable matching task outcome, and transfer remain unapproved
+Blockers: OR48 still requires an external metric sensor and two jaw-bound landmarks; physical capture and all transfer claims remain false
+Next step: preserve OR50's exact terminal success and residuals; any successor must target the early-motion, early-support-loss, absent-bilateral-contact, or transient-tilt channel without relabeling this outcome-informed fit as promotion evidence
 ```
 
 ## Stop conditions

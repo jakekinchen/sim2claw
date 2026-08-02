@@ -1,0 +1,52 @@
+{
+  "schema_version": "sim2claw.observable_registration_outcome_informed_fixed_pad_breakpoint_closeout.v1",
+  "experiment_id": "OR49_OUTCOME_INFORMED_FIXED_PAD_BREAKPOINT_V1",
+  "status": "TERMINAL_NEGATIVE_FINE_FIXED_PAD_BREAKPOINT_INSUFFICIENT",
+  "proof_class": "quarantined_outcome_informed_exact_episode_natural_dynamics_fixed_pad_breakpoint_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_outcome_informed_fixed_pad_breakpoint_v1.json",
+    "sha256": "4d3e1da9f569c5d43b0e4db9216e8bc2d005a49b5835a124adf8843805d70b83"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_outcome_informed_fixed_pad_breakpoint.py",
+    "sha256": "04924b2e1e1584ee82fab6958d1ac0dae14104276945c46822cfab01ae7efc06"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_outcome_informed_fixed_pad_breakpoint.py",
+    "sha256": "a5c84cee76f8352afdf05b7004afad5f63328179dad3f57b231d2dd8e8b99503",
+    "passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_outcome_informed_fixed_pad_breakpoint_v1/receipt.json",
+    "sha256": "51fa1378c6ec3a463da5e0904e702797ae6a740e87ec3b73ef28e93767becce3",
+    "artifact_sha256": "a3eb241bc0f960b4939bec6620cff79e6dd1bfc97c77c87a221073f0ade202dd"
+  },
+  "result": {
+    "candidate_count": 19,
+    "selected_rerun_exact_without_refit": true,
+    "full_physics_driven_exact_episode_replay_pass": false,
+    "best_event_candidate_fixed_pad_local_z_m": -0.11525,
+    "best_event_candidate_gate_count": 3,
+    "best_event_candidate_tilt_at_sample_260_degrees": 2.5691309816762784,
+    "closest_upright_terminal_candidate_fixed_pad_local_z_m": -0.113,
+    "closest_upright_terminal_planar_error_m": 0.014624481453360457,
+    "closest_upright_terminal_tilt_degrees": 0.0016786047546065936,
+    "closest_upright_terminal_height_error_m": 1.0082323564919449e-7,
+    "remaining_planar_error_above_6mm_gate_m": 0.008624481453360458,
+    "next_bounded_lead": "Refine only the same fixed-pad coordinate around the deterministic -0.113 m upright basin; do not reopen camera, timing, actuator, object, or contact-material parameters."
+  },
+  "claim_limits": {
+    "canonical_contact_geometry": false,
+    "heldout_validation": false,
+    "global_mapping_approved": false,
+    "simulator_promoted": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "hardware_used": false,
+    "paid_compute_used": false,
+    "physical_motion": false,
+    "physical_task_attempts": 0,
+    "simulator_replays": 20
+  }
+}

@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `BLOCKED_EXTERNAL_METRIC_SENSOR_AND_JAW_MARKERS`
+Status: `OR50_PASS_QUARANTINED_NUMERIC_TASK_REPLAY_EVENT_MISMATCH_REMAINS`
 
 ## Active mission
 
@@ -9,17 +9,17 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR48_EXTERNAL_METRIC_PAD_SURFACE_PACKET`
+`OR50_OUTCOME_INFORMED_UPRIGHT_BASIN_REFINEMENT`
 
 ## Current card
 
-`OR48`
+`none` — the campaign is at an external-input boundary
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_registration_external_metric_pad_surface_packet_v1_closeout.json`.
-- Closeout SHA-256: `f6b774da2ea7e09ec1ee5ec34f927390f5a4f913a4cafd994308f53716752c34`.
-- Proof class: `static_fail_closed_external_metric_pad_surface_experiment_packet_and_sensor_preflight`.
+- Closeout: `configs/decisions/observable_registration_outcome_informed_upright_basin_v1_closeout.json`.
+- Closeout SHA-256: `38a5cdf33938bad8949ae836e043028c9c3cc871154cbe38eaca4b9d4e460a1a`.
+- Proof class: `quarantined_outcome_informed_exact_episode_natural_dynamics_upright_basin_refinement`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`owner_reconnects_or_replaces_d405_and_provides_two_rigid_jaw_bound_metric_landmarks_then_new_or48_zero_motion_lease_review`
+`preserve_or50_terminal_success_and_freeze_any_event_residual_successor_as_a_new_quarantined_card_or_resume_or48_after_external_metric_inputs`
 
 ## Stop conditions
 

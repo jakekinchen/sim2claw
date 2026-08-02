@@ -1,13 +1,26 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
-  "generated_at": "2026-08-01",
-  "status": "blocked_external_metric_sensor_and_jaw_markers",
-  "active_card": "OR48",
-  "active_card_contract": {
-    "card_id": "OR48",
-    "proof_target": "static_fail_closed_external_metric_pad_surface_experiment_packet_and_sensor_preflight",
+  "generated_at": "2026-08-02",
+  "status": "or50_pass_quarantined_numeric_task_replay_event_mismatch_remains",
+  "active_card": null,
+  "active_card_contract": null,
+  "last_card_contract": {
+    "card_id": "OR50",
+    "proof_target": "quarantined_outcome_informed_exact_episode_natural_dynamics_upright_basin_refinement",
     "allowed_paths": [
+      "configs/evaluations/observable_registration_outcome_informed_upright_basin_v1.json",
+      "src/sim2claw/observable_registration_outcome_informed_upright_basin.py",
+      "tests/test_observable_registration_outcome_informed_upright_basin.py",
+      "outputs/observable_registration_outcome_informed_upright_basin_v1",
+      "configs/decisions/observable_registration_outcome_informed_upright_basin_v1_closeout.json",
+      "docs/session-logs/122-executor-observable-registration-or50.md",
+      "configs/evaluations/observable_registration_outcome_informed_fixed_pad_breakpoint_v1.json",
+      "src/sim2claw/observable_registration_outcome_informed_fixed_pad_breakpoint.py",
+      "tests/test_observable_registration_outcome_informed_fixed_pad_breakpoint.py",
+      "outputs/observable_registration_outcome_informed_fixed_pad_breakpoint_v1",
+      "configs/decisions/observable_registration_outcome_informed_fixed_pad_breakpoint_v1_closeout.json",
+      "docs/session-logs/121-executor-observable-registration-or49.md",
       "configs/evaluations/observable_registration_external_metric_pad_surface_packet_v1.json",
       "src/sim2claw/observable_registration_external_metric_pad_surface_packet.py",
       "tests/test_observable_registration_external_metric_pad_surface_packet.py",
@@ -126,6 +139,8 @@
       "commit"
     ],
     "validation_commands": [
+      "uv run --locked pytest -q tests/test_observable_registration_outcome_informed_upright_basin.py",
+      "uv run --locked pytest -q tests/test_observable_registration_outcome_informed_fixed_pad_breakpoint.py",
       "uv run --locked pytest -q tests/test_observable_registration_retained_full_range_gripper_mapping.py",
       "uv run --locked pytest -q tests/test_observable_registration_retained_video_jaw_surface_mapping.py",
       "uv run --locked pytest -q tests/test_observable_registration_measured_state_compliance.py",
@@ -143,7 +158,7 @@
     "commit": true,
     "push_origin_main": true
   },
-  "next_transition": "owner_reconnects_or_replaces_d405_and_provides_two_rigid_jaw_bound_metric_landmarks_then_new_or48_zero_motion_lease_review",
+  "next_transition": "preserve_or50_terminal_success_and_freeze_any_event_residual_successor_as_a_new_quarantined_card_or_resume_or48_after_external_metric_inputs",
   "node_types": [
     "workcell",
     "session",
@@ -184,7 +199,7 @@
   "source_bindings": {
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "b43ab3aa69fc2d817cc55f3e7f87dfc68684b63d96fd07fa38f5d1506a1aff81",
+      "sha256": "0ffe896ab011fb8d2ada2ec59a932cd3d337b6291e19f1aa011e96ee933689bd",
       "proof_class": "campaign_control_state"
     },
     "predecessor_graph": {
@@ -461,6 +476,16 @@
       "path": "configs/decisions/observable_registration_external_metric_pad_surface_packet_v1_closeout.json",
       "sha256": "f6b774da2ea7e09ec1ee5ec34f927390f5a4f913a4cafd994308f53716752c34",
       "proof_class": "static_fail_closed_external_metric_pad_surface_experiment_packet_and_sensor_preflight"
+    },
+    "or49": {
+      "path": "configs/decisions/observable_registration_outcome_informed_fixed_pad_breakpoint_v1_closeout.json",
+      "sha256": "6aba66544fc37c77929e5fa9770fb3d285828c7c46cd76fe430c3d35e3f2d304",
+      "proof_class": "quarantined_outcome_informed_exact_episode_natural_dynamics_fixed_pad_breakpoint_diagnostic"
+    },
+    "or50": {
+      "path": "configs/decisions/observable_registration_outcome_informed_upright_basin_v1_closeout.json",
+      "sha256": "38a5cdf33938bad8949ae836e043028c9c3cc871154cbe38eaca4b9d4e460a1a",
+      "proof_class": "quarantined_outcome_informed_exact_episode_natural_dynamics_upright_basin_refinement"
     }
   },
   "nodes": [
@@ -1523,6 +1548,75 @@
         "global_mapping_approved": false,
         "transfer_claim": false
       }
+    },
+    {
+      "id": "intervention:or49-outcome-informed-fixed-pad-breakpoint",
+      "type": "intervention",
+      "label": "Outcome-informed exact-episode fixed-pad breakpoint scan",
+      "status": "terminal_negative_fine_fixed_pad_breakpoint_insufficient",
+      "data": {
+        "proof_class": "quarantined_outcome_informed_exact_episode_natural_dynamics_fixed_pad_breakpoint_diagnostic",
+        "source_row_count": 531,
+        "raw_measured_state_changed": false,
+        "timestamps_or_interpolation_changed": false,
+        "single_simulator_coordinate": "fixed_contact_skin_longitudinal_position",
+        "fixed_pad_local_z_range_m": [-0.11525, -0.11075],
+        "fixed_pad_local_z_step_m": 0.00025,
+        "candidate_count": 19,
+        "terminal_task_outcome_fit_allowed": true,
+        "outcome_informed_quarantine_permanent": true,
+        "natural_dynamics_required": true,
+        "full_physics_driven_exact_episode_success_required": true,
+        "simulator_replay_count": 20,
+        "full_gate_pass": false,
+        "closest_upright_fixed_pad_local_z_m": -0.113,
+        "closest_upright_final_planar_error_m": 0.014624481453360457,
+        "closest_upright_final_tilt_degrees": 0.0016786047546065936,
+        "heldout_validation_opened": false,
+        "global_mapping_approved": false,
+        "simulator_promotion_allowed": false,
+        "physical_authority": false,
+        "physical_task_attempts": 0,
+        "transfer_claim": false
+      }
+    },
+    {
+      "id": "intervention:or50-outcome-informed-upright-basin",
+      "type": "intervention",
+      "label": "Outcome-informed exact-episode upright-basin refinement",
+      "status": "pass_quarantined_numeric_task_replay_event_mismatch_remains",
+      "data": {
+        "proof_class": "quarantined_outcome_informed_exact_episode_natural_dynamics_upright_basin_refinement",
+        "source_row_count": 531,
+        "raw_measured_state_changed": false,
+        "timestamps_or_interpolation_changed": false,
+        "single_simulator_coordinate": "fixed_contact_skin_longitudinal_position",
+        "fixed_pad_local_z_range_m": [-0.11312, -0.11288],
+        "fixed_pad_local_z_step_m": 0.00001,
+        "candidate_count": 25,
+        "outcome_informed_quarantine_permanent": true,
+        "natural_dynamics_required": true,
+        "selected_rerun_required": true,
+        "simulator_replay_count": 26,
+        "selected_fixed_pad_local_z_m": -0.11298,
+        "selected_rerun_exact_without_refit": true,
+        "numeric_task_replay_pass": true,
+        "terminal_task_gate_count": 7,
+        "final_planar_center_error_m": 0.004259829498557311,
+        "final_upright_tilt_degrees": 0.0038640027662202817,
+        "first_selected_jaw_contact_sample": 229,
+        "first_motion_over_1mm_sample": 244,
+        "first_sustained_support_loss_sample": 243,
+        "first_bilateral_jaw_contact_sample": null,
+        "tilt_at_sample_260_degrees": 26.114828655948646,
+        "complete_event_and_numeric_task_replay_pass": false,
+        "heldout_validation_opened": false,
+        "global_mapping_approved": false,
+        "simulator_promotion_allowed": false,
+        "physical_authority": false,
+        "physical_task_attempts": 0,
+        "transfer_claim": false
+      }
     }
   ],
   "edges": [
@@ -1815,6 +1909,16 @@
       "source": "mechanism:or44-d405-metric-depth-sidecar",
       "target": "observation:or45-d405-static-metric-capture",
       "type": "admitted-to"
+    },
+    {
+      "source": "counterexample:or38-fixed-pad-position-bracket",
+      "target": "intervention:or49-outcome-informed-fixed-pad-breakpoint",
+      "type": "predicts"
+    },
+    {
+      "source": "intervention:or49-outcome-informed-fixed-pad-breakpoint",
+      "target": "intervention:or50-outcome-informed-upright-basin",
+      "type": "predicts"
     }
   ]
 }

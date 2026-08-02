@@ -1,11 +1,11 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-08-01T00:00:00-05:00",
+  "updated_at": "2026-08-02T00:00:00-05:00",
   "active_campaign": "observable_registration_contact_causality_v1",
-  "current_milestone": "OR48_EXTERNAL_METRIC_PAD_SURFACE_PACKET",
+  "current_milestone": "OR50_OUTCOME_INFORMED_UPRIGHT_BASIN_REFINEMENT",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
-  "proof_class": "static_fail_closed_external_metric_pad_surface_packet_compiled_blocked_external_sensor_and_jaw_markers",
+  "proof_class": "quarantined_outcome_informed_exact_episode_natural_dynamics_numeric_task_success_with_event_mismatch",
   "four_hour_hil_transaction": {
     "schema_version": "sim2claw.four_hour_hil_transaction.v1",
     "status": "four_physical_attempts_complete_two_admitted_two_rejected_simulator_candidate_rejected_offline_decomposition_frozen_closeout_verification_active",

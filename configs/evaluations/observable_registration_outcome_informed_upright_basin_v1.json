@@ -1,0 +1,178 @@
+{
+  "schema_version": "sim2claw.observable_registration_outcome_informed_upright_basin_contract.v1",
+  "experiment_id": "OR50_OUTCOME_INFORMED_UPRIGHT_BASIN_V1",
+  "proof_class": "quarantined_outcome_informed_exact_episode_natural_dynamics_upright_basin_refinement",
+  "sources": {
+    "or34_contract": {
+      "path": "configs/evaluations/observable_registration_measured_state_visual_twin_v1.json",
+      "sha256": "ede7ca2a7f792c096014a90769bb9c024ededb264acb91b6173e97d55dc2011c"
+    },
+    "or49_receipt": {
+      "path": "outputs/observable_registration_outcome_informed_fixed_pad_breakpoint_v1/receipt.json",
+      "sha256": "51fa1378c6ec3a463da5e0904e702797ae6a740e87ec3b73ef28e93767becce3"
+    },
+    "or49_closeout": {
+      "path": "configs/decisions/observable_registration_outcome_informed_fixed_pad_breakpoint_v1_closeout.json",
+      "sha256": "6aba66544fc37c77929e5fa9770fb3d285828c7c46cd76fe430c3d35e3f2d304"
+    },
+    "c2_contact_skin_contract": {
+      "path": "configs/sail/grasp_retention_force_contact_v1.json",
+      "sha256": "a508170086dc9acc4187617282006627f88f5302de9d02dfffea821607fd0db7"
+    },
+    "rubber_contact_prior": {
+      "path": "configs/simulation/rubber_tip_contact_sensitivity_v1.json",
+      "sha256": "1845ed4b598696d407919f84a31f6a01e206035c70ed2294dcb5f46feda5c6ea"
+    }
+  },
+  "trajectory": {
+    "row_count": 531,
+    "robot_driver": "raw_follower_actual_position_degrees",
+    "preserve_source_values_order_timestamps_and_interpolation": true,
+    "action_or_state_assistance_allowed": false
+  },
+  "fixed_pad_upright_basin_grid": {
+    "single_coordinate": "fixed_contact_skin_longitudinal_position",
+    "fixed_coverage_offsets_m": [
+      0.00738,
+      0.00739,
+      0.0074,
+      0.00741,
+      0.00742,
+      0.00743,
+      0.00744,
+      0.00745,
+      0.00746,
+      0.00747,
+      0.00748,
+      0.00749,
+      0.0075,
+      0.00751,
+      0.00752,
+      0.00753,
+      0.00754,
+      0.00755,
+      0.00756,
+      0.00757,
+      0.00758,
+      0.00759,
+      0.0076,
+      0.00761,
+      0.00762
+    ],
+    "implied_fixed_pad_local_z_m": [
+      -0.11312,
+      -0.11311,
+      -0.1131,
+      -0.11309,
+      -0.11308,
+      -0.11307,
+      -0.11306,
+      -0.11305,
+      -0.11304,
+      -0.11303,
+      -0.11302,
+      -0.11301,
+      -0.113,
+      -0.11299,
+      -0.11298,
+      -0.11297,
+      -0.11296,
+      -0.11295,
+      -0.11294,
+      -0.11293,
+      -0.11292,
+      -0.11291,
+      -0.1129,
+      -0.11289,
+      -0.11288
+    ],
+    "candidate_count": 25,
+    "terminal_position_or_task_outcome_used_for_selection": true,
+    "outcome_informed_quarantine_permanent": true,
+    "selection_order": [
+      "prefer_complete_event_and_numeric_task_success",
+      "prefer_numeric_task_success",
+      "maximize_terminal_task_gate_count",
+      "minimize_final_planar_center_error",
+      "minimize_final_upright_tilt",
+      "maximize_event_gate_count"
+    ],
+    "rerun_selected_candidate_without_refit": true
+  },
+  "contact_skin_intervention": {
+    "tip_thickness_m": 0.001,
+    "tip_half_width_m": 0.0065,
+    "tip_coverage_m": 0.02,
+    "tip_coverage_offset_m": -0.03,
+    "tip_fixed_coverage_offset_m": 0.00738,
+    "tip_moving_coverage_offset_m": 0.025,
+    "sliding_friction": 1.8,
+    "torsional_friction_m": 0.012,
+    "rolling_friction_m": 0.0012,
+    "rubber_contact_condim": 6,
+    "solref_time_constant_s": 0.006,
+    "solref_damping_ratio": 1.2,
+    "solimp": [0.95, 0.98, 0.0005, 0.5, 2.0],
+    "add_exactly_one_pad_per_jaw": true,
+    "disable_all_original_collision_enabled_geoms_on_target_jaws": true
+  },
+  "simulation": {
+    "natural_pawn_dynamics_only": true,
+    "selected_pawn_pose_written_only_during_initialization": true,
+    "object_pose_injection_allowed": false,
+    "latch_attachment_or_grasp_mode_allowed": false,
+    "pawn_mass_com_or_inertia_change_allowed": false,
+    "actuator_force_gain_or_driver_change_allowed": false,
+    "camera_mapping_or_reset_change_allowed": false,
+    "post_action_settle_seconds": 1.0
+  },
+  "trace": {
+    "internal_step_seconds": 0.005,
+    "analysis_source_sample_start": 210,
+    "analysis_source_sample_end": 300,
+    "physical_contact_interval_samples": [228, 232],
+    "physical_lift_interval_samples": [247, 260],
+    "motion_threshold_m": 0.001,
+    "tilt_threshold_degrees": 5.0,
+    "slip_threshold_m_s": 0.001,
+    "support_loss_minimum_internal_steps": 3,
+    "emit_all_internal_rows_for_selected_rerun_only": true,
+    "contact_force_is_simulator_internal_not_physical_force": true
+  },
+  "preterminal_gates": {
+    "first_selected_jaw_contact_interval_samples": [228, 232],
+    "no_motion_over_1mm_before_sample": 247,
+    "sustained_support_loss_interval_samples": [247, 260],
+    "bilateral_contact_interval_samples": [247, 270],
+    "maximum_tilt_at_sample_260_degrees": 10.0
+  },
+  "acceptance": {
+    "strong_pass_requires_all_preterminal_gates_and_numeric_task_success": true,
+    "terminal_consequence_pass_requires_numeric_task_success": true,
+    "event_mismatch_must_remain_explicit": true,
+    "selected_rerun_must_be_byte_identical_in_summary": true
+  },
+  "claim_limits": {
+    "canonical_contact_geometry": false,
+    "global_mapping_approval": false,
+    "physical_contact_skin_calibration": false,
+    "heldout_validation": false,
+    "simulator_promotion": false,
+    "policy_transfer": false,
+    "bidirectional_transfer": false,
+    "physical_authority": false
+  },
+  "authority": {
+    "simulator_replay": true,
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}
