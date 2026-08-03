@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_regional_residual_attribution_closeout.v1",
+  "experiment_id": "OR133A_RENDERER_NATIVE_REGIONAL_RESIDUAL_ATTRIBUTION_AND_COHORT_EXPOSURE_AUDIT_V1",
+  "status": "PASS_RETROSPECTIVE_REGIONAL_ATTRIBUTION_COMPLETE",
+  "proof_class": "renderer_native_read_only_regional_residual_attribution_and_cohort_exposure_audit",
+  "receipt": {
+    "path": "outputs/observable_registration_renderer_native_regional_residual_attribution_v1/receipt.json",
+    "sha256": "1f0ac10367098017642b7f2b6c8930d41fe4d2142bfb9e4be13b1d53073a19a4",
+    "artifact_sha256": "b0673cb231847f82ee333327c3865cb67d6f6f02521c750e5c7e8307127f678e"
+  },
+  "integrity": {
+    "all_gates_passed": true,
+    "development_episode_count": 7,
+    "development_frame_count": 751,
+    "triangle_count_every_frame": 825548,
+    "instrumented_renderer_equivalent_to_or79": true,
+    "exposure_lineage_complete": true,
+    "positions_8_through_11_pixel_reads": 0,
+    "sibling_pixel_reads": 0,
+    "fits_selections_threshold_changes_retries_replays_hardware_actions": 0,
+    "paid_compute": false
+  },
+  "diagnostic_result": {
+    "episodes_meeting_geometry_threshold": 0,
+    "episodes_meeting_illumination_threshold": 0,
+    "episodes_meeting_operator_threshold": 7,
+    "qualified_family": "operator_or_cable_scene_content",
+    "mean_silhouette_mass_share": 0.20944008526473848,
+    "mean_shadow_mass_share": 0.09635598816365869,
+    "mean_operator_or_cable_mass_share": 0.20534165866233178,
+    "mean_unattributed_mass_share": 0.48886226790927095,
+    "mean_persistent_candidate_to_physical_median_distance_px": 3.4155768689087274,
+    "mean_nearest_edge_matched_luma_residual": 43.850333956133376
+  },
+  "exposure_result": {
+    "recording_count": 18,
+    "or131_recording_count": 11,
+    "other_sibling_recording_count": 7,
+    "derived_frame_artifact_count": 36,
+    "untouched_cohort_remaining": false,
+    "claim": "sibling_exposure_bounded_and_ledgered_not_untouched"
+  },
+  "reviewer_decision": "FREEZE_SEPARATE_OR133B_FROM_IMMUTABLE_DIAGNOSTIC_RECEIPT",
+  "next_transition": "freeze_separate_or133b_contract_citing_or133a_receipt",
+  "claim_limits": {
+    "retrospective_outcome_informed_diagnostic_only": true,
+    "fidelity_improvement": false,
+    "regional_target_progress": false,
+    "regional_target_resolution": false,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

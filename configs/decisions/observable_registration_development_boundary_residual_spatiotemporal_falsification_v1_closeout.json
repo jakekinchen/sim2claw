@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.observable_registration_development_boundary_residual_spatiotemporal_falsification_closeout.v1",
+  "experiment_id": "OR133B_DEVELOPMENT_BOUNDARY_RESIDUAL_SPATIOTEMPORAL_FALSIFICATION_V1",
+  "status": "TERMINAL_BOUNDARY_RESIDUAL_REPRODUCTION_INFEASIBLE",
+  "proof_class": "development_only_read_compute_boundary_residual_identifiability_test",
+  "terminal_failure": {
+    "path": "outputs/observable_registration_development_boundary_residual_spatiotemporal_falsification_v1/terminal_failure.json",
+    "sha256": "c0f0aa2d2c0bc37fdb6604b3980a549908a123217e1b6bd9d84225254e29f4f5"
+  },
+  "failure": {
+    "failed_split_position": 2,
+    "instrumented_frames_rendered": 222,
+    "root_cause": "separate_left_right_silhouette_distance_did_not_reproduce_or133a_union_silhouette_distance",
+    "same_card_retry_allowed": false
+  },
+  "reviewer_decision": "FREEZE_NEW_IDENTITY_UNION_SILHOUETTE_INSTRUMENTATION_REPAIR",
+  "next_transition": "freeze_or133c_union_silhouette_exact_reproduction_repair",
+  "claim_limits": {
+    "operator_or_cable_identity": false,
+    "fidelity_improvement": false,
+    "regional_target_progress": false,
+    "regional_target_resolution": false,
+    "heldout_validity": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "event_parity": false,
+    "simulator_promotion": false,
+    "physical_transfer": false
+  }
+}

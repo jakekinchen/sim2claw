@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification_contract.v1",
+  "experiment_id": "OR133C_UNION_SILHOUETTE_BOUNDARY_RESIDUAL_SPATIOTEMPORAL_FALSIFICATION_V1",
+  "proof_class": "development_only_read_compute_boundary_residual_identifiability_test",
+  "status": "owner_admitted_frozen_not_executed",
+  "sources": {
+    "or133b_contract": {"path": "configs/evaluations/observable_registration_development_boundary_residual_spatiotemporal_falsification_v1.json", "sha256": "ad18807270fa4cb33c0d45d08c3c03f3e9aaeea914b20608dcf38efd9c5a676d"},
+    "or133b_implementation": {"path": "src/sim2claw/observable_registration_development_boundary_residual_spatiotemporal_falsification.py", "sha256": "eb5fec10f9e5532cd24ac6b83382717b267c593fcf0f99ed218068d84f75226c"},
+    "or133b_test": {"path": "tests/test_observable_registration_development_boundary_residual_spatiotemporal_falsification.py", "sha256": "5c20193b04cf00a0cba550e9fe39630660fa3d61fd2799bc78501cdbd21e1237"},
+    "or133b_terminal_failure": {"path": "outputs/observable_registration_development_boundary_residual_spatiotemporal_falsification_v1/terminal_failure.json", "sha256": "c0f0aa2d2c0bc37fdb6604b3980a549908a123217e1b6bd9d84225254e29f4f5"},
+    "or133b_closeout": {"path": "configs/decisions/observable_registration_development_boundary_residual_spatiotemporal_falsification_v1_closeout.json", "sha256": "9787e6277931fec69713cf778c449335701896b7329f2af1cc7c1cfd6d6418b9"},
+    "or133a_contract": {"path": "configs/evaluations/observable_registration_renderer_native_regional_residual_attribution_v1.json", "sha256": "27b339aa49bac61b288536877a7fc3a439f7f3be380efe0b9e7b8f55c02d6bd8"},
+    "or133a_receipt": {"path": "outputs/observable_registration_renderer_native_regional_residual_attribution_v1/receipt.json", "sha256": "1f0ac10367098017642b7f2b6c8930d41fe4d2142bfb9e4be13b1d53073a19a4", "artifact_sha256": "b0673cb231847f82ee333327c3865cb67d6f6f02521c750e5c7e8307127f678e"}
+  },
+  "frozen_identities": {
+    "implementation": {"path": "src/sim2claw/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification.py", "sha256": "3dd942bbf6841108749991189d0ff26fefd4f292c2a803e4bb57c1d200952bc3"},
+    "test": {"path": "tests/test_observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification.py", "sha256": "72ac0337dbb8baf7c900a92d1462ac71baf4ac4879e4cc4b3fac8eef24e87e00"}
+  },
+  "repair": {
+    "classification_distance_source": "morphological_boundary_of_union_of_left_and_right_robot_id_masks",
+    "separate_left_right_distances_are_descriptive_only": true,
+    "separate_left_right_distances_may_change_membership": false,
+    "all_other_or133b_protocol_fields_inherited_without_change": true,
+    "same_card_retry": false,
+    "new_experiment_identity": true
+  },
+  "inherited_protocol": {
+    "development_split_positions": [1, 2, 3, 4, 5, 6, 7],
+    "total_frame_count": 751,
+    "expected_triangle_count_per_frame": 825548,
+    "lags_frames": [-3, -2, -1, 0, 1, 2, 3],
+    "circular_shift_null_count": 40,
+    "minimum_circular_shift_frames": 25,
+    "minimum_qualifying_episode_count": 6,
+    "candidate_intervention_renders": 0,
+    "renderer_or_intervention_dof": 0
+  },
+  "stop_conditions": {
+    "follower_only": "PASS_FOLLOWER_COUPLED_BOUNDARY_RESIDUAL_DIAGNOSTIC_ONLY",
+    "leader_only": "PASS_LEADER_BOUNDARY_TRACK_COUPLED_DIAGNOSTIC_ONLY",
+    "both": "TERMINAL_SHARED_ACTION_PHASE_COUPLING_CONFOUNDED",
+    "neither": "TERMINAL_REGIONAL_DYNAMIC_RESIDUAL_UNIDENTIFIABLE_WITH_RETAINED_EVIDENCE",
+    "instrumentation_failure": "TERMINAL_UNION_SILHOUETTE_REPRODUCTION_REPAIR_FAILED"
+  },
+  "claim_limits": {
+    "development_only": true,
+    "retrospective_outcome_informed_diagnostic_only": true,
+    "operator_or_cable_identity": false,
+    "geometry_or_shadow_absence": false,
+    "fidelity_improvement": false,
+    "regional_target_progress": false,
+    "regional_target_resolution": false,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "heldout_validity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physics_fidelity": false,
+    "event_parity": false,
+    "simulator_promotion": false,
+    "physical_transfer": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

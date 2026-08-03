@@ -2,20 +2,20 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-08-03",
-  "status": "or132_terminal_global_temporal_pixel_target_achieved_composite_regional_target_open",
+  "status": "or133c_terminal_retained_evidence_regional_identifiability_lane_closed",
   "active_card": null,
   "active_card_contract": null,
   "last_card_contract": {
-    "card_id": "OR132",
-    "proof_target": "renderer_native_two_planar_fixture_residual_reconciliation",
+    "card_id": "OR133C",
+    "proof_target": "development_only_read_compute_boundary_residual_identifiability_test",
     "allowed_paths": [
-      "configs/evaluations/observable_registration_renderer_native_two_planar_fixture_residual_reconciliation_v1.json",
-      "src/sim2claw/observable_registration_renderer_native_two_planar_fixture_residual_reconciliation.py",
-      "tests/test_observable_registration_renderer_native_two_planar_fixture_residual_reconciliation.py",
-      "outputs/observable_registration_renderer_native_two_planar_fixture_residual_reconciliation_v1",
-      "configs/decisions/observable_registration_renderer_native_two_planar_fixture_residual_reconciliation_v1_closeout.json",
-      "docs/briefs/209-observable-registration-or132-renderer-native-two-planar-fixture-residual-reconciliation.md",
-      "docs/session-logs/209-executor-observable-registration-or132.md",
+      "configs/evaluations/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification_v1.json",
+      "src/sim2claw/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification.py",
+      "tests/test_observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification.py",
+      "outputs/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification_v1",
+      "configs/decisions/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification_v1_closeout.json",
+      "docs/briefs/212-observable-registration-or133c-union-silhouette-reproduction-repair.md",
+      "docs/session-logs/212-executor-observable-registration-or133c.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
       "docs/autonomous-workflow/project_state.json",
@@ -27,12 +27,41 @@
       "write"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_observable_registration_renderer_native_two_planar_fixture_residual_reconciliation.py",
+      "uv run --locked pytest -q tests/test_observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
-    "commit": false,
-    "push_origin_main": false
+    "commit": true,
+    "push_origin_main": true
+  },
+  "prior_card_contract": {
+    "card_id": "OR133B",
+    "proof_target": "development_only_read_compute_boundary_residual_identifiability_test",
+    "allowed_paths": [
+      "configs/evaluations/observable_registration_development_boundary_residual_spatiotemporal_falsification_v1.json",
+      "src/sim2claw/observable_registration_development_boundary_residual_spatiotemporal_falsification.py",
+      "tests/test_observable_registration_development_boundary_residual_spatiotemporal_falsification.py",
+      "outputs/observable_registration_development_boundary_residual_spatiotemporal_falsification_v1",
+      "configs/decisions/observable_registration_development_boundary_residual_spatiotemporal_falsification_v1_closeout.json",
+      "docs/briefs/211-observable-registration-or133b-boundary-residual-spatiotemporal-falsification.md",
+      "docs/session-logs/211-executor-observable-registration-or133b.md",
+      "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
+      "configs/sail/observable_registration_current_graph_v1.json",
+      "docs/autonomous-workflow/project_state.json",
+      "GOAL.md"
+    ],
+    "allowed_operations": [
+      "read",
+      "test",
+      "write"
+    ],
+    "validation_commands": [
+      "uv run --locked pytest -q tests/test_observable_registration_development_boundary_residual_spatiotemporal_falsification.py",
+      "uv run --locked sim2claw check --profile agent",
+      "uv run --locked sim2claw agent-goal --check"
+    ],
+    "commit": true,
+    "push_origin_main": true
   },
   "previous_card_contract": {
     "card_id": "OR50",
@@ -233,8 +262,23 @@
     },
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "95c9e73e729f7dbe011ad714eef2d28ee49b4deb5fdaf1d7ec9fe563f09b1002",
+      "sha256": "e3f7ce07721252bb72834f42b341067dd2566f779c1bb439fab53df50df7b527",
       "proof_class": "campaign_control_state"
+    },
+    "or133a": {
+      "path": "configs/decisions/observable_registration_renderer_native_regional_residual_attribution_v1_closeout.json",
+      "sha256": "5df904867366740a0dd1f43872b5826e4c17081b2c16e0247b29691d804e8b1f",
+      "proof_class": "renderer_native_read_only_regional_residual_attribution_and_cohort_exposure_audit"
+    },
+    "or133b": {
+      "path": "configs/decisions/observable_registration_development_boundary_residual_spatiotemporal_falsification_v1_closeout.json",
+      "sha256": "9787e6277931fec69713cf778c449335701896b7329f2af1cc7c1cfd6d6418b9",
+      "proof_class": "development_only_read_compute_boundary_residual_identifiability_test"
+    },
+    "or133c": {
+      "path": "configs/decisions/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification_v1_closeout.json",
+      "sha256": "1282522300e27a321891bd0e012d2a951c07a176bcd7e9e10cb3dd20d25aba06",
+      "proof_class": "development_only_read_compute_boundary_residual_identifiability_test"
     },
     "or69": {
       "path": "configs/decisions/observable_registration_renderer_native_missing_trace_regeneration_v1_closeout.json",
@@ -3750,6 +3794,56 @@
         "required_dominant_episode_count": 9,
         "selected_residual_family": "combined_or_unresolved_no_single_successor"
       }
+    },
+    {
+      "id": "mechanism:or133a-renderer-native-regional-residual-attribution",
+      "type": "mechanism",
+      "label": "Renderer-native regional residual attribution and cohort audit",
+      "status": "pass_retrospective_regional_attribution_complete",
+      "data": {
+        "development_episode_count": 7,
+        "development_frame_count": 751,
+        "triangle_count_every_frame": 825548,
+        "artifact_sha256": "b0673cb231847f82ee333327c3865cb67d6f6f02521c750e5c7e8307127f678e",
+        "geometry_route_episode_count": 0,
+        "illumination_route_episode_count": 0,
+        "boundary_connected_route_episode_count": 7,
+        "untouched_cohort_remaining": false,
+        "intervention_authorized": false
+      }
+    },
+    {
+      "id": "counterexample:or133b-boundary-residual-reproduction-infeasible",
+      "type": "counterexample",
+      "label": "OR133B separate-silhouette instrumentation mismatch",
+      "status": "terminal_boundary_residual_reproduction_infeasible",
+      "data": {
+        "failed_split_position": 2,
+        "instrumented_frames_rendered": 222,
+        "same_card_retry_allowed": false,
+        "terminal_failure_sha256": "c0f0aa2d2c0bc37fdb6604b3980a549908a123217e1b6bd9d84225254e29f4f5",
+        "causal_result_available": false,
+        "intervention_authorized": false
+      }
+    },
+    {
+      "id": "evaluator_verdict:or133c-regional-dynamic-residual-unidentifiable",
+      "type": "evaluator_verdict",
+      "label": "Retained regional dynamic residual identifiability verdict",
+      "status": "terminal_regional_dynamic_residual_unidentifiable_with_retained_evidence",
+      "data": {
+        "artifact_sha256": "687a9df8c0d754fca14830b8de226abd0c3d17383487e36244c99d09ed2f2d05",
+        "exact_or133a_boundary_mass_reproduced": true,
+        "episodes_qualifying_follower_speed_association": 5,
+        "episodes_qualifying_leader_innovation_association": 3,
+        "required_episode_count": 6,
+        "mean_coherent_track_coverage": 0.92238496495592,
+        "measured_class": "boundary_connected_nonshadow_residual",
+        "operator_or_cable_identity": false,
+        "intervention_authorized": false,
+        "new_capture_required": true,
+        "hardware_available": false
+      }
     }
   ],
   "edges": [
@@ -4481,6 +4575,21 @@
     {
       "source": "mechanism:or131-renderer-native-two-planar-fixture-full-timeline-propagation",
       "target": "mechanism:or132-renderer-native-two-planar-fixture-residual-reconciliation",
+      "type": "motivates"
+    },
+    {
+      "source": "mechanism:or132-renderer-native-two-planar-fixture-residual-reconciliation",
+      "target": "mechanism:or133a-renderer-native-regional-residual-attribution",
+      "type": "motivates"
+    },
+    {
+      "source": "mechanism:or133a-renderer-native-regional-residual-attribution",
+      "target": "counterexample:or133b-boundary-residual-reproduction-infeasible",
+      "type": "evaluated-on"
+    },
+    {
+      "source": "counterexample:or133b-boundary-residual-reproduction-infeasible",
+      "target": "evaluator_verdict:or133c-regional-dynamic-residual-unidentifiable",
       "type": "motivates"
     }
   ]
