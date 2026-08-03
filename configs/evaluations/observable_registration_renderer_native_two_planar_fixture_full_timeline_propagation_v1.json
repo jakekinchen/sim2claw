@@ -1,0 +1,104 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_two_planar_fixture_full_timeline_propagation_contract.v1",
+  "experiment_id": "OR131_RENDERER_NATIVE_TWO_PLANAR_FIXTURE_FULL_TIMELINE_PROPAGATION_V1",
+  "proof_class": "renderer_native_two_planar_fixture_full_timeline_propagation",
+  "sources": {
+    "or130_closeout": {
+      "path": "configs/decisions/observable_registration_renderer_native_two_planar_fixture_static_comparison_v1_closeout.json",
+      "sha256": "9e7347bdc0c5c4f023ab1c8972d59afbf317ca329da05fb3e5b23bfd1416130a",
+      "status": "PASS_RENDERER_NATIVE_TWO_PLANAR_FIXTURE_STATIC_COMPARISON"
+    },
+    "or130_receipt": {
+      "path": "outputs/observable_registration_renderer_native_two_planar_fixture_static_comparison_v1/receipt.json",
+      "sha256": "75d090073ec2b7621614c235ac206e1401452d91baa809d09fa6aab5fc909836",
+      "artifact_sha256": "3e81607fac382818f1703f01c525f5f9546edb137c6a139c54382029329c8091"
+    },
+    "or126_parameters": {
+      "path": "outputs/observable_registration_renderer_native_planar_fixture_parameterization_v1/planar-fixture-parameters.json",
+      "sha256": "45d124f45371cecb47e443d0f8b27756a1307bbdf253c8fbe1c16f866a01c7e7",
+      "artifact_sha256": "b863682c9e1ee537f89533203012ac86af6c1294e8714efd42730c3a469d2444"
+    },
+    "or129_parameters": {
+      "path": "outputs/observable_registration_renderer_native_clipped_planar_fixture_parameterization_v1/clipped-planar-fixture-parameters.json",
+      "sha256": "d6c90741eb58ddbe020e0eddb7b0dc6923e94d58431047686774616253ec3b5e",
+      "artifact_sha256": "3686f28cd17c053c77102e9b994a555b9360242005948af5d4e023c5e515b768"
+    },
+    "or119_contract": {
+      "path": "configs/evaluations/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1.json",
+      "sha256": "1d2d5aa18eff218c1374fbbd8639667b654bb930e98bf1d46973a75a06d4781a"
+    }
+  },
+  "frozen_identities": {
+    "implementation": {
+      "path": "src/sim2claw/observable_registration_renderer_native_two_planar_fixture_full_timeline_propagation.py",
+      "sha256": "efea87835d502d8a69cf45faa5bdb7553db4e6db1290cfbb41cc8c71812938ed"
+    },
+    "test": {
+      "path": "tests/test_observable_registration_renderer_native_two_planar_fixture_full_timeline_propagation.py",
+      "sha256": "f51c0b175398fa1a9fa653c84cd51224b10a216263193238023dca3806eabf7a"
+    }
+  },
+  "fixture": {
+    "fixture_count": 2,
+    "cell_count_per_axis": 8,
+    "triangle_count_per_fixture": 128,
+    "total_triangle_count": 256,
+    "plane_offset_m": 0.0005,
+    "black_target_bgr": [20, 20, 20],
+    "white_target_bgr": [240, 240, 240],
+    "shared_zbuffer": true,
+    "physical_pixel_texture_projection": false,
+    "screen_space_overlay": false
+  },
+  "gates": {
+    "expected_episode_count": 11,
+    "expected_total_frame_count": 1210,
+    "expected_total_raster_triangle_count_per_frame": 825548,
+    "expected_candidate_video_count": 11
+  },
+  "resource_boundary": {
+    "physical_episode_decodes_allowed": 11,
+    "physical_frames_compared_allowed": 1210,
+    "candidate_frames_rendered_allowed": 1210,
+    "candidate_videos_allowed": 11,
+    "native_compilations_allowed": 1,
+    "physical_pixel_texture_projections_allowed": 0,
+    "screen_space_overlays_allowed": 0,
+    "fits_or_candidate_selections_allowed": 0,
+    "threshold_changes_allowed": 0,
+    "retries_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "retrospective_same_video_full_timeline_only": true,
+    "complete_and_clipped_fixtures_only": true,
+    "procedural_renderer_geometry_only": true,
+    "physical_pixel_texture_projection": false,
+    "screen_space_overlay": false,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

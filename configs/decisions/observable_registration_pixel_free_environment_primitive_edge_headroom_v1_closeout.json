@@ -1,0 +1,65 @@
+{
+  "schema_version": "sim2claw.observable_registration_pixel_free_environment_primitive_edge_headroom_closeout.v1",
+  "experiment_id": "OR64_PIXEL_FREE_ENVIRONMENT_PRIMITIVE_EDGE_HEADROOM_V1",
+  "status": "PASS_PIXEL_FREE_ENVIRONMENT_PRIMITIVE_EDGE_HEADROOM_ADVANCE",
+  "proof_class": "retained_episode_specific_pixel_free_environment_primitive_edge_headroom_counterfactual",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_pixel_free_environment_primitive_edge_headroom_v1.json",
+    "sha256": "969aeb94f998160188899946b0f3ac2182274114ed3cd80a221d01f3df2fdfbd"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_pixel_free_environment_primitive_edge_headroom.py",
+    "sha256": "9fa74194962060c3886ea226bb84fcf5e322604b84b4dabc362fae06bfa071ab"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_pixel_free_environment_primitive_edge_headroom.py",
+    "sha256": "c378d0bdd2c85e0157b473af9616b9188dd5804171e2abbd2c1966ea8e94e039",
+    "focused_passed": 2
+  },
+  "rows": {
+    "path": "outputs/observable_registration_pixel_free_environment_primitive_edge_headroom_v1/edge_headroom_rows.json",
+    "sha256": "7c98e50d0681e63a0b332ed4a3bdc4e2fc9568fff6f65d98f402f329c1640ef8"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_pixel_free_environment_primitive_edge_headroom_v1/receipt.json",
+    "sha256": "9cc233f019f0bae52ecc4ef81ef8514ea681b8becf9bcfb620e5111386a68c7b",
+    "artifact_sha256": "e80af578fff4b7c5ef72d003a78568e11c27f49d74f335ac9981fe907a61e93d"
+  },
+  "result": {
+    "or58_mean_edge_f1_reproduced_exactly": true,
+    "prefix_8_full_mean_edge_f1": 0.23820692053977788,
+    "prefix_16_full_mean_edge_f1": 0.26843837545293775,
+    "prefix_24_full_mean_edge_f1": 0.2872480714751123,
+    "prefix_24_full_mean_absolute_improvement": 0.10690738363828894,
+    "prefix_24_validation_mean_edge_f1": 0.2856205189543586,
+    "prefix_24_validation_absolute_improvement": 0.1070202876584107,
+    "prefix_24_stress_mean_edge_f1": 0.29110575829291,
+    "remaining_gap_to_edge_gate": 0.11275192852488775,
+    "counterfactual_edge_gate_reached": false,
+    "target_pass": false
+  },
+  "execution": {
+    "frame_evaluations": 516,
+    "primitive_prefixes_evaluated": 3,
+    "renderer_runs": 0,
+    "simulator_replays": 0,
+    "candidate_videos": 0,
+    "image_outputs": 0,
+    "texture_outputs": 0,
+    "physical_pixel_composites": 0,
+    "geometric_warps": 0,
+    "scene_mutations": 0,
+    "validation_or_stress_selections": 0,
+    "hardware_actions": 0
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or65_post_environment_primitive_edge_residual_reattribution",
+  "claim_limits": {
+    "edge_only_counterfactual": true,
+    "same_video_target_pass": false,
+    "simulator_render": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_two_class_robot_material_palette_calibration_contract.v1",
+  "experiment_id": "OR106_POST_FINAL_TWO_CLASS_ROBOT_MATERIAL_PALETTE_CALIBRATION_V1",
+  "proof_class": "post_final_sampled_development_validation_two_class_robot_material_palette_calibration",
+  "sources": {
+    "or105_closeout": {"path": "configs/decisions/observable_registration_post_final_robot_material_semantics_loss_attribution_v1_closeout.json", "sha256": "b49c0fd18428ccc83225a5190d60f01bca39b537033f9fdece9869909372343e"},
+    "or105_receipt": {"path": "outputs/observable_registration_post_final_robot_material_semantics_loss_attribution_v1/receipt.json", "sha256": "49c8b7dbff962ac3ff6876ce9f7e52f18eb3828e69f989c1fa1236614ae05847", "artifact_sha256": "d8bfaeaca7de09df0cb82d785a959e517e3c7bbd1f21a07ab21f13570d21f49a"},
+    "or104_implementation": {"path": "src/sim2claw/observable_registration_post_final_shared_shoulder_lift_articulation_calibration.py", "sha256": "19fc6ff9b520504e5d6b79afdade6f1169e451025985b900c604088cfa71cd73"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+    "or95_receipt": {"path": "outputs/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1/receipt.json", "sha256": "9afcd7d4d7f5e433b0f784db39996e8acf4697a99d5f745bcacf7c6eebc6e65f", "artifact_sha256": "06eaaa2a7fef5aab3363aad23e8ef54ecfbe75f1b289391200c96b2324b0da7c"},
+    "or95_frame_rows": {"path": "outputs/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1/frame_rows.json", "sha256": "7d32235363bf3d90a4185b59291ade3e400616ce6a1de0c843aab89c323b7551"},
+    "or94_implementation": {"path": "src/sim2claw/observable_registration_post_final_independent_left_right_robot_base_se2_diagnostic.py", "sha256": "d2afbdf2b45744045afd8338d0c1ea4bd019147d1cd6215734abafa82b936b75"},
+    "shared_scene_manifest": {"path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/scene_manifest.json", "sha256": "777f915fb7c84d498615f43e54cbeaee47a35494f8166724898ef9dc998f371b", "revision_sha256": "e7d93bb2a5786079131bdfdd82410ffbc108baecd451b0d8a74d9f442aedd3d9"},
+    "or79_native_source": {"path": "tools/renderer/or79_triangle_rasterizer.c", "sha256": "872c5beb0918ffd07e1961eb5bf2119b34b0d7fccf9a419bf06e194c43b39a6b"},
+    "mesh_asset_root": {"path": "third_party/mujoco_menagerie/robotstudio_so101/assets", "hash_source": "shared_scene_manifest.meshes.asset_sha256"}
+  },
+  "split": {"development_positions": [1, 2, 3, 4, 5, 6, 7], "validation_positions": [8, 9, 10, 11], "validation_render_requires_development_gate": true, "validation_never_selects_or_refits": true, "untouched_cohort_remaining": false},
+  "sampling": {"within_episode_quantiles": [0.25, 0.5, 0.75], "index_formula": "floor(quantile_times_episode_evaluation_row_count_minus_one_plus_0p5)", "rows_sorted_by": "evaluation_index", "samples_per_episode": 3},
+  "candidate_family": {
+    "structural_grayscale_albedo_candidates": [0.5, 0.7, 0.85, 1.0],
+    "servo_grayscale_albedo_candidates": [0.05, 0.15, 0.3, 0.5],
+    "identity_pair": [0.5, 0.5],
+    "one_shared_pair_for_both_robots_all_frames_and_episodes": true,
+    "per_frame_side_episode_or_mesh_values": false,
+    "selection": "maximum_development_mean_full_frame_linear_similarity_then_outside_board_edge_f1_then_board_edge_f1_then_closest_to_identity",
+    "selected_pair_frozen_before_validation": true,
+    "geometry_camera_response_action_state_dynamics_timing_and_contact_fixed": true,
+    "pixel_warp_composite_texture_projection_or_mask_edit": false
+  },
+  "renderer": {"width_px": 320, "height_px": 240, "background_rgb": [150, 150, 150], "maximum_triangles_per_mesh_instance": 1000000, "sphere_latitude_segments": 6, "sphere_longitude_segments": 10, "cylinder_segments": 12, "capsule_policy": "depth_union_of_cylinder_and_two_uv_spheres", "lighting": {"world_direction": [0.3, -0.4, 0.85], "ambient": 0.35, "diffuse": 0.65, "two_sided": true}},
+  "regions": {"board_plus_margin": {"points_px": [[-3.0, 66.5], [79.0, 52.0], [176.0, 144.5], [71.5, 193.0]], "dilation_kernel_px_at_320x240": 15}, "outside_board": {"definition": "pixelwise_complement_of_board_plus_margin"}},
+  "metric": {"primary_formula": "1_minus_mean_absolute_bgr_error_divided_by_255", "edge": {"canny_low_threshold": 50, "canny_high_threshold": 150, "tolerance_dilation_kernel_px": 3}},
+  "acceptance": {"development_minimum_selected_minus_identity_mean_full_frame_linear_similarity": 0.004, "development_minimum_samples_with_full_frame_gain_at_least_0p002": 14, "validation_minimum_selected_minus_identity_mean_full_frame_linear_similarity": 0.003, "validation_minimum_samples_with_full_frame_gain_at_least_0p002": 8, "minimum_selected_minus_identity_mean_outside_board_edge_f1": -0.005, "minimum_selected_minus_identity_mean_board_plus_margin_edge_f1": -0.005, "all_gates_required": true},
+  "gates": {"expected_development_sample_count": 21, "expected_validation_sample_count": 12, "expected_candidate_pair_count": 16, "expected_unique_mesh_asset_reads": 18, "expected_total_raster_triangle_count_per_frame": 824944, "maximum_identity_baseline_metric_absolute_error_vs_or95": 1e-12},
+  "resource_boundary": {"development_state_trace_reads_allowed": 7, "validation_state_trace_reads_allowed_if_development_passes": 4, "already_open_development_physical_episode_decodes_allowed": 7, "already_open_validation_physical_episode_decodes_allowed_if_development_passes": 4, "development_physical_frames_compared_allowed": 21, "validation_physical_frames_compared_allowed_if_development_passes": 12, "candidate_pair_values_allowed": 16, "fits_allowed": 1, "exact_full_mesh_development_candidate_renders_allowed": 336, "exact_full_mesh_validation_selected_renders_allowed_if_development_passes": 12, "simulator_replays_allowed": 0, "action_or_state_mutations_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"post_final_sampled_retrospective_material_calibration_only": true, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

@@ -1,0 +1,118 @@
+{
+  "schema_version": "sim2claw.observable_registration_second_success_footage_replication_contract.v1",
+  "experiment_id": "OR54_SECOND_SUCCESSFUL_SAME_RIG_FOOTAGE_REPLICATION_V1",
+  "proof_class": "retained_known_success_same_rig_two_pass_image_plane_tracking_replication_diagnostic",
+  "sources": {
+    "recording_receipt": {
+      "path": "datasets/manipulation_source_recordings/b5-to-a5__20260727T041623Z-4b8cba4b/recording_receipt.json",
+      "sha256": "a3cdedf52c92c275258d99aecc172fc975bdc20dcafbe2aeb76b8dced4c664a8"
+    },
+    "raw_samples": {
+      "path": "datasets/manipulation_source_recordings/b5-to-a5__20260727T041623Z-4b8cba4b/samples.jsonl",
+      "sha256": "2219c1a423fbefd91134e6ab8a0003f2f24dc53ade22669d89985ca822394e64"
+    },
+    "wrist_rgb_video": {
+      "path": "datasets/manipulation_source_recordings/b5-to-a5__20260727T041623Z-4b8cba4b/wrist_d405.browser.mp4",
+      "sha256": "9046fee81cdd02e61fb0387054c5d91a2856775513ac0585430b86601bcce1cb"
+    },
+    "wrist_rgb_metadata": {
+      "path": "datasets/manipulation_source_recordings/b5-to-a5__20260727T041623Z-4b8cba4b/wrist_video.json",
+      "sha256": "3739046e7c598960cd7307bed4291d8f12d416a2d05e91d0128e932ab1bfc5c5"
+    },
+    "or52_closeout": {
+      "path": "configs/decisions/observable_registration_footage_enclosure_audit_v1_closeout.json",
+      "sha256": "cf8a2227e6921a12b56a335c3093a99fddf85feb1a444f60c92cd7fbca2f631c"
+    },
+    "or53_closeout": {
+      "path": "configs/decisions/observable_registration_existing_trace_footage_constraint_audit_v1_closeout.json",
+      "sha256": "214fac3a0e0cd76556637c8c3c640fd2855c58c5e6fd7d9847214bad1f85087e"
+    }
+  },
+  "recording_policy": {
+    "recording_id": "20260727T041623Z-4b8cba4b",
+    "directory_label": "b5-to-a5",
+    "authoritative_receipt_source_square": "b2",
+    "authoritative_receipt_destination_square": "b1",
+    "authoritative_receipt_piece_id": "brown_pawn_b2",
+    "authoritative_receipt_outcome_label": "success",
+    "known_outcome_quarantine_permanent": true,
+    "heldout_claim_allowed": false,
+    "cross_episode_parameter_fit_allowed": false
+  },
+  "closed_command_hold": {
+    "search_sample_range_inclusive": [180, 400],
+    "gripper_joint_index": 5,
+    "command_field": "follower_command_degrees",
+    "closed_command_target_degrees": 1.0688836104513064,
+    "absolute_tolerance_degrees": 1e-12,
+    "selection_rule": "longest_contiguous_matching_run"
+  },
+  "frame_association": {
+    "browser_frame_rate_hz": 5.0,
+    "sample_video_time_field": "wrist_video_time_seconds",
+    "selection_rule": "nearest_sample_to_container_pts",
+    "maximum_association_error_ms": 26.0,
+    "all_selected_frames_must_map_inside_closed_command_hold": true
+  },
+  "tracking": {
+    "stream": "d405_rgb_non_metric",
+    "algorithm": "opencv_pyramidal_lucas_kanade",
+    "frame_range_inclusive": [100, 125],
+    "labels": ["fixed_jaw_tip", "moving_jaw_tip", "selected_pawn_crown"],
+    "pass_a": {
+      "direction": "ascending",
+      "anchor_frame_index": 100,
+      "anchor_points_xy": [[217.0, 179.0], [263.0, 180.0], [243.0, 175.0]]
+    },
+    "pass_b": {
+      "direction": "descending",
+      "anchor_frame_index": 125,
+      "anchor_points_xy": [[215.0, 176.0], [264.0, 176.0], [242.0, 164.0]]
+    },
+    "opencv_parameters": {
+      "window_size_px": [31, 31],
+      "maximum_pyramid_level": 4,
+      "maximum_iterations": 40,
+      "epsilon": 0.001,
+      "minimum_eigenvalue_threshold": 0.00001
+    },
+    "maximum_jaw_tip_pass_disagreement_px": 8.0,
+    "maximum_pawn_crown_pass_disagreement_px": 8.0,
+    "minimum_accepted_rows_per_point": 20,
+    "per_frame_manual_correction_allowed": false,
+    "interpolation_allowed": false,
+    "failed_tracks_abstain": true
+  },
+  "execution": {
+    "endpoint_anchor_count": 6,
+    "per_frame_manual_annotations_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "new_candidates_allowed": 0,
+    "parameter_changes_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "heldout_open_allowed": false
+  },
+  "claim_limits": {
+    "metric_aperture": false,
+    "metric_depth": false,
+    "contact_force": false,
+    "bilateral_physical_contact": false,
+    "camera_calibration": false,
+    "canonical_contact_geometry": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

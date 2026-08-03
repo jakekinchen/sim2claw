@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.observable_registration_native_full_mesh_development_timeline_closeout.v1",
+  "experiment_id": "OR80_NATIVE_FULL_MESH_DEVELOPMENT_TIMELINE_V1",
+  "status": "TERMINAL_NATIVE_FULL_MESH_DEVELOPMENT_BELOW_TARGET",
+  "proof_class": "development_four_episode_frozen_camera_native_full_mesh_temporal_pixel_evaluation",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_native_full_mesh_development_timeline_v1.json",
+    "sha256": "02351984c1d4677d2ab079c15c5098485b923b3b574a4895baa78e8d04404b01"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_native_full_mesh_development_timeline.py",
+    "sha256": "c1de353370f24b695c68f9762649762197ad2ba4c187f7a26cfe7f41360026a7"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_native_full_mesh_development_timeline.py",
+    "sha256": "63401846ae9d38234c0aeba7541fb7973d363550d094c915770a4a81aa69a0fa",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_native_full_mesh_development_timeline_v1/receipt.json",
+    "sha256": "1598bd3d0b66430cb7b39f9d3774d47d4e9a3de792a3422af85572bc7e79fb9b",
+    "artifact_sha256": "3e65d65d1a3e3eeaedb0decaef0114227046e401ed405f4f137cb054e71ab200"
+  },
+  "result": {
+    "development_episode_count": 4,
+    "frame_count": 423,
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.8034967687465339,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.7910737514495849,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.7672378584032967,
+    "pooled_mean_tolerant_edge_f1": 0.2976785782217679,
+    "minimum_episode_mean_full_frame_linear_pixel_similarity": 0.8007195495834974,
+    "minimum_phase_mean_full_frame_linear_pixel_similarity": 0.7940441608428955,
+    "metric_gates_passed": 5,
+    "metric_gates_total": 6,
+    "integrity_gates_passed": 6,
+    "integrity_gates_total": 6,
+    "full_frame_mean_target_crossed": true,
+    "edge_target_crossed": false,
+    "edge_gap_to_target": 0.10232142177823212,
+    "wall_seconds": 144.52931758295745,
+    "mean_full_frame_render_seconds": 0.33752753809380653,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "parameter_fits": 0,
+    "simulator_replays": 0,
+    "pixel_similarity_achieved": false,
+    "physics_fidelity_achieved": false
+  },
+  "reviewer_decision": "KEEP_VALIDATION_CLOSED_AND_SELECT_DEVELOPMENT_CAMERA_GEOMETRY_MECHANISM",
+  "next_transition": "freeze_or81_development_board_grid_camera_geometry_audit",
+  "claim_limits": {
+    "development_full_timeline_evaluation_only": true,
+    "analytic_primitive_tessellation_approximate": true,
+    "mujoco_raster_equivalence": false,
+    "physical_camera_matched": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

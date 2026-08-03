@@ -1,0 +1,106 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_dense_static_support_reconstruction_contract.v1",
+  "experiment_id": "OR125_RENDERER_NATIVE_DENSE_STATIC_SUPPORT_RECONSTRUCTION_V1",
+  "proof_class": "renderer_native_dense_static_support_reconstruction",
+  "sources": {
+    "or124_closeout": {"path": "configs/decisions/observable_registration_planar_array_residual_motion_ownership_attribution_v1_closeout.json", "sha256": "eab3b1c1924aa3a578130009643f4411a1366014499e881c38fb773424156e68"},
+    "or124_receipt": {"path": "outputs/observable_registration_planar_array_residual_motion_ownership_attribution_v1/receipt.json", "sha256": "82f2733aafedbfa3b5372099a03b1a4941e3c99f935ac15bf0f4fcae72114b8e", "artifact_sha256": "32dc4a62dffaef52df2a01906498574dd425f644195c5a69d0b138e963c2be43"},
+    "or123_audit": {"path": "outputs/observable_registration_renderer_native_planar_array_failure_attribution_v1/planar-array-failure-attribution.png", "sha256": "0f42f68969e948624ac1bc4cd531955e73fc4029777bbaf70ae74db2ffcac1ae"},
+    "or122b_receipt": {"path": "outputs/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction_v1/receipt.json", "sha256": "0fb1d82ee7fa256a9be44e4754a9523a33dedb148863748acaa0ea53a94e6bcf", "artifact_sha256": "b995db022e7f4d3f4d150a620cb2a8a0474572b47940bac7bca3757bb93facbe"},
+    "or119_contract": {"path": "configs/evaluations/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1.json", "sha256": "1d2d5aa18eff218c1374fbbd8639667b654bb930e98bf1d46973a75a06d4781a"},
+    "or119_frame_rows": {"path": "outputs/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1/frame_rows.json", "sha256": "71e07d3725b221863c44f149148f94d6f1861217299b04a0c0e980827c9a4f7c"},
+    "or118_receipt": {"path": "outputs/observable_registration_post_final_two_material_shaft_terminal_calibration_v1/receipt.json", "sha256": "fe57096d7b307208c1382c2029e1c5c568aa04090d691784a56114c5cada93df", "artifact_sha256": "c7df01d4f6651004ccc4fec7edb97142e0f9af67a7e1a26641eeae491a12665d"},
+    "or116_contract": {"path": "configs/evaluations/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_v1.json", "sha256": "ff02ea2a939ebc8ff95d420dd750d6aa4f2f7c93ec51448943bdc0362fabf351"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+    "shared_scene_manifest": {"path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/scene_manifest.json", "sha256": "777f915fb7c84d498615f43e54cbeaee47a35494f8166724898ef9dc998f371b"},
+    "mesh_asset_root": {"path": "third_party/mujoco_menagerie/robotstudio_so101/assets", "hash_source": "shared_scene_manifest.meshes.asset_sha256"},
+    "or79_native_source": {"path": "tools/renderer/or79_triangle_rasterizer.c", "sha256": "872c5beb0918ffd07e1961eb5bf2119b34b0d7fccf9a419bf06e194c43b39a6b"}
+  },
+  "frozen_identities": {
+    "implementation": {"path": "src/sim2claw/observable_registration_renderer_native_dense_static_support_reconstruction.py", "sha256": "d6da92bbfe4ceadbdbf08cd131fa8df82dc8158cff07ed8d7044c268a9037cd4"},
+    "test": {"path": "tests/test_observable_registration_renderer_native_dense_static_support_reconstruction.py", "sha256": "f33e23fd61f03b78b3160ac9efd79900dac2dacbf2e3e106d68bd61bc7af6e88"}
+  },
+  "split": {
+    "development_positions": [1, 2, 3, 4, 5, 6, 7],
+    "corroboration_positions": [8, 9, 10, 11],
+    "corroboration_requires_development_gate": true,
+    "corroboration_refit_allowed": false,
+    "untouched_cohort_remaining": false
+  },
+  "vectorization": {
+    "source": "or123_uncovered_consensus_panel",
+    "panel_width_px": 320,
+    "panel_height_px": 240,
+    "component_dilation_kernel_px": 3,
+    "minimum_dilated_component_area_px": 8,
+    "primitive_per_component": "minimum_area_rotated_rectangle_perimeter",
+    "minimum_segment_length_px": 2.0,
+    "maximum_dense_segment_count": 192,
+    "search_or_selection_allowed": false
+  },
+  "expected_vectorization": {
+    "uncovered_pixel_count": 626,
+    "dilated_component_count": 41,
+    "retained_component_count": 40,
+    "dense_segment_count": 160
+  },
+  "geometry": {
+    "primitive_type": "tabletop_supported_capsule_contours",
+    "inherited_centerline_segment_count": 5,
+    "dense_segment_count": 160,
+    "total_segment_count": 165,
+    "triangle_count_per_segment": 248,
+    "total_added_triangle_count": 40920,
+    "radius_px": 1.0,
+    "support_plane": "or116_body_8_geom_101_exact_tabletop",
+    "shared_scene_zbuffer": true,
+    "physical_pixel_composite": false
+  },
+  "material": {
+    "source": "or122b_pre_response_bgr",
+    "expected_pre_response_bgr": [113, 123, 163],
+    "refits_allowed": 0
+  },
+  "regions": {
+    "dense_support_roi_xyxy": [0, 150, 190, 240]
+  },
+  "acceptance": {
+    "development": {"minimum_mean_outside_board_edge_f1_delta": 0.012, "minimum_mean_array_roi_edge_f1_delta": 0.1, "minimum_mean_full_frame_similarity_delta": 0.0004, "maximum_absolute_mean_board_edge_f1_delta": 0.001, "minimum_mean_consensus_change_coverage": 0.75, "all_rows_positive_outside_required": true},
+    "corroboration": {"minimum_mean_outside_board_edge_f1_delta": 0.01, "minimum_mean_array_roi_edge_f1_delta": 0.08, "minimum_mean_full_frame_similarity_delta": 0.0003, "maximum_absolute_mean_board_edge_f1_delta": 0.001, "minimum_mean_consensus_change_coverage": 0.7, "all_rows_positive_outside_required": true},
+    "maximum_endpoint_reprojection_error_px": 1e-8,
+    "all_gates_required": true
+  },
+  "resource_boundary": {
+    "development_physical_frame_reads_allowed": 7,
+    "corroboration_physical_frame_reads_allowed_if_development_passes": 4,
+    "baseline_renders_allowed": 11,
+    "candidate_renders_allowed": 11,
+    "contour_or_parameter_searches_allowed": 0,
+    "material_refits_allowed": 0,
+    "plane_or_camera_changes_allowed": 0,
+    "threshold_changes_allowed": 0,
+    "retries_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "physical_pixel_composites_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "retrospective_same_episode_initial_frame_static_support_reconstruction_only": true,
+    "workcell_static_image_ownership": true,
+    "specific_tabletop_surface_proven": false,
+    "specific_object_identity": false,
+    "metric_3d_geometry_calibrated": false,
+    "same_video_semantic_match": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_two_planar_fixture_residual_reconciliation_contract.v1",
+  "experiment_id": "OR132_RENDERER_NATIVE_TWO_PLANAR_FIXTURE_RESIDUAL_RECONCILIATION_V1",
+  "proof_class": "renderer_native_two_planar_fixture_residual_reconciliation",
+  "sources": {
+    "or131_closeout": {"path": "configs/decisions/observable_registration_renderer_native_two_planar_fixture_full_timeline_propagation_v1_closeout.json", "sha256": "3d251f87822b7f3deec31ebbaefc0eeeeca82127a18a369a7b3fad7687c7f1b0"},
+    "or131_receipt": {"path": "outputs/observable_registration_renderer_native_two_planar_fixture_full_timeline_propagation_v1/receipt.json", "sha256": "d100315ca8c7a78c1b882a82c4527f01adf39ce86c93d57b5d6f047e2cebb33a", "artifact_sha256": "ad7e3071670a8a8442ccdecd46c7cb640e27a06880be64031b77253a9de1dff2"},
+    "or131_frame_rows": {"path": "outputs/observable_registration_renderer_native_two_planar_fixture_full_timeline_propagation_v1/frame_rows.json", "sha256": "ddb94e736812d7b624d2e56a4d095ecfcbb64897ef25e2c34518e157b26c7118"},
+    "or120_contract": {"path": "configs/evaluations/observable_registration_post_object_full_timeline_residual_reconciliation_v1.json", "sha256": "93dc9c7b6075f1e84359fcf261da3a68636d9064dedf0b17c781b2edf172e999"}
+  },
+  "frozen_identities": {
+    "implementation": {"path": "src/sim2claw/observable_registration_renderer_native_two_planar_fixture_residual_reconciliation.py", "sha256": "673c779ac6bda457dbd692be010419843644367c597d02e9865fe9bca2fd2cbb"},
+    "test": {"path": "tests/test_observable_registration_renderer_native_two_planar_fixture_residual_reconciliation.py", "sha256": "9095a0f7b1ce753619c631afe0f8e134ff5a0a8b32284182ceaa88d131c8c8c4"}
+  },
+  "resource_boundary": {
+    "existing_physical_video_decodes_allowed": 11,
+    "existing_candidate_video_decodes_allowed": 11,
+    "physical_frames_read_allowed": 1210,
+    "candidate_frames_read_allowed": 1210,
+    "occupancy_map_outputs_allowed": 11,
+    "renders_allowed": 0,
+    "fits_allowed": 0,
+    "candidate_selections_allowed": 0,
+    "threshold_changes_allowed": 0,
+    "retries_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "post_or131_retrospective_diagnostic_only": true,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

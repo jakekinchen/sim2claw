@@ -1,0 +1,60 @@
+{
+  "schema_version": "sim2claw.observable_registration_development_board_grid_camera_geometry_fit_closeout.v1",
+  "experiment_id": "OR81_DEVELOPMENT_BOARD_GRID_CAMERA_GEOMETRY_FIT_V1",
+  "status": "TERMINAL_BOARD_GRID_CAMERA_GEOMETRY_STATIC_GATE_FAILED",
+  "proof_class": "development_four_frame_shared_board_lattice_camera_geometry_fit",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_development_board_grid_camera_geometry_fit_v1.json",
+    "sha256": "3dbcd3b3635e8682db2dc157e99264af9d622f9ffe7b185492c1c616ca44223b"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_development_board_grid_camera_geometry_fit.py",
+    "sha256": "01e6810ce0f8f7b4eec140ed7a174adfbc4e5298863e46d4d71228c3778b2140"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_development_board_grid_camera_geometry_fit.py",
+    "sha256": "5814ed68a8e0c6976ae5d716e0aa6736c7b696a20cf6954489570606c937b662",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_development_board_grid_camera_geometry_fit_v1/receipt.json",
+    "sha256": "e938f12c6a4c4b1c99a780066bbe1bad9109f87934a594f772e9eba5704cb212",
+    "artifact_sha256": "ef44788e0b74695de6c41826969ab6961614a3a9b1f4d479f5f7a0c66d21ce6d"
+  },
+  "result": {
+    "candidate_evaluations": 29896,
+    "selected_hypothesis": 5,
+    "selected_board_reprojection_rms_px": 22.512793988310932,
+    "selected_board_reprojection_max_px": 29.545390210441862,
+    "mean_full_frame_linear_pixel_similarity": 0.7330585196614265,
+    "mean_tolerant_edge_f1": 0.3868349737969936,
+    "baseline_mean_tolerant_edge_f1": 0.29156504873745515,
+    "edge_f1_improvement": 0.09526992505953845,
+    "gates_passed": 7,
+    "gates_total": 9,
+    "optimizer_converged": false,
+    "camera_elevation_bound_hit": true,
+    "camera_fov_bound_hit": true,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "appearance_fits": 0,
+    "time_fits": 0,
+    "state_or_physics_fits": 0
+  },
+  "reviewer_decision": "REJECT_SEVEN_PARAMETER_CAMERA_AND_EXPAND_ONLY_SENSOR_ROLL",
+  "next_transition": "freeze_or82_board_grid_camera_sensor_roll_successor",
+  "claim_limits": {
+    "development_board_camera_fit_only": true,
+    "full_timeline_verified": false,
+    "mujoco_raster_equivalence": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

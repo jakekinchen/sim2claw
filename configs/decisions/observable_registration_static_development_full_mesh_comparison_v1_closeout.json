@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.observable_registration_static_development_full_mesh_comparison_closeout.v1",
+  "experiment_id": "OR78_STATIC_DEVELOPMENT_FULL_MESH_COMPARISON_V1",
+  "status": "PASS_FULL_MESH_STATIC_DEVELOPMENT_ADVANCE",
+  "proof_class": "development_four_initial_frame_frozen_camera_full_mesh_no_refit_comparison",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_static_development_full_mesh_comparison_v1.json",
+    "sha256": "2b680e971359b6114cd7ad33c676092db182c2c5a35ac9a6e0223fd0d5d5f337"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_static_development_full_mesh_comparison.py",
+    "sha256": "d1cbf5f92cde301c3b07b75bc1b5f3d28f3b890bd99507a52c3e047f4e5047da"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_static_development_full_mesh_comparison.py",
+    "sha256": "3e7f6d041fbcfa961cd331bbe3ea3436d4f35620cf472c7da0969c62abb07f1f",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_static_development_full_mesh_comparison_v1/receipt.json",
+    "sha256": "9761ef625e2707aa59d7d75531c00216da8d4388eb3edbaecbbcd600ea2fcffb",
+    "artifact_sha256": "8eb758da767733bc8c62d8502a10bd048f31133e74dc0305a285696b7856651b"
+  },
+  "result": {
+    "development_episode_count": 4,
+    "candidate_image_count": 4,
+    "mean_full_frame_linear_pixel_similarity": 0.8101436235010624,
+    "baseline_mean_full_frame_linear_pixel_similarity": 0.7904017791152,
+    "mean_full_frame_linear_pixel_similarity_improvement": 0.01974184438586235,
+    "mean_tolerant_edge_f1": 0.29156504873745515,
+    "baseline_mean_tolerant_edge_f1": 0.27677871748811234,
+    "mean_tolerant_edge_f1_improvement": 0.01478633124934281,
+    "minimum_episode_full_frame_linear_pixel_similarity": 0.8063771426677704,
+    "maximum_episode_full_frame_linear_pixel_similarity": 0.8124138116836548,
+    "unique_mesh_asset_reads": 18,
+    "mesh_definitions_per_frame": 36,
+    "mesh_source_triangles_per_frame": 802680,
+    "mesh_raster_triangles_per_frame": 802680,
+    "total_raster_triangles_per_frame": 824944,
+    "gates_passed": 13,
+    "gates_total": 13,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "parameter_fits": 0,
+    "simulator_replays": 0,
+    "pixel_similarity_achieved": false,
+    "physics_fidelity_achieved": false
+  },
+  "reviewer_decision": "ADVANCE_TO_FROZEN_FULL_MESH_TEMPORAL_EVALUATION_AFTER_EXACT_ACCELERATION_EQUIVALENCE",
+  "next_transition": "freeze_or79_native_rasterizer_byte_equivalence_before_temporal_budget",
+  "claim_limits": {
+    "development_initial_frame_structural_comparison_only": true,
+    "full_timeline_verified": false,
+    "analytic_primitive_tessellation_approximate": true,
+    "mujoco_raster_equivalence": false,
+    "full_scene_mesh_exactness": false,
+    "physical_camera_matched": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

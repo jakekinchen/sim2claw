@@ -1,0 +1,42 @@
+{
+  "schema_version": "sim2claw.observable_registration_gui_session_renderer_capability_probe_closeout.v1",
+  "experiment_id": "OR60_GUI_SESSION_RENDERER_CAPABILITY_PROBE_V1",
+  "status": "TERMINAL_GUI_SERVICE_UNAVAILABLE_NO_RENDERER_CONTEXT",
+  "proof_class": "local_read_only_gui_session_renderer_capability_probe",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_gui_session_renderer_capability_probe_v1.json",
+    "sha256": "a4e4c4be81cc2013eeaed05fc7ed1a828bfbb85e25e5d5293d91a73a9c55a326"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_gui_session_renderer_capability_probe_v1/receipt.json",
+    "sha256": "e6c7efe2a5171adbe126387e9a2631b5c73aa0a7612b0bc086743593ae0f94da",
+    "artifact_sha256": "c354d492b96c80d6b1024cbdcab0a59aa9aa2cf61d558c1ec5d552846d0d8f0c"
+  },
+  "result": {
+    "terminal_state_requests": 1,
+    "app_enumeration_requests": 1,
+    "failure_signature": "Sky Computer Use service startup request failed",
+    "computer_use_service_started": false,
+    "terminal_state_observable": false,
+    "renderer_context_available": false
+  },
+  "execution": {
+    "ui_actions": 0,
+    "terminal_commands": 0,
+    "renderer_runs": 0,
+    "dependency_installs": 0,
+    "colima_starts": 0,
+    "candidate_videos": 0,
+    "scene_changes": 0,
+    "hardware_actions": 0
+  },
+  "reviewer_decision": "REDIRECT",
+  "next_transition": "freeze_or61_installed_webgl_replay_capability_probe",
+  "claim_limits": {
+    "native_gui_renderer_available": false,
+    "same_video_target_pass": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

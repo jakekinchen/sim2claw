@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy_closeout.v1",
+  "experiment_id": "OR108_POST_FINAL_PERSISTENCE_SUBTRACTED_DYNAMIC_OPERATOR_PROXY_V1",
+  "status": "PASS_DYNAMIC_OPERATOR_PROXY_VALIDATED",
+  "proof_class": "post_final_development_frozen_persistence_subtracted_dynamic_operator_proxy",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy_v1.json", "sha256": "7e7b34af588783f83dbebf464b502188f8540cfa35017d36087301732b19e414"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy.py", "sha256": "3009af40ead179c9e1a2a70870d2d8777e972bbc917dd4eedeb509b76e4bc6ec"},
+  "test": {"path": "tests/test_observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy.py", "sha256": "fde42ed4dba9e72f9d1dbf5adccd0e79ad030d3ab74a6969bdeeb708096a46ea", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy_v1/receipt.json", "sha256": "bb0842d969a2083d86eb8f5f0c87ee7dd08bcc07205f95a9064836c6133d62c4", "artifact_sha256": "ea581454fa8e15ce20e58789b02a76641eba01a5a194c30ff377aa90ddb19fab"},
+  "result": {"persistent_support_area_fraction": 0.06330587997029637, "development_mean_dynamic_area_fraction": 0.03911220195902569, "development_mean_dynamic_edge_fraction": 0.11366899561078128, "development_present_samples": 13, "validation_mean_dynamic_area_fraction": 0.029558777200207026, "validation_mean_dynamic_edge_fraction": 0.0961448336051915, "validation_present_samples": 8, "gates_passed": 13, "gates_total": 13},
+  "reviewer_decision": "FREEZE_SINGLE_CAPSULE_DYNAMIC_OPERATOR_SHAPE_IDENTIFIABILITY",
+  "next_transition": "freeze_or109_single_capsule_dynamic_operator_shape_identifiability",
+  "claims": {"operator_geometry_or_trajectory_calibrated": false, "same_video_semantic_match": false, "person_identity_or_biometric_inference": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

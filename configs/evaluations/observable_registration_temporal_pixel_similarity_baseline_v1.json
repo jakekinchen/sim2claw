@@ -1,0 +1,121 @@
+{
+  "schema_version": "sim2claw.observable_registration_temporal_pixel_similarity_contract.v1",
+  "experiment_id": "OR55_TEMPORAL_PIXEL_SIMILARITY_BASELINE_V1",
+  "proof_class": "retained_action_identical_registered_physical_simulator_temporal_pixel_similarity_baseline",
+  "sources": {
+    "goal_loop": {
+      "path": "docs/autonomous-workflow/goal-loop-physical-simulator-temporal-pixel-similarity-20260802.md",
+      "sha256": "4457ccb8858cd847ba938741afba5c9f861111099f98e19c766193433fb41767"
+    },
+    "or26_closeout": {
+      "path": "configs/decisions/observable_registration_visible_divergence_video_v1_closeout.json",
+      "sha256": "07bfad4071199dc0de6f27d00d5f3aed0a796aaaccbf8b7f0ebd39ccdf24bebd"
+    },
+    "or26_receipt": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/receipt.json",
+      "sha256": "b6589ea2848749a91fda7ea7adfa7838e4f2a8f9f7089141e5570092cbdd9a4e"
+    },
+    "physical_video": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/physical.mp4",
+      "sha256": "00aaf4bed86e25d6a661643335ae577906bf436681fe7b1f09f76a60ea0ce1c8"
+    },
+    "simulator_video": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/simulator.mp4",
+      "sha256": "fb6fb32eca13e6990129269c91f404b52c6a2ff721cb1851f024060ef9a3a6ca"
+    },
+    "motion_curves": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/motion_curves.json",
+      "sha256": "7b1adb0fbfd4388cd610ceee7bf2d9afa1c5521a95d143a0fe2247fb3d152430"
+    }
+  },
+  "timebox": {
+    "started_at_utc": "2026-08-03T01:01:16Z",
+    "deadline_utc": "2026-08-03T09:01:16Z",
+    "maximum_elapsed_hours": 8
+  },
+  "timeline": {
+    "expected_frame_count": 531,
+    "expected_available_physical_frame_count": 516,
+    "expected_missing_physical_frame_count": 15,
+    "width_px": 640,
+    "height_px": 480,
+    "fps": 20.0,
+    "missing_frames_excluded_not_filled": true,
+    "phases": [
+      {"name": "approach", "sample_range_inclusive": [0, 227]},
+      {"name": "contact", "sample_range_inclusive": [228, 247]},
+      {"name": "lift_onset", "sample_range_inclusive": [248, 259]},
+      {"name": "carry", "sample_range_inclusive": [260, 399]},
+      {"name": "release_settle", "sample_range_inclusive": [400, 530]}
+    ]
+  },
+  "metric": {
+    "primary_name": "full_frame_linear_pixel_similarity",
+    "primary_formula": "1_minus_mean_absolute_bgr_error_divided_by_255",
+    "additional_geometric_warp_allowed": false,
+    "color_fit_allowed": false,
+    "per_frame_transform_allowed": false,
+    "physical_pixel_compositing_allowed": false,
+    "physical_pixels_as_simulator_texture_allowed": false,
+    "board_polygon_source": "or26_receipt.camera_and_display_registration.physical_playing_corners_px",
+    "ssim": {
+      "color_space": "grayscale",
+      "gaussian_window_px": [11, 11],
+      "gaussian_sigma": 1.5,
+      "k1": 0.01,
+      "k2": 0.03
+    },
+    "motion_union": {
+      "grayscale_gaussian_kernel_px": 5,
+      "physical_difference_threshold": 12,
+      "simulator_difference_threshold": 5,
+      "dilation_kernel_px": 7,
+      "minimum_union_pixels": 100
+    },
+    "edge": {
+      "canny_low_threshold": 50,
+      "canny_high_threshold": 150,
+      "tolerance_dilation_kernel_px": 3
+    }
+  },
+  "acceptance": {
+    "minimum_mean_full_frame_linear_pixel_similarity": 0.80,
+    "minimum_p10_full_frame_linear_pixel_similarity": 0.75,
+    "minimum_mean_motion_union_linear_pixel_similarity": 0.75,
+    "minimum_each_phase_mean_full_frame_linear_pixel_similarity": 0.78,
+    "minimum_mean_tolerant_edge_f1": 0.40,
+    "all_gates_required": true
+  },
+  "execution": {
+    "simulator_replays_allowed": 0,
+    "candidate_renders_allowed": 0,
+    "geometric_registration_changes_allowed": 0,
+    "color_fits_allowed": 0,
+    "parameter_changes_allowed": 0,
+    "physical_frame_substitutions_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "heldout_open_allowed": false
+  },
+  "claim_limits": {
+    "metric_camera_calibration": false,
+    "physics_fidelity": false,
+    "physical_contact_force": false,
+    "bilateral_physical_contact": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_success": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

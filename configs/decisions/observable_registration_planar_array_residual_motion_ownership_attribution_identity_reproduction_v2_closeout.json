@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.observable_registration_planar_array_residual_motion_ownership_attribution_identity_reproduction_closeout.v2",
+  "experiment_id": "OR124C_IDENTITY_BOUND_RESIDUAL_MOTION_OWNERSHIP_REPRODUCTION_V2",
+  "status": "PASS_SIGNIFICANT_RESIDUAL_COMPONENTS_WORKCELL_STATIC_REPRODUCED",
+  "proof_class": "identity_bound_residual_motion_ownership_reproduction_v2",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_planar_array_residual_motion_ownership_attribution_identity_reproduction_v2.json",
+    "sha256": "b677b3fda0b23283719563b5698733b71bafbd05246f1ec63b0ebd51cbec9d7a"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_planar_array_residual_motion_ownership_attribution_identity_reproduction_v2.py",
+    "sha256": "790a4bf4db5a6a8e3734623cda5878fb8f445039ae8d4550aef16517fd63938c"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_planar_array_residual_motion_ownership_attribution_identity_reproduction_v2.py",
+    "sha256": "fe2400817506f02a4bafa678b370723da37b9ce1f0468452534a377ddb2e3fe5",
+    "focused_passed_before_execution": 3,
+    "focused_passed_after_execution": 3
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_planar_array_residual_motion_ownership_attribution_identity_reproduction_v2/receipt.json",
+    "sha256": "06b2832df66aef9f169504e68eec097e0f3815abfa8e75d60eefdf0b5c8cdb23",
+    "artifact_sha256": "bbf50647713cc3b87f35dc885f16fe3138a35b17103dc970cbc23e516c729a3c"
+  },
+  "result": {
+    "selected_motion_ownership": "workcell_static",
+    "significant_component_count": 5,
+    "significant_component_raw_pixel_count": 398,
+    "total_or123_uncovered_pixel_count": 626,
+    "development_static_votes_per_component": [7, 7, 7, 7, 7],
+    "corroboration_static_votes_per_component": [4, 4, 4, 4, 4],
+    "development_decisive": true,
+    "corroboration_matches_development": true,
+    "physical_video_decodes": 11,
+    "physical_frame_reads": 1173
+  },
+  "review_limit": {
+    "all_626_pixels_classified": false,
+    "specific_surface_or_object_identified": false,
+    "tabletop_plane_selected": false,
+    "dense_mask_geometry_authorized": false,
+    "reason": "Motion ownership establishes camera-fixed workcell content for five significant components, not their physical surface, depth, topology, or semantic identity."
+  },
+  "verification": {
+    "receipt_artifact_digest_verified": true,
+    "all_new_frozen_identities_verified_after_execution": true,
+    "all_integrity_gates_passed": true,
+    "second_evaluator_run_performed": false
+  },
+  "reviewer_decision": "FREEZE_WORKCELL_STATIC_COMPONENT_SURFACE_IDENTIFICATION",
+  "next_transition": "freeze_or125_workcell_static_component_surface_identification",
+  "claims": {
+    "significant_components_workcell_static": true,
+    "quarantined_or124_or_or124b_promoted": false,
+    "specific_surface_or_object_identity": false,
+    "metric_3d_geometry_calibrated": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "physical_transfer": false,
+    "simulator_promotion": false
+  }
+}

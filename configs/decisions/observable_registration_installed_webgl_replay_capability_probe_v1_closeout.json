@@ -1,0 +1,48 @@
+{
+  "schema_version": "sim2claw.observable_registration_installed_webgl_replay_capability_probe_closeout.v1",
+  "experiment_id": "OR61_INSTALLED_WEBGL_REPLAY_CAPABILITY_PROBE_V1",
+  "status": "TERMINAL_SYSTEM_CHROME_ABORTED_NO_WEBGL_CONTEXT",
+  "proof_class": "local_no_download_installed_webgl_renderer_capability_probe",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_installed_webgl_replay_capability_probe_v1.json",
+    "sha256": "0c6e8b9b6a87339db3c52fe02a6c08c84da509c51a26fb0cb4a7b3b3f2c4105f"
+  },
+  "probe_page": {
+    "path": "outputs/observable_registration_installed_webgl_replay_capability_probe_v1/webgl_probe.html",
+    "sha256": "abdbac7ea8dc445c8205eebaf943d34d54bd154b52b52b10b5acb1217f9ea6ac"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_installed_webgl_replay_capability_probe_v1/receipt.json",
+    "sha256": "c1935c0785c6782feb595a4529e85ff86644b2728f2c5e0594eac51970642126",
+    "artifact_sha256": "29b3f4855b6361914718430691e9e98fb002091ab45496ecb7855c2e919a6769"
+  },
+  "result": {
+    "complete_installed_route_present": true,
+    "system_chrome_launched": true,
+    "system_chrome_exit_signal": "SIGABRT",
+    "webgl_context_observed": false,
+    "screenshot_observed": false,
+    "exact_matching_webkit_2327_cache_present": true
+  },
+  "execution": {
+    "network_downloads": 0,
+    "package_installs": 0,
+    "browser_installs": 0,
+    "homebrew_actions": 0,
+    "colima_starts": 0,
+    "system_setting_changes": 0,
+    "scene_changes": 0,
+    "candidate_videos": 0,
+    "browser_launches": 1,
+    "existing_browser_sessions_changed": 0
+  },
+  "reviewer_decision": "REDIRECT",
+  "next_transition": "freeze_or62_exact_installed_webkit_2327_blank_context_probe",
+  "claim_limits": {
+    "webgl_renderer_available": false,
+    "same_video_target_pass": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

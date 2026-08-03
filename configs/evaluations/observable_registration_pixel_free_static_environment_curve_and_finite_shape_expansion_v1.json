@@ -1,0 +1,124 @@
+{
+  "schema_version": "sim2claw.observable_registration_pixel_free_static_environment_curve_and_finite_shape_expansion_contract.v1",
+  "experiment_id": "OR66_PIXEL_FREE_STATIC_ENVIRONMENT_CURVE_AND_FINITE_SHAPE_EXPANSION_V1",
+  "proof_class": "retained_episode_specific_pixel_free_static_environment_curve_and_finite_shape_expansion",
+  "sources": {
+    "goal_loop": {
+      "path": "docs/autonomous-workflow/goal-loop-physical-simulator-temporal-pixel-similarity-20260802.md",
+      "sha256": "4457ccb8858cd847ba938741afba5c9f861111099f98e19c766193433fb41767"
+    },
+    "or55_contract": {
+      "path": "configs/evaluations/observable_registration_temporal_pixel_similarity_baseline_v1.json",
+      "sha256": "05da35fd381e8cc2ca7e27cb007ea47b6267721247051b7dd4727f147c12ee9b"
+    },
+    "or26_receipt": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/receipt.json",
+      "sha256": "b6589ea2848749a91fda7ea7adfa7838e4f2a8f9f7089141e5570092cbdd9a4e"
+    },
+    "physical_video": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/physical.mp4",
+      "sha256": "00aaf4bed86e25d6a661643335ae577906bf436681fe7b1f09f76a60ea0ce1c8"
+    },
+    "or58_receipt": {
+      "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/receipt.json",
+      "sha256": "7449d46dc672f2ea14b2a34bbe4c393e1df7db0271770ae24107321c4137e330"
+    },
+    "or58_candidate_video": {
+      "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/simulator_candidate.mp4",
+      "sha256": "24d6e1dc3700b1457694b134be7fd95b8cda40d8582e045c3628af7e9726737e"
+    },
+    "or63_scene_spec": {
+      "path": "outputs/observable_registration_renderer_independent_static_environment_scene_specification_v1/scene_spec.json",
+      "sha256": "7dbc87183a327ff8df9ca140cb73e5eea31b28e93bf145d1917521883fd0f1ee"
+    },
+    "or64_receipt": {
+      "path": "outputs/observable_registration_pixel_free_environment_primitive_edge_headroom_v1/receipt.json",
+      "sha256": "9cc233f019f0bae52ecc4ef81ef8514ea681b8becf9bcfb620e5111386a68c7b"
+    },
+    "or65_closeout": {
+      "path": "configs/decisions/observable_registration_post_environment_primitive_edge_residual_reattribution_v1_closeout.json",
+      "sha256": "a876a7a0fc5f3647f0ec6fde2afb99d6f4dc4499f1d2dfda089815258754839c"
+    }
+  },
+  "timeline": {
+    "decoded_frame_count": 531,
+    "scored_sample_range_inclusive": [0, 515],
+    "development_ranges_inclusive": [[0, 119], [260, 319], [400, 439]],
+    "validation_ranges_inclusive": [[120, 199], [320, 379], [440, 479]],
+    "stress_ranges_inclusive": [[200, 259], [380, 399], [480, 515]],
+    "development_frame_count": 220,
+    "validation_frame_count": 180,
+    "stress_frame_count": 116,
+    "selection_may_read_only_development": true
+  },
+  "extraction": {
+    "canny_low_threshold": 50,
+    "canny_high_threshold": 150,
+    "board_exclusion_dilation_px": 7,
+    "minimum_development_physical_edge_occurrence": 0.35,
+    "maximum_development_simulator_edge_occurrence": 0.10,
+    "initial_residual_closing_kernel_px": 3,
+    "or63_line_neighborhood_exclusion_kernel_px": 7,
+    "post_exclusion_closing_kernel_px": 5,
+    "contour_retrieval": "external",
+    "minimum_contour_perimeter_px": 20.0,
+    "minimum_bounding_extent_px": 8,
+    "simplification_minimum_epsilon_px": 1.5,
+    "simplification_perimeter_fraction": 0.015,
+    "closed_polylines": true,
+    "line_width_px": 1,
+    "maximum_primitives": 32,
+    "maximum_total_vertices": 512,
+    "ranking": "descending_development_contour_perimeter_then_bbox_then_vertices"
+  },
+  "evaluation": {
+    "union_with_decoded_or58_simulator_canny_edges": true,
+    "union_with_all_24_or63_line_skeletons": true,
+    "evaluate_full_frozen_family_only": true,
+    "selection_on_validation_or_stress_allowed": false,
+    "tolerance_dilation_kernel_px": 3,
+    "edge_gate_reference": 0.40
+  },
+  "acceptance": {
+    "minimum_frozen_primitives": 8,
+    "minimum_validation_absolute_mean_edge_f1_improvement_over_or64": 0.02,
+    "target_pass_allowed": false
+  },
+  "resource_boundary": {
+    "renderer_runs_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "candidate_videos_allowed": 0,
+    "mask_outputs_allowed": 0,
+    "bgr_pixel_outputs_allowed": 0,
+    "image_outputs_allowed": 0,
+    "texture_outputs_allowed": 0,
+    "physical_pixel_composites_allowed": 0,
+    "geometric_warps_allowed": 0,
+    "scene_mutations_allowed": 0,
+    "action_changes_allowed": 0,
+    "state_changes_allowed": 0,
+    "validation_or_stress_selections_allowed": 0
+  },
+  "claim_limits": {
+    "development_derived_screen_space_vectors_only": true,
+    "edge_only_counterfactual": true,
+    "same_video_target_pass": false,
+    "metric_3d_geometry": false,
+    "simulator_render": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

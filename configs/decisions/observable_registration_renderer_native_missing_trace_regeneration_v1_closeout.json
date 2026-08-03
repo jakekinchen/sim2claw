@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_missing_trace_regeneration_closeout.v1",
+  "experiment_id": "OR69_RENDERER_NATIVE_MISSING_TRACE_REGENERATION_V1",
+  "status": "PASS_ALL_ELEVEN_RENDERER_NATIVE_STATE_TRACES_READY_NO_VIDEO_RENDER",
+  "proof_class": "retained_four_episode_action_identical_renderer_native_state_trace_regeneration",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_renderer_native_missing_trace_regeneration_v1.json",
+    "sha256": "65ec5e06d6a937ac9335d304cb242761f29757d1dab4ea37e66f6a793f02c4c7"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_renderer_native_missing_trace_regeneration.py",
+    "sha256": "3860f357c400b3784e00ac62ac6746680c22073dd5b55bed6a19aa499abbc3b7"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_renderer_native_missing_trace_regeneration.py",
+    "sha256": "c4479b380e4278bfc0c240dbc6d87c033bf0422d81c0e527b52597a96b221f45",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_renderer_native_missing_trace_regeneration_v1/receipt.json",
+    "sha256": "0de673051e8bd39e0e9d07b1474c01be243acbdb0ee922024d0e4ad4e98d3c40",
+    "artifact_sha256": "8889fc7a67ac83e1f88314e79270d5eb63878d93b0aab19514824594264df899"
+  },
+  "result": {
+    "regenerated_state_trace_count": 4,
+    "total_state_trace_ready_episode_count": 11,
+    "development_state_trace_ready_count": 4,
+    "validation_state_trace_ready_count": 3,
+    "evaluator_heldout_state_trace_ready_count": 4,
+    "shared_parameter_digest": "689cc4e245b3b7d500f9ea5ecb16003599cbcc0de9f0ca2a3d30b3f7b60389f7",
+    "shared_scene_revision_sha256": "e7d93bb2a5786079131bdfdd82410ffbc108baecd451b0d8a74d9f442aedd3d9",
+    "physical_video_reads": 0,
+    "simulator_replays": 4,
+    "renderer_runs": 0,
+    "rendered_video_count": 0,
+    "parameter_fits": 0,
+    "pixel_similarity_achieved": false,
+    "physics_fidelity_achieved": false
+  },
+  "reviewer_decision": "ADVANCE_TO_RENDERER_RUNTIME_AND_SHARED_CAMERA_BASELINE",
+  "next_transition": "freeze_or70_renderer_runtime_and_development_only_shared_camera_baseline",
+  "claim_limits": {
+    "pixel_similarity_achieved": false,
+    "renderer_runtime_ready": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

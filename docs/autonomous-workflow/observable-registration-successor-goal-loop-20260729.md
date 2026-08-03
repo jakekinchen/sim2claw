@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Goal Loop
 
-Status: `TERMINAL_RETAINED_DATA_VISUAL_ALIGNMENT_BOUNDARY`
+Status: `ACTIVE_OR64_PIXEL_FREE_ENVIRONMENT_PRIMITIVE_EDGE_HEADROOM`
 
 Created: `2026-07-29`
 
@@ -120,16 +120,16 @@ after repository evidence and bounded alternatives have been exhausted.
 ## Progress ledger
 
 ```text
-Current state: OR50_PASS_QUARANTINED_NUMERIC_TASK_REPLAY_EVENT_MISMATCH_REMAINS
-Active card: none; OR50 terminal consequence success closed
+Current state: OR64_PIXEL_FREE_ENVIRONMENT_PRIMITIVE_EDGE_HEADROOM_ACTIVE
+Active card: OR64; evaluator-only edge headroom for frozen vector primitive prefixes
 Completed: predecessor evidence; OR0–OR23 and OR26–OR33; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed
-Evidence: OR26/OR27 provide the synchronized comparison and samples-248–260 visual split. OR28 isolates aperture as the upright/transport lever; OR29–OR33 reject bounded aperture, base XY, base yaw, and wrist-local corrections under unchanged gates.
+Evidence: OR58 reaches mean `0.800309` with all four temporal/distribution gates; OR59 attributes the largest structural deficit to non-motion outside-board content at `0.094377` F1 and `7,494,697` unmatched edges.
 Pi lineage: no Pi exists for the successful source; later guarded-run Pi files and contact-free tri-camera files are auxiliary, same-run-only evidence
 Retained RGB evidence: OR22 yields 23 jaw and 10 crown proxies; contact/lift/carry timing corresponds, but no accepted pawn-base observation exists and pawn-axis orientation remains unknown
 OR23 result: physical contact/lift/carry-start timing corresponds, but no physical channel directly discriminates off-center moment, slip, support transition, or downstream collision
-Remaining: event-shape matching, exact intrinsics, pristine heldout extrinsics, globally approved mapping, physical pawn orientation/contact mechanics, promotable matching task outcome, and transfer remain unapproved
-Blockers: OR48 still requires an external metric sensor and two jaw-bound landmarks; physical capture and all transfer claims remain false
-Next step: preserve OR50's exact terminal success and residuals; any successor must target the early-motion, early-support-loss, absent-bilateral-contact, or transient-tilt channel without relabeling this outcome-informed fit as promotion evidence
+Remaining: event-shape matching, exact intrinsics, pristine heldout extrinsics, globally approved mapping, physical pawn orientation/contact mechanics, promotable matching task outcome, and transfer remain unapproved; the existing fixed-pad traces cannot supply a full event match
+Blockers: no future hardware access is available; metric depth, force, exact camera calibration, and physical contact state remain unavailable
+Next step: quantify the full unchanged edge-gate headroom of the frozen `8/16/24` line prefixes without emitting pixels
 ```
 
 ## Stop conditions

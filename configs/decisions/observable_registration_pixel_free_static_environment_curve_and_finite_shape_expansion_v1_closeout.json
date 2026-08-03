@@ -1,0 +1,77 @@
+{
+  "schema_version": "sim2claw.observable_registration_pixel_free_static_environment_curve_and_finite_shape_expansion_closeout.v1",
+  "experiment_id": "OR66_PIXEL_FREE_STATIC_ENVIRONMENT_CURVE_AND_FINITE_SHAPE_EXPANSION_V1",
+  "status": "PASS_PIXEL_FREE_CURVE_AND_FINITE_SHAPE_EDGE_HEADROOM_ADVANCE",
+  "proof_class": "retained_episode_specific_pixel_free_static_environment_curve_and_finite_shape_expansion",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_pixel_free_static_environment_curve_and_finite_shape_expansion_v1.json",
+    "sha256": "66565005c6e06021abd0f9c55d413927d2edaeb6ba55190ff06000794512dc59"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_pixel_free_static_environment_curve_and_finite_shape_expansion.py",
+    "sha256": "795eb1891cb5045337f4d5309c89178242326bd23fc3a3790a4a8ef6cae66ee8"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_pixel_free_static_environment_curve_and_finite_shape_expansion.py",
+    "sha256": "9c00817268f01e8ca652f0e434f3954e7eee8e924ae508f13ab35647a7f00ab4",
+    "focused_passed": 2,
+    "combined_predecessor_passed": 6
+  },
+  "scene_spec": {
+    "path": "outputs/observable_registration_pixel_free_static_environment_curve_and_finite_shape_expansion_v1/curve_and_finite_shape_scene_spec.json",
+    "sha256": "8336ef14f9f1e5fde89bdd7b4383bb53f8e8c6555c50aeff23aafcaba2b347e0"
+  },
+  "rows": {
+    "path": "outputs/observable_registration_pixel_free_static_environment_curve_and_finite_shape_expansion_v1/edge_headroom_rows.json",
+    "sha256": "da54d76cca562f9ef8305a4d6c77015ef5cd7693cc918dbcc0ca741ddeb8fe1c"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_pixel_free_static_environment_curve_and_finite_shape_expansion_v1/receipt.json",
+    "sha256": "af39c5f3a44362b33de43b20b286421bbc172fb881a1f347ac3fc253f9917671",
+    "artifact_sha256": "74b455d1910e03ce3e26d6cf49923f0d3fc7480b46e488a2eb273808e8b2c145"
+  },
+  "result": {
+    "frozen_primitive_count": 32,
+    "frozen_total_vertices": 303,
+    "or64_full_mean_edge_f1_reproduced_exactly": true,
+    "expanded_full_mean_edge_f1": 0.41706126655258324,
+    "expanded_full_p10_edge_f1": 0.39799425136685485,
+    "expanded_validation_mean_edge_f1": 0.4167814375705935,
+    "expanded_validation_absolute_improvement_over_or64": 0.1311609186162349,
+    "expanded_stress_mean_edge_f1": 0.4166999345907051,
+    "expanded_stress_absolute_improvement_over_or64": 0.12559417629779507,
+    "counterfactual_edge_gate_reached": true,
+    "target_pass": false
+  },
+  "execution": {
+    "development_frame_evaluations": 220,
+    "validation_frame_evaluations": 180,
+    "stress_frame_evaluations": 116,
+    "renderer_runs": 0,
+    "simulator_replays": 0,
+    "candidate_videos": 0,
+    "mask_outputs": 0,
+    "bgr_pixel_outputs": 0,
+    "image_outputs": 0,
+    "texture_outputs": 0,
+    "physical_pixel_composites": 0,
+    "geometric_warps": 0,
+    "scene_mutations": 0,
+    "action_changes": 0,
+    "state_changes": 0,
+    "validation_or_stress_selections": 0,
+    "hardware_actions": 0
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or67_static_vector_environment_video_render",
+  "claim_limits": {
+    "development_derived_screen_space_vectors_only": true,
+    "edge_only_counterfactual": true,
+    "same_video_target_pass": false,
+    "metric_3d_geometry": false,
+    "simulator_render": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_legacy_photo_background_ablation_contract.v1",
+  "experiment_id": "OR98_POST_FINAL_LEGACY_PHOTO_BACKGROUND_ABLATION_V1",
+  "proof_class": "post_final_eleven_initial_frame_renderer_native_legacy_photo_background_ablation",
+  "sources": {
+    "or97_closeout": {"path": "configs/decisions/observable_registration_post_final_static_dynamic_edge_occupancy_factorization_v1_closeout.json", "sha256": "1d73978536cdf463aa7cc7cede472e5ae45b74de403aaef3dda76c66de4b6dca"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+    "or95_implementation": {"path": "src/sim2claw/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic.py", "sha256": "86aa4c076299478d83709225b9aff480b465f7e6038a30fe3aa6c3f7bdd60f27"},
+    "or94_implementation": {"path": "src/sim2claw/observable_registration_post_final_independent_left_right_robot_base_se2_diagnostic.py", "sha256": "d2afbdf2b45744045afd8338d0c1ea4bd019147d1cd6215734abafa82b936b75"},
+    "shared_scene_manifest": {"path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/scene_manifest.json", "sha256": "777f915fb7c84d498615f43e54cbeaee47a35494f8166724898ef9dc998f371b", "revision_sha256": "e7d93bb2a5786079131bdfdd82410ffbc108baecd451b0d8a74d9f442aedd3d9"},
+    "or79_native_source": {"path": "tools/renderer/or79_triangle_rasterizer.c", "sha256": "872c5beb0918ffd07e1961eb5bf2119b34b0d7fccf9a419bf06e194c43b39a6b"},
+    "mesh_asset_root": {"path": "third_party/mujoco_menagerie/robotstudio_so101/assets", "hash_source": "shared_scene_manifest.meshes.asset_sha256"}
+  },
+  "frozen_candidate": {
+    "source": "or95_contract.frozen_candidate",
+    "renderer_only_ablated_body_ids": [6, 7],
+    "renderer_only_ablated_body_names": ["photo_background", "antler_mug"],
+    "kept_static_body_ids": [8, 9, 10, 27, 28],
+    "new_geometry_added": false,
+    "physics_or_state_mutated": false
+  },
+  "renderer": {"width_px": 320, "height_px": 240, "background_rgb": [150, 150, 150], "maximum_triangles_per_mesh_instance": 1000000, "sphere_latitude_segments": 6, "sphere_longitude_segments": 10, "cylinder_segments": 12, "capsule_policy": "depth_union_of_cylinder_and_two_uv_spheres", "lighting": {"world_direction": [0.3, -0.4, 0.85], "ambient": 0.35, "diffuse": 0.65, "two_sided": true}},
+  "regions": {"board_plus_margin": {"points_px": [[-3.0, 66.5], [79.0, 52.0], [176.0, 144.5], [71.5, 193.0]], "dilation_kernel_px_at_320x240": 15}, "outside_board": {"definition": "pixelwise_complement_of_board_plus_margin"}},
+  "metric": {"primary_formula": "1_minus_mean_absolute_bgr_error_divided_by_255", "edge": {"canny_low_threshold": 50, "canny_high_threshold": 150, "tolerance_dilation_kernel_px": 3}},
+  "acceptance": {"minimum_selected_mean_outside_board_edge_f1": 0.35, "minimum_selected_minus_baseline_mean_outside_board_edge_f1": 0.02, "minimum_episodes_with_outside_board_edge_f1_delta_at_least_0p01": 8, "minimum_selected_minus_baseline_mean_board_plus_margin_edge_f1": -0.01, "minimum_selected_minus_baseline_mean_full_frame_linear_similarity": -0.01, "all_gates_required": true},
+  "gates": {"expected_episode_count": 11, "expected_baseline_triangle_count": 824944, "expected_ablated_triangle_count": 817548, "expected_unique_mesh_asset_reads": 18},
+  "resource_boundary": {"already_open_physical_video_decodes_allowed": 11, "physical_initial_frames_read_allowed": 11, "exact_full_mesh_baseline_renders_allowed": 11, "exact_full_mesh_ablated_renders_allowed": 11, "mesh_asset_reads_allowed": 18, "fits_allowed": 0, "candidate_family_searches_allowed": 0, "simulator_replays_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"post_final_static_ablation_diagnostic_only": true, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

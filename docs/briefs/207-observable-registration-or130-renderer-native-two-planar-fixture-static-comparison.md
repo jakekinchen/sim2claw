@@ -1,0 +1,3 @@
+# OR130 renderer-native two-planar-fixture static comparison
+
+Append OR126's complete fixture and OR129's clipped fixture as two procedural 128-triangle surfaces in the exact OR119 native triangle stream and shared z-buffer. Keep scene geometry, object state, camera, response, actions, timing, and physics fixed. Compare baseline, complete-only, and two-fixture opening frames on seven development episodes; open four corroboration frames without refit only if the two-fixture candidate passes frozen full-frame, outside-region, and clipped-fixture-local gain gates. No physical-pixel texture, screen-space candidate overlay, replay, hardware, paid compute, promotion, or physics/transfer claim is permitted.

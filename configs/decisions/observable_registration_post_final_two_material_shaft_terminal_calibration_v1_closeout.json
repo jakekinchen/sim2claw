@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_two_material_shaft_terminal_calibration_closeout.v1",
+  "experiment_id": "OR118_POST_FINAL_TWO_MATERIAL_SHAFT_TERMINAL_CALIBRATION_V1",
+  "status": "PASS_TWO_MATERIAL_SHAFT_TERMINAL_CALIBRATION_VALIDATED",
+  "proof_class": "post_final_retained_footage_conditioned_two_material_shaft_terminal_calibration",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_two_material_shaft_terminal_calibration_v1.json", "sha256": "5cd29c2d3df086c2aeaf66675752923eb58326aaff4183e400cf93092cceb2c6"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_two_material_shaft_terminal_calibration.py", "sha256": "271d9a98d1bb197ab772159338943f7c6e66ece1525ca66bf342d61a947fde36"},
+  "test": {"path": "tests/test_observable_registration_post_final_two_material_shaft_terminal_calibration.py", "sha256": "0505be15588afb69653efdf543cc37edd2d69774be0a1def0cc89b97c621bf56", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_two_material_shaft_terminal_calibration_v1/receipt.json", "sha256": "fe57096d7b307208c1382c2029e1c5c568aa04090d691784a56114c5cada93df", "artifact_sha256": "c7df01d4f6651004ccc4fec7edb97142e0f9af67a7e1a26641eeae491a12665d"},
+  "result": {"selected_shaft_target_bgr": [138, 136, 132], "selected_terminal_target_bgr": [55, 48, 43], "development_full_frame_similarity_delta": 0.0005427471229008266, "validation_full_frame_similarity_delta": 0.0005837604403495789, "development_outside_board_edge_f1_delta": 0.04450964010930607, "validation_outside_board_edge_f1_delta": 0.04478897320703101, "development_object_roi_edge_f1_delta": 0.7343792284551941, "validation_object_roi_edge_f1_delta": 0.7337425154896158},
+  "reviewer_decision": "FREEZE_TWO_MATERIAL_FINITE_OBJECT_FULL_TIMELINE_PROPAGATION",
+  "next_transition": "freeze_or119_two_material_finite_object_full_timeline_propagation",
+  "claims": {"retained_same_episode_two_material_calibration_validated": true, "full_timeline_validated": false, "same_video_semantic_match": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_planar_fixture_static_comparison_closeout.v1",
+  "experiment_id": "OR127_RENDERER_NATIVE_PLANAR_FIXTURE_STATIC_COMPARISON_V1",
+  "status": "PASS_RENDERER_NATIVE_PLANAR_FIXTURE_STATIC_COMPARISON",
+  "proof_class": "renderer_native_planar_fixture_static_comparison",
+  "contract": {"path": "configs/evaluations/observable_registration_renderer_native_planar_fixture_static_comparison_v1.json", "sha256": "a503f2651c4749fdbbdfa428e10911a38fcb60da04ab56836b9488fd98cb47e8"},
+  "implementation": {"path": "src/sim2claw/observable_registration_renderer_native_planar_fixture_static_comparison.py", "sha256": "0fcdde36f0187feec984bd6db9393ac6ea2efcfab598ce50aae0e4d1f7485b41"},
+  "test": {"path": "tests/test_observable_registration_renderer_native_planar_fixture_static_comparison.py", "sha256": "98166727b8d479668f9c7ae749e4cf087861f7dcfd9009871f3684eb4cc49b20", "focused_passed_before_execution": 3, "focused_passed_after_execution": 3},
+  "receipt": {"path": "outputs/observable_registration_renderer_native_planar_fixture_static_comparison_v1/receipt.json", "sha256": "b028051eb592366069bf5c80680cd40d3acc5b6b45effb3a70468b1677d64348", "artifact_sha256": "cf3ada9492b9316d18808c6535d5d8eccb7dfd226fe345ed6c92bf1b509254aa"},
+  "result": {"baseline_full_similarity": 0.8485474423928694, "candidate_full_similarity": 0.8493489162488417, "full_similarity_delta": 0.00080147385597229, "fixture_similarity_delta": 0.03908138518983668, "fixture_edge_f1_delta": 0.1439740612289092, "outside_edge_f1_delta": 0.016572065556653425, "development_passed": true, "corroboration_passed": true},
+  "review_limit": {"complete_fixture_only": true, "static_initial_frames_only": true, "larger_clipped_fixture_included": false, "physical_pixel_texture_projected": false, "full_timeline_validated": false},
+  "verification": {"receipt_artifact_digest_verified": true, "all_frozen_identities_verified_after_execution": true, "baseline_reproduces_or119": true, "all_integrity_gates_passed": true, "second_evaluator_run_performed": false},
+  "reviewer_decision": "FREEZE_PLANAR_FIXTURE_FULL_TIMELINE_PROPAGATION",
+  "next_transition": "freeze_or128_planar_fixture_full_timeline_propagation",
+  "claims": {"renderer_native_static_improvement": true, "full_timeline_same_video_match": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

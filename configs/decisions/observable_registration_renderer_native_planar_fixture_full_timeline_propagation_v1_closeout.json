@@ -1,0 +1,17 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_planar_fixture_full_timeline_propagation_closeout.v1",
+  "experiment_id": "OR128_RENDERER_NATIVE_PLANAR_FIXTURE_FULL_TIMELINE_PROPAGATION_V1",
+  "status": "TERMINAL_FULL_TIMELINE_REGIONAL_GATES_FAILED_WITH_ADVANCE",
+  "proof_class": "renderer_native_planar_fixture_full_timeline_propagation",
+  "contract": {"path": "configs/evaluations/observable_registration_renderer_native_planar_fixture_full_timeline_propagation_v1.json", "sha256": "0ec8601387c892afcf64a94edea79a93621fe8f5ca9a3288236bec759e54c198"},
+  "implementation": {"path": "src/sim2claw/observable_registration_renderer_native_planar_fixture_full_timeline_propagation.py", "sha256": "acd55d026f2d2b1f008cd0fef9ba94d70cfe2b06f1f2d7623d050c0e1eb84e65"},
+  "test": {"path": "tests/test_observable_registration_renderer_native_planar_fixture_full_timeline_propagation.py", "sha256": "34fbf27bcb89dddfc79d0836c76e0def526397af19345ab8bf49bd4dbea736c6", "focused_passed_before_execution": 3, "focused_passed_after_execution": 3},
+  "receipt": {"path": "outputs/observable_registration_renderer_native_planar_fixture_full_timeline_propagation_v1/receipt.json", "sha256": "63f0b66ea4dd74642b2b5d6bcd1b4640f1518989e714fcc34ca6813e418c9163", "artifact_sha256": "c47aff69e8716d34a4aa399c72bc3411778161087eecfcf71158e322303bc7b3"},
+  "result": {"frame_count": 1210, "candidate_video_count": 11, "pooled_full_similarity_mean": 0.8373826591067077, "pooled_full_similarity_p10": 0.8228267759084702, "pooled_motion_similarity_mean": 0.7918434701764349, "pooled_whole_edge_f1_mean": 0.47465414935756844, "pooled_board_edge_f1_mean": 0.5709514959922349, "pooled_outside_edge_f1_mean": 0.39839086669561596, "pooled_outside_edge_f1_p10": 0.36568612969753855, "pooled_full_similarity_delta_vs_or95": 0.00038807102717643925, "pooled_outside_edge_f1_delta_vs_or95": 0.03857289922108127},
+  "metric_gates": {"full_similarity_band": true, "full_similarity_p10": true, "motion_similarity": true, "phase_means": true, "whole_edge_f1": true, "board_edge_mean": false, "outside_edge_mean": false, "outside_edge_p10": false, "each_episode_outside_edge": false, "minimum_full_improvement_vs_or95": false, "minimum_outside_improvement_vs_or95": true},
+  "review_limit": {"same_video_target_achieved": false, "larger_clipped_fixture_included": false, "component_3_included": false, "predictive_simulation": false, "physics_fidelity": false, "reason": "Global similarity and motion remain in band, but board/outside regional gates fail and the +0.0004 full-improvement gate misses by 0.000011929."},
+  "verification": {"receipt_artifact_digest_verified": true, "all_frozen_identities_verified_after_execution": true, "candidate_video_hash_count": 11, "all_integrity_gates_passed": true, "second_evaluator_run_performed": false},
+  "reviewer_decision": "FREEZE_CLIPPED_PLANAR_FIXTURE_PARAMETERIZATION",
+  "next_transition": "freeze_or129_clipped_planar_fixture_parameterization",
+  "claims": {"renderer_native_full_timeline_advance": true, "same_video_target_achieved": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

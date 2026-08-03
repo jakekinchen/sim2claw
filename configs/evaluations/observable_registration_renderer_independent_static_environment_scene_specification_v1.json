@@ -1,0 +1,104 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_independent_static_environment_scene_specification_contract.v1",
+  "experiment_id": "OR63_RENDERER_INDEPENDENT_STATIC_ENVIRONMENT_SCENE_SPECIFICATION_V1",
+  "proof_class": "retained_episode_specific_renderer_independent_static_environment_observation_specification",
+  "sources": {
+    "goal_loop": {
+      "path": "docs/autonomous-workflow/goal-loop-physical-simulator-temporal-pixel-similarity-20260802.md",
+      "sha256": "4457ccb8858cd847ba938741afba5c9f861111099f98e19c766193433fb41767"
+    },
+    "or26_receipt": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/receipt.json",
+      "sha256": "b6589ea2848749a91fda7ea7adfa7838e4f2a8f9f7089141e5570092cbdd9a4e"
+    },
+    "or58_receipt": {
+      "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/receipt.json",
+      "sha256": "7449d46dc672f2ea14b2a34bbe4c393e1df7db0271770ae24107321c4137e330"
+    },
+    "or59_receipt": {
+      "path": "outputs/observable_registration_retained_edge_residual_mechanism_diagnosis_v1/receipt.json",
+      "sha256": "5b8ed1c37519edd75083ce4aa72eb23c9f6d50676b4e20d903495fd3db0aa00b"
+    },
+    "or62_closeout": {
+      "path": "configs/decisions/observable_registration_exact_cached_webkit_webgl_capability_probe_v1_closeout.json",
+      "sha256": "941aa3f9077983a29cea4f22184b198d3993e437769b15baba4d5993c84b2997"
+    },
+    "physical_video": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/physical.mp4",
+      "sha256": "00aaf4bed86e25d6a661643335ae577906bf436681fe7b1f09f76a60ea0ce1c8"
+    },
+    "or58_candidate_video": {
+      "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/simulator_candidate.mp4",
+      "sha256": "24d6e1dc3700b1457694b134be7fd95b8cda40d8582e045c3628af7e9726737e"
+    }
+  },
+  "timeline": {
+    "decoded_frame_count": 531,
+    "scored_sample_range_inclusive": [0, 515],
+    "development_ranges_inclusive": [[0, 119], [260, 319], [400, 439]],
+    "validation_ranges_inclusive": [[120, 199], [320, 379], [440, 479]],
+    "stress_ranges_inclusive": [[200, 259], [380, 399], [480, 515]],
+    "development_frame_count": 220,
+    "validation_frame_count": 180,
+    "stress_frame_count": 116,
+    "selection_may_read_only_development": true
+  },
+  "edge_extraction": {
+    "canny_low_threshold": 50,
+    "canny_high_threshold": 150,
+    "board_exclusion_dilation_px": 7,
+    "minimum_development_physical_edge_occurrence": 0.35,
+    "maximum_development_simulator_edge_occurrence": 0.10,
+    "hough_threshold": 12,
+    "minimum_line_length_px": 18,
+    "maximum_line_gap_px": 8,
+    "deduplication_line_width_px": 5,
+    "maximum_deduplication_overlap_fraction": 0.50,
+    "maximum_line_primitives": 24,
+    "support_tolerance_kernel_px": 3
+  },
+  "palette": {
+    "cluster_count": 6,
+    "development_frame_stride": 10,
+    "pixel_stride": 8,
+    "opencv_rng_seed": 63,
+    "attempts": 1,
+    "color_space": "BGR"
+  },
+  "acceptance": {
+    "minimum_frozen_line_primitives": 8,
+    "minimum_validation_physical_minus_simulator_support": 0.20,
+    "target_pass_allowed": false
+  },
+  "resource_boundary": {
+    "renderer_runs_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "candidate_videos_allowed": 0,
+    "image_outputs_allowed": 0,
+    "texture_outputs_allowed": 0,
+    "physical_pixel_composites_allowed": 0,
+    "geometric_warps_allowed": 0,
+    "dependency_installs_allowed": 0
+  },
+  "claim_limits": {
+    "screen_space_observation_constraints_only": true,
+    "metric_3d_geometry": false,
+    "physical_pixels_as_texture": false,
+    "same_video_target_pass": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

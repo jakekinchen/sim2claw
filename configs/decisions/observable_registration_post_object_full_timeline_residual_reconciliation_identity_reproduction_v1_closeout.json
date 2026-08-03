@@ -1,0 +1,59 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_object_full_timeline_residual_reconciliation_identity_reproduction_closeout.v1",
+  "experiment_id": "OR120B_IDENTITY_BOUND_POST_OBJECT_RESIDUAL_REPRODUCTION_V1",
+  "status": "PASS_IDENTITY_BOUND_PERSISTENT_STATIC_RESIDUAL_REPRODUCED",
+  "proof_class": "identity_bound_post_object_full_timeline_static_dynamic_residual_reproduction",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_post_object_full_timeline_residual_reconciliation_identity_reproduction_v1.json",
+    "sha256": "fe5870513902c9bdc4e4ca2cae863c16752c73f72a55138d6ebc2ca7b447a333"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_post_object_full_timeline_residual_reconciliation_identity_reproduction.py",
+    "sha256": "3a7104282dbc8ee21af6a84b7d215103e69a9ac367cf10bda3eb7041dd3c97e3"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_post_object_full_timeline_residual_reconciliation_identity_reproduction.py",
+    "sha256": "47a185c94ed54606da08aebdd35e3c6c86dd37e2e7ca243a6bb069b009627a96",
+    "focused_passed_before_execution": 3,
+    "focused_passed_after_execution": 3
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_post_object_full_timeline_residual_reconciliation_identity_reproduction_v1/receipt.json",
+    "sha256": "84aca2bbccaeb943ce5f762a33993d4b6a5baba5ae6b723899d0bd52ccba9709",
+    "artifact_sha256": "a98a27c9af0564504bd90fc566b6fa4494952d586e89cb5fb609f84f22b17f0e"
+  },
+  "result": {
+    "mean_persistent_outside_board_edge_occupancy_f1": 0.3450131365384859,
+    "mean_dynamic_outside_board_edge_occupancy_f1": 0.5714293825856678,
+    "mean_persistent_f1_delta_vs_or97": 0.06965567729093236,
+    "mean_dynamic_f1_delta_vs_or97": 0.0019734600588778447,
+    "mean_persistent_deficit_to_0_60": 0.25498686346151395,
+    "mean_dynamic_deficit_to_0_60": 0.03528124400698169,
+    "persistent_to_dynamic_mean_deficit_ratio": 7.227263965268782,
+    "episodes_persistent_deficit_dominant_at_3x": 9,
+    "episodes_dynamic_deficit_dominant_at_3x": 0,
+    "selected_residual_family": "post_object_persistent_static_spatial_decomposition",
+    "numeric_rows_match_quarantined_or120_reference": true,
+    "physical_occupancy_identity_matches_or97": true
+  },
+  "verification": {
+    "contract_implementation_and_test_hashes_bound_before_execution": true,
+    "receipt_artifact_digest_verified": true,
+    "all_frozen_identities_verified_after_execution": true,
+    "representative_eight_panel_visual_audit_consistent": true
+  },
+  "reviewer_decision": "FREEZE_POST_OBJECT_PERSISTENT_STATIC_SPATIAL_DECOMPOSITION",
+  "next_transition": "freeze_or121_post_object_persistent_static_spatial_decomposition",
+  "claims": {
+    "identity_bound_retrospective_residual_family_reproduced": true,
+    "quarantined_or120_promoted": false,
+    "specific_static_object_identity_selected": false,
+    "same_video_semantic_match": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "event_parity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false
+  }
+}

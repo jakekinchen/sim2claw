@@ -1,0 +1,24 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_shared_robot_base_se2_diagnostic_closeout.v1",
+  "experiment_id": "OR93_POST_FINAL_SHARED_ROBOT_BASE_SE2_DIAGNOSTIC_V1",
+  "status": "TERMINAL_SHARED_ROBOT_BASE_SE2_INSUFFICIENT",
+  "proof_class": "post_final_six_frame_renderer_native_shared_robot_base_se2_diagnostic",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_shared_robot_base_se2_diagnostic_v1.json", "sha256": "d94a0372ad4fc5c896f080221ca4ceec33564f1e34c00277569915054f2e7d7b"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_shared_robot_base_se2_diagnostic.py", "sha256": "d4c58925f154ec8d777e811c463b91568be3c0318d0713ae7a242a5245e2336f"},
+  "test": {"path": "tests/test_observable_registration_post_final_shared_robot_base_se2_diagnostic.py", "sha256": "74bb9ab97e05bf406c9f0255782e92f855dea8cd7ed70e4f36e229c22e3d28a2", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_shared_robot_base_se2_diagnostic_v1/receipt.json", "sha256": "610c280aede4cd0b90afd0b15d512ee1ea59a18a387cc49112621c4bb028f98f", "artifact_sha256": "f2eadde28fd8042529963f17eed4a7d82132cefc440e9799daaa476f631e630e"},
+  "result": {
+    "selected_vector": [73.65823876697412, 0.23125644469769058, 0.010776667808297002],
+    "baseline_mean_outside_board_edge_f1": 0.3026486453386071,
+    "selected_mean_outside_board_edge_f1": 0.2319251409415787,
+    "selected_minus_baseline_mean_outside_board_edge_f1": -0.07072350439702837,
+    "samples_with_material_outside_board_improvement": 0,
+    "baseline_mean_board_plus_margin_edge_f1": 0.5523846728719106,
+    "selected_mean_board_plus_margin_edge_f1": 0.5643568564826699,
+    "analytic_search_candidate_evaluations": 195,
+    "exact_full_mesh_renders": 12
+  },
+  "reviewer_decision": "REJECT_SHARED_ROBOT_BASE_AND_FREEZE_INDEPENDENT_LEFT_RIGHT_DIAGNOSTIC",
+  "next_transition": "freeze_or94_post_final_independent_left_right_robot_base_diagnostic",
+  "claims": {"same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false}
+}

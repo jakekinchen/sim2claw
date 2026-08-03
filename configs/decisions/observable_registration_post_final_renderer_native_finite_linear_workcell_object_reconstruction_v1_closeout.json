@@ -1,0 +1,15 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_closeout.v1",
+  "experiment_id": "OR116_POST_FINAL_RENDERER_NATIVE_FINITE_LINEAR_WORKCELL_OBJECT_RECONSTRUCTION_V1",
+  "status": "TERMINAL_RENDERER_NATIVE_FINITE_LINEAR_WORKCELL_OBJECT_RECONSTRUCTION_DEVELOPMENT_GATE_FAILED",
+  "proof_class": "post_final_retained_footage_conditioned_renderer_native_finite_linear_workcell_object_reconstruction_terminal_negative",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_v1.json", "sha256": "ff02ea2a939ebc8ff95d420dd750d6aa4f2f7c93ec51448943bdc0362fabf351"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction.py", "sha256": "d208f5ef3346525803a3c0d0e00251148ce6565f8898a2c0a2bc2cb3c9c878b9"},
+  "test": {"path": "tests/test_observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction.py", "sha256": "8ddea78c855b2dadc9e5e255b94376ac12a6a41911de1d17850193bd8a3d2b03", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_v1/receipt.json", "sha256": "251ceea560910e845f5a1780d7d66f9e44731400d10f446a9ca92d88c04c4481", "artifact_sha256": "3d5aff9407fdc3abab7405559ce2afa248dfe11cec6fec2b78aacc6a016eda6d"},
+  "visual_audit": {"path": "outputs/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_v1/development_physical_baseline_finite_object.png", "sha256": "2bc9f486fc5eb54e81c6547144d0e43e874632c952332122aa7373accb08eca3", "result": "geometry_closes_local_edges_but_one_gray_material_visibly_overdarkens_the_shaft_and_underdarkens_the_terminal"},
+  "result": {"development_mean_outside_board_edge_f1_delta": 0.04416295676968811, "development_mean_object_roi_edge_f1_delta": 0.7308764383490105, "development_mean_full_frame_linear_similarity_delta": 0.0001570007630756923, "required_full_frame_linear_similarity_delta": 0.001, "positive_outside_board_rows": 7, "validation_opened": false},
+  "reviewer_decision": "REJECT_SINGLE_MATERIAL_FINITE_LINEAR_OBJECT_AND_ATTRIBUTE_APPEARANCE_FAILURE",
+  "next_transition": "freeze_or117_finite_linear_object_appearance_failure_attribution",
+  "claims": {"renderer_native_structure_materially_improves_edges": true, "development_contract_passed": false, "validation_opened": false, "same_video_semantic_match": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

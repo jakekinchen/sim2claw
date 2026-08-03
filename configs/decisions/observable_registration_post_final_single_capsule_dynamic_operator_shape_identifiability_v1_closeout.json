@@ -1,0 +1,26 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability_closeout.v1",
+  "experiment_id": "OR109_POST_FINAL_SINGLE_CAPSULE_DYNAMIC_OPERATOR_SHAPE_IDENTIFIABILITY_V1",
+  "status": "PASS_SINGLE_CAPSULE_DYNAMIC_OPERATOR_SHAPE_IDENTIFIABLE",
+  "proof_class": "post_final_dynamic_operator_single_capsule_shape_identifiability",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability_v1.json", "sha256": "bd2b79cade9ed4d47fe0ac8a103c7b63aca26ec227694ecc490fb01e2011673c"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability.py", "sha256": "d9a928cd2bf10c304200b866985180a78857d32fb04f7fc45560ac568f4bc40a"},
+  "test": {"path": "tests/test_observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability.py", "sha256": "1cb0db40f71bea89a2f065d09ca558a24dff00c369df210ed74dc5ef98aebed8", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability_v1/receipt.json", "sha256": "48a669fd68405f7dab0861956eb99a5d8cb7578602c4a01974cb743c06888b04", "artifact_sha256": "cf6d609fb34d559eb86534cee6b0ce91ef72bf8e3a140bcd75f5df5a99495def"},
+  "result": {
+    "development_mean_iou": 0.7456964141066199,
+    "development_mean_coverage": 0.9135938754754058,
+    "development_mean_precision": 0.8032686912903492,
+    "development_present_shape_count": 13,
+    "validation_mean_iou": 0.7849665172409984,
+    "validation_mean_coverage": 0.9086111578311498,
+    "validation_mean_precision": 0.8524343755924723,
+    "validation_present_shape_count": 8,
+    "gates_passed": 11,
+    "gates_total": 11,
+    "visual_audit": "accepted_capsule_tracks_materially_present_hand_forearm_dynamic_proxy_tiny_residual_fragments_remain_below_frozen_presence_threshold"
+  },
+  "reviewer_decision": "FREEZE_RENDERER_NATIVE_SINGLE_CAPSULE_OPERATOR_RECONSTRUCTION",
+  "next_transition": "freeze_or110_renderer_native_single_capsule_operator_reconstruction",
+  "claims": {"post_final_2d_shape_identifiability_only": true, "operator_3d_geometry_or_trajectory_calibrated": false, "same_video_semantic_match": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_robot_material_semantics_loss_attribution_closeout.v1",
+  "experiment_id": "OR105_POST_FINAL_ROBOT_MATERIAL_SEMANTICS_LOSS_ATTRIBUTION_V1",
+  "status": "PASS_ROBOT_MATERIAL_SEMANTICS_LOSS_ATTRIBUTED",
+  "proof_class": "post_final_renderer_robot_material_semantics_loss_attribution",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_robot_material_semantics_loss_attribution_v1.json", "sha256": "cded48bafd12ea6a559b4aa332832d224526bc027c0aba5ec4fb032a56510897"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_robot_material_semantics_loss_attribution.py", "sha256": "c346e228c40fa0e87971e5d37fab7613302c06b987707a3a4854a5e6a15251df"},
+  "test": {"path": "tests/test_observable_registration_post_final_robot_material_semantics_loss_attribution.py", "sha256": "67ff80573c2b03a2b31c37f0a476784203032fe81f7fcd622937d9308d6ead67", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_robot_material_semantics_loss_attribution_v1/receipt.json", "sha256": "49c8b7dbff962ac3ff6876ce9f7e52f18eb3828e69f989c1fa1236614ae05847", "artifact_sha256": "d8bfaeaca7de09df0cb82d785a959e517e3c7bbd1f21a07ab21f13570d21f49a"},
+  "result": {"manifest_robot_mesh_geoms": 36, "manifest_unique_robot_rgba_count": 1, "manifest_robot_rgba": [0.5, 0.5, 0.5, 1.0], "upstream_visual_meshes": 14, "upstream_unique_visual_material_rgba_count": 2, "manifest_to_upstream_mapping_fraction": 1.0, "gates_passed": 8, "gates_total": 8},
+  "reviewer_decision": "FREEZE_TWO_CLASS_ROBOT_MATERIAL_PALETTE_CALIBRATION",
+  "next_transition": "freeze_or106_two_class_robot_material_palette_calibration",
+  "claims": {"material_palette_calibrated": false, "same_video_semantic_match": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

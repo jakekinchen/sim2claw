@@ -1,0 +1,112 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_object_persistent_static_spatial_decomposition_contract.v1",
+  "experiment_id": "OR121_POST_OBJECT_PERSISTENT_STATIC_SPATIAL_DECOMPOSITION_V1",
+  "proof_class": "post_object_persistent_static_spatial_decomposition",
+  "sources": {
+    "or120b_closeout": {
+      "path": "configs/decisions/observable_registration_post_object_full_timeline_residual_reconciliation_identity_reproduction_v1_closeout.json",
+      "sha256": "66582d8af401c496cc804d4e02b24cbf72a2d34b618080ce82829050dd3cbb5a",
+      "artifact_sha256": "a98a27c9af0564504bd90fc566b6fa4494952d586e89cb5fb609f84f22b17f0e"
+    },
+    "or120b_receipt": {
+      "path": "outputs/observable_registration_post_object_full_timeline_residual_reconciliation_identity_reproduction_v1/receipt.json",
+      "sha256": "84aca2bbccaeb943ce5f762a33993d4b6a5baba5ae6b723899d0bd52ccba9709",
+      "artifact_sha256": "a98a27c9af0564504bd90fc566b6fa4494952d586e89cb5fb609f84f22b17f0e"
+    },
+    "or114_contract": {
+      "path": "configs/evaluations/observable_registration_post_final_persistent_static_enclosure_boundary_line_identifiability_v1.json",
+      "sha256": "ab30f61d3b5530fb2f6976822924a0057446679895d54e210531a52ea1b03ab7"
+    }
+  },
+  "frozen_identities": {
+    "implementation": {
+      "path": "src/sim2claw/observable_registration_post_object_persistent_static_spatial_decomposition.py",
+      "sha256": "616c375eb702e6dc1f8a11afa5c1c40617749e15b578b6005b883d00aab76a99"
+    },
+    "test": {
+      "path": "tests/test_observable_registration_post_object_persistent_static_spatial_decomposition.py",
+      "sha256": "afd14fdc30123539285a36b4dd7a0537f56f42ac6ae8155594bb0316d83a7f1d"
+    }
+  },
+  "input_panels": {
+    "panel_width_px": 320,
+    "panel_height_px": 240,
+    "panel_count": 8,
+    "physical_only_persistent_panel_index": 2,
+    "expected_map_count": 11,
+    "expected_layout": "physical_persistent_candidate_persistent_physical_only_persistent_candidate_only_persistent_physical_dynamic_candidate_dynamic_physical_only_dynamic_candidate_only_dynamic"
+  },
+  "consensus": {
+    "minimum_episode_count": 9,
+    "component_dilation_kernel_px": 3,
+    "component_connectivity": 8
+  },
+  "line_extractor": {
+    "rho_resolution_px": 1,
+    "theta_resolution_degrees": 1,
+    "vote_threshold": 12,
+    "minimum_line_length_px": 20,
+    "maximum_line_gap_px": 4,
+    "orientation_bin_width_degrees": 10,
+    "candidate_match_maximum_orientation_delta_degrees": 5,
+    "candidate_match_maximum_midpoint_distance_px": 20,
+    "selected_line_maximum_rho_delta_px": 25
+  },
+  "acceptance": {
+    "minimum_consensus_pixel_count": 500,
+    "minimum_each_episode_consensus_coverage": 0.90,
+    "minimum_largest_component_dilated_share": 0.30,
+    "minimum_primary_orientation_line_count": 3,
+    "minimum_primary_orientation_total_length_px": 100,
+    "minimum_secondary_orientation_line_count": 2,
+    "minimum_secondary_orientation_total_length_px": 60,
+    "minimum_orthogonal_separation_degrees": 80,
+    "maximum_orthogonal_separation_degrees": 100,
+    "minimum_finite_elongated_bbox_aspect_ratio": 3.0,
+    "all_gates_required": true
+  },
+  "resource_boundary": {
+    "identity_bound_residual_map_reads_allowed": 11,
+    "audit_montage_outputs_allowed": 1,
+    "source_video_decodes_allowed": 0,
+    "candidate_video_decodes_allowed": 0,
+    "renders_allowed": 0,
+    "fits_allowed": 0,
+    "candidate_selections_allowed": 0,
+    "threshold_changes_allowed": 0,
+    "retries_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "geometry_values_produced_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "identity_bound_residual_map_only": true,
+    "image_space_spatial_family_only": true,
+    "specific_object_identity": false,
+    "metric_3d_geometry_calibrated": false,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

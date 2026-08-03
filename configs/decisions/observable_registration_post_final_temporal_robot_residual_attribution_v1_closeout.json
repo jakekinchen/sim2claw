@@ -1,0 +1,15 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_temporal_robot_residual_attribution_closeout.v1",
+  "experiment_id": "OR96_POST_FINAL_TEMPORAL_ROBOT_RESIDUAL_ATTRIBUTION_V1",
+  "status": "PASS_ROBOT_ARTICULATION_AND_SCENE_CONTENT_FACTORIZATION_SELECTED",
+  "proof_class": "post_final_receipt_only_temporal_robot_scene_content_residual_attribution",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_temporal_robot_residual_attribution_v1.json", "sha256": "e17666c7268d7605ad4f85c60a093e9d4fb3feaa20b125e6319f09792e9198c0"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_temporal_robot_residual_attribution.py", "sha256": "5b81f8191fbe5dceeae64a14b2c0a175f297d91fa42f48b8d7e6d88099f41e92"},
+  "test": {"path": "tests/test_observable_registration_post_final_temporal_robot_residual_attribution.py", "sha256": "4876dbd005881a392c1a320b03875df68dda03e30e2429602319154e953140b2", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_temporal_robot_residual_attribution_v1/receipt.json", "sha256": "317045ab4dbbeb1fb6573cdd8f4257a3a25edd7b6fdc3ac073215833e11f0122", "artifact_sha256": "b148d1869be34e55e7ecb0a83a01905eb1439fe49bfd1d80a96b0b7f5b976782"},
+  "result": {"outside_board_mean_gap_to_target": 0.24018203252546533, "board_mean_gap_to_target": 0.028633649793865845, "outside_to_board_gap_ratio": 8.388104005411117, "episode_outside_board_mean_range": 0.023088561884361092, "rigid_base_outside_board_gain": 0.05630538625279291, "rigid_base_fraction_of_gap_recovered": 0.1893564141213022, "gates_passed": 9, "gates_total": 9},
+  "selected_mechanism": "robot_articulation_and_renderer_native_scene_content_factorization",
+  "reviewer_decision": "FREEZE_RENDERER_NATIVE_ROBOT_ARTICULATION_VS_SCENE_CONTENT_DIAGNOSTIC",
+  "next_transition": "freeze_or97_renderer_native_robot_articulation_vs_scene_content_diagnostic",
+  "claims": {"same_video_semantic_match": false, "untouched_cohort_remaining": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

@@ -1,0 +1,59 @@
+{
+  "schema_version": "sim2claw.observable_registration_outcome_success_robustness_audit_closeout.v1",
+  "experiment_id": "OR51_OUTCOME_SUCCESS_ROBUSTNESS_AUDIT_V1",
+  "status": "TERMINAL_ISOLATED_OUTCOME_SUCCESS_WRONG_EVENT_TOPOLOGY_EXTERNAL_METRIC_OBSERVATION_REQUIRED",
+  "proof_class": "quarantined_zero_new_replay_local_robustness_and_event_residual_audit",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_outcome_success_robustness_audit_v1.json",
+    "sha256": "8ea45dbcae14e2518166d23774bfa96230222c6f1aebebe1816d23bbd127d47a"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_outcome_success_robustness_audit.py",
+    "sha256": "13498e9810f61d51d26071b1edbf32a27be644e545fe703fbe2e0c9acdca3b01"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_outcome_success_robustness_audit.py",
+    "sha256": "03e36c7789e35645d064d6676b43ca50fbc992f6fc187e6e7c018173c34f0feb",
+    "passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_outcome_success_robustness_audit_v1/receipt.json",
+    "sha256": "ed5700a4b8824c9bd1d9717f1afa22c4b1b12688cc15e22ece0874a64bf453db",
+    "artifact_sha256": "a0d19d0627ecf239c8927cc5c5ba0c5cbe3c9442305b1bbce07a4154bc2407e5"
+  },
+  "result": {
+    "candidate_count": 25,
+    "numeric_task_success_candidate_count": 1,
+    "selected_contiguous_numeric_success_count": 1,
+    "required_contiguous_numeric_success_count": 3,
+    "local_outcome_continuity_pass": false,
+    "preterminal_gate_pass_count": 1,
+    "preterminal_gate_total_count": 5,
+    "first_named_jaw_contact_sample": 229,
+    "first_bilateral_jaw_contact_sample": null,
+    "observed_named_jaw_bodies": [
+      "left_moving_jaw_so101_v1"
+    ],
+    "motion_early_by_samples": 3,
+    "support_loss_early_by_samples": 4,
+    "tilt_excess_at_sample_260_degrees": 16.114828655948646,
+    "maximum_adjacent_planar_error_jump_m": 0.1940819485186899,
+    "selection_verification_digest_identity": true,
+    "overall_gate_pass": false
+  },
+  "execution": {
+    "simulator_replays": 0,
+    "new_candidates": 0,
+    "parameter_changes": 0,
+    "hardware_actions": 0,
+    "heldout_opened": false
+  },
+  "next_promotable_boundary": "OR48_EXTERNAL_METRIC_PAD_SURFACE_PACKET",
+  "claim_limits": {
+    "canonical_contact_geometry": false,
+    "heldout_validation": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

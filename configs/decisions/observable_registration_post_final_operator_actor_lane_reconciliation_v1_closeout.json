@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_operator_actor_lane_reconciliation_closeout.v1",
+  "experiment_id": "OR113_POST_FINAL_OPERATOR_ACTOR_LANE_RECONCILIATION_V1",
+  "status": "PASS_OPERATOR_ACTOR_LANE_RECONCILED",
+  "proof_class": "post_final_operator_actor_lane_reconciliation",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_operator_actor_lane_reconciliation_v1.json", "sha256": "052510a80c74d08071e71b24862eb22c270f1c0ef08b9c2bcc8cee8f0d0d9c41"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_operator_actor_lane_reconciliation.py", "sha256": "2256c394a2a6ac59c6d596869975b286e6522874632ad9a1e0fa11d716ab85bd"},
+  "test": {"path": "tests/test_observable_registration_post_final_operator_actor_lane_reconciliation.py", "sha256": "9a0b23799a15747988c2f1da4185ef21168e1e6c5ed27b6c049a3c5adf052ca1", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_operator_actor_lane_reconciliation_v1/receipt.json", "sha256": "18cb7ca73c3757dac5c31d2e9bbf13ad4aae123222146d2cdfc2c65eb801e04f", "artifact_sha256": "7b6d974d858000e3bd1155b30011dad7ac4e19d7db036c985f0672f0678af7f7"},
+  "result": {"actor_lane_continued": false, "selected_successor": "CLOSE_ACTOR_LANE_SELECT_PERSISTENT_STATIC_ENCLOSURE_BOUNDARY_LINES", "persistent_static_gap": 0.32464254075244636, "robot_dynamic_gap": 0.030544077473210085, "persistent_to_dynamic_gap_ratio": 10.628657586309071, "maximum_existing_static_primitive_gain": 0.006665859266348051},
+  "reviewer_decision": "FREEZE_PERSISTENT_STATIC_ENCLOSURE_BOUNDARY_LINE_IDENTIFIABILITY",
+  "next_transition": "freeze_or114_persistent_static_enclosure_boundary_line_identifiability",
+  "claims": {"receipt_only_lane_selection": true, "same_video_semantic_match": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

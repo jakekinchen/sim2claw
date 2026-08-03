@@ -1,0 +1,15 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_two_planar_fixture_residual_reconciliation_closeout.v1",
+  "experiment_id": "OR132_RENDERER_NATIVE_TWO_PLANAR_FIXTURE_RESIDUAL_RECONCILIATION_V1",
+  "status": "TERMINAL_POST_OBJECT_RESIDUAL_RECONCILIATION_UNRESOLVED",
+  "proof_class": "renderer_native_two_planar_fixture_residual_reconciliation",
+  "contract": {"path": "configs/evaluations/observable_registration_renderer_native_two_planar_fixture_residual_reconciliation_v1.json", "sha256": "ea1b0512ecb0438c3345122157648c9b1263abce5b38c347f0329b890cbd8ac6"},
+  "implementation": {"path": "src/sim2claw/observable_registration_renderer_native_two_planar_fixture_residual_reconciliation.py", "sha256": "673c779ac6bda457dbd692be010419843644367c597d02e9865fe9bca2fd2cbb"},
+  "test": {"path": "tests/test_observable_registration_renderer_native_two_planar_fixture_residual_reconciliation.py", "sha256": "9095a0f7b1ce753619c631afe0f8e134ff5a0a8b32284182ceaa88d131c8c8c4", "focused_passed_before_execution": 3, "focused_passed_after_execution": 3},
+  "receipt": {"path": "outputs/observable_registration_renderer_native_two_planar_fixture_residual_reconciliation_v1/receipt.json", "sha256": "b3f9d1dd33bb92fe91f6c2d89943b3f4e990ef2d44f54e6143f9e6a22973d737", "artifact_sha256": "386e958dc20f362e8e61b10495af5e489cc78819181c96e189b741357f77b692"},
+  "result": {"mean_persistent_outside_occupancy_f1": 0.4805780970188768, "mean_dynamic_outside_occupancy_f1": 0.5726639807218926, "mean_persistent_deficit_to_0_60": 0.11942190298112322, "mean_dynamic_deficit_to_0_60": 0.03430750658724566, "persistent_to_dynamic_deficit_ratio": 3.480926329560777, "episodes_persistent_deficit_dominant": 8, "required_dominant_episode_count": 9, "selected_residual_family": "combined_or_unresolved_no_single_successor"},
+  "verification": {"receipt_artifact_digest_verified": true, "all_frozen_identities_verified_after_execution": true, "physical_occupancy_identity_matches_or97": true, "all_resource_and_integrity_gates_passed": true, "single_residual_family_gate_passed": false, "second_evaluator_run_performed": false},
+  "terminal_interpretation": {"global_80_to_90_percent_temporal_pixel_target_achieved_by_or131": true, "composite_regional_same_video_target_achieved": false, "static_only_successor_authorized": false, "dynamic_only_successor_authorized": false, "combined_successor_preregistered": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false},
+  "reviewer_decision": "CLOSE_CURRENT_GOAL_LOOP_GLOBAL_PIXEL_TARGET_MET_COMPOSITE_REGIONAL_TARGET_OPEN",
+  "next_transition": null
+}

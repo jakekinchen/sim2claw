@@ -1,0 +1,94 @@
+{
+  "schema_version": "sim2claw.observable_registration_json_only_validation_split_restart_contract.v1",
+  "experiment_id": "OR88_JSON_ONLY_VALIDATION_SPLIT_RESTART_V1",
+  "proof_class": "retained_eleven_episode_json_only_split_restart_after_rejected_validation",
+  "sources": {
+    "or87_closeout": {
+      "path": "configs/decisions/observable_registration_reject_only_validation_camera_workcell_response_v1_closeout.json",
+      "sha256": "0bf9fe14ec29ff508d402d6609b46a89c62b53df01a28c3406cb5e54d44115af"
+    },
+    "or68_pairing_inventory": {
+      "path": "outputs/observable_registration_renderer_native_cross_episode_admission_v1/pairing_inventory.json",
+      "sha256": "a3e7febdea2b4894f5d5446701298ea7940f76ffae3dbe5eabead99d2028ab63"
+    },
+    "or69_receipt": {
+      "path": "outputs/observable_registration_renderer_native_missing_trace_regeneration_v1/receipt.json",
+      "sha256": "0de673051e8bd39e0e9d07b1474c01be243acbdb0ee922024d0e4ad4e98d3c40"
+    }
+  },
+  "split": {
+    "source_order": "or68_ascending_sha256_utf8_recording_id",
+    "expanded_development_positions": [1, 2, 3, 4, 5, 6, 7],
+    "fresh_validation_positions": [8, 9],
+    "final_evaluator_heldout_positions": [10, 11],
+    "expected_recording_ids_by_role": {
+      "expanded_development": [
+        "20260719T032315Z-d3c3cf0b",
+        "20260719T032400Z-052d5137",
+        "20260719T031615Z-0e058ca2",
+        "20260719T030059Z-a26f8400",
+        "20260719T032620Z-0c7e3d86",
+        "20260719T032531Z-06be393c",
+        "20260719T030206Z-af661460"
+      ],
+      "fresh_validation": [
+        "20260719T031813Z-b147b429",
+        "20260719T032440Z-f728a18c"
+      ],
+      "final_evaluator_heldout": [
+        "20260719T031324Z-bf91502b",
+        "20260719T031715Z-61ebb199"
+      ]
+    },
+    "opened_or87_validation_becomes_development": true,
+    "retroactive_validation_claim_allowed": false,
+    "prospective_pristine_holdout_claimed": false,
+    "prior_historical_pixel_access_acknowledged": true
+  },
+  "physical_access": {
+    "path_stat_allowed": true,
+    "byte_hash_allowed": true,
+    "video_decode_allowed": false,
+    "frame_extraction_allowed": false,
+    "pixel_metric_evaluation_allowed": false,
+    "annotation_allowed": false
+  },
+  "execution": {
+    "physical_frames_decoded_allowed": 0,
+    "physical_video_decodes_allowed": 0,
+    "renderer_runs_allowed": 0,
+    "candidate_videos_allowed": 0,
+    "parameter_fits_allowed": 0,
+    "candidate_selections_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "json_outputs_only": true,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "split_restart_only": true,
+    "fresh_validation_verified": false,
+    "final_evaluator_heldout_verified": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

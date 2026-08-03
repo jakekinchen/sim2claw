@@ -1,0 +1,3 @@
+# OR129 renderer-native clipped planar-fixture parameterization
+
+OR128 proves that the complete procedural fixture produces a persistent native-rendering gain, but three accepted workcell-static residual components on the larger clipped fixture remain absent. Fit one bounded projective placement of the same dictionary-generated 8x8 family using only seven development initial frames and a fixed visible-support objective. Corroboration opens without refit only after decisive development gates. Backprojection to the frozen model table is self-consistency, not physical metric calibration. Physical-pixel texture projection, screen-space overlay, rendering, replay, hardware, paid compute, promotion, and physics or transfer claims remain closed.

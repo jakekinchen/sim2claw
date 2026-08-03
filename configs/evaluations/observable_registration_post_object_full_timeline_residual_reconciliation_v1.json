@@ -1,0 +1,112 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_object_full_timeline_residual_reconciliation_contract.v1",
+  "experiment_id": "OR120_POST_OBJECT_FULL_TIMELINE_RESIDUAL_RECONCILIATION_V1",
+  "proof_class": "post_object_full_timeline_static_dynamic_residual_reconciliation",
+  "sources": {
+    "or119_closeout": {
+      "path": "configs/decisions/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1_closeout.json",
+      "sha256": "a153f36c1dc7c35b1da87e0581156083f0db78456b040d380a86f1c537c4ee38"
+    },
+    "or119_receipt": {
+      "path": "outputs/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1/receipt.json",
+      "sha256": "8daaea75ca6cb235f02e45a075f0ff27622bad9360270424eaa5490139bfd640",
+      "artifact_sha256": "be61174c491122c08886c0f611a1709fa4380f7988730752012b50526005fb36"
+    },
+    "or119_frame_rows": {
+      "path": "outputs/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1/frame_rows.json",
+      "sha256": "71e07d3725b221863c44f149148f94d6f1861217299b04a0c0e980827c9a4f7c"
+    },
+    "or97_contract": {
+      "path": "configs/evaluations/observable_registration_post_final_static_dynamic_edge_occupancy_factorization_v1.json",
+      "sha256": "3c1b34124f4376a06625dbb6300d7ded883b7ed4283b8a9070a98b53ee388149"
+    },
+    "or97_implementation": {
+      "path": "src/sim2claw/observable_registration_post_final_static_dynamic_edge_occupancy_factorization.py",
+      "sha256": "747a55a4bb74a0678b5b26285638f64c41c96abb9b4abe91850ab4f690e1145b"
+    },
+    "or97_receipt": {
+      "path": "outputs/observable_registration_post_final_static_dynamic_edge_occupancy_factorization_v1/receipt.json",
+      "sha256": "b6c16773e2dd1fa4f3cb1dfccbcc7ef8d78380b205ca4d818585376fb8c5ea8c",
+      "artifact_sha256": "97489ff630469d50d41813ed934f5d527496873c0310c2eae752980574a4c695"
+    },
+    "or95_contract": {
+      "path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json",
+      "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"
+    }
+  },
+  "regions": {
+    "board_plus_margin": {
+      "points_px": [[-3.0, 66.5], [79.0, 52.0], [176.0, 144.5], [71.5, 193.0]],
+      "dilation_kernel_px_at_320x240": 15
+    },
+    "outside_board": {
+      "definition": "pixelwise_complement_of_board_plus_margin"
+    }
+  },
+  "edge_occupancy": {
+    "width_px": 320,
+    "height_px": 240,
+    "canny_low_threshold": 50,
+    "canny_high_threshold": 150,
+    "persistent_minimum_frame_fraction": 0.80,
+    "dynamic_minimum_frame_fraction": 0.05,
+    "dynamic_maximum_frame_fraction_exclusive": 0.80,
+    "tolerance_dilation_kernel_px": 3
+  },
+  "dominance_rule": {
+    "minimum_adequate_factor_f1": 0.60,
+    "minimum_inadequate_episode_count": 9,
+    "minimum_dominant_episode_count": 9,
+    "minimum_per_episode_deficit_margin": 0.05,
+    "minimum_mean_deficit_ratio": 2.0,
+    "persistent_dominant_selects": "renderer_native_persistent_static_scene_content",
+    "dynamic_dominant_selects": "dynamic_robot_operator_articulation",
+    "otherwise_selects": "combined_or_unresolved_no_single_successor"
+  },
+  "gates": {
+    "expected_episode_count": 11,
+    "expected_total_frame_count": 1210,
+    "physical_occupancy_identity_must_match_or97": true,
+    "single_family_selection_required_for_successor": true
+  },
+  "resource_boundary": {
+    "already_open_physical_video_decodes_allowed": 11,
+    "existing_or119_candidate_video_decodes_allowed": 11,
+    "physical_frames_read_allowed": 1210,
+    "candidate_frames_read_allowed": 1210,
+    "occupancy_map_outputs_allowed": 11,
+    "renders_allowed": 0,
+    "fits_allowed": 0,
+    "candidate_selections_allowed": 0,
+    "threshold_changes_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "post_final_retrospective_diagnostic_only": true,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

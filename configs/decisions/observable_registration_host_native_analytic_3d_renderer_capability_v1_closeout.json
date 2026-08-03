@@ -1,0 +1,65 @@
+{
+  "schema_version": "sim2claw.observable_registration_host_native_analytic_3d_renderer_capability_closeout.v1",
+  "experiment_id": "OR71_HOST_NATIVE_ANALYTIC_3D_RENDERER_CAPABILITY_V1",
+  "status": "PASS_ANALYTIC_3D_SCENE_STATE_RENDERER_CAPABILITY",
+  "proof_class": "host_native_analytic_3d_scene_state_renderer_capability",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_host_native_analytic_3d_renderer_capability_v1.json",
+    "sha256": "1238514b582b58c1c344debc84fa499c3401460b468843fdb99d2eab1143349d"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_host_native_analytic_3d_renderer_capability.py",
+    "sha256": "28fb6a049b3d210e4b12cc53adc143fe9a2088b2747f6f483417ac0f104141db"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_host_native_analytic_3d_renderer_capability.py",
+    "sha256": "e6e5b0e4a357d4fb8dffcf5726a0df6596f0fff6fc5f9187c7994bf031720f58",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_host_native_analytic_3d_renderer_capability_v1/receipt.json",
+    "sha256": "44386b1e3a2997f645cacd4632c1c51e3f9f004a2437323c1bd00e258a54555c",
+    "artifact_sha256": "c76216716f75e638f218ad32e7bb45ab6b477bdbbb16ccacc722e4983811d216"
+  },
+  "frame": {
+    "path": "outputs/observable_registration_host_native_analytic_3d_renderer_capability_v1/capability_frame.png",
+    "sha256": "98373cc3c12ec6d7d1460f283753560fa1ca0dbe2476bd7ed9c9f85cb88b1f3f",
+    "width_px": 320,
+    "height_px": 240
+  },
+  "result": {
+    "body_count": 45,
+    "declared_visible_geom_count": 485,
+    "accounted_geom_count": 485,
+    "projected_geom_count": 485,
+    "mesh_approximation_count": 36,
+    "non_background_fraction": 0.9466927083333333,
+    "rgb_standard_deviation": 97.54217432749083,
+    "unique_rgb_triplet_count": 1136,
+    "all_gates_passed": true,
+    "physical_video_reads": 0,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "camera_fits": 0,
+    "simulator_replays": 0,
+    "pixel_similarity_achieved": false,
+    "physics_fidelity_achieved": false
+  },
+  "reviewer_decision": "ADVANCE_TO_DEVELOPMENT_ONLY_SHARED_CAMERA_BASELINE",
+  "next_transition": "freeze_or72_development_only_shared_camera_baseline",
+  "claim_limits": {
+    "analytic_renderer_capability_only": true,
+    "mujoco_raster_equivalence": false,
+    "mesh_exactness": false,
+    "physical_camera_matched": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

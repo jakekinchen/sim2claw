@@ -1,0 +1,60 @@
+{
+  "schema_version": "sim2claw.observable_registration_board_grid_camera_sensor_roll_successor_closeout.v1",
+  "experiment_id": "OR82_BOARD_GRID_CAMERA_SENSOR_ROLL_SUCCESSOR_V1",
+  "status": "TERMINAL_BOARD_GRID_CAMERA_SENSOR_ROLL_GATE_FAILED",
+  "proof_class": "development_four_frame_shared_board_lattice_camera_sensor_roll_fit",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_board_grid_camera_sensor_roll_successor_v1.json",
+    "sha256": "25bf8a4101810dfbcd717f12ed2f334f9032d93c9b0c75892e057c519d70a773"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_board_grid_camera_sensor_roll_successor.py",
+    "sha256": "3084cd13bdc443a662c3199b9e3333567f8004a33a7569b3d3c3e55c0f30e224"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_board_grid_camera_sensor_roll_successor.py",
+    "sha256": "cdf23d875f75d39d4a563c9bcf2b0e7ac065b52e73f3a438e19cb4ce74919143",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_board_grid_camera_sensor_roll_successor_v1/receipt.json",
+    "sha256": "03ab3c7174ecc6006b12f39e7673371a3fe94405a1ed45a978004743a72fab58",
+    "artifact_sha256": "17501631c62ea63ae40194be50c9c76a7b1002e2c123e7dec209f0b5d071ae73"
+  },
+  "result": {
+    "candidate_evaluations": 43183,
+    "selected_sensor_roll_degrees": 41.51847641536014,
+    "selected_board_reprojection_rms_px": 8.798678889286437,
+    "selected_board_reprojection_max_px": 10.15600691960741,
+    "mean_full_frame_linear_pixel_similarity": 0.766321275383234,
+    "mean_tolerant_edge_f1": 0.32658053743961735,
+    "or81_mean_tolerant_edge_f1": 0.3868349737969936,
+    "gates_passed": 6,
+    "gates_total": 10,
+    "optimizer_converged": false,
+    "fov_bound_hit": true,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "principal_point_fits": 0,
+    "distortion_fits": 0,
+    "appearance_fits": 0,
+    "time_fits": 0,
+    "state_or_physics_fits": 0
+  },
+  "reviewer_decision": "REJECT_WHOLE_FRAME_ADVANCE_AND_RUN_BOARD_VS_OUTSIDE_REGION_ATTRIBUTION",
+  "next_transition": "freeze_or83_board_anchored_scene_composition_residual_attribution",
+  "claim_limits": {
+    "development_board_camera_roll_fit_only": true,
+    "full_timeline_verified": false,
+    "mujoco_raster_equivalence": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

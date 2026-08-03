@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.observable_registration_reject_only_validation_camera_workcell_response_closeout.v1",
+  "experiment_id": "OR87_REJECT_ONLY_VALIDATION_CAMERA_WORKCELL_RESPONSE_V1",
+  "status": "TERMINAL_REJECT_ONLY_VALIDATION_CAMERA_WORKCELL_RESPONSE_FAILED",
+  "proof_class": "validation_three_episode_frozen_camera_workcell_response_native_full_mesh_temporal_evaluation",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_reject_only_validation_camera_workcell_response_v1.json",
+    "sha256": "7d4fef25992196f02898e9c925aaf35aefa0d1be412beb5bbc7cd8c3ac6578f4"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_reject_only_validation_camera_workcell_response.py",
+    "sha256": "805a52bca98208eba36bc6007b9356fc525458b399fb871f1e25d178d1b69c26"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_reject_only_validation_camera_workcell_response.py",
+    "sha256": "fba921841783406bf172668c3c34fe5f3e62a7989407af3ea8368324f1b1e592",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_reject_only_validation_camera_workcell_response_v1/receipt.json",
+    "sha256": "ef02ab67b9369360e4ee4c50650965718f4e575d9fce75fd1375d0f58f000187",
+    "artifact_sha256": "889504ac87b8e87c5c2b797a8850bd33129c4230b71256e3ca49471e2dbc0f43"
+  },
+  "result": {
+    "validation_episode_count": 3,
+    "frame_count": 328,
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.8420511728107203,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.8253606051206589,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.7993540257962893,
+    "pooled_mean_tolerant_edge_f1": 0.3917342497191718,
+    "metric_gates_passed": 5,
+    "metric_gates_total": 6,
+    "integrity_gates_passed": 7,
+    "integrity_gates_total": 7,
+    "development_reads": 0,
+    "validation_reads": 3,
+    "evaluator_heldout_reads": 0,
+    "fits_or_candidate_selections": 0,
+    "simulator_replays": 0
+  },
+  "failed_gate": {
+    "name": "pooled_mean_tolerant_edge_f1",
+    "minimum": 0.4,
+    "observed": 0.3917342497191718
+  },
+  "reviewer_decision": "REJECT_CANDIDATE_KEEP_EVALUATOR_HELDOUT_SEALED_AND_FREEZE_NEW_SPLIT_RESTART",
+  "next_transition": "freeze_or88_json_only_validation_split_restart",
+  "claim_limits": {
+    "reject_only_validation_evaluation": true,
+    "candidate_rejected": true,
+    "evaluator_heldout_verified": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

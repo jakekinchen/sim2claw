@@ -1,0 +1,17 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_planar_fixture_parameterization_closeout.v1",
+  "experiment_id": "OR126_RENDERER_NATIVE_PLANAR_FIXTURE_PARAMETERIZATION_V1",
+  "status": "PASS_COMPLETE_PLANAR_FIXTURE_PARAMETERIZED",
+  "proof_class": "renderer_native_planar_fixture_parameterization",
+  "contract": {"path": "configs/evaluations/observable_registration_renderer_native_planar_fixture_parameterization_v1.json", "sha256": "24aed0248416975b47d0e605b63b16f49f7da9d76fcbc248e8a9150f0fda5bb7"},
+  "implementation": {"path": "src/sim2claw/observable_registration_renderer_native_planar_fixture_parameterization.py", "sha256": "8ad420bd84c824026ba32d0cadb000271579f90e584a1eecf9819c6bf25b9a12"},
+  "test": {"path": "tests/test_observable_registration_renderer_native_planar_fixture_parameterization.py", "sha256": "3aef506ad1358e134a64144979ebde9087749ffbbe493b0f4a3a6c33ee485259", "focused_passed_before_execution": 3, "focused_passed_after_execution": 3},
+  "receipt": {"path": "outputs/observable_registration_renderer_native_planar_fixture_parameterization_v1/receipt.json", "sha256": "75a8f7a00ce1fd170009e35a5d38a581df7f0d1772146429856c79a6319f2fed", "artifact_sha256": "88cdda837c928b765d88683430a06dca87681066bfd088753352a7c0b8d29465"},
+  "parameterization": {"path": "outputs/observable_registration_renderer_native_planar_fixture_parameterization_v1/planar-fixture-parameters.json", "sha256": "45d124f45371cecb47e443d0f8b27756a1307bbdf253c8fbe1c16f866a01c7e7", "artifact_sha256": "b863682c9e1ee537f89533203012ac86af6c1294e8714efd42730c3a469d2444"},
+  "result": {"source_component_index": 4, "procedural_cell_shape": [8, 8], "distinct_dictionary_entry_count": 1, "maximum_corroboration_corner_rms_px": 0.6038077562545137, "maximum_reprojection_error_px": 5.684341886080802e-14, "physical_video_decodes": 11, "physical_frame_reads": 11},
+  "review_limit": {"complete_fixture_only": true, "clipped_larger_fixture_parameterized": false, "physical_pixel_texture_projected": false, "metric_physical_geometry_calibrated": false, "reason": "The procedural cells and model-plane corners are view-independent renderer inputs, but their plane projection remains conditional on the existing camera/workcell model and is not physical metric calibration."},
+  "verification": {"receipt_artifact_digest_verified": true, "all_frozen_identities_verified_after_execution": true, "all_integrity_gates_passed": true, "second_evaluator_run_performed": false},
+  "reviewer_decision": "FREEZE_RENDERER_NATIVE_PLANAR_FIXTURE_STATIC_COMPARISON",
+  "next_transition": "freeze_or127_renderer_native_planar_fixture_static_comparison",
+  "claims": {"procedural_fixture_parameterized": true, "physical_pixel_texture_projection": false, "specific_object_identity": false, "metric_3d_geometry_calibrated": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

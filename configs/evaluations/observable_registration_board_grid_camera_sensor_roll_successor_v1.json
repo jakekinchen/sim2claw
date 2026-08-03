@@ -1,0 +1,120 @@
+{
+  "schema_version": "sim2claw.observable_registration_board_grid_camera_sensor_roll_successor_contract.v1",
+  "experiment_id": "OR82_BOARD_GRID_CAMERA_SENSOR_ROLL_SUCCESSOR_V1",
+  "proof_class": "development_four_frame_shared_board_lattice_camera_sensor_roll_fit",
+  "sources": {
+    "or81_closeout": {
+      "path": "configs/decisions/observable_registration_development_board_grid_camera_geometry_fit_v1_closeout.json",
+      "sha256": "45774a220210ce01c87e5722696ce39c45320e9bd88f9c94871454c14a6e5ede"
+    },
+    "or81_contract": {
+      "path": "configs/evaluations/observable_registration_development_board_grid_camera_geometry_fit_v1.json",
+      "sha256": "3dbcd3b3635e8682db2dc157e99264af9d622f9ffe7b185492c1c616ca44223b"
+    },
+    "or81_implementation": {
+      "path": "src/sim2claw/observable_registration_development_board_grid_camera_geometry_fit.py",
+      "sha256": "01e6810ce0f8f7b4eec140ed7a174adfbc4e5298863e46d4d71228c3778b2140"
+    },
+    "or79_implementation": {
+      "path": "src/sim2claw/observable_registration_native_rasterizer_byte_equivalence.py",
+      "sha256": "07f17d14040b265c6367458954bfe3ace1fea53c403a38bbe5c8ae29f10830cf"
+    },
+    "or79_native_source": {
+      "path": "tools/renderer/or79_triangle_rasterizer.c",
+      "sha256": "872c5beb0918ffd07e1961eb5bf2119b34b0d7fccf9a419bf06e194c43b39a6b"
+    },
+    "or72_contract": {
+      "path": "configs/evaluations/observable_registration_development_shared_camera_baseline_v1.json",
+      "sha256": "8f7366a9a2bf4813712553adb751e5cfd71f5b4addcbb4c36205681c07912440"
+    },
+    "shared_scene_manifest": {
+      "path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/scene_manifest.json",
+      "sha256": "777f915fb7c84d498615f43e54cbeaee47a35494f8166724898ef9dc998f371b",
+      "revision_sha256": "e7d93bb2a5786079131bdfdd82410ffbc108baecd451b0d8a74d9f442aedd3d9"
+    },
+    "mesh_asset_root": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/assets",
+      "hash_source": "shared_scene_manifest.meshes.asset_sha256"
+    }
+  },
+  "unchanged_or81_sections": [
+    "annotations",
+    "scene_correspondence",
+    "renderer",
+    "metric",
+    "baseline",
+    "acceptance"
+  ],
+  "camera_family": {
+    "parameter_order": ["target_x_m", "target_y_m", "target_z_m", "azimuth_degrees", "elevation_degrees", "distance_m", "vertical_fov_degrees", "optical_axis_sensor_roll_degrees"],
+    "bounds": [
+      [-0.6, 0.6],
+      [0.0, 1.1],
+      [0.5, 1.3],
+      [-180.0, 180.0],
+      [10.0, 89.0],
+      [0.5, 3.0],
+      [20.0, 110.0],
+      [-180.0, 180.0]
+    ],
+    "added_parameter_count": 1,
+    "added_parameter": "optical_axis_sensor_roll_degrees",
+    "one_shared_vector_required": true
+  },
+  "search": {
+    "seed": 82,
+    "population_size_multiplier": 8,
+    "maximum_iterations": 70,
+    "tolerance": 0.000001,
+    "absolute_tolerance": 0.000001,
+    "polish": true,
+    "workers": 1,
+    "maximum_candidate_evaluations_across_all_hypotheses": 60000,
+    "objective": "unchanged_shared_board_corner_reprojection_rms_px_only"
+  },
+  "resource_boundary": {
+    "development_episode_reads_allowed": 4,
+    "development_physical_video_decodes_allowed": 4,
+    "development_physical_frames_allowed": 4,
+    "development_state_trace_reads_allowed": 4,
+    "candidate_images_allowed": 4,
+    "unique_mesh_asset_reads_allowed": 18,
+    "camera_fits_allowed": 1,
+    "appearance_fits_allowed": 0,
+    "time_fits_allowed": 0,
+    "state_or_physics_fits_allowed": 0,
+    "principal_point_fits_allowed": 0,
+    "distortion_fits_allowed": 0,
+    "validation_reads_allowed": 0,
+    "evaluator_heldout_reads_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "development_board_camera_roll_fit_only": true,
+    "full_timeline_verified": false,
+    "mujoco_raster_equivalence": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

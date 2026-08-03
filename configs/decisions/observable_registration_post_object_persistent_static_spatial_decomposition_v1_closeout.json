@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_object_persistent_static_spatial_decomposition_closeout.v1",
+  "experiment_id": "OR121_POST_OBJECT_PERSISTENT_STATIC_SPATIAL_DECOMPOSITION_V1",
+  "status": "PASS_CLIPPED_RECTILINEAR_PLANAR_ARRAY_IDENTIFIED",
+  "proof_class": "post_object_persistent_static_spatial_decomposition",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_post_object_persistent_static_spatial_decomposition_v1.json",
+    "sha256": "e87bfc318610390ca77026cc2d2776f77794afe69f37ae5096c970daeb1b9c84"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_post_object_persistent_static_spatial_decomposition.py",
+    "sha256": "616c375eb702e6dc1f8a11afa5c1c40617749e15b578b6005b883d00aab76a99"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_post_object_persistent_static_spatial_decomposition.py",
+    "sha256": "afd14fdc30123539285a36b4dd7a0537f56f42ac6ae8155594bb0316d83a7f1d",
+    "focused_passed_before_execution": 3,
+    "focused_passed_after_execution": 3
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_post_object_persistent_static_spatial_decomposition_v1/receipt.json",
+    "sha256": "649372320b6aa3fcf82faf233161d46d70faaf76f92ed9ce056eb60ced1e67f8",
+    "artifact_sha256": "5961266c38b60c12eab0e69adeea090ce68514cff22563195ca572495e36471e"
+  },
+  "result": {
+    "consensus_pixel_count": 911,
+    "minimum_episode_consensus_coverage": 0.9835345773874863,
+    "largest_component_dilated_share": 0.3801916932907348,
+    "largest_component_bbox_xywh": [5, 165, 122, 75],
+    "largest_component_touches_bottom_boundary": true,
+    "primary_orientation_bin_degrees": 50,
+    "primary_orientation_line_count": 3,
+    "primary_orientation_total_length_px": 203.65788720929237,
+    "secondary_orientation_bin_degrees": 140,
+    "secondary_orientation_line_count": 2,
+    "secondary_orientation_total_length_px": 81.63653605024464,
+    "orientation_family_separation_degrees": 90.0,
+    "selected_spatial_family": "clipped_image_space_rectilinear_planar_array"
+  },
+  "reviewer_decision": "FREEZE_RENDERER_NATIVE_CLIPPED_RECTILINEAR_PLANAR_ARRAY_RECONSTRUCTION",
+  "next_transition": "freeze_or122_renderer_native_clipped_rectilinear_planar_array_reconstruction",
+  "claims": {
+    "identity_bound_residual_map_spatial_family_selected": true,
+    "specific_object_identity_selected": false,
+    "metric_3d_geometry_calibrated": false,
+    "same_video_semantic_match": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "event_parity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false
+  }
+}

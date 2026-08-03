@@ -1,0 +1,74 @@
+{
+  "schema_version": "sim2claw.observable_registration_frozen_camera_full_development_timeline_closeout.v1",
+  "experiment_id": "OR74_FROZEN_CAMERA_FULL_DEVELOPMENT_TIMELINE_V1",
+  "status": "TERMINAL_FROZEN_CAMERA_FULL_DEVELOPMENT_BELOW_TARGET",
+  "proof_class": "development_four_episode_frozen_camera_temporal_pixel_evaluation",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_frozen_camera_full_development_timeline_v1.json",
+    "sha256": "1768c4248ab79dc642e921812d514046379c4b1646e56d2c44b5621e5161234f"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_frozen_camera_full_development_timeline.py",
+    "sha256": "e29067c9897fc7ab2de7099371d8b154722e3c9debaa623986b1c746b9de120c"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_frozen_camera_full_development_timeline.py",
+    "sha256": "46e4dfeeb3c333c3e541a92dcc63e7e6972f1b7b9803f143236f45fb03776aac",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_frozen_camera_full_development_timeline_v1/receipt.json",
+    "sha256": "d6f08fcc5335f5dc1de820d6e4dd81a36ece0a1242566fc928a37fad1b982f3b",
+    "artifact_sha256": "0eaa13fe16528fcbc7aae845e614e3b9a737dd4792f6299306edaa704fca16c5"
+  },
+  "rows": {
+    "path": "outputs/observable_registration_frozen_camera_full_development_timeline_v1/rows.json",
+    "sha256": "3ddd24bc797ccca3de38167aa25ee9c03831a388e2d6728d62693d3805e44104",
+    "artifact_sha256": "2ae0e4b440a0db34a0c9d95911ec2105e17f064337d7b85b1c056d32e2b88809",
+    "row_count": 423
+  },
+  "result": {
+    "development_episode_count": 4,
+    "physical_frames_compared": 423,
+    "analytic_frames_rendered": 423,
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.7810828735783308,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.7679425001144409,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.7574411544995971,
+    "pooled_mean_tolerant_edge_f1": 0.2858257286041517,
+    "minimum_episode_mean_full_frame_linear_pixel_similarity": 0.7802403604935023,
+    "maximum_episode_mean_full_frame_linear_pixel_similarity": 0.7820293759909746,
+    "minimum_phase_mean_full_frame_linear_pixel_similarity": 0.7708491072058677,
+    "gates_passed": 2,
+    "gates_total": 6,
+    "passed_gates": [
+      "pooled_p10_full_frame_linear_pixel_similarity",
+      "pooled_mean_motion_union_linear_pixel_similarity"
+    ],
+    "camera_fits": 0,
+    "appearance_fits": 0,
+    "time_fits": 0,
+    "state_or_physics_fits": 0,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "simulator_replays": 0,
+    "pixel_similarity_achieved": false,
+    "physics_fidelity_achieved": false
+  },
+  "reviewer_decision": "FREEZE_NEXT_DEVELOPMENT_RESIDUAL_MECHANISM",
+  "next_transition": "diagnose_or74_development_residual_before_new_fit",
+  "claim_limits": {
+    "development_frozen_camera_evaluation_only": true,
+    "mujoco_raster_equivalence": false,
+    "mesh_exactness": false,
+    "physical_camera_matched": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

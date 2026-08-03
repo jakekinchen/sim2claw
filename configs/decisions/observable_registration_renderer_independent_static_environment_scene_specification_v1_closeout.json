@@ -1,0 +1,70 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_independent_static_environment_scene_specification_closeout.v1",
+  "experiment_id": "OR63_RENDERER_INDEPENDENT_STATIC_ENVIRONMENT_SCENE_SPECIFICATION_V1",
+  "status": "PASS_PIXEL_FREE_STATIC_ENVIRONMENT_OBSERVATION_SPECIFICATION",
+  "proof_class": "retained_episode_specific_renderer_independent_static_environment_observation_specification",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_renderer_independent_static_environment_scene_specification_v1.json",
+    "sha256": "602d91f81354300c9facf78e188b4db06ec390a3a2c374b1db7dc31acda54c33"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_renderer_independent_static_environment_scene_specification.py",
+    "sha256": "d815860ea139f814213475f50947e366ca79cf0efdb70acee1a88ad9ef7109a5"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_renderer_independent_static_environment_scene_specification.py",
+    "sha256": "21eaef799ef17f1f2b16b9985485aacfada12c9aca43afa3ba129f2d7aa2d23d",
+    "focused_passed": 2
+  },
+  "scene_spec": {
+    "path": "outputs/observable_registration_renderer_independent_static_environment_scene_specification_v1/scene_spec.json",
+    "sha256": "7dbc87183a327ff8df9ca140cb73e5eea31b28e93bf145d1917521883fd0f1ee"
+  },
+  "primitive_support_rows": {
+    "path": "outputs/observable_registration_renderer_independent_static_environment_scene_specification_v1/primitive_support_rows.json",
+    "sha256": "f6ed2343943b772e8d4ed7fa1444fb19c2054204735627804de2968be19a59df"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_renderer_independent_static_environment_scene_specification_v1/receipt.json",
+    "sha256": "c87f731a9ff84022a21f61294088a9adb515c8e175a36607a9c6bb27bd15cb91",
+    "artifact_sha256": "a08d97bbc597eebc4453584916b71f50ddcc77d92f3d26a185a506fa2d64c0f6"
+  },
+  "result": {
+    "stable_residual_pixel_count": 20769,
+    "frozen_line_primitive_count": 24,
+    "palette_cluster_count": 6,
+    "development_physical_mean_support": 0.7287349581580419,
+    "development_simulator_mean_support": 0.05384171831444404,
+    "validation_physical_mean_support": 0.7446114607545905,
+    "validation_simulator_mean_support": 0.045504562913667196,
+    "validation_physical_minus_simulator_support": 0.6991068978409233,
+    "stress_physical_mean_support": 0.7401936492861182,
+    "stress_simulator_mean_support": 0.05694338990258538,
+    "target_pass": false
+  },
+  "execution": {
+    "development_frame_evaluations": 220,
+    "validation_frame_evaluations": 180,
+    "stress_frame_evaluations": 116,
+    "renderer_runs": 0,
+    "simulator_replays": 0,
+    "candidate_videos": 0,
+    "image_outputs": 0,
+    "texture_outputs": 0,
+    "physical_pixel_composites": 0,
+    "geometric_warps": 0,
+    "dependency_installs": 0,
+    "hardware_actions": 0
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or64_pixel_free_environment_primitive_edge_headroom",
+  "claim_limits": {
+    "screen_space_observation_constraints_only": true,
+    "metric_3d_geometry": false,
+    "physical_pixels_as_texture": false,
+    "same_video_target_pass": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

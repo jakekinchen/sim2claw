@@ -1,0 +1,18 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_persistent_static_enclosure_boundary_line_identifiability_contract.v1",
+  "experiment_id": "OR114_POST_FINAL_PERSISTENT_STATIC_ENCLOSURE_BOUNDARY_LINE_IDENTIFIABILITY_V1",
+  "proof_class": "post_final_persistent_static_enclosure_boundary_line_identifiability",
+  "sources": {
+    "or113_closeout": {"path": "configs/decisions/observable_registration_post_final_operator_actor_lane_reconciliation_v1_closeout.json", "sha256": "d947c4c2bc821464718a758745c7ca7052b6df24bd16be00075044641075531b"},
+    "or97_receipt": {"path": "outputs/observable_registration_post_final_static_dynamic_edge_occupancy_factorization_v1/receipt.json", "sha256": "b6c16773e2dd1fa4f3cb1dfccbcc7ef8d78380b205ca4d818585376fb8c5ea8c", "artifact_sha256": "97489ff630469d50d41813ed934f5d527496873c0310c2eae752980574a4c695"}
+  },
+  "split": {"development_positions": [1, 2, 3, 4, 5, 6, 7], "validation_positions": [8, 9, 10, 11], "validation_never_changes_orientation_or_rho": true, "untouched_cohort_remaining": false},
+  "occupancy_panels": {"panel_width_px": 320, "panel_height_px": 240, "physical_persistent_panel_index": 0, "candidate_persistent_panel_index": 1, "expected_map_count": 11},
+  "region": {"background_roi_xyxy": [100, 0, 300, 160], "exclude_board_plus_margin": true, "board_points_px": [[-3.0, 66.5], [79.0, 52.0], [176.0, 144.5], [71.5, 193.0]], "board_dilation_kernel_px": 15},
+  "line_extractor": {"rho_resolution_px": 1, "theta_resolution_degrees": 1, "vote_threshold": 12, "minimum_line_length_px": 20, "maximum_line_gap_px": 4, "orientation_bin_width_degrees": 10, "candidate_match_maximum_orientation_delta_degrees": 5, "candidate_match_maximum_midpoint_distance_px": 20, "selected_line_maximum_rho_delta_px": 25},
+  "selection": {"development_selector": "maximum_total_unmatched_physical_segment_length_orientation_bin", "tie_break": "lowest_orientation_bin_degrees", "shared_line_angle": "median_selected_development_segment_angle", "shared_line_rho": "median_selected_development_segment_rho", "validation_refit": false},
+  "acceptance": {"development_minimum_positions_with_selected_line_length_at_least_20px": 5, "development_minimum_mean_selected_unmatched_length_px": 25, "development_minimum_selected_share_of_all_unmatched_length": 0.2, "validation_minimum_positions_with_selected_line_length_at_least_20px": 3, "validation_minimum_mean_selected_unmatched_length_px": 20, "validation_minimum_total_physical_minus_candidate_matched_length_px": 40, "all_gates_required": true},
+  "resource_boundary": {"or97_occupancy_map_reads_allowed": 11, "source_video_decodes_allowed": 0, "candidate_video_decodes_allowed": 0, "renders_allowed": 0, "fits_or_candidate_searches_allowed": 0, "orientation_bins_allowed": 18, "shared_line_values_allowed": 2, "validation_refits_allowed": 0, "simulator_replays_allowed": 0, "geometry_values_produced_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"image_space_persistent_boundary_line_identifiability_only": true, "metric_3d_enclosure_geometry_calibrated": false, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "predictive_simulation": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

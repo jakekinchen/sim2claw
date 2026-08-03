@@ -1,0 +1,115 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_missing_trace_regeneration_contract.v1",
+  "experiment_id": "OR69_RENDERER_NATIVE_MISSING_TRACE_REGENERATION_V1",
+  "proof_class": "retained_four_episode_action_identical_renderer_native_state_trace_regeneration",
+  "sources": {
+    "goal_loop": {
+      "path": "docs/autonomous-workflow/goal-loop-renderer-native-heldout-visual-physics-successor-20260803.md",
+      "sha256": "e3608d43ed670179eb36612b4770c9e326d28733d2d3a510f815f48c87f09b31"
+    },
+    "or68_closeout": {
+      "path": "configs/decisions/observable_registration_renderer_native_cross_episode_admission_v1_closeout.json",
+      "sha256": "e180cfffde4aa10243db586c5e3e6cd30963f3f079c97dbb3e548d11a17d3312"
+    },
+    "or68_pairing_inventory": {
+      "path": "outputs/observable_registration_renderer_native_cross_episode_admission_v1/pairing_inventory.json",
+      "sha256": "a3e7febdea2b4894f5d5446701298ea7940f76ffae3dbe5eabead99d2028ab63"
+    },
+    "eleven_episode_cohort": {
+      "path": "outputs/pawn_bg_grasp_group_probes/frozen_v3_timestep045_all.json",
+      "sha256": "5763e0be1f1ff6d1e535f13af36289eabb07f219220ac2c95b7c8bdf4158eb29"
+    },
+    "shared_scene": {
+      "path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/scene_manifest.json",
+      "sha256": "777f915fb7c84d498615f43e54cbeaee47a35494f8166724898ef9dc998f371b"
+    },
+    "simulator_contract": {
+      "path": "configs/optimization/pawn_bg_grasp_coordinate_descent_v1.json",
+      "sha256": "6f39692ede95e1fc581826699ba107b6b9814a776a0751dbc6a13ce25e6e9847"
+    },
+    "simulator_implementation": {
+      "path": "src/sim2claw/pawn_bg_grasp_coordinate_descent.py",
+      "sha256": "fe938637ceb106faadcb85bcb04db0847c69943e2c5fe3f72f1d4cc2b6b867bf"
+    }
+  },
+  "shared_parameters": {
+    "source": "eleven_episode_cohort.parameters",
+    "parameter_digest": "689cc4e245b3b7d500f9ea5ecb16003599cbcc0de9f0ca2a3d30b3f7b60389f7",
+    "candidate_selection_allowed": false,
+    "episode_specific_override_allowed": false
+  },
+  "episodes": [
+    {
+      "recording_id": "20260719T032315Z-d3c3cf0b",
+      "split_role": "development",
+      "action_array_sha256": "757e5a7b4aecac8e5e8588bea69606fe8249af9e2cd723843a8d31decbcb5606"
+    },
+    {
+      "recording_id": "20260719T030059Z-a26f8400",
+      "split_role": "development",
+      "action_array_sha256": "c4acc4dca04e30c9d3031e326496a7c1d46777e7a1bd87b8d6968d2174e575bc"
+    },
+    {
+      "recording_id": "20260719T030206Z-af661460",
+      "split_role": "validation",
+      "action_array_sha256": "9a550296ddabd75cb43c4d4e0320396603a0fc6b2ea9c8de227dd6ed4aef6c06"
+    },
+    {
+      "recording_id": "20260719T031813Z-b147b429",
+      "split_role": "evaluator_heldout",
+      "action_array_sha256": "843565b9f7bad57bb96e35e7b73fc8974b47abe9c2401925ed6474f2077cad53"
+    }
+  ],
+  "acceptance": {
+    "expected_episode_count": 4,
+    "require_action_hash_match": true,
+    "require_parameter_digest_match": true,
+    "require_historical_diagnostic_reproduction": true,
+    "require_common_scene_revision": true,
+    "require_finite_state_trace": true,
+    "require_inspection_only": true
+  },
+  "physical_access": {
+    "physical_sample_metadata_allowed": true,
+    "physical_video_path_stat_allowed": false,
+    "physical_video_byte_read_allowed": false,
+    "physical_video_decode_allowed": false,
+    "physical_frame_extraction_allowed": false,
+    "pixel_metric_evaluation_allowed": false
+  },
+  "execution": {
+    "simulator_replays_allowed": 4,
+    "state_traces_allowed": 4,
+    "scene_manifests_allowed": 4,
+    "probe_receipts_allowed": 4,
+    "renderer_runs_allowed": 0,
+    "candidate_videos_allowed": 0,
+    "parameter_fits_allowed": 0,
+    "physical_video_reads_allowed": 0,
+    "hardware_actions_allowed": 0
+  },
+  "claim_limits": {
+    "pixel_similarity_achieved": false,
+    "renderer_runtime_ready": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

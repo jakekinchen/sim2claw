@@ -1,0 +1,65 @@
+{
+  "schema_version": "sim2claw.observable_registration_second_success_footage_replication_closeout.v1",
+  "experiment_id": "OR54_SECOND_SUCCESSFUL_SAME_RIG_FOOTAGE_REPLICATION_V1",
+  "status": "TERMINAL_SECOND_SUCCESSFUL_EPISODE_JAW_TRACKS_REPLICATE_PAWN_CROWN_TWO_PASS_ABSTAINS",
+  "proof_class": "retained_known_success_same_rig_two_pass_image_plane_tracking_replication_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_second_success_footage_replication_v1.json",
+    "sha256": "37c256dcb2c9275ff5dfea9217a5e5070681c8a1b91f582495d2fd3d6008b89c"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_second_success_footage_replication.py",
+    "sha256": "b72b8441638a5216856cec8b689631d126cbe4667bfd5c57494468acb5387c08"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_second_success_footage_replication.py",
+    "sha256": "24f2939b2507c3d274f3cd6c1f732ca5e3614b7767bc1f79dd01900a58288150",
+    "focused_passed": 8
+  },
+  "rows": {
+    "path": "outputs/observable_registration_second_success_footage_replication_v1/tracking_rows.json",
+    "sha256": "b3246babfa9528a33e0c1db155596127ed1857b3ce32e00ca0f5da73a0b08fbc"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_second_success_footage_replication_v1/receipt.json",
+    "sha256": "632c58cc5dc8f7abc574abf8909d3a8d16f4a3ad3eb81734b3094940fc7e18dd",
+    "artifact_sha256": "4514556c4e9f71b349189c76052565439102819aaf8eb991af22cec129649588"
+  },
+  "result": {
+    "closed_command_hold_interval_samples_inclusive": [226, 351],
+    "frame_range_inclusive": [100, 125],
+    "nearest_sample_range_inclusive": [230, 330],
+    "frame_count": 26,
+    "maximum_association_error_ms": 16.925791976973414,
+    "fixed_jaw_tip_two_pass_accepted_count": 26,
+    "moving_jaw_tip_two_pass_accepted_count": 26,
+    "selected_pawn_crown_two_pass_accepted_count": 3,
+    "minimum_accepted_rows_per_point": 20,
+    "pass_b_crown_projection_between_jaw_tips_count": 26,
+    "two_pass_enclosure_replication_pass": false,
+    "directory_receipt_semantic_conflict": true,
+    "authoritative_receipt_task": "brown_pawn_b2_b2_to_b1"
+  },
+  "execution": {
+    "endpoint_anchor_count": 6,
+    "per_frame_manual_annotations": 0,
+    "simulator_replays": 0,
+    "new_candidates": 0,
+    "parameter_changes": 0,
+    "hardware_actions": 0,
+    "heldout_opened": false
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or55_pawn_crown_appearance_tracker_with_pre_pickup_and_post_release_negative_controls",
+  "claim_limits": {
+    "metric_aperture": false,
+    "metric_depth": false,
+    "contact_force": false,
+    "bilateral_physical_contact": false,
+    "camera_calibration": false,
+    "canonical_contact_geometry": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

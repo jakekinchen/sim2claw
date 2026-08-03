@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_two_class_robot_material_palette_calibration_closeout.v1",
+  "experiment_id": "OR106_POST_FINAL_TWO_CLASS_ROBOT_MATERIAL_PALETTE_CALIBRATION_V1",
+  "status": "TERMINAL_TWO_CLASS_ROBOT_MATERIAL_PALETTE_DEVELOPMENT_GATE_FAILED",
+  "proof_class": "post_final_sampled_development_validation_two_class_robot_material_palette_calibration",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_two_class_robot_material_palette_calibration_v1.json", "sha256": "3a3ccc27e6473b08b7c15cad8921f7f9a9e73653f2d7438ad975523f7c15a3ad"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_two_class_robot_material_palette_calibration.py", "sha256": "4e9de256aabaaa8fc4bd0959cc48d2f0610a609ac90f01b47bcacf1d2c5d03ec"},
+  "test": {"path": "tests/test_observable_registration_post_final_two_class_robot_material_palette_calibration.py", "sha256": "97985fe9f4817f0a3ae2566097b3ef00d04d594cc8b6ad0b2afc5aaf16c88c4c", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_two_class_robot_material_palette_calibration_v1/receipt.json", "sha256": "f4b9218b60752330206649a39cc3272b2a4db25093e6acfe3896f86b23f9ff60", "artifact_sha256": "db3753459cdd507eb565b53c762e08cbbf76d2598d4e30d5c15504a2719b8fae"},
+  "result": {"selected_structural_grayscale_albedo": 1.0, "selected_servo_grayscale_albedo": 0.5, "development_full_frame_gain": 0.004504972270556906, "samples_with_full_frame_gain_at_least_0p002": 19, "development_outside_board_edge_f1_delta": -0.033961305768732575, "minimum_allowed_outside_board_edge_f1_delta": -0.005, "identity_baseline_maximum_absolute_error_vs_or95": 0.0, "validation_opened": false, "integrity_gates_passed": 11, "integrity_gates_total": 11},
+  "reviewer_decision": "REJECT_TWO_CLASS_ROBOT_MATERIAL_PALETTE_AND_ATTRIBUTE_EXOGENOUS_OPERATIONAL_CONTENT",
+  "next_transition": "freeze_or107_exogenous_operator_skin_edge_occupancy_attribution",
+  "claims": {"same_video_semantic_match": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

@@ -1,0 +1,150 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_contract.v1",
+  "experiment_id": "OR122_RENDERER_NATIVE_CLIPPED_RECTILINEAR_PLANAR_ARRAY_RECONSTRUCTION_V1",
+  "proof_class": "renderer_native_clipped_rectilinear_planar_array_reconstruction",
+  "sources": {
+    "or121_closeout": {
+      "path": "configs/decisions/observable_registration_post_object_persistent_static_spatial_decomposition_v1_closeout.json",
+      "sha256": "398d839f7336f5a28eee1b9969a94c654c7a981fbfede50e63d693739b6ae615",
+      "artifact_sha256": "5961266c38b60c12eab0e69adeea090ce68514cff22563195ca572495e36471e"
+    },
+    "or121_contract": {
+      "path": "configs/evaluations/observable_registration_post_object_persistent_static_spatial_decomposition_v1.json",
+      "sha256": "e87bfc318610390ca77026cc2d2776f77794afe69f37ae5096c970daeb1b9c84"
+    },
+    "or121_receipt": {
+      "path": "outputs/observable_registration_post_object_persistent_static_spatial_decomposition_v1/receipt.json",
+      "sha256": "649372320b6aa3fcf82faf233161d46d70faaf76f92ed9ce056eb60ced1e67f8",
+      "artifact_sha256": "5961266c38b60c12eab0e69adeea090ce68514cff22563195ca572495e36471e"
+    },
+    "or120b_receipt": {
+      "path": "outputs/observable_registration_post_object_full_timeline_residual_reconciliation_identity_reproduction_v1/receipt.json",
+      "sha256": "84aca2bbccaeb943ce5f762a33993d4b6a5baba5ae6b723899d0bd52ccba9709",
+      "artifact_sha256": "a98a27c9af0564504bd90fc566b6fa4494952d586e89cb5fb609f84f22b17f0e"
+    },
+    "or119_contract": {
+      "path": "configs/evaluations/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1.json",
+      "sha256": "1d2d5aa18eff218c1374fbbd8639667b654bb930e98bf1d46973a75a06d4781a"
+    },
+    "or119_receipt": {
+      "path": "outputs/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1/receipt.json",
+      "sha256": "8daaea75ca6cb235f02e45a075f0ff27622bad9360270424eaa5490139bfd640",
+      "artifact_sha256": "be61174c491122c08886c0f611a1709fa4380f7988730752012b50526005fb36"
+    },
+    "or119_frame_rows": {
+      "path": "outputs/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1/frame_rows.json",
+      "sha256": "71e07d3725b221863c44f149148f94d6f1861217299b04a0c0e980827c9a4f7c"
+    },
+    "or116_contract": {
+      "path": "configs/evaluations/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_v1.json",
+      "sha256": "ff02ea2a939ebc8ff95d420dd750d6aa4f2f7c93ec51448943bdc0362fabf351"
+    }
+  },
+  "frozen_identities": {
+    "implementation": {
+      "path": "src/sim2claw/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction.py",
+      "sha256": "1596ffda6d771d38f3ab15707df12e52c2d7e7640273373755d60f52b4205e38"
+    },
+    "test": {
+      "path": "tests/test_observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction.py",
+      "sha256": "293fca2ae0920fb32e2c0e5055803e1a71184c6afde4c06986dba85cfbd30779"
+    }
+  },
+  "split": {
+    "development_positions": [1, 2, 3, 4, 5, 6, 7],
+    "validation_positions": [8, 9, 10, 11],
+    "validation_requires_development_gate": true,
+    "validation_refit_allowed": false,
+    "untouched_cohort_remaining": false
+  },
+  "geometry": {
+    "primitive_type": "tabletop_supported_capsule",
+    "primitive_count": 5,
+    "primary_segment_count": 3,
+    "secondary_segment_count": 2,
+    "capsule_radius_px": 1.5,
+    "triangle_count_per_primitive": 248,
+    "total_added_triangle_count": 1240,
+    "support_plane": "or116_body_8_geom_101_exact_tabletop",
+    "shared_zbuffer": true,
+    "camera_facing_billboard_or_2d_overlay": false,
+    "physical_pixel_texture_projection": false
+  },
+  "material": {
+    "support_line_thickness_px": 3,
+    "development_color_quantile": 0.5,
+    "shared_material_estimates": 1,
+    "validation_material_refits": 0
+  },
+  "regions": {
+    "planar_array_roi_xyxy": [0, 150, 190, 240]
+  },
+  "acceptance": {
+    "development_minimum_mean_outside_board_edge_f1_delta": 0.012,
+    "development_minimum_mean_array_roi_edge_f1_delta": 0.10,
+    "development_minimum_mean_full_frame_linear_similarity_delta": 0.0004,
+    "development_minimum_rows_with_positive_outside_board_delta": 5,
+    "validation_minimum_mean_outside_board_edge_f1_delta": 0.010,
+    "validation_minimum_mean_array_roi_edge_f1_delta": 0.08,
+    "validation_minimum_mean_full_frame_linear_similarity_delta": 0.0003,
+    "validation_minimum_rows_with_positive_outside_board_delta": 3,
+    "minimum_mean_board_plus_margin_edge_f1_delta": -0.001,
+    "all_gates_required": true
+  },
+  "gates": {
+    "expected_development_sample_count": 7,
+    "expected_validation_sample_count_if_development_passes": 4,
+    "expected_unique_mesh_asset_reads": 18,
+    "expected_baseline_triangle_count_per_frame": 825292,
+    "expected_candidate_triangle_count_per_frame": 826532,
+    "maximum_baseline_metric_absolute_error_vs_or119": 1E-8,
+    "maximum_endpoint_reprojection_error_px": 1E-8
+  },
+  "resource_boundary": {
+    "or120b_residual_map_reads_allowed": 11,
+    "development_physical_episode_decodes_allowed": 7,
+    "validation_physical_episode_decodes_allowed_if_development_passes": 4,
+    "development_baseline_renders_allowed": 7,
+    "development_candidate_renders_allowed": 7,
+    "validation_baseline_renders_allowed_if_development_passes": 4,
+    "validation_candidate_renders_allowed_if_development_passes": 4,
+    "geometry_derivations_allowed": 1,
+    "material_estimates_allowed": 1,
+    "line_or_geometry_searches_allowed": 0,
+    "material_searches_allowed": 0,
+    "validation_refits_allowed": 0,
+    "retries_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "physical_pixel_composites_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "retrospective_same_episode_initial_frame_reconstruction_only": true,
+    "specific_object_identity": false,
+    "metric_3d_geometry_calibrated": false,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": "sim2claw.observable_registration_retained_edge_residual_mechanism_diagnosis_closeout.v1",
+  "experiment_id": "OR59_RETAINED_EDGE_RESIDUAL_MECHANISM_DIAGNOSIS_V1",
+  "status": "PASS_EDGE_RESIDUAL_MECHANISM_ATTRIBUTED_TARGET_STILL_OPEN",
+  "proof_class": "retained_episode_specific_evaluator_owned_edge_residual_mechanism_diagnosis",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_retained_edge_residual_mechanism_diagnosis_v1.json",
+    "sha256": "73fcceb5176d62529e52b0cca22ec2fde0607dbb71d86cda51dae10080a87d74"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_retained_edge_residual_mechanism_diagnosis.py",
+    "sha256": "93bd9c514cbe6c63a3bef95f506ed11a2caaa14b56e13f999843604071799823"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_retained_edge_residual_mechanism_diagnosis.py",
+    "sha256": "d2e12e41fb09cfbd09dc500e8d69c9778029a25b767756e6682b735509128bad",
+    "focused_passed": 2
+  },
+  "edge_region_rows": {
+    "path": "outputs/observable_registration_retained_edge_residual_mechanism_diagnosis_v1/edge_region_rows.json",
+    "sha256": "b12611586651a265635d9de3b0b564548b907eb13924265b72f9316e96b91d45"
+  },
+  "edge_tile_rows": {
+    "path": "outputs/observable_registration_retained_edge_residual_mechanism_diagnosis_v1/edge_tile_rows.json",
+    "sha256": "54bedbcdde257ba6b3ff3c297f0811ec7e5b9228ac3ce8236b3569a02df7fcc9"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_retained_edge_residual_mechanism_diagnosis_v1/receipt.json",
+    "sha256": "5b8ed1c37519edd75083ce4aa72eb23c9f6d50676b4e20d903495fd3db0aa00b",
+    "artifact_sha256": "42bf620d33c01024cb7fee7e42f32a2d0d0b81b925ef35186d65bc626fcff35f"
+  },
+  "result": {
+    "or58_mean_frame_edge_f1_reproduced_exactly": true,
+    "motion_union_edge_denominator_share": 0.25244980263643146,
+    "motion_union_tolerant_edge_f1": 0.21792457273076013,
+    "motion_union_unmatched_edge_mass": 3420934,
+    "nonmotion_board_edge_denominator_share": 0.2699265523804423,
+    "nonmotion_board_tolerant_edge_f1": 0.2973558646241003,
+    "nonmotion_board_unmatched_edge_mass": 3286261,
+    "nonmotion_outside_board_edge_denominator_share": 0.47762364498312626,
+    "nonmotion_outside_board_tolerant_edge_f1": 0.09437742123362987,
+    "nonmotion_outside_board_unmatched_edge_mass": 7494697,
+    "selected_class": "nonmotion_outside_board",
+    "selected_next_mechanism": "observed_static_environment_geometry_and_materials_without_physical_pixel_background",
+    "target_pass": false
+  },
+  "execution": {
+    "diagnostic_frame_evaluations": 516,
+    "candidate_videos": 0,
+    "renderer_runs": 0,
+    "simulator_replays": 0,
+    "action_changes": 0,
+    "physics_changes": 0,
+    "state_changes": 0,
+    "geometric_warps": 0,
+    "response_fits": 0,
+    "per_frame_transforms": 0,
+    "physical_pixel_composites": 0,
+    "hardware_actions": 0
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or60_gui_session_renderer_capability_probe",
+  "claim_limits": {
+    "diagnostic_only": true,
+    "same_video_target_pass": false,
+    "episode_specific_visual_replay_only": true,
+    "metric_camera_calibration": false,
+    "physics_fidelity": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

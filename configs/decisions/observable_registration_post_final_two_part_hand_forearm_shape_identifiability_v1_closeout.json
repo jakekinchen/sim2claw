@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_two_part_hand_forearm_shape_identifiability_closeout.v1",
+  "experiment_id": "OR112_POST_FINAL_TWO_PART_HAND_FOREARM_SHAPE_IDENTIFIABILITY_V1",
+  "status": "TERMINAL_TWO_PART_HAND_FOREARM_SHAPE_INSUFFICIENT",
+  "proof_class": "post_final_two_part_hand_forearm_shape_identifiability",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_two_part_hand_forearm_shape_identifiability_v1.json", "sha256": "f4bfe0627c1a9b76ded6734013ee780edbd27905373b8009b1d274257f9a533d"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_two_part_hand_forearm_shape_identifiability.py", "sha256": "a7b034a950b67f8b1c3b843f691ae81bd90545b813cce1a532a4a40473e94503"},
+  "test": {"path": "tests/test_observable_registration_post_final_two_part_hand_forearm_shape_identifiability.py", "sha256": "bdcd6838345c57418f59186935033fb1098a79c83a81744fa668ceb7cc060f3a", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_two_part_hand_forearm_shape_identifiability_v1/receipt.json", "sha256": "5bc0cffeef6f7dc3b8c56714e87aea54b369ec4c987d04d97bf4e4e6befe4067", "artifact_sha256": "13becb10cf052e26bcfd324c4bc9d6848e3986b85c9a011ae5d812054583de12"},
+  "result": {"development_mean_iou_gain": -0.028280197774505585, "development_mean_local_edge_f1_gain": -0.012458762798334173, "validation_mean_iou_gain": -0.06283654875466699, "validation_mean_local_edge_f1_gain": -0.07879221389273341, "validation_rows_with_positive_local_edge_gain": 2, "validation_present_rows": 8},
+  "reviewer_decision": "REJECT_TWO_PART_SHAPE_AND_RECONCILE_OPERATOR_ACTOR_LANE",
+  "next_transition": "freeze_or113_operator_actor_lane_reconciliation",
+  "claims": {"post_final_two_part_2d_shape_identifiability_only": true, "same_video_semantic_match": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": "sim2claw.observable_registration_board_anchored_workcell_se2_static_development_fit_closeout.v1",
+  "experiment_id": "OR84_BOARD_ANCHORED_WORKCELL_SE2_STATIC_DEVELOPMENT_FIT_V1",
+  "status": "PASS_BOARD_ANCHORED_WORKCELL_SE2_STATIC_DEVELOPMENT_ADVANCE",
+  "proof_class": "development_four_frame_renderer_native_board_anchored_workcell_se2_fit",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_board_anchored_workcell_se2_static_development_fit_v1.json",
+    "sha256": "05e736259b0a056140d9850ff6a998cae1465309b47c3bb73c986052f9af58bc"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_board_anchored_workcell_se2_static_development_fit.py",
+    "sha256": "ccf91deda6e640dfed3b76295a73ede6b3d0ea671f1d6207d2beaff3a45266b2"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_board_anchored_workcell_se2_static_development_fit.py",
+    "sha256": "73307cdf63fa3e1e2000fae29c380c31f1aad12d1f76fa46e52fe614b11ec52a",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_board_anchored_workcell_se2_static_development_fit_v1/receipt.json",
+    "sha256": "a19678e45d4e39f12a3afc8e0444decf1d8619b300255a6246adcb49a5e95f17",
+    "artifact_sha256": "d36ba25fd84fef58092e47d45a89164914f694d78376272917e5179cd006be0a"
+  },
+  "result": {
+    "selected_vector": [35.819156790053825, -0.3585471837092544, -0.5415197793190017],
+    "parameter_names": ["workcell_yaw_degrees", "workcell_translation_x_m", "workcell_translation_y_m"],
+    "optimizer_converged": false,
+    "analytic_candidate_evaluations": 195,
+    "exact_full_mesh_final_renders": 4,
+    "mean_board_plus_margin_edge_f1": 0.5423929119695983,
+    "mean_outside_board_edge_f1": 0.3712547598257375,
+    "mean_whole_frame_tolerant_edge_f1": 0.45290650734552956,
+    "or82_mean_whole_frame_tolerant_edge_f1": 0.32658053743961735,
+    "mean_whole_frame_edge_delta_over_or82": 0.12632596990591222,
+    "mean_full_frame_linear_pixel_similarity": 0.7549788430333138,
+    "gates_passed": 14,
+    "gates_total": 14,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "simulator_replays": 0
+  },
+  "reviewer_decision": "ADVANCE_TO_FROZEN_WORKCELL_SE2_FULL_DEVELOPMENT_TIMELINE",
+  "next_transition": "freeze_or85_workcell_se2_full_development_timeline",
+  "claim_limits": {
+    "development_static_scene_registration_fit_only": true,
+    "full_timeline_verified": false,
+    "pixel_similarity_achieved": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

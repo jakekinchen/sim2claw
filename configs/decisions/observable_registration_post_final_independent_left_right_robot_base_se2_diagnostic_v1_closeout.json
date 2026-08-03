@@ -1,0 +1,25 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_independent_left_right_robot_base_se2_diagnostic_closeout.v1",
+  "experiment_id": "OR94_POST_FINAL_INDEPENDENT_LEFT_RIGHT_ROBOT_BASE_SE2_DIAGNOSTIC_V1",
+  "status": "PASS_INDEPENDENT_LEFT_RIGHT_ROBOT_BASE_SE2_HEADROOM_SELECTED",
+  "proof_class": "post_final_six_frame_renderer_native_independent_left_right_robot_base_se2_diagnostic",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_independent_left_right_robot_base_se2_diagnostic_v1.json", "sha256": "8d668906ffa71e46bc76924bf3f523c837e68f3dcbe54d9d391d8892e30e2d0d"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_independent_left_right_robot_base_se2_diagnostic.py", "sha256": "d2afbdf2b45744045afd8338d0c1ea4bd019147d1cd6215734abafa82b936b75"},
+  "test": {"path": "tests/test_observable_registration_post_final_independent_left_right_robot_base_se2_diagnostic.py", "sha256": "aa0aa781772d07c8ab17385001767beb79e36ee35dd1af34e11db90c5da86056", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_independent_left_right_robot_base_se2_diagnostic_v1/receipt.json", "sha256": "4b67480590a7caf543c7b64050fa8d1abd60f07ff27057a1d580617b24e7b9f5", "artifact_sha256": "7f50b9441872bb40273fac56d62ca2ccdcc439a0f10db4c75543bab2127e03b0"},
+  "result": {
+    "selected_vector": [149.16793267398734, -0.15734394530935192, 0.11595443832033214, 11.160382858764342, 0.18722645163506035, -0.3901344497653234],
+    "baseline_mean_outside_board_edge_f1": 0.3026486453386071,
+    "selected_mean_outside_board_edge_f1": 0.3589540315914,
+    "selected_minus_baseline_mean_outside_board_edge_f1": 0.05630538625279291,
+    "samples_with_material_outside_board_improvement": 4,
+    "baseline_mean_board_plus_margin_edge_f1": 0.5523846728719106,
+    "selected_mean_board_plus_margin_edge_f1": 0.5672089785846616,
+    "exact_robot_only_mesh_search_candidate_evaluations": 198,
+    "exact_robot_only_mesh_search_renders": 1200,
+    "exact_full_mesh_renders": 12
+  },
+  "reviewer_decision": "FREEZE_POST_FINAL_INDEPENDENT_ROBOT_BASE_FULL_CORPUS_DIAGNOSTIC",
+  "next_transition": "freeze_or95_post_final_independent_robot_base_full_corpus_diagnostic",
+  "claims": {"same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false}
+}

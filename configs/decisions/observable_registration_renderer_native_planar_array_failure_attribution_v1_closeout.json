@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_planar_array_failure_attribution_closeout.v1",
+  "experiment_id": "OR123_RENDERER_NATIVE_PLANAR_ARRAY_FAILURE_ATTRIBUTION_V1",
+  "status": "PASS_SPARSE_CENTERLINE_SUPPORT_INSUFFICIENT_TABLETOP_OWNERSHIP_UNRESOLVED",
+  "proof_class": "renderer_native_planar_array_failure_attribution",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_renderer_native_planar_array_failure_attribution_v1.json",
+    "sha256": "5b96c9d65f4553c8e7750b0b7fbbfdd35c8efabc132cc6310a78176f0ff218cb"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_renderer_native_planar_array_failure_attribution.py",
+    "sha256": "4e530e39f868d6f9efd4556f9001af23331bf9b8e36d0bdd5962d72c3da2ee99"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_renderer_native_planar_array_failure_attribution.py",
+    "sha256": "9c353b00d2471a7646e80ba56debd0c1c0442f807132e621b7f62c33ae983481",
+    "focused_passed_before_execution": 3,
+    "focused_passed_after_execution": 3
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_renderer_native_planar_array_failure_attribution_v1/receipt.json",
+    "sha256": "c0cd7d7604ca8ee4cd641a41e43f662399e4c77d06bf4d461c66be06f3122f82",
+    "artifact_sha256": "532679fdf5e72f445d0015027e3190a603baeb4125f2355ebbde51c148b61611"
+  },
+  "accepted_result": {
+    "five_centerlines_spatially_insufficient": true,
+    "expected_line_coverage_by_added_support": 0.9744318181818182,
+    "mean_added_support_residual_improvement": 3.19707614789582,
+    "mean_improved_pixel_fraction": 0.6889503938684267,
+    "persistent_consensus_coverage_by_added_support": 0.31284302963776073,
+    "persistent_consensus_uncovered_pixel_count": 626,
+    "union_added_support_pixel_count": 671,
+    "selected_bounded_failure_family": "sparse_boundary_support_and_missing_rectilinear_detail"
+  },
+  "review_limit": {
+    "tabletop_ownership_proven": false,
+    "dense_renderer_geometry_authorized": false,
+    "projection_gate_is_construction_self_consistency_not_physical_support_ownership": true,
+    "audit_contains_multiple_uncovered_structured_components": true,
+    "reason": "Back-projecting physical-image endpoints to a plane and reprojecting them is exact by construction. The initial-frame montage cannot distinguish tabletop-static content from robot-attached or actor-attached structure, so dense geometry would be premature."
+  },
+  "verification": {
+    "receipt_artifact_digest_verified": true,
+    "all_frozen_identities_verified_after_execution": true,
+    "all_integrity_gates_passed": true,
+    "audit_visually_reviewed": true,
+    "second_evaluator_run_performed": false
+  },
+  "reviewer_decision": "FREEZE_TEMPORAL_MOTION_OWNERSHIP_ATTRIBUTION_BEFORE_ANY_DENSE_RENDER",
+  "next_transition": "freeze_or124_planar_array_residual_motion_ownership_attribution",
+  "claims": {
+    "sparse_centerline_support_insufficient": true,
+    "tabletop_static_ownership": false,
+    "dense_rectilinear_geometry_validated": false,
+    "specific_object_identity": false,
+    "same_video_semantic_match": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "event_parity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false
+  }
+}

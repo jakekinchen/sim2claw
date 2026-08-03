@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.observable_registration_gui_session_renderer_capability_probe_contract.v1",
+  "experiment_id": "OR60_GUI_SESSION_RENDERER_CAPABILITY_PROBE_V1",
+  "proof_class": "local_read_only_gui_session_renderer_capability_probe",
+  "sources": {
+    "goal_loop": {
+      "path": "docs/autonomous-workflow/goal-loop-physical-simulator-temporal-pixel-similarity-20260802.md",
+      "sha256": "4457ccb8858cd847ba938741afba5c9f861111099f98e19c766193433fb41767"
+    },
+    "or57_closeout": {
+      "path": "configs/decisions/observable_registration_camera_parallax_edge_v1_closeout.json",
+      "sha256": "f2e7ca0caf2f2dd7d73ed36ee812441a8349216ecaee57454f548b19acade8d6"
+    },
+    "or59_receipt": {
+      "path": "outputs/observable_registration_retained_edge_residual_mechanism_diagnosis_v1/receipt.json",
+      "sha256": "5b8ed1c37519edd75083ce4aa72eb23c9f6d50676b4e20d903495fd3db0aa00b"
+    },
+    "or59_closeout": {
+      "path": "configs/decisions/observable_registration_retained_edge_residual_mechanism_diagnosis_v1_closeout.json",
+      "sha256": "a86955a93bea6a08b93b481b102756416ece97f07515d65c4c293aa9e72e8faf"
+    },
+    "computer_use_skill": {
+      "path": "/Users/kelly/.codex/plugins/cache/openai-bundled/computer-use/1.0.1000502/skills/computer-use/SKILL.md",
+      "sha256": "2cc1d04e978ca5204dc19184ef947e5f1bd4886ab47c521faca00b5807492894"
+    }
+  },
+  "probe": {
+    "terminal_app_name": "Terminal",
+    "maximum_terminal_state_requests": 1,
+    "maximum_app_enumeration_requests": 1,
+    "pass_condition": "computer_use_service_started_and_terminal_state_observable",
+    "failure_signature": "Sky Computer Use service startup request failed"
+  },
+  "resource_boundary": {
+    "terminal_commands_allowed": 0,
+    "ui_actions_allowed": 0,
+    "renderer_runs_allowed": 0,
+    "dependency_installs_allowed": 0,
+    "colima_starts_allowed": 0,
+    "candidate_videos_allowed": 0
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

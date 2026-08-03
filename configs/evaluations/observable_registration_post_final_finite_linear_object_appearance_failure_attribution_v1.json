@@ -1,0 +1,17 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_finite_linear_object_appearance_failure_attribution_contract.v1",
+  "experiment_id": "OR117_POST_FINAL_FINITE_LINEAR_OBJECT_APPEARANCE_FAILURE_ATTRIBUTION_V1",
+  "proof_class": "post_final_finite_linear_object_appearance_failure_attribution",
+  "sources": {
+    "or116_closeout": {"path": "configs/decisions/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_v1_closeout.json", "sha256": "91582b18875eec27fb2bf7988ebfc1f40f6edc4f816f89d91cdb668a129500e0"},
+    "or116_receipt": {"path": "outputs/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_v1/receipt.json", "sha256": "251ceea560910e845f5a1780d7d66f9e44731400d10f446a9ca92d88c04c4481", "artifact_sha256": "3d5aff9407fdc3abab7405559ce2afa248dfe11cec6fec2b78aacc6a016eda6d"},
+    "or116_development_montage": {"path": "outputs/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_v1/development_physical_baseline_finite_object.png", "sha256": "2bc9f486fc5eb54e81c6547144d0e43e874632c952332122aa7373accb08eca3"}
+  },
+  "montage": {"row_count": 7, "row_height_px": 240, "panel_width_px": 320, "panel_order": ["physical", "or95_baseline", "or116_candidate"], "development_only": true},
+  "support": {"candidate_minus_baseline_minimum_max_channel_difference": 1, "terminal_disk_radius_multiplier": 1.5, "shaft_region": "candidate_support_outside_terminal_disk", "terminal_region": "candidate_support_inside_terminal_disk", "validation_pixels_allowed": false},
+  "metrics": {"target_color": "channelwise_median_physical_bgr_on_region", "signed_grayscale_residual": "mean_physical_minus_candidate_grayscale_on_region", "absolute_residual": "mean_absolute_physical_minus_image_bgr_on_region", "color_separation": "euclidean_distance_between_shaft_and_terminal_target_bgr"},
+  "acceptance": {"minimum_aggregate_shaft_pixels": 500, "minimum_aggregate_terminal_pixels": 100, "minimum_target_bgr_euclidean_separation": 60, "minimum_absolute_signed_grayscale_residual_each_region": 20, "require_opposite_signed_grayscale_residuals": true, "or116_minimum_local_edge_delta_for_geometry_preservation": 0.5, "all_gates_required": true},
+  "resource_boundary": {"or116_receipt_reads_allowed": 1, "or116_development_montage_reads_allowed": 1, "validation_pixel_reads_allowed": 0, "source_video_decodes_allowed": 0, "candidate_video_decodes_allowed": 0, "renders_allowed": 0, "fits_or_candidate_searches_allowed": 0, "threshold_changes_allowed": 0, "simulator_replays_allowed": 0, "geometry_or_material_mutations_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"appearance_failure_attribution_only": true, "two_material_candidate_validated": false, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "predictive_simulation": false, "metric_object_geometry_calibrated": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

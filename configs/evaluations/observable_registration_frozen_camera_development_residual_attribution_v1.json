@@ -1,0 +1,71 @@
+{
+  "schema_version": "sim2claw.observable_registration_frozen_camera_development_residual_attribution_contract.v1",
+  "experiment_id": "OR75_FROZEN_CAMERA_DEVELOPMENT_RESIDUAL_ATTRIBUTION_V1",
+  "proof_class": "development_receipt_only_renderer_appearance_timing_residual_attribution",
+  "sources": {
+    "or73_closeout": {
+      "path": "configs/decisions/observable_registration_development_initial_shared_3d_camera_fit_v1_closeout.json",
+      "sha256": "d5dc0d2c507ba541617caec126da0609fa04d7b206fe853425863bfe81b32088"
+    },
+    "or74_closeout": {
+      "path": "configs/decisions/observable_registration_frozen_camera_full_development_timeline_v1_closeout.json",
+      "sha256": "4388855090b39d18666db1bc77ed14b6b8c918e2d2d3921ef7b512b6b616c380"
+    },
+    "or74_receipt": {
+      "path": "outputs/observable_registration_frozen_camera_full_development_timeline_v1/receipt.json",
+      "sha256": "d6f08fcc5335f5dc1de820d6e4dd81a36ece0a1242566fc928a37fad1b982f3b"
+    }
+  },
+  "target_gates": {
+    "mean_full_frame_linear_pixel_similarity": 0.8,
+    "p10_full_frame_linear_pixel_similarity": 0.75,
+    "mean_motion_union_linear_pixel_similarity": 0.75,
+    "each_phase_mean_full_frame_linear_pixel_similarity": 0.78,
+    "mean_tolerant_edge_f1": 0.4,
+    "each_episode_mean_full_frame_linear_pixel_similarity": 0.8
+  },
+  "decision_rule": {
+    "renderer_structure": "select_if_motion_gate_passes_and_edge_gate_fails_and_static_final_resolution_edge_fails_and_edge_gap_exceeds_mean_gap",
+    "timing": "select_if_motion_gate_fails_and_temporal_phase_spread_exceeds_episode_spread",
+    "appearance": "select_if_edge_and_motion_gates_pass_but_mean_or_episode_mean_fails",
+    "otherwise": "terminal_ambiguous_residual_requires_new_diagnostic",
+    "priority_order": ["renderer_structure", "timing", "appearance"]
+  },
+  "resource_boundary": {
+    "receipt_reads_allowed": 3,
+    "physical_video_decodes_allowed": 0,
+    "renderer_runs_allowed": 0,
+    "candidate_outputs_allowed": 0,
+    "parameter_fits_allowed": 0,
+    "validation_reads_allowed": 0,
+    "evaluator_heldout_reads_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "development_receipt_only_diagnostic": true,
+    "new_metric_evidence": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

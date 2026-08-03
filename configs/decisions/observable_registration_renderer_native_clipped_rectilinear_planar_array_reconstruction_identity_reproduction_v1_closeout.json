@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction_closeout.v1",
+  "experiment_id": "OR122B_IDENTITY_BOUND_RENDERER_NATIVE_PLANAR_ARRAY_REPRODUCTION_V1",
+  "status": "TERMINAL_IDENTITY_BOUND_PLANAR_ARRAY_DEVELOPMENT_GATES_FAILED",
+  "proof_class": "identity_bound_renderer_native_clipped_rectilinear_planar_array_reconstruction_reproduction",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction_v1.json",
+    "sha256": "72c792e7dcd8729e32ac35323f3c29998f232edc3c13c65049d8c29941ebda21"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction.py",
+    "sha256": "0e8eaa5e2abb68080b287de01a5b8fdb28f555870212622d09ae412730f75110"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction.py",
+    "sha256": "9dd233f3eb67efe790bd69d84e49ed6a52f89d17869fe193bfb7fbef25a03ee3",
+    "focused_passed_before_execution": 3,
+    "focused_passed_after_execution": 3
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction_v1/receipt.json",
+    "sha256": "0fb1d82ee7fa256a9be44e4754a9523a33dedb148863748acaa0ea53a94e6bcf",
+    "artifact_sha256": "b995db022e7f4d3f4d150a620cb2a8a0474572b47940bac7bca3757bb93facbe"
+  },
+  "result": {
+    "development_row_count": 7,
+    "mean_outside_board_edge_f1_delta": 0.017517463448525086,
+    "mean_array_roi_edge_f1_delta": 0.05332520573387343,
+    "mean_full_frame_similarity_delta": 0.00010954695088522775,
+    "mean_board_edge_f1_delta": 0.0,
+    "rows_positive_outside": 7,
+    "rows_positive_full": 7,
+    "development_gate_passed": false,
+    "corroboration_opened": false,
+    "maximum_endpoint_reprojection_error_px": 1.1368683772161603e-13,
+    "added_triangle_count_per_frame": 1240,
+    "material_target_bgr": [120, 129, 142]
+  },
+  "comparison_to_quarantined_or122": {
+    "outside_board_edge_delta_exact": true,
+    "array_roi_edge_delta_exact": true,
+    "terminal_gate_outcome_reproduced": true,
+    "mean_full_frame_delta_difference": 1.3262033462524414e-06,
+    "quarantined_receipt_promoted": false
+  },
+  "verification": {
+    "receipt_artifact_digest_verified": true,
+    "all_frozen_identities_verified_after_execution": true,
+    "integrity_gates_passed": true,
+    "visual_audit_shows_narrow_projected_line_support_but_large_unmodeled_scene_residual": true,
+    "second_evaluator_run_performed": false
+  },
+  "reviewer_decision": "FREEZE_RENDERER_NATIVE_PLANAR_ARRAY_FAILURE_ATTRIBUTION",
+  "next_transition": "freeze_or123_renderer_native_planar_array_failure_attribution",
+  "claims": {
+    "identity_bound_terminal_result_admitted": true,
+    "planar_array_candidate_validated": false,
+    "same_video_semantic_match": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "event_parity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false
+  }
+}

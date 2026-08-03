@@ -1,0 +1,105 @@
+{
+  "schema_version": "sim2claw.observable_registration_footage_enclosure_audit_contract.v1",
+  "experiment_id": "OR52_FOOTAGE_ONLY_PHYSICAL_ENCLOSURE_AUDIT_V1",
+  "proof_class": "retained_successful_episode_two_pass_image_plane_enclosure_and_closed_command_carry_audit",
+  "sources": {
+    "physical_episode": {
+      "path": "outputs/observable_physical_episode_observations_v1/receipt.json",
+      "sha256": "e8e76bf8f9d1f44789c647e967a313b57893770edb1d3570f3b4974cb4b94d1a"
+    },
+    "or22_proxy_rows": {
+      "path": "outputs/retained_rgb_contact_consequence_proxies_v1/proxy_rows.json",
+      "sha256": "50c3d7ad17c8133c0048b097dbacf7e51deb7de1b114c69c17fc77d5a231e96f"
+    },
+    "or22_receipt": {
+      "path": "outputs/retained_rgb_contact_consequence_proxies_v1/receipt.json",
+      "sha256": "3681ece59772e8cacefa813e30a86011f4c73d6d25cea60d765d04bfb8fb66fe"
+    },
+    "raw_samples": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+      "sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302"
+    },
+    "wrist_rgb_video": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_d405.browser.mp4",
+      "sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c"
+    },
+    "or51_receipt": {
+      "path": "outputs/observable_registration_outcome_success_robustness_audit_v1/receipt.json",
+      "sha256": "ed5700a4b8824c9bd1d9717f1afa22c4b1b12688cc15e22ece0874a64bf453db"
+    },
+    "or51_closeout": {
+      "path": "configs/decisions/observable_registration_outcome_success_robustness_audit_v1_closeout.json",
+      "sha256": "4d2a83a9274c20adea31af438c1b875269e5c09d7c9da74f48baf2fb8f10ce50"
+    }
+  },
+  "footage_policy": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "camera_stream": "d405_rgb_non_metric",
+    "physical_definite_carry_interval_samples_inclusive": [260, 390],
+    "required_points": [
+      "fixed_jaw_tip",
+      "moving_jaw_tip",
+      "selected_pawn_crown"
+    ],
+    "annotation_pass_fields": ["pass_a_xy", "pass_b_xy"],
+    "consensus_field": "consensus_xy",
+    "minimum_coaccepted_carry_rows": 8,
+    "minimum_coaccepted_carry_span_samples": 80,
+    "crown_axial_fraction_bounds_inclusive": [0.0, 1.0],
+    "failed_or_missing_rows_abstain": true,
+    "reannotation_allowed": false,
+    "interpolation_allowed": false,
+    "cross_episode_merge_allowed": false
+  },
+  "closed_command_hold": {
+    "search_sample_range_inclusive": [210, 390],
+    "gripper_joint_index": 5,
+    "command_field": "follower_command_degrees",
+    "closed_command_target_degrees": 1.0688836104513064,
+    "absolute_tolerance_degrees": 1e-12,
+    "selection_rule": "longest_contiguous_matching_run",
+    "minimum_coaccepted_hold_rows": 4,
+    "stability_threshold_or_parameter_fit_allowed": false
+  },
+  "simulator_comparison": {
+    "expected_or51_status": "TERMINAL_ISOLATED_OUTCOME_SUCCESS_WRONG_EVENT_TOPOLOGY_EXTERNAL_METRIC_OBSERVATION_REQUIRED",
+    "required_named_jaw_bodies": [
+      "left_gripper",
+      "left_moving_jaw_so101_v1"
+    ],
+    "physical_image_plane_enclosure_may_be_called_bilateral_contact": false,
+    "simulator_parameter_selection_allowed": false,
+    "simulator_replay_allowed": false
+  },
+  "execution": {
+    "new_annotations_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "new_candidates_allowed": 0,
+    "parameter_changes_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "heldout_open_allowed": false
+  },
+  "claim_limits": {
+    "metric_aperture": false,
+    "metric_depth": false,
+    "contact_force": false,
+    "bilateral_physical_contact": false,
+    "camera_calibration": false,
+    "canonical_contact_geometry": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

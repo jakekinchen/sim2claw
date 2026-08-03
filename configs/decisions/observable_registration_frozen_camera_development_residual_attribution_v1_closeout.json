@@ -1,0 +1,56 @@
+{
+  "schema_version": "sim2claw.observable_registration_frozen_camera_development_residual_attribution_closeout.v1",
+  "experiment_id": "OR75_FROZEN_CAMERA_DEVELOPMENT_RESIDUAL_ATTRIBUTION_V1",
+  "status": "PASS_RENDERER_STRUCTURE_SELECTED_BEFORE_APPEARANCE_OR_TIMING",
+  "proof_class": "development_receipt_only_renderer_appearance_timing_residual_attribution",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_frozen_camera_development_residual_attribution_v1.json",
+    "sha256": "012e00a4aa81b5f01ce5d7b79b229f1040b85da05d5c8f7e06abc32cdd77aa28"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_frozen_camera_development_residual_attribution.py",
+    "sha256": "0f19df306ed0e0de792eab908ec908408cef5d6a8c62df1cec76a7dc7b4ece0c"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_frozen_camera_development_residual_attribution.py",
+    "sha256": "31dcec16f266ddeba00c25b5413957981cd7e1074016de37b4a128165d26649f",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_frozen_camera_development_residual_attribution_v1/receipt.json",
+    "sha256": "2111c0df41340cf3b14adb83a69474cbaae02af5692dabf880d5654c017bc1fc",
+    "artifact_sha256": "34066fdd7f31f762ad6a86994c3bd90d7d940decea5bcb6b0caf4fe51a4c4252"
+  },
+  "result": {
+    "selected_mechanism": "renderer_structure",
+    "mean_full_frame_gap": 0.018917126421669206,
+    "mean_motion_union_gap": 0.0,
+    "mean_tolerant_edge_f1_gap": 0.11417427139584835,
+    "minimum_episode_mean_gap": 0.019759639506497728,
+    "minimum_phase_mean_gap": 0.009150892794132282,
+    "search_to_final_static_edge_f1_drop": 0.13921083868260214,
+    "episode_mean_spread": 0.001789015497472235,
+    "phase_mean_spread": 0.019552671909332298,
+    "physical_video_decodes": 0,
+    "renderer_runs": 0,
+    "candidate_outputs": 0,
+    "parameter_fits": 0,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0
+  },
+  "reviewer_decision": "FREEZE_MESH_OCCLUSION_CAPABLE_RENDERER_CAPABILITY",
+  "next_transition": "freeze_or76_host_native_mesh_zbuffer_renderer_capability",
+  "claim_limits": {
+    "development_receipt_only_diagnostic": true,
+    "new_metric_evidence": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

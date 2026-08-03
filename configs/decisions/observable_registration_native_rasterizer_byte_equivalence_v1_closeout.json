@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.observable_registration_native_rasterizer_byte_equivalence_closeout.v1",
+  "experiment_id": "OR79_NATIVE_RASTERIZER_BYTE_EQUIVALENCE_V1",
+  "status": "PASS_NATIVE_RASTERIZER_BYTE_EQUIVALENCE",
+  "proof_class": "footage_blind_compiled_rasterizer_byte_equivalence_and_speedup",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_native_rasterizer_byte_equivalence_v1.json",
+    "sha256": "6f49d7582d709c54f1d99399ad4301dd1c2df9b9cf20ca94668bde02207c3508"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_native_rasterizer_byte_equivalence.py",
+    "sha256": "07f17d14040b265c6367458954bfe3ace1fea53c403a38bbe5c8ae29f10830cf"
+  },
+  "native_source": {
+    "path": "tools/renderer/or79_triangle_rasterizer.c",
+    "sha256": "872c5beb0918ffd07e1961eb5bf2119b34b0d7fccf9a419bf06e194c43b39a6b"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_native_rasterizer_byte_equivalence.py",
+    "sha256": "b11477ed380d1a1c8257d7b517ca73c33aae2059573fcc00aa125a4ba31a6a4b",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_native_rasterizer_byte_equivalence_v1/receipt.json",
+    "sha256": "382b7f3c800f958eaff216364432bfe1af5673233f92f703c8261ba62201bb45",
+    "artifact_sha256": "0db8ebd39e96194c91bfd8c3eb924bba2256549575c7565e462f10d3e9f682f3"
+  },
+  "result": {
+    "total_raster_triangle_count": 824944,
+    "mesh_source_triangle_count": 802680,
+    "unique_mesh_asset_reads": 18,
+    "pixel_mismatch_count_native_to_or78": 0,
+    "python_depth_buffer_update_count": 243348,
+    "native_depth_buffer_update_count": 243348,
+    "python_occluded_fragment_count": 18780,
+    "native_occluded_fragment_count": 18780,
+    "python_raster_seconds": 22.064530625008047,
+    "native_raster_seconds": 0.035582083044573665,
+    "native_raster_stage_speedup": 620.1022744331133,
+    "gates_passed": 13,
+    "gates_total": 13,
+    "physical_video_reads": 0,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "parameter_fits": 0,
+    "simulator_replays": 0
+  },
+  "reviewer_decision": "ADVANCE_TO_FROZEN_FULL_MESH_DEVELOPMENT_TIMELINE",
+  "next_transition": "freeze_or80_native_full_mesh_full_development_timeline",
+  "claim_limits": {
+    "rasterizer_equivalence_and_speed_capability_only": true,
+    "full_timeline_verified": false,
+    "mujoco_raster_equivalence": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

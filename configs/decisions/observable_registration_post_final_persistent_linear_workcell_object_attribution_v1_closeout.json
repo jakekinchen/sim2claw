@@ -1,0 +1,15 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_persistent_linear_workcell_object_attribution_closeout.v1",
+  "experiment_id": "OR115_POST_FINAL_PERSISTENT_LINEAR_WORKCELL_OBJECT_ATTRIBUTION_V1",
+  "status": "PASS_PERSISTENT_FINITE_LINEAR_WORKCELL_OBJECT_ATTRIBUTED",
+  "proof_class": "post_final_persistent_linear_workcell_object_attribution",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_persistent_linear_workcell_object_attribution_v1.json", "sha256": "1e1f32829e2e49d538eaf0e0bf33808b5ac171f67be66e92873b8bc9518832bf"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_persistent_linear_workcell_object_attribution.py", "sha256": "8225312b401037340b91e6eb83904f98d7a88c747ed29748021ff5ccd0078e24"},
+  "test": {"path": "tests/test_observable_registration_post_final_persistent_linear_workcell_object_attribution.py", "sha256": "f57c9f99f1541241b0aaf8fedaa5f30484080ffff8b48cbc0291a9433f1a45f1", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_persistent_linear_workcell_object_attribution_v1/receipt.json", "sha256": "dff05f22f69abec23918b0384e810a2ac00deeef6c99d2ddbb30405b0dd43e61", "artifact_sha256": "0ac8288bbc215282f4020d70194040e9ea1010611096bb66f0e8e243be749e07"},
+  "visual_audit": {"path": "outputs/observable_registration_post_final_persistent_linear_workcell_object_attribution_v1/persistent_linear_object_topology.png", "sha256": "a32b62f85732ec41383a2c8b04c9ddd53da2576f0f414c3daae425c3e97c1375", "result": "selected_component_is_finite_interior_and_elongated_with_bounded_terminal_support"},
+  "result": {"development_finite_object_rows": 7, "development_supported_rows": 7, "validation_finite_object_rows": 3, "validation_supported_rows": 3, "scene_boundary_rows": 0, "median_component_axial_span_px_approximately": 121.38, "minimum_roi_boundary_margin_px": 37.0, "specific_object_identity_known": false},
+  "reviewer_decision": "FREEZE_RENDERER_NATIVE_FINITE_LINEAR_WORKCELL_OBJECT_RECONSTRUCTION",
+  "next_transition": "freeze_or116_renderer_native_finite_linear_workcell_object_reconstruction",
+  "claims": {"image_space_finite_linear_geometry_family": true, "specific_object_identity_known": false, "metric_3d_geometry": false, "same_video_semantic_match": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

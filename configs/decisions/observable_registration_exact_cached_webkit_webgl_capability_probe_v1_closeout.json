@@ -1,0 +1,50 @@
+{
+  "schema_version": "sim2claw.observable_registration_exact_cached_webkit_webgl_capability_probe_closeout.v1",
+  "experiment_id": "OR62_EXACT_CACHED_WEBKIT_WEBGL_CAPABILITY_PROBE_V1",
+  "status": "TERMINAL_EXACT_WEBKIT_ABORTED_NO_WEBGL_CONTEXT",
+  "proof_class": "local_no_download_exact_cached_webkit_webgl_capability_probe",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_exact_cached_webkit_webgl_capability_probe_v1.json",
+    "sha256": "a009db7d6c4395968a892b3f216d1c80e13c5f9f8a1c5714248da2e625f94b3e"
+  },
+  "probe_request": {
+    "path": "outputs/observable_registration_exact_cached_webkit_webgl_capability_probe_v1/probe_request.json",
+    "sha256": "0bb3a783bb204baf8b67326b742565cd326b70806342fd98aebb30e43c98e861"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_exact_cached_webkit_webgl_capability_probe_v1/receipt.json",
+    "sha256": "2d84224e4c72636daeadccdd09b70f91e8f9b8a61b06445557e8c8b4c7f5806e",
+    "artifact_sha256": "ca9414ec0929bee506774b0fa44e5ce27f0536af57f225660101b1936c233239"
+  },
+  "result": {
+    "exact_cache_used": true,
+    "webkit_revision": 2327,
+    "browser_failure": "Abort trap: 6",
+    "launcher_exit_code": 134,
+    "webgl_context_observed": false,
+    "snapshot_observed": false,
+    "screenshot_observed": false,
+    "all_local_browser_engine_routes_closed": true
+  },
+  "execution": {
+    "network_downloads": 0,
+    "cache_population": 0,
+    "package_installs": 0,
+    "browser_installs": 0,
+    "system_browser_launches": 0,
+    "existing_session_attachments": 0,
+    "system_setting_changes": 0,
+    "scene_changes": 0,
+    "candidate_videos": 0,
+    "browser_launches": 1
+  },
+  "reviewer_decision": "REDIRECT",
+  "next_transition": "freeze_or63_renderer_independent_footage_derived_static_environment_scene_specification",
+  "claim_limits": {
+    "webgl_renderer_available": false,
+    "same_video_target_pass": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

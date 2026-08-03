@@ -1,0 +1,36 @@
+{
+  "schema_version": "sim2claw.observable_registration_workcell_static_component_surface_identification_contract.v1",
+  "experiment_id": "OR125_WORKCELL_STATIC_COMPONENT_SURFACE_IDENTIFICATION_V1",
+  "proof_class": "workcell_static_component_surface_identification",
+  "sources": {
+    "or124c_receipt": {"path": "outputs/observable_registration_planar_array_residual_motion_ownership_attribution_identity_reproduction_v2/receipt.json", "sha256": "06b2832df66aef9f169504e68eec097e0f3815abfa8e75d60eefdf0b5c8cdb23", "artifact_sha256": "bbf50647713cc3b87f35dc885f16fe3138a35b17103dc970cbc23e516c729a3c"},
+    "or124c_contract": {"path": "configs/evaluations/observable_registration_planar_array_residual_motion_ownership_attribution_identity_reproduction_v2.json", "sha256": "b677b3fda0b23283719563b5698733b71bafbd05246f1ec63b0ebd51cbec9d7a"},
+    "or124c_audit": {"path": "outputs/observable_registration_planar_array_residual_motion_ownership_attribution_identity_reproduction_v2/motion-ownership-components.png", "sha256": "574982f751fd2a18ea8562f2e399951fe5a26230e180c5b21dfe7be415079576"},
+    "or121_receipt": {"path": "outputs/observable_registration_post_object_persistent_static_spatial_decomposition_v1/receipt.json", "sha256": "649372320b6aa3fcf82faf233161d46d70faaf76f92ed9ce056eb60ced1e67f8", "artifact_sha256": "5961266c38b60c12eab0e69adeea090ce68514cff22563195ca572495e36471e"},
+    "or123_audit": {"path": "outputs/observable_registration_renderer_native_planar_array_failure_attribution_v1/planar-array-failure-attribution.png", "sha256": "0f42f68969e948624ac1bc4cd531955e73fc4029777bbaf70ae74db2ffcac1ae"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"}
+  },
+  "frozen_identities": {
+    "implementation": {"path": "src/sim2claw/observable_registration_workcell_static_component_surface_identification.py", "sha256": "001c5fefb846a9a41b8c990c95d3d61cd4d0e8e20af983ed954513e1fde25ebc"},
+    "test": {"path": "tests/test_observable_registration_workcell_static_component_surface_identification.py", "sha256": "760cf114a37de4360f3d8f8ae4f673a9310d85ef4d06dd391dd0273f41bc1e05"}
+  },
+  "split": {"development_positions": [1,2,3,4,5,6,7], "corroboration_positions": [8,9,10,11], "corroboration_requires_decisive_development": true, "corroboration_refit_allowed": false, "untouched_cohort_remaining": false},
+  "detector": {"backend": "opencv_aruco", "dictionary": "DICT_APRILTAG_36h11", "corner_refinement": "CORNER_REFINE_SUBPIX", "individual_marker_identity_admitted": false},
+  "decision_tree": {
+    "fixture_axis_families_degrees": [50.0, 140.0],
+    "maximum_axis_family_error_degrees": 12.0,
+    "maximum_component_to_fixture_distance_px": 60,
+    "minimum_component_fixture_overlap_fraction": 0.50,
+    "minimum_associated_component_count": 3,
+    "minimum_associated_raw_pixel_fraction": 0.75,
+    "development_minimum_fixture_episode_count": 5,
+    "corroboration_minimum_fixture_episode_count": 3,
+    "pass_selects": "separate_static_planar_fixture",
+    "failure_selects": "indeterminate",
+    "exactly_one_surface_family_selected": true
+  },
+  "integrity": {"expected_significant_component_count": 5, "expected_development_frame_count": 7, "expected_corroboration_frame_count_if_development_decisive": 4},
+  "resource_boundary": {"development_physical_video_decodes_allowed": 7, "corroboration_physical_video_decodes_allowed_if_development_decisive": 4, "physical_frames_read_allowed_maximum": 11, "audit_outputs_allowed": 1, "renders_allowed": 0, "dense_mask_vectorizations_allowed": 0, "geometry_or_material_fits_allowed": 0, "parameter_searches_allowed": 0, "threshold_changes_allowed": 0, "retries_allowed": 0, "simulator_replays_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"retained_physical_initial_frame_surface_family_only": true, "dominant_component_subset_only": true, "individual_marker_identity": false, "specific_object_identity": false, "metric_3d_geometry_calibrated": false, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "predictive_simulation": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

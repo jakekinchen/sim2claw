@@ -1,0 +1,80 @@
+{
+  "schema_version": "sim2claw.observable_registration_edge_preserving_response_frontier_closeout.v1",
+  "experiment_id": "OR58_EDGE_PRESERVING_RESPONSE_FRONTIER_V1",
+  "status": "PASS_MEAN_AND_TEMPORAL_PIXEL_TARGET_EDGE_GATE_REMAINS",
+  "proof_class": "retained_episode_specific_time_invariant_edge_preserving_response_frontier",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_edge_preserving_response_frontier_v1.json",
+    "sha256": "311d3f0e837a79113974d60ca2a542a913e66fba8a6db05cc582f34aa290cdf8"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_edge_preserving_response_frontier.py",
+    "sha256": "b48b6daedfe6cd9ad2432607ef50f404961bfe5858204d298300ced391410114"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_edge_preserving_response_frontier.py",
+    "sha256": "c31474357c56c9f7384a88de8164fd7fc3a62afa84e7d8a045e7b7e855d8046a",
+    "focused_passed": 2
+  },
+  "candidate_table": {
+    "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/candidate_table.json",
+    "sha256": "5250559363c16b27e59ce12686df4b5f0eaa30fa685b1e4890a12c28bed6e9a4"
+  },
+  "candidate_video": {
+    "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/simulator_candidate.mp4",
+    "sha256": "24d6e1dc3700b1457694b134be7fd95b8cda40d8582e045c3628af7e9726737e"
+  },
+  "metric_rows": {
+    "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/metric_rows.json",
+    "sha256": "77be9bb8e6a2038e30ef33a75768ae1fe118515eda60a408d47d33e45feace7f"
+  },
+  "spatial_residual_rows": {
+    "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/spatial_residual_rows.json",
+    "sha256": "eda1d963a92adf92fec8cb47587c53cd2291d361039b694c0711550d1ab626e9"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/receipt.json",
+    "sha256": "7449d46dc672f2ea14b2a34bbe4c393e1df7db0271770ae24107321c4137e330",
+    "artifact_sha256": "1b73ff5b334c420af7ae72a173b748a85eadb2ab8db6a532eabde6be0fe91342"
+  },
+  "result": {
+    "candidate_count": 100,
+    "eligible_development_mean_target_candidate_count": 24,
+    "selected_common_bgr_gain": 0.4,
+    "selected_common_bgr_bias": 64.0,
+    "selected_gaussian_blur_kernel_px": 1,
+    "selection_inputs": "development_only",
+    "full_frame_mean": 0.8003091564936231,
+    "full_frame_p10": 0.787591740489006,
+    "motion_union_mean": 0.7823256770361641,
+    "tolerant_edge_f1_mean": 0.18034068783682333,
+    "passing_acceptance_gate_count": 4,
+    "acceptance_gate_count": 5,
+    "mean_and_temporal_distribution_gates_pass": true,
+    "target_pass": false
+  },
+  "execution": {
+    "candidate_evaluations": 100,
+    "emitted_candidate_videos": 1,
+    "simulator_replays": 0,
+    "renderer_runs": 0,
+    "action_changes": 0,
+    "physics_changes": 0,
+    "state_changes": 0,
+    "geometric_warps": 0,
+    "per_frame_transforms": 0,
+    "physical_pixel_composites": 0,
+    "hardware_actions": 0
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or59_retained_edge_residual_mechanism_diagnosis",
+  "claim_limits": {
+    "episode_specific_visual_replay_only": true,
+    "mean_only_target_is_full_video_match": false,
+    "metric_camera_calibration": false,
+    "physics_fidelity": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

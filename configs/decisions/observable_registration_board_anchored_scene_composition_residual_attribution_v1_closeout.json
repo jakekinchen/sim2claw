@@ -1,0 +1,55 @@
+{
+  "schema_version": "sim2claw.observable_registration_board_anchored_scene_composition_residual_attribution_closeout.v1",
+  "experiment_id": "OR83_BOARD_ANCHORED_SCENE_COMPOSITION_RESIDUAL_ATTRIBUTION_V1",
+  "status": "PASS_BOARD_TO_ROBOT_WORLD_REGISTRATION_SELECTED",
+  "proof_class": "development_evaluator_only_board_vs_outside_scene_composition_residual_attribution",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_board_anchored_scene_composition_residual_attribution_v1.json",
+    "sha256": "bdac902c852b36678d1fd03c299b42c089c05dc9c0f3cf80fda3b0db12b499b2"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_board_anchored_scene_composition_residual_attribution.py",
+    "sha256": "7f1bac4f20fa7b0f7c69572e7d8b913b63ae35d80919c44a1738fdd2cb361109"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_board_anchored_scene_composition_residual_attribution.py",
+    "sha256": "8eaf1bfb9a7c403713e003e6101ccbd8d70cc6c9ddb00ef7a543f061d4ac5738",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_board_anchored_scene_composition_residual_attribution_v1/receipt.json",
+    "sha256": "b26952ae0faf8152a1c25042de1380a06f78741274e235f64367a188be601e56",
+    "artifact_sha256": "19bd2ac7d4e61afd19b7f3032603e5cfb2444f9ef119fbfd8330f1ae44c16fd5"
+  },
+  "result": {
+    "development_episode_count": 4,
+    "mean_or81_board_edge_f1": 0.48323146033096487,
+    "mean_or82_board_edge_f1": 0.551832744026105,
+    "mean_board_edge_f1_delta": 0.06860128369514022,
+    "mean_or81_outside_board_edge_f1": 0.3026260703453385,
+    "mean_or82_outside_board_edge_f1": 0.13493326280512208,
+    "mean_outside_board_edge_f1_delta": -0.16769280754021643,
+    "board_improved_every_episode": true,
+    "outside_board_regressed_every_episode": true,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "candidate_images_created": 0,
+    "renders": 0,
+    "fits": 0
+  },
+  "reviewer_decision": "FREEZE_ONE_BOARD_TO_ROBOT_WORLD_REGISTRATION_FAMILY",
+  "next_transition": "freeze_or84_board_anchored_workcell_se2_static_development_fit",
+  "claim_limits": {
+    "development_region_attribution_only": true,
+    "camera_promoted": false,
+    "scene_registration_fit": false,
+    "pixel_similarity_achieved": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

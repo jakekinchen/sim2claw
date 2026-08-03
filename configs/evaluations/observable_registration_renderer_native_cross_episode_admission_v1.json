@@ -1,0 +1,114 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_cross_episode_admission_contract.v1",
+  "experiment_id": "OR68_RENDERER_NATIVE_CROSS_EPISODE_ADMISSION_V1",
+  "proof_class": "retained_cross_episode_renderer_native_anti_leakage_admission",
+  "sources": {
+    "goal_loop": {
+      "path": "docs/autonomous-workflow/goal-loop-renderer-native-heldout-visual-physics-successor-20260803.md",
+      "sha256": "e3608d43ed670179eb36612b4770c9e326d28733d2d3a510f815f48c87f09b31"
+    },
+    "eleven_episode_cohort": {
+      "path": "outputs/pawn_bg_grasp_group_probes/frozen_v3_timestep045_all.json",
+      "sha256": "5763e0be1f1ff6d1e535f13af36289eabb07f219220ac2c95b7c8bdf4158eb29"
+    },
+    "published_ranked_gallery": {
+      "path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/gallery_manifest.json",
+      "sha256": "bb1c0c146b34cd881cca264a81a6aadc36f6bf814b3afb5b5ffca826161f9442"
+    },
+    "published_shared_scene": {
+      "path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/scene_manifest.json",
+      "sha256": "777f915fb7c84d498615f43e54cbeaee47a35494f8166724898ef9dc998f371b"
+    },
+    "or67_closeout": {
+      "path": "configs/decisions/observable_registration_static_vector_environment_video_render_v1_closeout.json",
+      "sha256": "df049853cbaa3d40d39008bc93a0d660e395278200c8e2669f5ceede0bdf1ad5"
+    }
+  },
+  "corpus": {
+    "expected_episode_count": 11,
+    "physical_recording_root": "datasets/manipulation_source_recordings",
+    "physical_video_name": "overhead_c922.mp4",
+    "physical_samples_name": "samples.jsonl",
+    "require_distinct_recording_ids": true,
+    "require_distinct_action_array_sha256": true,
+    "require_action_byte_identical": true,
+    "expected_published_shared_scene_trace_count": 7,
+    "expected_trace_regeneration_count": 4
+  },
+  "split": {
+    "key": "sha256_utf8_recording_id",
+    "order": "ascending_hex_digest",
+    "roles_by_one_based_position": {
+      "development": [1, 4],
+      "validation": [5, 7],
+      "evaluator_heldout": [8, 11]
+    },
+    "expected_counts": {
+      "development": 4,
+      "validation": 3,
+      "evaluator_heldout": 4
+    },
+    "historical_outcome_rank_may_assign_roles": false,
+    "prior_historical_pixel_access_acknowledged": true,
+    "prospective_pristine_holdout_claimed": false
+  },
+  "candidate_provenance": {
+    "required_pixel_source": "declared_3d_renderer_only",
+    "shared_parameter_vector_across_all_episodes": true,
+    "physical_video_may_construct_candidate": false,
+    "validation_or_heldout_may_select_candidate": false,
+    "episode_specific_parameters_allowed": false,
+    "frame_specific_parameters_allowed": false,
+    "screen_space_geometry_allowed": false,
+    "physical_image_derived_materials_allowed": false,
+    "background_plates_allowed": false,
+    "post_render_compositing_allowed": false,
+    "geometric_or_optical_flow_warps_allowed": false,
+    "missing_frame_substitution_allowed": false,
+    "prohibited_candidate_input_prefixes": [
+      "outputs/observable_registration_renderer_independent_static_environment_scene_specification_v1",
+      "outputs/observable_registration_pixel_free_static_environment_curve_and_finite_shape_expansion_v1",
+      "outputs/observable_registration_static_vector_environment_video_render_v1"
+    ]
+  },
+  "physical_access": {
+    "path_stat_allowed": true,
+    "byte_hash_allowed": true,
+    "video_decode_allowed": false,
+    "frame_extraction_allowed": false,
+    "pixel_metric_evaluation_allowed": false,
+    "annotation_allowed": false
+  },
+  "execution": {
+    "physical_frames_decoded_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "renderer_runs_allowed": 0,
+    "candidate_videos_allowed": 0,
+    "parameter_fits_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "json_outputs_only": true
+  },
+  "claim_limits": {
+    "pixel_similarity_achieved": false,
+    "renderer_runtime_ready": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

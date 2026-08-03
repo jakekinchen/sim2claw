@@ -1,0 +1,15 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution_closeout.v1",
+  "experiment_id": "OR107_POST_FINAL_EXOGENOUS_OPERATOR_SKIN_EDGE_OCCUPANCY_ATTRIBUTION_V1",
+  "status": "REJECT_GENERIC_SKIN_PROXY_STATIC_BOARD_CONFOUND",
+  "proof_class": "post_final_sampled_development_validation_exogenous_operator_skin_edge_occupancy_attribution",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution_v1.json", "sha256": "79d3f1f2b5a031fb9d18dbe61f27f9aebc32aadb499870829ade81c6173ed51a"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution.py", "sha256": "8f04164f952fe4689577df0ecd8e71b04feea21ae3fdd224dcba11090bf6dadc"},
+  "test": {"path": "tests/test_observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution.py", "sha256": "31025b2e6dbda3c2e459fb55a81324d2cebff85911f618a9aa7ba63c47cb0f90", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution_v1/receipt.json", "sha256": "32ed079c7f327e18cbc0382a1288fc06d5f3c2f69c162c65a486633815a82484", "artifact_sha256": "6a39eec3ef65a845ed18eb1ef807825a8b2389947f80bc428dded2d06bedc8f2"},
+  "numeric_result": {"development_mean_skin_area_fraction": 0.10293966368022939, "development_mean_skin_associated_edge_fraction": 0.3038874058629914, "development_present_samples": 21, "validation_mean_skin_area_fraction": 0.09344691599720967, "validation_mean_skin_associated_edge_fraction": 0.27758100213434156, "validation_present_samples": 12, "numeric_gates_passed": 13, "numeric_gates_total": 13},
+  "visual_audit": {"montage_path": "outputs/observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution_v1/development_physical_skin_proxy.png", "montage_sha256": "db6b82366a4c90ac5e10c1df697eca0f780ec505d43361f45656ee2a0019fc2e", "verdict": "reject_static_wooden_board_frame_is_consistently_labeled_as_skin", "evidence": "largest_component_is_approximately_3700_pixels_in_nearly_every_sample_even_when_no_hand_is_visible"},
+  "reviewer_decision": "REJECT_GENERIC_PROXY_AND_FREEZE_DEVELOPMENT_PERSISTENCE_SUBTRACTED_DYNAMIC_PROXY",
+  "next_transition": "freeze_or108_persistence_subtracted_dynamic_operator_proxy",
+  "claims": {"operator_content_attributed": false, "same_video_semantic_match": false, "person_identity_or_biometric_inference": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

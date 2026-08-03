@@ -1,0 +1,34 @@
+{
+  "schema_version": "sim2claw.observable_registration_workcell_static_component_surface_identification_closeout.v1",
+  "experiment_id": "OR125_WORKCELL_STATIC_COMPONENT_SURFACE_IDENTIFICATION_V1",
+  "status": "PASS_DOMINANT_COMPONENT_SUBSET_SEPARATE_STATIC_PLANAR_FIXTURE",
+  "proof_class": "workcell_static_component_surface_identification",
+  "contract": {"path": "configs/evaluations/observable_registration_workcell_static_component_surface_identification_v1.json", "sha256": "2e8718cfbc56f3fe733487b1514fb84721d3958e3313e94192613db624577cf5"},
+  "implementation": {"path": "src/sim2claw/observable_registration_workcell_static_component_surface_identification.py", "sha256": "001c5fefb846a9a41b8c990c95d3d61cd4d0e8e20af983ed954513e1fde25ebc"},
+  "test": {"path": "tests/test_observable_registration_workcell_static_component_surface_identification.py", "sha256": "760cf114a37de4360f3d8f8ae4f673a9310d85ef4d06dd391dd0273f41bc1e05", "focused_passed_before_execution": 3, "focused_passed_after_execution": 3},
+  "receipt": {"path": "outputs/observable_registration_workcell_static_component_surface_identification_v1/receipt.json", "sha256": "663f37a053dab8c35a3a992aa03a890603b9afe2fdfac7b31a9ff7f6b143b821", "artifact_sha256": "27475dbf1f3b9e5e61d2a418870779b9ea3dcd1a5fcec703370e4ed344cd08bf"},
+  "result": {
+    "selected_surface_family": "separate_static_planar_fixture",
+    "associated_component_count": 4,
+    "total_significant_component_count": 5,
+    "associated_raw_pixel_fraction_minimum": 0.8567839195979899,
+    "associated_raw_pixel_fraction_maximum": 0.8844221105527639,
+    "maximum_axis_family_error_degrees": 6.080924186660695,
+    "development_fixture_episode_count": 7,
+    "corroboration_fixture_episode_count": 4,
+    "physical_video_decodes": 11,
+    "physical_frame_reads": 11
+  },
+  "review_limit": {
+    "all_five_components_on_one_surface": false,
+    "excluded_component_index": 3,
+    "individual_marker_identity_admitted": false,
+    "metric_depth_or_pose_identified": false,
+    "dense_mask_geometry_authorized": false,
+    "reason": "A dominant four-component subset shares a stable planar-fixture witness; the board-edge component is excluded and no exact fixture identity, depth, topology, or appearance map is claimed."
+  },
+  "verification": {"receipt_artifact_digest_verified": true, "all_frozen_identities_verified_after_execution": true, "all_integrity_gates_passed": true, "second_evaluator_run_performed": false},
+  "reviewer_decision": "FREEZE_RENDERER_NATIVE_PLANAR_FIXTURE_PARAMETERIZATION",
+  "next_transition": "freeze_or126_renderer_native_planar_fixture_parameterization",
+  "claims": {"dominant_subset_surface_family_identified": true, "specific_object_identity": false, "metric_3d_geometry_calibrated": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

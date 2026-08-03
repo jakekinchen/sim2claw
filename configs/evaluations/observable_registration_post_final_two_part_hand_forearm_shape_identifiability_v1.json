@@ -1,0 +1,33 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_two_part_hand_forearm_shape_identifiability_contract.v1",
+  "experiment_id": "OR112_POST_FINAL_TWO_PART_HAND_FOREARM_SHAPE_IDENTIFIABILITY_V1",
+  "proof_class": "post_final_two_part_hand_forearm_shape_identifiability",
+  "sources": {
+    "or111_closeout": {"path": "configs/decisions/observable_registration_post_final_actor_reconstruction_failure_attribution_v1_closeout.json", "sha256": "03ed3b5c5ce37146c9ce152ebb45c7d48c7728b2138686e6cb00c1b8ac8a9020"},
+    "or111_receipt": {"path": "outputs/observable_registration_post_final_actor_reconstruction_failure_attribution_v1/receipt.json", "sha256": "72ebce8eee518b70497e6f40c02684298b878942140211b1a295f5a41777dbd4", "artifact_sha256": "dfd81e3a427e30bcf8c4f581a6435acef633753cd9ffa1dbc88d4718f88dc8f6"},
+    "or111_implementation": {"path": "src/sim2claw/observable_registration_post_final_actor_reconstruction_failure_attribution.py", "sha256": "7753e993bcf0bbdf806ab5805ecda88d0556b33f3b8b1c1c737589c1280a74d4"},
+    "or109_contract": {"path": "configs/evaluations/observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability_v1.json", "sha256": "bd2b79cade9ed4d47fe0ac8a103c7b63aca26ec227694ecc490fb01e2011673c"},
+    "or109_receipt": {"path": "outputs/observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability_v1/receipt.json", "sha256": "48a669fd68405f7dab0861956eb99a5d8cb7578602c4a01974cb743c06888b04", "artifact_sha256": "cf6d609fb34d559eb86534cee6b0ce91ef72bf8e3a140bcd75f5df5a99495def"},
+    "or109_implementation": {"path": "src/sim2claw/observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability.py", "sha256": "d9a928cd2bf10c304200b866985180a78857d32fb04f7fc45560ac568f4bc40a"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+    "or95_frame_rows": {"path": "outputs/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1/frame_rows.json", "sha256": "7d32235363bf3d90a4185b59291ade3e400616ce6a1de0c843aab89c323b7551"}
+  },
+  "split": {"development_positions": [1, 2, 3, 4, 5, 6, 7], "validation_positions": [8, 9, 10, 11], "validation_never_changes_split_or_shape_rule": true, "untouched_cohort_remaining": false},
+  "sampling": {"within_episode_quantiles": [0.25, 0.5, 0.75], "samples_per_episode": 3, "development_present_rows": 13, "validation_present_rows": 8},
+  "two_part_rule": {"component": "same_largest_persistence_subtracted_dynamic_component_as_or109", "shared_axis": "principal_eigenvector_of_full_component", "axis_orientation": "proximal_endpoint_is_nearest_image_border", "split_quantile": 0.5, "split_search": false, "half_shape_rule": "unchanged_or109_capsule_fit_on_each_axial_half", "part_count": 2, "union_policy": "boolean_union_of_two_capsule_masks", "validation_refit": false},
+  "metric": {"shape": ["iou", "coverage", "precision"], "physical_edge": {"canny_low_threshold": 50, "canny_high_threshold": 150, "local_support_dilation_px": 31, "tolerance_dilation_px": 3}},
+  "acceptance": {
+    "development_minimum_mean_iou_gain_over_single": 0.04,
+    "development_minimum_mean_coverage_gain_over_single": 0.01,
+    "development_minimum_mean_local_physical_edge_f1_gain_over_single": 0.02,
+    "development_minimum_rows_with_positive_local_edge_gain": 9,
+    "validation_minimum_mean_iou_gain_over_single": 0.03,
+    "validation_minimum_mean_coverage_gain_over_single": 0.005,
+    "validation_minimum_mean_local_physical_edge_f1_gain_over_single": 0.015,
+    "validation_minimum_rows_with_positive_local_edge_gain": 5,
+    "all_gates_required": true
+  },
+  "resource_boundary": {"development_physical_episode_decodes_allowed": 7, "validation_physical_episode_decodes_allowed": 4, "development_physical_frames_read_allowed": 21, "validation_physical_frames_read_allowed": 12, "development_two_part_shape_estimates_allowed": 13, "validation_two_part_shape_estimates_allowed": 8, "split_values_allowed": 1, "fits_or_candidate_searches_allowed": 0, "renders_allowed": 0, "simulator_replays_allowed": 0, "action_or_state_timing_dynamics_camera_workcell_robot_mutations_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"post_final_two_part_2d_shape_identifiability_only": true, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "predictive_simulation": false, "operator_metric_3d_geometry_or_trajectory_calibrated": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

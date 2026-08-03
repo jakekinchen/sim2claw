@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.observable_registration_frozen_workcell_se2_full_development_timeline_closeout.v1",
+  "experiment_id": "OR85_FROZEN_WORKCELL_SE2_FULL_DEVELOPMENT_TIMELINE_V1",
+  "status": "TERMINAL_FROZEN_WORKCELL_SE2_FULL_DEVELOPMENT_BELOW_TARGET",
+  "proof_class": "development_four_episode_frozen_workcell_se2_native_full_mesh_temporal_pixel_evaluation",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_frozen_workcell_se2_full_development_timeline_v1.json",
+    "sha256": "35651110690c7ab5707d3defbd49df3a0bb5fb3b8c6f4326da821aed7e8c9c46"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_frozen_workcell_se2_full_development_timeline.py",
+    "sha256": "923e82109fa3c2bc5b52e94659046a87f76ae85da79c4a460e77d50bb8e3a265"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_frozen_workcell_se2_full_development_timeline.py",
+    "sha256": "ea8250a23991c57a01a06cd45aff61f428a8e20c3ceea6386bbc704c7f521ce8",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_frozen_workcell_se2_full_development_timeline_v1/receipt.json",
+    "sha256": "6ac0065617c6e57ce3bb8baf60b9c63f0880052427a44fd7917a3c8a23adb25c",
+    "artifact_sha256": "5366afafb19ea9e0d9c9c54f1854b2aea0e7fb82a116cdd370e312ba88e5aa32"
+  },
+  "result": {
+    "frame_count": 423,
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.7396687671154667,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.7201092541217804,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.6888407888276153,
+    "pooled_mean_tolerant_edge_f1": 0.4262553239357279,
+    "metric_gates_passed": 1,
+    "metric_gates_total": 6,
+    "integrity_gates_passed": 6,
+    "integrity_gates_total": 6,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "fits": 0,
+    "simulator_replays": 0
+  },
+  "development_only_followup_diagnostic": {
+    "status": "shared_scalar_camera_response_headroom_found_not_yet_admitted",
+    "candidate_evaluations": 35,
+    "spatial_parameters": 0,
+    "per_frame_parameters": 0,
+    "best_gate_preserving_probe": {
+      "gain": 0.55,
+      "bias": 48.0,
+      "approximate_mean_similarity_from_decoded_or85_video": 0.84226,
+      "approximate_p10_similarity_from_decoded_or85_video": 0.82339,
+      "approximate_mean_motion_similarity_from_decoded_or85_video": 0.7958,
+      "approximate_mean_edge_f1_from_decoded_or85_video": 0.40352
+    },
+    "proof_limit": "read_only_development_headroom_diagnostic_not_a_frozen_candidate_or_pass"
+  },
+  "reviewer_decision": "FREEZE_ONE_SHARED_SCALAR_CAMERA_RESPONSE_DEVELOPMENT_FIT",
+  "next_transition": "freeze_or86_shared_scalar_camera_response_development_fit",
+  "claim_limits": {
+    "development_full_timeline_evaluation_only": true,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

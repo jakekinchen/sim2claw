@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_cross_episode_admission_closeout.v1",
+  "experiment_id": "OR68_RENDERER_NATIVE_CROSS_EPISODE_ADMISSION_V1",
+  "status": "PASS_SPLIT_FROZEN_TRACE_REGENERATION_REQUIRED_RENDERER_NOT_READY",
+  "proof_class": "retained_cross_episode_renderer_native_anti_leakage_admission",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_renderer_native_cross_episode_admission_v1.json",
+    "sha256": "dd2f49e44489f5f7261c4a67008f3b59d02f287438686c180476b587a0fea9c6"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_renderer_native_cross_episode_admission.py",
+    "sha256": "27b4c4154d582f18c4c9beb75aa75b83d4c5ca7ad6b605606a6ce14c695693f2"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_renderer_native_cross_episode_admission.py",
+    "sha256": "7805926aaa9b1e6da5ba36d74d0294e75da03b3d75bac9a766424333e0c6b4a9",
+    "focused_passed": 2
+  },
+  "pairing_inventory": {
+    "path": "outputs/observable_registration_renderer_native_cross_episode_admission_v1/pairing_inventory.json",
+    "sha256": "a3e7febdea2b4894f5d5446701298ea7940f76ffae3dbe5eabead99d2028ab63",
+    "artifact_sha256": "df020863dff1fcf0d76838a979f9cef990fcee7168372224841ab9a67b16af25"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_renderer_native_cross_episode_admission_v1/receipt.json",
+    "sha256": "4b148598176194880378d530fd28f53745bfd419d1260a788bab68ca6457986c",
+    "artifact_sha256": "d25b3288177706b3d8072f13510424307581f4fd75897837675f57ecd910c21e"
+  },
+  "result": {
+    "episode_count": 11,
+    "development_count": 4,
+    "validation_count": 3,
+    "evaluator_heldout_count": 4,
+    "distinct_recording_id_count": 11,
+    "distinct_action_hash_count": 11,
+    "published_shared_scene_state_trace_count": 7,
+    "action_identical_trace_regeneration_required_count": 4,
+    "physical_video_frames_decoded": 0,
+    "simulator_replays": 0,
+    "renderer_runs": 0,
+    "candidate_videos": 0,
+    "pixel_similarity_achieved": false,
+    "physics_fidelity_achieved": false,
+    "prospective_generalization_claimed": false
+  },
+  "or67_disposition": {
+    "numeric_proxy_pass_preserved": true,
+    "screen_space_reward_hack_quarantined": true,
+    "candidate_artifacts_admissible_as_successor_inputs": false,
+    "mujoco_scene_implementation": false,
+    "physics_fidelity": false
+  },
+  "reviewer_decision": "ADVANCE_TO_ACTION_IDENTICAL_MISSING_TRACE_REGENERATION",
+  "next_transition": "freeze_or69_four_missing_action_identical_state_trace_regenerations",
+  "claim_limits": {
+    "pixel_similarity_achieved": false,
+    "renderer_runtime_ready": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

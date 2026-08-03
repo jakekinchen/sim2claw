@@ -1,0 +1,139 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_two_planar_fixture_static_comparison_contract.v1",
+  "experiment_id": "OR130_RENDERER_NATIVE_TWO_PLANAR_FIXTURE_STATIC_COMPARISON_V1",
+  "proof_class": "renderer_native_two_planar_fixture_static_comparison",
+  "sources": {
+    "or129_closeout": {
+      "path": "configs/decisions/observable_registration_renderer_native_clipped_planar_fixture_parameterization_v1_closeout.json",
+      "sha256": "7d5d8cae7986ee2cf8fd90a4300f8ca3590193864af661ae32c11af9860cae19",
+      "status": "PASS_CLIPPED_PLANAR_FIXTURE_PARAMETERIZED"
+    },
+    "or129_receipt": {
+      "path": "outputs/observable_registration_renderer_native_clipped_planar_fixture_parameterization_v1/receipt.json",
+      "sha256": "fa05a640c6e02f890e2ed4ef43397317ea46ca9c24324598710d306307b14b89",
+      "artifact_sha256": "6d05fd9ea6371d9e4631c5ab703707bb32923dc0c304b17d167e1b5ff3106f10"
+    },
+    "or129_parameters": {
+      "path": "outputs/observable_registration_renderer_native_clipped_planar_fixture_parameterization_v1/clipped-planar-fixture-parameters.json",
+      "sha256": "d6c90741eb58ddbe020e0eddb7b0dc6923e94d58431047686774616253ec3b5e",
+      "artifact_sha256": "3686f28cd17c053c77102e9b994a555b9360242005948af5d4e023c5e515b768"
+    },
+    "or127_receipt": {
+      "path": "outputs/observable_registration_renderer_native_planar_fixture_static_comparison_v1/receipt.json",
+      "sha256": "b028051eb592366069bf5c80680cd40d3acc5b6b45effb3a70468b1677d64348",
+      "artifact_sha256": "cf3ada9492b9316d18808c6535d5d8eccb7dfd226fe345ed6c92bf1b509254aa"
+    },
+    "or126_parameters": {
+      "path": "outputs/observable_registration_renderer_native_planar_fixture_parameterization_v1/planar-fixture-parameters.json",
+      "sha256": "45d124f45371cecb47e443d0f8b27756a1307bbdf253c8fbe1c16f866a01c7e7",
+      "artifact_sha256": "b863682c9e1ee537f89533203012ac86af6c1294e8714efd42730c3a469d2444"
+    },
+    "or119_contract": {
+      "path": "configs/evaluations/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1.json",
+      "sha256": "1d2d5aa18eff218c1374fbbd8639667b654bb930e98bf1d46973a75a06d4781a"
+    },
+    "or119_frame_rows": {
+      "path": "outputs/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1/frame_rows.json",
+      "sha256": "71e07d3725b221863c44f149148f94d6f1861217299b04a0c0e980827c9a4f7c"
+    },
+    "mesh_asset_root": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/assets",
+      "hash_source": "shared_scene_manifest.meshes.asset_sha256"
+    }
+  },
+  "frozen_identities": {
+    "implementation": {
+      "path": "src/sim2claw/observable_registration_renderer_native_two_planar_fixture_static_comparison.py",
+      "sha256": "cb48c62fd16350e61e2c9ed922f40a5d69199bdc2d100f257b24dd0ac1992747"
+    },
+    "test": {
+      "path": "tests/test_observable_registration_renderer_native_two_planar_fixture_static_comparison.py",
+      "sha256": "e8a29f013f7451bf81f561f18ca1ccb40265cd26173b199cdfa43b0dd5a95eb9"
+    }
+  },
+  "split": {
+    "development_positions": [1, 2, 3, 4, 5, 6, 7],
+    "corroboration_positions": [8, 9, 10, 11],
+    "corroboration_requires_development_pass": true,
+    "corroboration_refit_allowed": false,
+    "untouched_cohort_remaining": false
+  },
+  "fixture": {
+    "fixture_count": 2,
+    "cell_count_per_axis": 8,
+    "triangle_count_per_fixture": 128,
+    "total_fixture_triangle_count": 256,
+    "plane_offset_m": 0.0005,
+    "black_target_bgr": [20, 20, 20],
+    "white_target_bgr": [240, 240, 240],
+    "shared_zbuffer": true,
+    "physical_pixel_texture_projection": false,
+    "screen_space_overlay": false
+  },
+  "regions": {
+    "fixture_mask_dilation_kernel_px": 9,
+    "outside_region_source": "or119_board_plus_margin_complement"
+  },
+  "gates": {
+    "minimum_development_mean_clipped_edge_f1_delta": 0.10,
+    "minimum_development_mean_clipped_similarity_delta": 0.05,
+    "minimum_development_mean_full_similarity_delta": 0.0005,
+    "minimum_development_mean_outside_edge_f1_delta": 0.01,
+    "minimum_each_development_clipped_edge_f1_delta": 0.05,
+    "maximum_each_complete_fixture_edge_f1_regression": 0.005,
+    "minimum_corroboration_mean_clipped_edge_f1_delta": 0.10,
+    "minimum_corroboration_mean_full_similarity_delta": 0.0005,
+    "minimum_corroboration_mean_outside_edge_f1_delta": 0.01,
+    "maximum_reference_metric_error": 1E-8,
+    "expected_baseline_triangle_count": 825292,
+    "expected_complete_triangle_count": 825420,
+    "expected_candidate_triangle_count": 825548
+  },
+  "resource_boundary": {
+    "physical_video_decodes_allowed": 11,
+    "physical_frames_read_allowed": 11,
+    "baseline_renders_allowed": 11,
+    "complete_fixture_renders_allowed": 11,
+    "two_fixture_renders_allowed": 11,
+    "native_compilations_allowed": 1,
+    "audit_outputs_allowed": 1,
+    "physical_pixel_texture_projections_allowed": 0,
+    "screen_space_overlays_allowed": 0,
+    "fits_or_candidate_selections_allowed": 0,
+    "threshold_changes_allowed": 0,
+    "retries_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "retrospective_initial_frames_only": true,
+    "complete_and_clipped_fixtures_only": true,
+    "procedural_renderer_geometry_only": true,
+    "physical_pixel_texture_projection": false,
+    "screen_space_overlay": false,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

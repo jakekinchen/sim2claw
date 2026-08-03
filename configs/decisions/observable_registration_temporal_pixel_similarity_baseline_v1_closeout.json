@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.observable_registration_temporal_pixel_similarity_closeout.v1",
+  "experiment_id": "OR55_TEMPORAL_PIXEL_SIMILARITY_BASELINE_V1",
+  "status": "TERMINAL_BASELINE_BELOW_TEMPORAL_PIXEL_SIMILARITY_TARGET",
+  "proof_class": "retained_action_identical_registered_physical_simulator_temporal_pixel_similarity_baseline",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_temporal_pixel_similarity_baseline_v1.json",
+    "sha256": "05da35fd381e8cc2ca7e27cb007ea47b6267721247051b7dd4727f147c12ee9b"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_temporal_pixel_similarity.py",
+    "sha256": "1c05b8a4aa6b8d716af5e4dcf2aab4e061537c1c95e5571fcf030fe0700b046e"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_temporal_pixel_similarity.py",
+    "sha256": "cd66d97f45638587af5390d105206ea1932c2080a4524b0ed2ffaa53c3fdf10a",
+    "focused_passed": 4
+  },
+  "rows": {
+    "path": "outputs/observable_registration_temporal_pixel_similarity_baseline_v1/metric_rows.json",
+    "sha256": "428d85b97109e86a0740291d9460d40530c003dc4921585142009e7ea63f9edf"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_temporal_pixel_similarity_baseline_v1/receipt.json",
+    "sha256": "cce7b7c104f1d6619f32a6537223448fd5d34c26b3d8a5830d8440e8b5855acd",
+    "artifact_sha256": "7ff8219d6f265c39ea5a19fd966a2d7ca67691b08c52303056883c0abb869efd"
+  },
+  "result": {
+    "decoded_frame_count": 531,
+    "available_physical_frame_count": 516,
+    "missing_physical_frame_count": 15,
+    "mean_full_frame_linear_pixel_similarity": 0.7036233736678611,
+    "p10_full_frame_linear_pixel_similarity": 0.6863253116607666,
+    "mean_motion_union_linear_pixel_similarity": 0.6702985640271122,
+    "mean_tolerant_edge_f1": 0.22669722901824033,
+    "minimum_phase_mean_full_frame_linear_pixel_similarity": 0.6930622706810633,
+    "passing_acceptance_gate_count": 0,
+    "acceptance_gate_count": 5
+  },
+  "execution": {
+    "simulator_replays": 0,
+    "candidate_renders": 0,
+    "geometric_registration_changes": 0,
+    "color_fits": 0,
+    "parameter_changes": 0,
+    "physical_frame_substitutions": 0,
+    "hardware_actions": 0,
+    "heldout_opened": false
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or56_static_renderer_appearance_factorization",
+  "claim_limits": {
+    "metric_camera_calibration": false,
+    "physics_fidelity": false,
+    "physical_contact_force": false,
+    "bilateral_physical_contact": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_success": false,
+    "task_transfer": false
+  }
+}

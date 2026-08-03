@@ -1,0 +1,29 @@
+{
+  "schema_version": "sim2claw.observable_registration_reject_only_fresh_validation_global_monotone_response_closeout.v1",
+  "experiment_id": "OR90_REJECT_ONLY_FRESH_VALIDATION_GLOBAL_MONOTONE_RESPONSE_V1",
+  "status": "PASS_FRESH_VALIDATION_GLOBAL_MONOTONE_RESPONSE",
+  "proof_class": "fresh_validation_two_episode_frozen_camera_workcell_monotone_response_native_full_mesh_temporal_evaluation",
+  "contract": {"path": "configs/evaluations/observable_registration_reject_only_fresh_validation_global_monotone_response_v1.json", "sha256": "f70f20da9725eb8fecf77fb733ab8fc4289bc0827c2a3c21330390c2186f0371"},
+  "implementation": {"path": "src/sim2claw/observable_registration_reject_only_fresh_validation_global_monotone_response.py", "sha256": "4cacd572d75e837ab1b8e93841c17bd0a59a9b3a86e7405c9aa493b88512244a"},
+  "test": {"path": "tests/test_observable_registration_reject_only_fresh_validation_global_monotone_response.py", "sha256": "079bdffe80fdcb74f127029c71c1c8d4cf39f94b2688cbe1b10e4357bf826d8a", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_reject_only_fresh_validation_global_monotone_response_v1/receipt.json", "sha256": "374ddbf7979774b5a6214c5487175c2f19b93d702e36d29d2b21a23840f0a4ed", "artifact_sha256": "25f92cd875e5d60a154ff7c6702325e21010e525ec13e53b35c9a6ef963f886d"},
+  "result": {
+    "fresh_validation_episode_count": 2,
+    "frame_count": 213,
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.8421360795766535,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.8241930902004242,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.8105380828205443,
+    "pooled_mean_tolerant_edge_f1": 0.4210814762352334,
+    "metric_gates_passed": 6,
+    "metric_gates_total": 6,
+    "integrity_gates_passed": 7,
+    "integrity_gates_total": 7,
+    "fits_or_candidate_selections": 0,
+    "development_reads": 0,
+    "final_evaluator_heldout_reads": 0,
+    "simulator_replays": 0
+  },
+  "reviewer_decision": "OPEN_ONE_SHOT_FINAL_EVALUATOR_HELDOUT_WITH_FROZEN_CANDIDATE",
+  "next_transition": "freeze_or91_one_shot_final_evaluator_heldout_global_monotone_response",
+  "claim_limits": {"fresh_validation_evaluation_only": true, "final_evaluator_heldout_verified": false, "pixel_similarity_achieved": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false}
+}

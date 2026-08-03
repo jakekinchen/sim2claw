@@ -1,0 +1,17 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_robot_dynamic_footprint_scale_attribution_contract.v1",
+  "experiment_id": "OR101_POST_FINAL_ROBOT_DYNAMIC_FOOTPRINT_SCALE_ATTRIBUTION_V1",
+  "proof_class": "post_final_eleven_episode_immutable_dynamic_occupancy_robot_footprint_scale_attribution",
+  "sources": {
+    "or97_closeout": {"path": "configs/decisions/observable_registration_post_final_static_dynamic_edge_occupancy_factorization_v1_closeout.json", "sha256": "1d73978536cdf463aa7cc7cede472e5ae45b74de403aaef3dda76c66de4b6dca"},
+    "or97_receipt": {"path": "outputs/observable_registration_post_final_static_dynamic_edge_occupancy_factorization_v1/receipt.json", "sha256": "b6c16773e2dd1fa4f3cb1dfccbcc7ef8d78380b205ca4d818585376fb8c5ea8c", "artifact_sha256": "97489ff630469d50d41813ed934f5d527496873c0310c2eae752980574a4c695"},
+    "or95_closeout": {"path": "configs/decisions/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1_closeout.json", "sha256": "05c8a71e912a381fcd34f20987daa9d18d0973428fa39cd6cc44f60e186a9b05"},
+    "or100_closeout": {"path": "configs/decisions/observable_registration_post_final_bounded_renderer_native_enclosure_plane_fit_v1_closeout.json", "sha256": "b9b13470d1299653997ae0b6958fe14b259fb4b1a3094ebcce92da7b84768156"}
+  },
+  "input": {"occupancy_map_count": 11, "panel_width_px": 320, "panel_height_px": 240, "panel_order": ["physical_persistent", "candidate_persistent", "physical_dynamic", "candidate_dynamic"], "binary_threshold": 127},
+  "measurements": {"dynamic_occupied_pixels": true, "dynamic_bounding_box": true, "dynamic_bounding_box_diagonal_px": true, "dynamic_centroid_px": true, "physical_to_candidate_area_ratio": true, "physical_to_candidate_bbox_diagonal_ratio": true},
+  "decision_tree": {"camera_ray_depth_registration_if": {"minimum_median_physical_to_candidate_area_ratio": 1.5, "minimum_episodes_with_area_ratio_at_least_1p5": 9, "minimum_median_physical_to_candidate_bbox_diagonal_ratio": 1.2}, "otherwise_if_mean_dynamic_f1_below": 0.6, "otherwise": "no_robot_footprint_successor_selected"},
+  "resource_boundary": {"occupancy_png_reads_allowed": 11, "physical_video_decodes_allowed": 0, "renders_allowed": 0, "fits_allowed": 0, "parameter_selections_allowed": 0, "simulator_replays_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"post_final_receipt_only_diagnostic": true, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

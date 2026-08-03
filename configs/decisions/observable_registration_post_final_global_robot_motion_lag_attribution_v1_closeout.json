@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_global_robot_motion_lag_attribution_closeout.v1",
+  "experiment_id": "OR102_POST_FINAL_GLOBAL_ROBOT_MOTION_LAG_ATTRIBUTION_V1",
+  "status": "TERMINAL_GLOBAL_ROBOT_MOTION_LAG_INSUFFICIENT",
+  "proof_class": "post_final_seven_development_four_validation_all_episode_global_motion_lag_attribution",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_global_robot_motion_lag_attribution_v1.json", "sha256": "8c48f99add689da2b4bd2ea6390ab8d9d6af4ec848228f2c18ba54765bc398d3"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_global_robot_motion_lag_attribution.py", "sha256": "a8de4e1ccfa4bce898566476552db8b46fa0d521f279858daecb057ec18068c8"},
+  "test": {"path": "tests/test_observable_registration_post_final_global_robot_motion_lag_attribution.py", "sha256": "68eff9e6e31cd8c3fba3ec06fe9548ac15cb25d56a2e323cac7cbd886da07fbe", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_global_robot_motion_lag_attribution_v1/receipt.json", "sha256": "2f1e1430d1369b8bc5a0a22e94de00ff9cb6c9d4f1e9ae8be4208a5f84af4a59", "artifact_sha256": "f51986ab51c34f31b32eb5f7a7a4f013eeacd82a77767c988f1525d305ed18bd"},
+  "result": {"selected_lag_frames": 2, "selected_lag_seconds": 0.4, "development_correlation_gain": 0.03916403249613095, "development_episodes_with_material_gain": 4, "validation_correlation_gain": -0.021264697362986362, "validation_episodes_with_material_gain": 2, "integrity_gates_passed": 6, "integrity_gates_total": 6},
+  "reviewer_decision": "REJECT_GLOBAL_LAG_AND_FREEZE_JOINT_ARTICULATION_CALIBRATION",
+  "next_transition": "freeze_or103_joint_articulation_calibration_successor",
+  "claims": {"same_video_semantic_match": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

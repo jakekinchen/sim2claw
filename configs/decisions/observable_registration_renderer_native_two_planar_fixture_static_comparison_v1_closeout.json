@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_two_planar_fixture_static_comparison_closeout.v1",
+  "experiment_id": "OR130_RENDERER_NATIVE_TWO_PLANAR_FIXTURE_STATIC_COMPARISON_V1",
+  "status": "PASS_RENDERER_NATIVE_TWO_PLANAR_FIXTURE_STATIC_COMPARISON",
+  "proof_class": "renderer_native_two_planar_fixture_static_comparison",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_renderer_native_two_planar_fixture_static_comparison_v1.json",
+    "sha256": "c697ecf25885f8a40f4c2ed16108a3bd11ea22d29a5f22130d045845f7702dc7"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_renderer_native_two_planar_fixture_static_comparison.py",
+    "sha256": "cb48c62fd16350e61e2c9ed922f40a5d69199bdc2d100f257b24dd0ac1992747"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_renderer_native_two_planar_fixture_static_comparison.py",
+    "sha256": "e8a29f013f7451bf81f561f18ca1ccb40265cd26173b199cdfa43b0dd5a95eb9",
+    "focused_passed_before_execution": 3,
+    "focused_passed_after_execution": 3
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_renderer_native_two_planar_fixture_static_comparison_v1/receipt.json",
+    "sha256": "75d090073ec2b7621614c235ac206e1401452d91baa809d09fa6aab5fc909836",
+    "artifact_sha256": "3e81607fac382818f1703f01c525f5f9546edb137c6a139c54382029329c8091"
+  },
+  "result": {
+    "baseline_full_similarity_mean": 0.8485474423928694,
+    "complete_fixture_full_similarity_mean": 0.8493489162488417,
+    "two_fixture_full_similarity_mean": 0.8536540581421419,
+    "full_similarity_delta_vs_complete": 0.004305141893300143,
+    "clipped_fixture_similarity_delta_vs_complete": 0.08570118790323084,
+    "clipped_fixture_edge_f1_delta_vs_complete": 0.476995200519064,
+    "outside_edge_f1_delta_vs_complete": 0.08238508444693493,
+    "complete_fixture_edge_f1_delta": 0.0
+  },
+  "verification": {
+    "receipt_artifact_digest_verified": true,
+    "all_frozen_identities_verified_after_execution": true,
+    "development_gated_no_refit_corroboration": true,
+    "baseline_and_complete_predecessor_metrics_reproduced_exactly": true,
+    "all_metric_and_integrity_gates_passed": true,
+    "second_evaluator_run_performed": false
+  },
+  "review_limit": {
+    "retrospective_initial_frames_only": true,
+    "physical_pixel_texture_projection": false,
+    "screen_space_candidate_overlay": false,
+    "same_video_target_achieved": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "physical_transfer": false
+  },
+  "reviewer_decision": "FREEZE_TWO_PLANAR_FIXTURE_FULL_TIMELINE_PROPAGATION",
+  "next_transition": "freeze_or131_two_planar_fixture_full_timeline_propagation"
+}

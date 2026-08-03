@@ -1,0 +1,102 @@
+{
+  "schema_version": "sim2claw.observable_registration_static_vector_environment_video_render_closeout.v1",
+  "experiment_id": "OR67_STATIC_VECTOR_ENVIRONMENT_VIDEO_RENDER_V1",
+  "status": "PASS_TEMPORAL_PIXEL_SIMILARITY_TARGET_STATIC_VECTOR_VIDEO",
+  "proof_class": "retained_episode_specific_static_vector_environment_augmented_simulator_video",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_static_vector_environment_video_render_v1.json",
+    "sha256": "4ce2026c1d4b830efc1a2f18509fd0d522cfcbd92d06aa28866393a6450e240c"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_static_vector_environment_video_render.py",
+    "sha256": "881fa46a1684a49b425dd7de209da116d398faa2f8e3a333012fa968fe71de51"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_static_vector_environment_video_render.py",
+    "sha256": "3584a8c09d6140bff06f1b5a229eb0d4dcbd2be5a434fdb10e40004bf706a033",
+    "focused_passed": 2
+  },
+  "candidate_video": {
+    "path": "outputs/observable_registration_static_vector_environment_video_render_v1/simulator_vector_environment_candidate.mp4",
+    "sha256": "270356c7a8d881b6a2ed5cb1acd94f03516cbae4b3da32d9f422c04169bf6914",
+    "frame_count": 531,
+    "fps": 20.0,
+    "width_px": 640,
+    "height_px": 480
+  },
+  "material_spec": {
+    "path": "outputs/observable_registration_static_vector_environment_video_render_v1/material_spec.json",
+    "sha256": "91c052581559617c9b1849b35d29a8f47ef0fb670fbafc4911e60953705e05c7"
+  },
+  "candidate_table": {
+    "path": "outputs/observable_registration_static_vector_environment_video_render_v1/candidate_table.json",
+    "sha256": "f0609981ee0482dbdf346d8846cd1fc7879324ddd06e2c75dcbaabeb5745e8a7"
+  },
+  "metric_rows": {
+    "path": "outputs/observable_registration_static_vector_environment_video_render_v1/metric_rows.json",
+    "sha256": "fda5735dc08e4d5766de72e75df865c60f8952c9a6c0138cf55fc48fe54caf17"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_static_vector_environment_video_render_v1/receipt.json",
+    "sha256": "c93a7caf9710b94da135cac93b1ab0227810f515d02333b9ad10b50f920c3eca",
+    "artifact_sha256": "5440cf41ae810908960e5eee55bf2cf298975918fa32f430285be8b2ac40c441"
+  },
+  "selection": {
+    "candidate_count": 2,
+    "eligible_candidate_count": 2,
+    "selection_inputs": "development_only",
+    "selected_alpha": 0.5,
+    "stroke_width_px": 1,
+    "rendered_pixel_count": 7544,
+    "validation_and_stress_used_for_selection": false
+  },
+  "result": {
+    "mean_full_frame_linear_pixel_similarity": 0.8010299338619838,
+    "p10_full_frame_linear_pixel_similarity": 0.7882107123732567,
+    "mean_motion_union_linear_pixel_similarity": 0.7861204808914518,
+    "minimum_phase_mean_full_frame_linear_pixel_similarity": 0.7923908464867493,
+    "mean_tolerant_edge_f1": 0.43575394992350763,
+    "validation_mean_full_frame_linear_pixel_similarity": 0.8026005313628249,
+    "validation_mean_tolerant_edge_f1": 0.43571244518333013,
+    "stress_mean_full_frame_linear_pixel_similarity": 0.7990398900262241,
+    "stress_mean_tolerant_edge_f1": 0.43513176126239633,
+    "mean_full_frame_gate": true,
+    "p10_full_frame_gate": true,
+    "motion_union_gate": true,
+    "every_phase_gate": true,
+    "tolerant_edge_gate": true,
+    "all_acceptance_gates_pass": true,
+    "actions_and_timestamps_unchanged": true,
+    "physical_pixels_embedded": false
+  },
+  "execution": {
+    "development_candidates_evaluated": 2,
+    "static_vector_video_renders": 1,
+    "emitted_candidate_videos": 1,
+    "decoded_candidate_videos": 1,
+    "mujoco_renderer_runs": 0,
+    "simulator_replays": 0,
+    "dependency_installs": 0,
+    "colima_starts": 0,
+    "physical_pixel_composites": 0,
+    "geometric_warps": 0,
+    "action_changes": 0,
+    "timestamp_changes": 0,
+    "state_changes": 0,
+    "missing_frame_fills": 0,
+    "validation_or_stress_selections": 0,
+    "hardware_actions": 0
+  },
+  "reviewer_decision": "STOP_TARGET_ACHIEVED",
+  "next_transition": "no_op_target_achieved",
+  "claim_limits": {
+    "episode_specific_screen_space_visual_replay": true,
+    "synthetic_vector_environment_layer": true,
+    "metric_3d_geometry": false,
+    "mujoco_scene_implementation": false,
+    "physics_fidelity": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_planar_fixture_static_comparison_contract.v1",
+  "experiment_id": "OR127_RENDERER_NATIVE_PLANAR_FIXTURE_STATIC_COMPARISON_V1",
+  "proof_class": "renderer_native_planar_fixture_static_comparison",
+  "sources": {
+    "or126_closeout": {"path": "configs/decisions/observable_registration_renderer_native_planar_fixture_parameterization_v1_closeout.json", "sha256": "da83c29c630d96c00090bf0809dcc619ed0473dc33ec42cb123484b27c96dc53", "status": "PASS_COMPLETE_PLANAR_FIXTURE_PARAMETERIZED"},
+    "or126_receipt": {"path": "outputs/observable_registration_renderer_native_planar_fixture_parameterization_v1/receipt.json", "sha256": "75a8f7a00ce1fd170009e35a5d38a581df7f0d1772146429856c79a6319f2fed", "artifact_sha256": "88cdda837c928b765d88683430a06dca87681066bfd088753352a7c0b8d29465"},
+    "or126_parameters": {"path": "outputs/observable_registration_renderer_native_planar_fixture_parameterization_v1/planar-fixture-parameters.json", "sha256": "45d124f45371cecb47e443d0f8b27756a1307bbdf253c8fbe1c16f866a01c7e7", "artifact_sha256": "b863682c9e1ee537f89533203012ac86af6c1294e8714efd42730c3a469d2444"},
+    "or119_contract": {"path": "configs/evaluations/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1.json", "sha256": "1d2d5aa18eff218c1374fbbd8639667b654bb930e98bf1d46973a75a06d4781a"},
+    "or119_frame_rows": {"path": "outputs/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1/frame_rows.json", "sha256": "71e07d3725b221863c44f149148f94d6f1861217299b04a0c0e980827c9a4f7c"}
+  },
+  "frozen_identities": {
+    "implementation": {"path": "src/sim2claw/observable_registration_renderer_native_planar_fixture_static_comparison.py", "sha256": "0fcdde36f0187feec984bd6db9393ac6ea2efcfab598ce50aae0e4d1f7485b41"},
+    "test": {"path": "tests/test_observable_registration_renderer_native_planar_fixture_static_comparison.py", "sha256": "98166727b8d479668f9c7ae749e4cf087861f7dcfd9009871f3684eb4cc49b20"}
+  },
+  "split": {"development_positions": [1,2,3,4,5,6,7], "corroboration_positions": [8,9,10,11], "corroboration_requires_development_pass": true, "corroboration_refit_allowed": false, "untouched_cohort_remaining": false},
+  "fixture": {"source_component_index": 4, "cell_count_per_axis": 8, "triangle_count": 128, "plane_offset_m": 0.0005, "black_target_bgr": [20,20,20], "white_target_bgr": [240,240,240], "shared_zbuffer": true, "physical_pixel_texture_projection": false, "screen_space_overlay": false},
+  "gates": {"minimum_development_mean_fixture_edge_f1_delta": 0.05, "minimum_development_mean_fixture_similarity_delta": 0.03, "minimum_development_mean_full_similarity_delta": 0.0002, "minimum_each_development_fixture_edge_f1_delta": 0.02, "minimum_corroboration_mean_fixture_edge_f1_delta": 0.05, "minimum_corroboration_mean_full_similarity_delta": 0.0002, "maximum_baseline_metric_error_vs_or119": 1e-8, "expected_baseline_triangle_count": 825292, "expected_candidate_triangle_count": 825420},
+  "resource_boundary": {"physical_video_decodes_allowed": 11, "physical_frames_read_allowed": 11, "baseline_renders_allowed": 11, "candidate_renders_allowed": 11, "native_compilations_allowed": 1, "audit_outputs_allowed": 1, "physical_pixel_texture_projections_allowed": 0, "screen_space_overlays_allowed": 0, "fits_or_candidate_selections_allowed": 0, "threshold_changes_allowed": 0, "retries_allowed": 0, "simulator_replays_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"retrospective_initial_frames_only": true, "complete_fixture_only": true, "procedural_renderer_geometry_only": true, "physical_pixel_texture_projection": false, "screen_space_overlay": false, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "predictive_simulation": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

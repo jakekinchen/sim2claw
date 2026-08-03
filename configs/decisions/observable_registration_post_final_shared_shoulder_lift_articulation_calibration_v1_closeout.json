@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_shared_shoulder_lift_articulation_calibration_closeout.v1",
+  "experiment_id": "OR104_POST_FINAL_SHARED_SHOULDER_LIFT_ARTICULATION_CALIBRATION_V1",
+  "status": "TERMINAL_SHARED_SHOULDER_LIFT_ARTICULATION_DEVELOPMENT_GATE_FAILED",
+  "proof_class": "post_final_sampled_development_validation_shared_shoulder_lift_articulation_calibration",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_shared_shoulder_lift_articulation_calibration_v1.json", "sha256": "f18c99876aab1e33f1c9d983896cdf3891356aea9a7033ec41f2fe9e4ad53a0a"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_shared_shoulder_lift_articulation_calibration.py", "sha256": "19fc6ff9b520504e5d6b79afdade6f1169e451025985b900c604088cfa71cd73"},
+  "test": {"path": "tests/test_observable_registration_post_final_shared_shoulder_lift_articulation_calibration.py", "sha256": "127233d14c499a7cd6661351e8eaec1748fe25482204227440ccc2e96c5a1467", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_shared_shoulder_lift_articulation_calibration_v1/receipt.json", "sha256": "7e24b2b85b346471464e3ff11cd053e75688b378092bf4878027bbb58b8d3d58", "artifact_sha256": "0bb4a35ab1e8d9ab7c9b317aeea1de498a927676c52d5808c7fb87b2392bc379"},
+  "result": {"selected_excursion_gain": 0.8, "selected_offset_degrees": -5.0, "development_identity_mean_outside_board_edge_f1": 0.3472742236957847, "development_selected_mean_outside_board_edge_f1": 0.3587291221768303, "development_gain": 0.011454898481045583, "required_development_gain": 0.02, "materially_improved_samples": 12, "required_materially_improved_samples": 14, "identity_baseline_maximum_absolute_error_vs_or95": 0.0, "validation_opened": false, "integrity_gates_passed": 11, "integrity_gates_total": 11},
+  "reviewer_decision": "REJECT_SHARED_SHOULDER_LIFT_AND_REATTRIBUTE_ARTICULATION_RESIDUAL",
+  "next_transition": "freeze_or105_robot_material_semantics_loss_attribution",
+  "claims": {"same_video_semantic_match": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

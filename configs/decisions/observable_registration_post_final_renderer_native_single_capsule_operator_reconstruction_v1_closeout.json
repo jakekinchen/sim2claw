@@ -1,0 +1,25 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_renderer_native_single_capsule_operator_reconstruction_closeout.v1",
+  "experiment_id": "OR110_POST_FINAL_RENDERER_NATIVE_SINGLE_CAPSULE_OPERATOR_RECONSTRUCTION_V1",
+  "status": "TERMINAL_RENDERER_NATIVE_SINGLE_CAPSULE_OPERATOR_RECONSTRUCTION_DEVELOPMENT_GATE_FAILED",
+  "proof_class": "post_final_retained_footage_conditioned_renderer_native_single_capsule_operator_reconstruction",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_renderer_native_single_capsule_operator_reconstruction_v1.json", "sha256": "664951d908f8c4a0f047be878ef33b1dd4ac428ee44dad6c7b3a20ff6170c8c4"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_renderer_native_single_capsule_operator_reconstruction.py", "sha256": "79aaf0dbac975a5512876e5842c11ca477397149b2438bc5138edf95e227f436"},
+  "test": {"path": "tests/test_observable_registration_post_final_renderer_native_single_capsule_operator_reconstruction.py", "sha256": "bee8a74e99fe51cf2b6d8c09baee3fb548259715b2225e93eba694f105666ad4", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_renderer_native_single_capsule_operator_reconstruction_v1/receipt.json", "sha256": "78593df6650262b3cbcfebc7b423c8a9667aa2d18aeefb28e783477071a75a84", "artifact_sha256": "99eec7e0a65f2fd8af0bec4688a0c941a8a92857b69a9d651a1c8546b012db84"},
+  "result": {
+    "development_present_rows": 13,
+    "development_present_rows_with_positive_outside_board_delta": 10,
+    "development_present_mean_full_frame_linear_similarity_delta": 0.00942584528372838,
+    "development_present_mean_outside_board_edge_f1_delta": 0.007340339813001868,
+    "development_all_sample_mean_outside_board_edge_f1_delta": 0.004544019884239252,
+    "development_all_sample_mean_board_plus_margin_edge_f1_delta": 0.0004034510635003813,
+    "development_edge_gates_passed": 0,
+    "development_edge_gates_total": 2,
+    "validation_opened": false,
+    "visual_audit": "accepted_as_real_3d_zbuffered_actor_but_single_uniform_capsule_underrepresents_hand_forearm_boundary_detail"
+  },
+  "reviewer_decision": "REJECT_SINGLE_CAPSULE_RENDER_AND_ATTRIBUTE_ACTOR_RECONSTRUCTION_FAILURE",
+  "next_transition": "freeze_or111_actor_reconstruction_failure_attribution",
+  "claims": {"retained_same_episode_exogenous_actor_reconstruction_only": true, "same_video_semantic_match": false, "predictive_simulation": false, "operator_metric_3d_geometry_or_trajectory_calibrated": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_actor_reconstruction_failure_attribution_closeout.v1",
+  "experiment_id": "OR111_POST_FINAL_ACTOR_RECONSTRUCTION_FAILURE_ATTRIBUTION_V1",
+  "status": "PASS_ACTOR_RECONSTRUCTION_FAILURE_ATTRIBUTED_SINGLE_PROXY_BOUNDARY_DETAIL_LOSS",
+  "proof_class": "post_final_renderer_native_actor_reconstruction_failure_attribution",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_actor_reconstruction_failure_attribution_v1.json", "sha256": "8b86cf353721b1657ade9154ef9ed6aa18308a7fee0568a9b073a87fbe1111a2"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_actor_reconstruction_failure_attribution.py", "sha256": "7753e993bcf0bbdf806ab5805ecda88d0556b33f3b8b1c1c737589c1280a74d4"},
+  "test": {"path": "tests/test_observable_registration_post_final_actor_reconstruction_failure_attribution.py", "sha256": "b5f66d71a70697da86739a43a3bc0bf024163b60ca45d9301e48d54a50964f53", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_actor_reconstruction_failure_attribution_v1/receipt.json", "sha256": "72ebce8eee518b70497e6f40c02684298b878942140211b1a295f5a41777dbd4", "artifact_sha256": "dfd81e3a427e30bcf8c4f581a6435acef633753cd9ffa1dbc88d4718f88dc8f6"},
+  "result": {"attribution": "SINGLE_PROXY_BOUNDARY_DETAIL_LOSS", "mean_target_vs_isolated_silhouette_iou": 0.9608525690893555, "mean_visible_vs_isolated_coverage": 0.986822104463126, "mean_target_local_physical_edge_f1": 0.2861375103447113, "mean_isolated_local_physical_edge_f1": 0.28131817471832543, "row_count": 13},
+  "reviewer_decision": "FREEZE_PREREGISTERED_TWO_PART_HAND_FOREARM_ACTOR",
+  "next_transition": "freeze_or112_preregistered_two_part_hand_forearm_actor",
+  "claims": {"failure_attribution_only": true, "same_video_semantic_match": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

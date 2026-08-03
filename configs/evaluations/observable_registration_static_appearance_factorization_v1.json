@@ -1,0 +1,98 @@
+{
+  "schema_version": "sim2claw.observable_registration_static_appearance_factorization_contract.v1",
+  "experiment_id": "OR56_STATIC_APPEARANCE_FACTORIZATION_V1",
+  "proof_class": "retained_episode_specific_time_invariant_renderer_camera_response_factorization",
+  "sources": {
+    "or55_contract": {
+      "path": "configs/evaluations/observable_registration_temporal_pixel_similarity_baseline_v1.json",
+      "sha256": "05da35fd381e8cc2ca7e27cb007ea47b6267721247051b7dd4727f147c12ee9b"
+    },
+    "or55_closeout": {
+      "path": "configs/decisions/observable_registration_temporal_pixel_similarity_baseline_v1_closeout.json",
+      "sha256": "8883b86e7dc483f7964e645306c010ade3214a393f69a174e0a79649abf92e8b"
+    },
+    "or55_receipt": {
+      "path": "outputs/observable_registration_temporal_pixel_similarity_baseline_v1/receipt.json",
+      "sha256": "cce7b7c104f1d6619f32a6537223448fd5d34c26b3d8a5830d8440e8b5855acd"
+    },
+    "or55_rows": {
+      "path": "outputs/observable_registration_temporal_pixel_similarity_baseline_v1/metric_rows.json",
+      "sha256": "428d85b97109e86a0740291d9460d40530c003dc4921585142009e7ea63f9edf"
+    },
+    "or26_receipt": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/receipt.json",
+      "sha256": "b6589ea2848749a91fda7ea7adfa7838e4f2a8f9f7089141e5570092cbdd9a4e"
+    },
+    "physical_video": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/physical.mp4",
+      "sha256": "00aaf4bed86e25d6a661643335ae577906bf436681fe7b1f09f76a60ea0ce1c8"
+    },
+    "simulator_video": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/simulator.mp4",
+      "sha256": "fb6fb32eca13e6990129269c91f404b52c6a2ff721cb1851f024060ef9a3a6ca"
+    }
+  },
+  "timebox": {
+    "goal_started_at_utc": "2026-08-03T01:01:16Z",
+    "goal_deadline_utc": "2026-08-03T09:01:16Z"
+  },
+  "timeline": {
+    "frame_count": 531,
+    "available_physical_sample_range_inclusive": [0, 515],
+    "missing_physical_sample_range_inclusive": [516, 530],
+    "width_px": 640,
+    "height_px": 480,
+    "fps": 20.0,
+    "development_ranges_inclusive": [[0, 119], [260, 319], [400, 439]],
+    "validation_ranges_inclusive": [[120, 199], [320, 379], [440, 479]],
+    "stress_ranges_inclusive": [[200, 259], [380, 399], [480, 515]],
+    "selection_may_read_only_development": true
+  },
+  "candidate_family": {
+    "models": ["identity", "diagonal_bgr_affine", "full_bgr_affine"],
+    "gaussian_blur_kernel_px": [1, 3, 5, 7],
+    "fit_pixel_grid_stride": 8,
+    "diagonal_gain_bounds": [0.5, 1.5],
+    "cross_channel_coefficient_bounds": [-0.25, 0.25],
+    "bias_bounds": [-64.0, 64.0],
+    "one_transform_for_all_frames": true,
+    "selection_order": [
+      "maximum_development_mean_full_frame_linear_pixel_similarity",
+      "maximum_development_p10_full_frame_linear_pixel_similarity",
+      "simpler_model",
+      "smaller_blur_kernel"
+    ]
+  },
+  "evaluation": {
+    "inherit_or55_metric_and_acceptance_gates": true,
+    "minimum_validation_absolute_improvement_for_photometric_advance": 0.02,
+    "maximum_stress_absolute_regression": 0.005,
+    "score_emitted_candidate_after_video_decode": true
+  },
+  "prohibitions": {
+    "action_change": true,
+    "physics_change": true,
+    "simulator_rerun": true,
+    "geometric_warp": true,
+    "per_frame_transform": true,
+    "phase_specific_transform": true,
+    "region_specific_transform": true,
+    "physical_pixel_compositing": true,
+    "physical_pixels_as_texture": true,
+    "background_plate_from_physical_video": true,
+    "segmentation_derived_replacement": true,
+    "validation_or_stress_selection": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

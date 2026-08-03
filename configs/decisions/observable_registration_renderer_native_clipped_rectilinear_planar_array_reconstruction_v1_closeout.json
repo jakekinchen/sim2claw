@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_closeout.v1",
+  "experiment_id": "OR122_RENDERER_NATIVE_CLIPPED_RECTILINEAR_PLANAR_ARRAY_RECONSTRUCTION_V1",
+  "status": "TERMINAL_IMPLEMENTATION_IDENTITY_DRIFT_QUARANTINED",
+  "proof_class": "renderer_native_clipped_rectilinear_planar_array_reconstruction",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_v1.json",
+    "sha256": "1226a439a1e7e41900a80d5fee412c943317d37c21c66dd55c88b18010280491"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction.py",
+    "frozen_sha256": "1596ffda6d771d38f3ab15707df12e52c2d7e7640273373755d60f52b4205e38",
+    "observed_final_sha256": "ae50095978bef1bb9fa7cebbf428a998a4438edfdb0990c67ac9b8f78c7c1b0f",
+    "identity_matches": false
+  },
+  "test": {
+    "path": "tests/test_observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction.py",
+    "frozen_sha256": "293fca2ae0920fb32e2c0e5055803e1a71184c6afde4c06986dba85cfbd30779",
+    "observed_final_sha256": "605d4e3bce756dcdfed746315824262d846ad30afaa6bdee46a4d278b7185c43",
+    "identity_matches": false,
+    "focused_passed_after_execution": 1,
+    "focused_failed_after_execution": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_v1/receipt.json",
+    "sha256": "f4b60f8244d453767511779ea2a2ce05ee1bec7b4b785c34c080a790665ea43b",
+    "artifact_sha256": "4c30dd9347783a04f01b825d8e43d80e41b7fdae7d620b208412365c8dfe9d33",
+    "artifact_digest_verified": true,
+    "admitted": false
+  },
+  "identity_drift": {
+    "contract_mtime_unix": 1785762467,
+    "implementation_mtime_unix": 1785762481,
+    "test_mtime_unix": 1785762481,
+    "receipt_mtime_unix": 1785762484,
+    "receipt_binds_nonfinal_implementation_and_test": true,
+    "final_source_cannot_load_frozen_contract": true
+  },
+  "advisory_only_result": {
+    "receipt_status": "TERMINAL_RENDERER_NATIVE_CLIPPED_RECTILINEAR_PLANAR_ARRAY_DEVELOPMENT_GATE_FAILED",
+    "development_row_count": 7,
+    "mean_outside_board_edge_f1_delta": 0.017517463448525086,
+    "mean_array_roi_edge_f1_delta": 0.05332520573387343,
+    "mean_full_frame_linear_similarity_delta": 0.0001082207475389753,
+    "mean_board_plus_margin_edge_f1_delta": 0.0,
+    "rows_with_positive_outside_board_delta": 7,
+    "validation_opened": false
+  },
+  "verification": {
+    "receipt_artifact_digest_verified": true,
+    "receipt_source_identities_match_final_files": false,
+    "focused_suite_matches_receipt_source_pair": false,
+    "numeric_result_promoted": false
+  },
+  "reviewer_decision": "QUARANTINE_OR122_AND_FREEZE_IDENTITY_BOUND_REPRODUCTION",
+  "next_transition": "freeze_or122b_identity_bound_renderer_native_planar_array_reproduction",
+  "claims": {
+    "renderer_native_candidate_admitted": false,
+    "quarantined_numeric_result_admitted": false,
+    "same_video_semantic_match": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "event_parity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false
+  }
+}

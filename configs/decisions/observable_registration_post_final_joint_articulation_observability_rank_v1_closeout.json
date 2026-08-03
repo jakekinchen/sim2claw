@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_joint_articulation_observability_rank_closeout.v1",
+  "experiment_id": "OR103_POST_FINAL_JOINT_ARTICULATION_OBSERVABILITY_RANK_V1",
+  "status": "PASS_JOINT_ARTICULATION_FAMILY_SELECTED",
+  "proof_class": "post_final_trace_only_joint_articulation_observability_rank",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_joint_articulation_observability_rank_v1.json", "sha256": "178e6fd3455d19bc8730ac27a239745062e58b4e921808ce9442412f4bc76102"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_joint_articulation_observability_rank.py", "sha256": "fa7c908ccd427360fc1c7948dce53ea991a85512ffd4235c45d4da075c8f1a37"},
+  "test": {"path": "tests/test_observable_registration_post_final_joint_articulation_observability_rank.py", "sha256": "f07fb62de7e8f80c354c9aae8b24aa138eb18482c198ce5152e719026a6793d0", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_joint_articulation_observability_rank_v1/receipt.json", "sha256": "1717c408b28969b28d4872ef98dd8adf3d0c7c0cdc7f7c95e59a0a560f40d288", "artifact_sha256": "27bcc9a66b86a602a887a4be9be51386d3e0660e57439386617da275090cda5a"},
+  "result": {"selected_family": "shoulder_lift", "mean_observability_score_px_rad": 62.77845871154157, "median_rotation_excursion_rad": 1.1439383367221803, "median_projected_leverage_px": 60.75027756363343, "episode_side_rows_with_rotation_excursion_at_least_0p05_rad": 14, "episode_side_rows_with_projected_leverage_at_least_5px": 14, "gates_passed": 9, "gates_total": 9},
+  "reviewer_decision": "FREEZE_SELECTED_SHARED_JOINT_FAMILY_CALIBRATION",
+  "next_transition": "freeze_or104_shared_shoulder_lift_articulation_calibration",
+  "claims": {"same_video_semantic_match": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

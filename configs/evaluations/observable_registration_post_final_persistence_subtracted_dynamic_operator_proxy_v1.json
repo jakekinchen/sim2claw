@@ -1,0 +1,21 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy_contract.v1",
+  "experiment_id": "OR108_POST_FINAL_PERSISTENCE_SUBTRACTED_DYNAMIC_OPERATOR_PROXY_V1",
+  "proof_class": "post_final_development_frozen_persistence_subtracted_dynamic_operator_proxy",
+  "sources": {
+    "or107_closeout": {"path": "configs/decisions/observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution_v1_closeout.json", "sha256": "7f462063aa6c5f81134d1a0eb9b78c2f678d0a0fd66725b99f1598d206f145dc"},
+    "or107_contract": {"path": "configs/evaluations/observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution_v1.json", "sha256": "79d3f1f2b5a031fb9d18dbe61f27f9aebc32aadb499870829ade81c6173ed51a"},
+    "or107_implementation": {"path": "src/sim2claw/observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution.py", "sha256": "8f04164f952fe4689577df0ecd8e71b04feea21ae3fdd224dcba11090bf6dadc"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+    "or95_frame_rows": {"path": "outputs/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1/frame_rows.json", "sha256": "7d32235363bf3d90a4185b59291ade3e400616ce6a1de0c843aab89c323b7551"}
+  },
+  "split": {"development_positions": [1, 2, 3, 4, 5, 6, 7], "validation_positions": [8, 9, 10, 11], "persistent_support_fit_on_development_only": true, "validation_uses_frozen_persistent_support": true, "untouched_cohort_remaining": false},
+  "sampling": {"within_episode_quantiles": [0.25, 0.5, 0.75], "samples_per_episode": 3},
+  "persistent_support": {"minimum_development_occupancy_fraction": 0.8, "removal_dilation_kernel_px": 5, "one_global_pixel_support": true, "validation_refit": false},
+  "metric": {"physical_edge": {"canny_low_threshold": 50, "canny_high_threshold": 150}, "dynamic_area_fraction": "skin_proxy_and_not_dilated_persistent_support_outside_board_divided_by_outside_board_pixels", "dynamic_edge_fraction": "outside_board_physical_edges_within_dilated_dynamic_proxy_divided_by_outside_board_physical_edges", "dynamic_edge_association_dilation_kernel_px": 11, "presence": {"minimum_dynamic_area_fraction": 0.005, "minimum_dynamic_edge_fraction": 0.04}},
+  "acceptance": {"minimum_persistent_support_area_fraction": 0.04, "maximum_persistent_support_area_fraction": 0.09, "development_minimum_mean_dynamic_area_fraction": 0.015, "development_minimum_mean_dynamic_edge_fraction": 0.08, "development_minimum_present_samples": 10, "validation_minimum_mean_dynamic_area_fraction": 0.012, "validation_minimum_mean_dynamic_edge_fraction": 0.06, "validation_minimum_present_samples": 5, "all_gates_required": true},
+  "gates": {"expected_development_sample_count": 21, "expected_validation_sample_count": 12},
+  "resource_boundary": {"development_physical_episode_decodes_allowed": 7, "validation_physical_episode_decodes_allowed": 4, "development_physical_frames_read_allowed": 21, "validation_physical_frames_read_allowed": 12, "persistent_support_fits_allowed": 1, "validation_refits_allowed": 0, "candidate_video_decodes_allowed": 0, "renders_allowed": 0, "simulator_replays_allowed": 0, "action_or_state_mutations_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"post_final_dynamic_generic_color_proxy_attribution_only": true, "person_identity_or_biometric_inference": false, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "operator_geometry_or_trajectory_calibrated": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

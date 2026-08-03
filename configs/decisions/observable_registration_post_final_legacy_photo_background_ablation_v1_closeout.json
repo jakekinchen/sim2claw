@@ -1,0 +1,44 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_legacy_photo_background_ablation_closeout.v1",
+  "experiment_id": "OR98_POST_FINAL_LEGACY_PHOTO_BACKGROUND_ABLATION_V1",
+  "status": "TERMINAL_LEGACY_PHOTO_BACKGROUND_ABLATION_INSUFFICIENT",
+  "proof_class": "post_final_eleven_initial_frame_renderer_native_legacy_photo_background_ablation",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_post_final_legacy_photo_background_ablation_v1.json",
+    "sha256": "8b7128c13a5a22e98ffbc4ed4e3dab5b5c9e0dfdea2d209e0ee80b35c6fa81b5"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_post_final_legacy_photo_background_ablation.py",
+    "sha256": "a8e6fd4e3aa23ed4d5f6053b3522485cfdd259cfbea3266ce7d2f119588516f2"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_post_final_legacy_photo_background_ablation.py",
+    "sha256": "74a7a8f9fd39452e943d549fbde7f121d0a4225c6cc4b06ee0065787e7fd630f",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_post_final_legacy_photo_background_ablation_v1/receipt.json",
+    "sha256": "ef082c23096fc154636f3fdc94b4c1f7e6314ec5b0fc62930d35693984fa6c48",
+    "artifact_sha256": "60455f72f7f6d09207a342f3a56a0ce3c9cd56bc3f6e450ef57160b3fde8a0ac"
+  },
+  "result": {
+    "baseline_mean_outside_board_edge_f1": 0.3539635027094212,
+    "ablated_mean_outside_board_edge_f1": 0.3461489393866105,
+    "outside_board_edge_f1_delta": -0.007814563322810664,
+    "episodes_with_outside_board_delta_at_least_0p01": 0,
+    "board_plus_margin_edge_f1_delta": 0.0,
+    "full_frame_linear_similarity_delta": 0.0019473040645773265,
+    "gates_passed": 9,
+    "gates_total": 12
+  },
+  "reviewer_decision": "REJECT_ABLATION_AND_FREEZE_WHITE_ENCLOSURE_PRIMITIVE_SUCCESSOR",
+  "next_transition": "freeze_or99_renderer_native_white_enclosure_primitive_successor",
+  "claims": {
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "kinematic_fidelity": false,
+    "physics_fidelity": false,
+    "physical_transfer": false,
+    "simulator_promotion": false
+  }
+}

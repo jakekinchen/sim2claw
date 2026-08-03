@@ -1,0 +1,15 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_static_dynamic_edge_occupancy_factorization_closeout.v1",
+  "experiment_id": "OR97_POST_FINAL_STATIC_DYNAMIC_EDGE_OCCUPANCY_FACTORIZATION_V1",
+  "status": "PASS_STATIC_SCENE_CONTENT_AND_ROBOT_ARTICULATION_SELECTED",
+  "proof_class": "post_final_all_episode_static_vs_dynamic_edge_occupancy_residual_factorization",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_static_dynamic_edge_occupancy_factorization_v1.json", "sha256": "3c1b34124f4376a06625dbb6300d7ded883b7ed4283b8a9070a98b53ee388149"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_static_dynamic_edge_occupancy_factorization.py", "sha256": "747a55a4bb74a0678b5b26285638f64c41c96abb9b4abe91850ab4f690e1145b"},
+  "test": {"path": "tests/test_observable_registration_post_final_static_dynamic_edge_occupancy_factorization.py", "sha256": "e101e1c4e6579ea8fd04540311550cf7349efe2732c69fa0e042bc0b5e50953b", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_static_dynamic_edge_occupancy_factorization_v1/receipt.json", "sha256": "b6c16773e2dd1fa4f3cb1dfccbcc7ef8d78380b205ca4d818585376fb8c5ea8c", "artifact_sha256": "97489ff630469d50d41813ed934f5d527496873c0310c2eae752980574a4c695"},
+  "result": {"mean_persistent_outside_board_edge_occupancy_f1": 0.2753574592475536, "mean_dynamic_outside_board_edge_occupancy_f1": 0.5694559225267899, "episodes_persistent_below_threshold": 11, "episodes_dynamic_below_threshold": 9, "gates_passed": 6, "gates_total": 6},
+  "selected_mechanism": "renderer_native_static_scene_content_and_robot_articulation",
+  "reviewer_decision": "FREEZE_STATIC_SCENE_CONTENT_THEN_ROBOT_ARTICULATION_SUCCESSORS",
+  "next_transition": "freeze_or98_renderer_native_static_scene_content_successor",
+  "claims": {"same_video_semantic_match": false, "untouched_cohort_remaining": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

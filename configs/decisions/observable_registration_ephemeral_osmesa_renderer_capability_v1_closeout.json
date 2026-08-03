@@ -1,0 +1,52 @@
+{
+  "schema_version": "sim2claw.observable_registration_ephemeral_osmesa_renderer_capability_closeout.v1",
+  "experiment_id": "OR70_EPHEMERAL_OSMESA_RENDERER_CAPABILITY_V1",
+  "status": "TERMINAL_COLIMA_UID_LOOKUP_FAILED_NO_CONTAINER_NO_RENDER",
+  "proof_class": "local_ephemeral_linux_osmesa_renderer_runtime_capability_terminal_environment_negative",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_ephemeral_osmesa_renderer_capability_v1.json",
+    "sha256": "739b458795e7e5578ecfa7586738b3c4d12bf8c61b5b8cd1117f79119788c0d5"
+  },
+  "implementation": {
+    "path": "tools/renderer/ephemeral_osmesa_capability.py",
+    "sha256": "a2b3ddba795a78fa44d029e58922d6ca2fd91fbef7d7011ecc3927a095b8cb62"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_ephemeral_osmesa_renderer_capability.py",
+    "sha256": "e8cfd976d8056a1f769737d68265d808dc716d1b7f6a8841a5e7b0190827e2cb",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_ephemeral_osmesa_renderer_capability_v1/receipt.json",
+    "sha256": "541bcdbe52a266d76e58d813fde51a5a430c6154811cdf856e6dabe196bd9010",
+    "artifact_sha256": "85255d6339acd7ec793efed0e7ee3c074d57ae53d98778f6c298270cee2024a2"
+  },
+  "result": {
+    "failure_stage": "colima_start_pre_container",
+    "failure": "panic: user: unknown userid 501",
+    "container_runs": 0,
+    "dependency_installs": 0,
+    "renderer_frames": 0,
+    "physical_video_reads": 0,
+    "colima_running_after": false,
+    "renderer_runtime_ready": false,
+    "pixel_similarity_achieved": false,
+    "physics_fidelity_achieved": false
+  },
+  "reviewer_decision": "REDIRECT_TO_HOST_NATIVE_ANALYTIC_3D_RENDERER_CAPABILITY",
+  "next_transition": "freeze_or71_host_native_analytic_3d_renderer_capability",
+  "claim_limits": {
+    "renderer_runtime_capability_only": true,
+    "workcell_scene_rendered": false,
+    "physical_camera_matched": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

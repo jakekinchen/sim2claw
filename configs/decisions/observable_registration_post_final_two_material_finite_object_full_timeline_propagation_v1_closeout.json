@@ -1,0 +1,54 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_two_material_finite_object_full_timeline_propagation_closeout.v1",
+  "experiment_id": "OR119_POST_FINAL_TWO_MATERIAL_FINITE_OBJECT_FULL_TIMELINE_PROPAGATION_V1",
+  "status": "TERMINAL_RETROSPECTIVE_TWO_MATERIAL_FINITE_OBJECT_FULL_TIMELINE_GATES_FAILED",
+  "proof_class": "post_final_two_material_finite_object_full_timeline_propagation",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1.json",
+    "sha256": "1d2d5aa18eff218c1374fbbd8639667b654bb930e98bf1d46973a75a06d4781a"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_post_final_two_material_finite_object_full_timeline_propagation.py",
+    "sha256": "14a9949afef2737bd9f9bab66bda1fb725a6dfce978c83ca193092ae7e113a50"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_post_final_two_material_finite_object_full_timeline_propagation.py",
+    "sha256": "a88b00f72683048490aa1378e30c3eb027a7f9859d8efe32917d27b86a33b8c3",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1/receipt.json",
+    "sha256": "8daaea75ca6cb235f02e45a075f0ff27622bad9360270424eaa5490139bfd640",
+    "artifact_sha256": "be61174c491122c08886c0f611a1709fa4380f7988730752012b50526005fb36"
+  },
+  "frame_rows": {
+    "path": "outputs/observable_registration_post_final_two_material_finite_object_full_timeline_propagation_v1/frame_rows.json",
+    "sha256": "71e07d3725b221863c44f149148f94d6f1861217299b04a0c0e980827c9a4f7c"
+  },
+  "result": {
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.8371792842164513,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.8226177632808686,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.7917453639776509,
+    "pooled_mean_whole_frame_tolerant_edge_f1": 0.4737489077869382,
+    "pooled_mean_board_plus_margin_edge_f1": 0.5713663502061341,
+    "pooled_mean_outside_board_edge_f1": 0.3963531080412701,
+    "pooled_p10_outside_board_edge_f1": 0.3636418068161686,
+    "pooled_mean_full_frame_similarity_delta_vs_or95": 0.0001846961369199201,
+    "pooled_mean_outside_board_edge_f1_delta_vs_or95": 0.03653514056673541,
+    "all_eleven_episode_mean_outside_board_edge_f1_gates_passed": false,
+    "global_pixel_band_gate_passed": true,
+    "all_regional_and_improvement_gates_passed": false
+  },
+  "reviewer_decision": "FREEZE_POST_OBJECT_FULL_TIMELINE_RESIDUAL_RECONCILIATION",
+  "next_transition": "freeze_or120_post_object_full_timeline_residual_reconciliation",
+  "claims": {
+    "retrospective_same_video_global_pixel_band_met": true,
+    "retrospective_same_video_regional_semantic_match": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "event_parity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false
+  }
+}

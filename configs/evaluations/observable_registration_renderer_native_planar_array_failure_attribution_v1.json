@@ -1,0 +1,130 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_planar_array_failure_attribution_contract.v1",
+  "experiment_id": "OR123_RENDERER_NATIVE_PLANAR_ARRAY_FAILURE_ATTRIBUTION_V1",
+  "proof_class": "renderer_native_planar_array_failure_attribution",
+  "sources": {
+    "or122b_closeout": {
+      "path": "configs/decisions/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction_v1_closeout.json",
+      "sha256": "5bac6d6e29d230d29fd5a612edafd95af775cea3bd6db48bd58990b5dfa59e77",
+      "artifact_sha256": "b995db022e7f4d3f4d150a620cb2a8a0474572b47940bac7bca3757bb93facbe"
+    },
+    "or122b_contract": {
+      "path": "configs/evaluations/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction_v1.json",
+      "sha256": "72c792e7dcd8729e32ac35323f3c29998f232edc3c13c65049d8c29941ebda21"
+    },
+    "or122b_receipt": {
+      "path": "outputs/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction_v1/receipt.json",
+      "sha256": "0fb1d82ee7fa256a9be44e4754a9523a33dedb148863748acaa0ea53a94e6bcf",
+      "artifact_sha256": "b995db022e7f4d3f4d150a620cb2a8a0474572b47940bac7bca3757bb93facbe"
+    },
+    "or122b_montage": {
+      "path": "outputs/observable_registration_renderer_native_clipped_rectilinear_planar_array_reconstruction_identity_reproduction_v1/planar-array-reconstruction-montage.png",
+      "sha256": "7382308c46a132fdc6c4a5b3e7e7a928f7984b5c743151e5a97b3c5136ab4ef6"
+    },
+    "or121_closeout": {
+      "path": "configs/decisions/observable_registration_post_object_persistent_static_spatial_decomposition_v1_closeout.json",
+      "sha256": "398d839f7336f5a28eee1b9969a94c654c7a981fbfede50e63d693739b6ae615",
+      "artifact_sha256": "5961266c38b60c12eab0e69adeea090ce68514cff22563195ca572495e36471e"
+    },
+    "or121_contract": {
+      "path": "configs/evaluations/observable_registration_post_object_persistent_static_spatial_decomposition_v1.json",
+      "sha256": "e87bfc318610390ca77026cc2d2776f77794afe69f37ae5096c970daeb1b9c84"
+    },
+    "or121_receipt": {
+      "path": "outputs/observable_registration_post_object_persistent_static_spatial_decomposition_v1/receipt.json",
+      "sha256": "649372320b6aa3fcf82faf233161d46d70faaf76f92ed9ce056eb60ced1e67f8",
+      "artifact_sha256": "5961266c38b60c12eab0e69adeea090ce68514cff22563195ca572495e36471e"
+    }
+  },
+  "frozen_identities": {
+    "implementation": {
+      "path": "src/sim2claw/observable_registration_renderer_native_planar_array_failure_attribution.py",
+      "sha256": "4e530e39f868d6f9efd4556f9001af23331bf9b8e36d0bdd5962d72c3da2ee99"
+    },
+    "test": {
+      "path": "tests/test_observable_registration_renderer_native_planar_array_failure_attribution.py",
+      "sha256": "9c353b00d2471a7646e80ba56debd0c1c0442f807132e621b7f62c33ae983481"
+    }
+  },
+  "montage_panels": {
+    "row_count": 7,
+    "panel_width_px": 320,
+    "panel_height_px": 240,
+    "physical_index": 0,
+    "baseline_index": 1,
+    "candidate_index": 2,
+    "physical_candidate_absolute_difference_index": 3
+  },
+  "support_masks": {
+    "candidate_added_support_rule": "any_candidate_channel_differs_from_baseline",
+    "expected_line_thickness_px": 3,
+    "tolerance_dilation_kernel_px": 3,
+    "persistent_consensus_rule": "or121_nine_of_eleven_physical_only_persistent"
+  },
+  "decision_tree": {
+    "order": [
+      "tabletop_plane_or_projection_alignment_failure",
+      "shared_material_response_failure",
+      "sparse_boundary_support_and_missing_rectilinear_detail",
+      "indeterminate_planar_array_failure"
+    ],
+    "projection_minimum_expected_line_coverage": 0.85,
+    "projection_maximum_endpoint_reprojection_error_px": 1e-8,
+    "material_minimum_mean_residual_improvement": 0.0,
+    "material_minimum_mean_improved_pixel_fraction": 0.55,
+    "support_detail_maximum_consensus_coverage": 0.65,
+    "exactly_one_family_selected": true
+  },
+  "integrity": {
+    "expected_or121_map_count": 11,
+    "expected_consensus_pixel_count": 911,
+    "expected_or122b_development_row_count": 7,
+    "expected_segment_count": 5,
+    "or122b_validation_must_remain_sealed": true
+  },
+  "resource_boundary": {
+    "or121_map_reads_allowed": 11,
+    "or122b_montage_reads_allowed": 1,
+    "audit_montage_outputs_allowed": 1,
+    "source_video_decodes_allowed": 0,
+    "candidate_video_decodes_allowed": 0,
+    "renders_allowed": 0,
+    "fits_allowed": 0,
+    "searches_allowed": 0,
+    "threshold_changes_allowed": 0,
+    "retries_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "geometry_values_produced_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "retrospective_map_and_montage_only": true,
+    "bounded_failure_family_only": true,
+    "specific_object_identity": false,
+    "metric_3d_geometry_calibrated": false,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "predictive_simulation": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

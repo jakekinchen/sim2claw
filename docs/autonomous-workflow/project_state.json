@@ -1,11 +1,11 @@
 {
   "schema_version": "sim2claw.autonomous_project_state.v1",
-  "updated_at": "2026-08-02T00:00:00-05:00",
+  "updated_at": "2026-08-03T10:26:00-05:00",
   "active_campaign": "observable_registration_contact_causality_v1",
-  "current_milestone": "OR50_OUTCOME_INFORMED_UPRIGHT_BASIN_REFINEMENT",
+  "current_milestone": "OR132_TERMINAL_GLOBAL_TEMPORAL_PIXEL_TARGET_ACHIEVED_COMPOSITE_REGIONAL_TARGET_OPEN",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
-  "proof_class": "quarantined_outcome_informed_exact_episode_natural_dynamics_numeric_task_success_with_event_mismatch",
+  "proof_class": "renderer_native_two_planar_fixture_residual_reconciliation",
   "four_hour_hil_transaction": {
     "schema_version": "sim2claw.four_hour_hil_transaction.v1",
     "status": "four_physical_attempts_complete_two_admitted_two_rejected_simulator_candidate_rejected_offline_decomposition_frozen_closeout_verification_active",

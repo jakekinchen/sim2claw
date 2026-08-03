@@ -1,0 +1,57 @@
+{
+  "schema_version": "sim2claw.observable_registration_shared_scalar_camera_response_development_fit_closeout.v1",
+  "experiment_id": "OR86_SHARED_SCALAR_CAMERA_RESPONSE_DEVELOPMENT_FIT_V1",
+  "status": "PASS_SHARED_SCALAR_CAMERA_RESPONSE_DEVELOPMENT_PIXEL_TARGET",
+  "proof_class": "development_four_episode_shared_two_parameter_uniform_camera_response_fit",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_shared_scalar_camera_response_development_fit_v1.json",
+    "sha256": "28eec4c8252f5da04f0f5283daf5c68f509713ded24a3b3c249c8126d627c14b"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_shared_scalar_camera_response_development_fit.py",
+    "sha256": "84503fcd282f243312f54677c9a35f5418550e1648e8d9baa8743b2e19ab2ff9"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_shared_scalar_camera_response_development_fit.py",
+    "sha256": "ae180f3ef1004b48d9fcdd919dda23f790ec170b91d11b5632e45de96bb37143",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_shared_scalar_camera_response_development_fit_v1/receipt.json",
+    "sha256": "c1720ca41670889a4b83cf7ca129eaec1f7a2579a4ee13fbf8e8b26baf75c1a7",
+    "artifact_sha256": "642ef60fe639a1d1ab266baad4f84cd264dffc0d4395b2e76007e57a0f34f299"
+  },
+  "result": {
+    "candidate_evaluations": 35,
+    "eligible_candidate_count": 8,
+    "selected_uniform_bgr_gain": 0.55,
+    "selected_uniform_bgr_bias": 48.0,
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.8422644027017814,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.8233865827322007,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.7954770339958703,
+    "pooled_mean_tolerant_edge_f1": 0.4035246002074279,
+    "metric_gates_passed": 6,
+    "metric_gates_total": 6,
+    "integrity_gates_passed": 6,
+    "integrity_gates_total": 6,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "simulator_replays": 0
+  },
+  "reviewer_decision": "OPEN_REJECT_ONLY_VALIDATION_WITH_FROZEN_CAMERA_WORKCELL_RESPONSE",
+  "next_transition": "freeze_or87_reject_only_validation_camera_workcell_response",
+  "claim_limits": {
+    "development_uniform_camera_response_fit_only": true,
+    "validation_verified": false,
+    "evaluator_heldout_verified": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": "sim2claw.observable_registration_static_appearance_factorization_closeout.v1",
+  "experiment_id": "OR56_STATIC_APPEARANCE_FACTORIZATION_V1",
+  "status": "PASS_TIME_INVARIANT_APPEARANCE_ADVANCE_BELOW_TARGET",
+  "proof_class": "retained_episode_specific_time_invariant_renderer_camera_response_factorization",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_static_appearance_factorization_v1.json",
+    "sha256": "3c09740f3609a2be4dbd0265fbece0831619d61fee5798437ec930ecf4cba6ea"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_static_appearance_factorization.py",
+    "sha256": "66f62b6da58eb4d185e19f14cc4340d5f3fd4144224551f1a9c8a2e69ee4a9d3"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_static_appearance_factorization.py",
+    "sha256": "d4318114b756df772b0994eebb74867beba1025432e56f02a1d52f550edf7c16",
+    "focused_passed": 6
+  },
+  "candidate_table": {
+    "path": "outputs/observable_registration_static_appearance_factorization_v1/candidate_table.json",
+    "sha256": "3e1b7d835702a04cd4675ab43be9d3242a47f20f8afe451730ede9f98958a26d"
+  },
+  "candidate_video": {
+    "path": "outputs/observable_registration_static_appearance_factorization_v1/simulator_candidate.mp4",
+    "sha256": "34e16af7909123364df8ac2479e08264950f8cb69c2aabbb193b2f6f10b64817"
+  },
+  "rows": {
+    "path": "outputs/observable_registration_static_appearance_factorization_v1/metric_rows.json",
+    "sha256": "6349f415b26ec2466464be312a918269aa5cef7aa007bfb50c31bb6f937ed105"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_static_appearance_factorization_v1/receipt.json",
+    "sha256": "9a392030527dc1bcc6899936aa11adcc1db823cdddfcf80c04466b398ee6fc7e",
+    "artifact_sha256": "33c311ed08001b0d61df86897c003c49eab886ee43011af5f126da66e23db5d6"
+  },
+  "result": {
+    "selected_model": "diagonal_bgr_affine",
+    "selected_gaussian_blur_kernel_px": 7,
+    "selected_diagonal_gain": [0.5, 0.5, 0.5],
+    "selected_bias_bgr": [64.0, 64.0, 64.0],
+    "development_absolute_mean_improvement": 0.08724316886880179,
+    "validation_absolute_mean_improvement": 0.08955004223518903,
+    "stress_absolute_mean_improvement": 0.08812587721080611,
+    "full_frame_mean": 0.7930527987868287,
+    "full_frame_p10": 0.7835180535912514,
+    "motion_union_mean": 0.754034810007576,
+    "tolerant_edge_f1_mean": 0.13323768261318508,
+    "passing_acceptance_gate_count": 3,
+    "acceptance_gate_count": 5,
+    "photometric_advance_gate_pass": true,
+    "target_pass": false
+  },
+  "execution": {
+    "candidate_evaluations": 12,
+    "camera_response_fits": 8,
+    "emitted_candidate_videos": 1,
+    "simulator_replays": 0,
+    "action_changes": 0,
+    "physics_changes": 0,
+    "geometric_warps": 0,
+    "per_frame_transforms": 0,
+    "physical_pixel_composites": 0,
+    "hardware_actions": 0
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or57_board_preserving_camera_parallax_and_edge_alignment",
+  "claim_limits": {
+    "episode_specific_visual_replay_only": true,
+    "metric_camera_calibration": false,
+    "physics_fidelity": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

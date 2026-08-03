@@ -1,0 +1,29 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution_contract.v1",
+  "experiment_id": "OR107_POST_FINAL_EXOGENOUS_OPERATOR_SKIN_EDGE_OCCUPANCY_ATTRIBUTION_V1",
+  "proof_class": "post_final_sampled_development_validation_exogenous_operator_skin_edge_occupancy_attribution",
+  "sources": {
+    "or106_closeout": {"path": "configs/decisions/observable_registration_post_final_two_class_robot_material_palette_calibration_v1_closeout.json", "sha256": "30d9bb44c0e2bafdc556d56467c43dd61b846e81997bb979a9cd161be8f70b99"},
+    "or104_implementation": {"path": "src/sim2claw/observable_registration_post_final_shared_shoulder_lift_articulation_calibration.py", "sha256": "19fc6ff9b520504e5d6b79afdade6f1169e451025985b900c604088cfa71cd73"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+    "or95_frame_rows": {"path": "outputs/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1/frame_rows.json", "sha256": "7d32235363bf3d90a4185b59291ade3e400616ce6a1de0c843aab89c323b7551"}
+  },
+  "split": {"development_positions": [1, 2, 3, 4, 5, 6, 7], "validation_positions": [8, 9, 10, 11], "validation_decode_requires_development_gate": true, "validation_never_changes_proxy_or_thresholds": true, "untouched_cohort_remaining": false},
+  "sampling": {"within_episode_quantiles": [0.25, 0.5, 0.75], "index_formula": "floor(quantile_times_episode_evaluation_row_count_minus_one_plus_0p5)", "rows_sorted_by": "evaluation_index", "samples_per_episode": 3},
+  "skin_proxy": {
+    "hsv": {"h_min": 0, "h_max": 25, "s_min": 25, "s_max": 220, "v_min": 40, "v_max": 255},
+    "ycrcb": {"cr_min": 125, "cr_max": 180, "cb_min": 70, "cb_max": 145},
+    "combination": "hsv_and_ycrcb",
+    "morphological_open_kernel_px": 3,
+    "morphological_close_kernel_px": 7,
+    "edge_association_dilation_kernel_px": 11,
+    "board_region_excluded": true,
+    "generic_color_proxy_not_person_identity_or_biometric_inference": true
+  },
+  "metric": {"physical_edge": {"canny_low_threshold": 50, "canny_high_threshold": 150}, "skin_area_fraction": "skin_proxy_pixels_outside_board_divided_by_outside_board_pixels", "skin_associated_edge_fraction": "outside_board_physical_edge_pixels_within_dilated_skin_proxy_divided_by_outside_board_physical_edge_pixels", "presence": {"minimum_skin_area_fraction": 0.005, "minimum_skin_associated_edge_fraction": 0.04}},
+  "acceptance": {"development_minimum_mean_skin_area_fraction": 0.015, "development_minimum_mean_skin_associated_edge_fraction": 0.08, "development_minimum_present_samples": 10, "validation_minimum_mean_skin_area_fraction": 0.01, "validation_minimum_mean_skin_associated_edge_fraction": 0.06, "validation_minimum_present_samples": 5, "all_gates_required": true},
+  "gates": {"expected_development_sample_count": 21, "expected_validation_sample_count": 12},
+  "resource_boundary": {"development_physical_episode_decodes_allowed": 7, "validation_physical_episode_decodes_allowed_if_development_passes": 4, "development_physical_frames_read_allowed": 21, "validation_physical_frames_read_allowed_if_development_passes": 12, "candidate_video_decodes_allowed": 0, "renders_allowed": 0, "fits_allowed": 0, "parameter_values_allowed": 0, "simulator_replays_allowed": 0, "action_or_state_mutations_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"post_final_generic_color_proxy_operator_content_attribution_only": true, "person_identity_or_biometric_inference": false, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "operator_geometry_or_trajectory_calibrated": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

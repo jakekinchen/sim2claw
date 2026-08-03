@@ -1,0 +1,79 @@
+{
+  "schema_version": "sim2claw.observable_registration_ephemeral_osmesa_renderer_capability_contract.v1",
+  "experiment_id": "OR70_EPHEMERAL_OSMESA_RENDERER_CAPABILITY_V1",
+  "proof_class": "local_ephemeral_linux_osmesa_renderer_runtime_capability",
+  "sources": {
+    "or69_closeout": {
+      "path": "configs/decisions/observable_registration_renderer_native_missing_trace_regeneration_v1_closeout.json",
+      "sha256": "d36f98b7d4ae633fab8831f1aa3be1b5aa1068665b606da0c4e24e56f8cf6ee6"
+    },
+    "so101_model": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+      "sha256": "5ad49f2b45b083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+    },
+    "so101_scene": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/scene_box.xml",
+      "sha256": "14c3826f23889587e63b88ef9a0e7d72318ffe13078fad8287c56dbdb9ba9ad8"
+    }
+  },
+  "runtime": {
+    "container_runtime": "local_colima_docker",
+    "base_image_tag": "python:3.12-slim",
+    "base_image_identity_must_be_recorded": true,
+    "python_version_prefix": "3.12",
+    "mujoco_version": "3.10.0",
+    "numpy_version": "2.3.5",
+    "gl_backend": "osmesa",
+    "debian_runtime_packages": ["libosmesa6", "libgl1", "libglx-mesa0"],
+    "project_lock_sync_allowed": false,
+    "cuda_packages_allowed": false,
+    "container_auto_remove_required": true,
+    "colima_stop_after_probe_required": true
+  },
+  "render": {
+    "model": "so101_scene",
+    "width_px": 320,
+    "height_px": 240,
+    "frame_count": 1,
+    "format": "binary_ppm_rgb",
+    "minimum_rgb_standard_deviation": 1.0,
+    "require_more_than_one_unique_rgb_triplet": true
+  },
+  "resource_boundary": {
+    "container_runs_allowed": 1,
+    "renderer_frames_allowed": 1,
+    "physical_video_reads_allowed": 0,
+    "state_trace_reads_allowed": 0,
+    "candidate_videos_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "parameter_fits_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "claim_limits": {
+    "renderer_runtime_capability_only": true,
+    "workcell_scene_rendered": false,
+    "physical_camera_matched": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

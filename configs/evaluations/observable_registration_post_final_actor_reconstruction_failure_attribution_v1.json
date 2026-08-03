@@ -1,0 +1,34 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_actor_reconstruction_failure_attribution_contract.v1",
+  "experiment_id": "OR111_POST_FINAL_ACTOR_RECONSTRUCTION_FAILURE_ATTRIBUTION_V1",
+  "proof_class": "post_final_renderer_native_actor_reconstruction_failure_attribution",
+  "sources": {
+    "or110_closeout": {"path": "configs/decisions/observable_registration_post_final_renderer_native_single_capsule_operator_reconstruction_v1_closeout.json", "sha256": "142efb65b8e7c3bec6872579584739a05f9d9d66b3bc0bee2daa5b2eaf31310e"},
+    "or110_contract": {"path": "configs/evaluations/observable_registration_post_final_renderer_native_single_capsule_operator_reconstruction_v1.json", "sha256": "664951d908f8c4a0f047be878ef33b1dd4ac428ee44dad6c7b3a20ff6170c8c4"},
+    "or110_receipt": {"path": "outputs/observable_registration_post_final_renderer_native_single_capsule_operator_reconstruction_v1/receipt.json", "sha256": "78593df6650262b3cbcfebc7b423c8a9667aa2d18aeefb28e783477071a75a84", "artifact_sha256": "99eec7e0a65f2fd8af0bec4688a0c941a8a92857b69a9d651a1c8546b012db84"},
+    "or110_development_montage": {"path": "outputs/observable_registration_post_final_renderer_native_single_capsule_operator_reconstruction_v1/development_physical_baseline_actor.png", "sha256": "21a4c59944c2716354a8e60c1c33c6449805639bf9e1f4336fb65d8dbf37b6e9"},
+    "or109_contract": {"path": "configs/evaluations/observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability_v1.json", "sha256": "bd2b79cade9ed4d47fe0ac8a103c7b63aca26ec227694ecc490fb01e2011673c"},
+    "or109_receipt": {"path": "outputs/observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability_v1/receipt.json", "sha256": "48a669fd68405f7dab0861956eb99a5d8cb7578602c4a01974cb743c06888b04", "artifact_sha256": "cf6d609fb34d559eb86534cee6b0ce91ef72bf8e3a140bcd75f5df5a99495def"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+    "or79_native_source": {"path": "tools/renderer/or79_triangle_rasterizer.c", "sha256": "872c5beb0918ffd07e1961eb5bf2119b34b0d7fccf9a419bf06e194c43b39a6b"}
+  },
+  "cohort": {"development_present_rows_only": true, "expected_row_count": 13, "validation_rows_or_pixels_allowed": 0},
+  "measurements": {
+    "target": "frozen_or109_2d_capsule_mask",
+    "isolated": "or110_3d_capsule_rendered_alone_by_native_triangle_zbuffer",
+    "visible": "pixelwise_change_between_or110_actor_and_exact_baseline_montage_panels",
+    "physical_edge": {"canny_low_threshold": 50, "canny_high_threshold": 150, "local_support_dilation_px": 31, "tolerance_dilation_px": 3}
+  },
+  "decision_tree": {
+    "minimum_mean_target_vs_isolated_silhouette_iou": 0.85,
+    "minimum_mean_visible_vs_isolated_coverage": 0.8,
+    "projection_failure_successor": "correct_renderer_native_3d_capsule_projection",
+    "occlusion_failure_successor": "correct_renderer_native_actor_depth_gauge",
+    "otherwise_successor": "preregistered_two_part_hand_forearm_actor_shape"
+  },
+  "renderer": {"width_px": 320, "height_px": 240, "background_rgb": [0, 0, 0], "maximum_triangles_per_mesh_instance": 1000000, "sphere_latitude_segments": 6, "sphere_longitude_segments": 10, "cylinder_segments": 12, "capsule_policy": "depth_union_of_cylinder_and_two_uv_spheres", "lighting": {"world_direction": [0.3, -0.4, 0.85], "ambient": 0.35, "diffuse": 0.65, "two_sided": true}},
+  "gates": {"expected_isolated_triangle_count_per_row": 248, "expected_montage_width_px": 960, "expected_montage_height_px": 5040, "all_integrity_gates_required": true},
+  "resource_boundary": {"development_state_trace_reads_allowed": 7, "development_montage_reads_allowed": 1, "physical_video_decodes_allowed": 0, "candidate_video_decodes_allowed": 0, "isolated_actor_renders_allowed": 13, "full_scene_renders_allowed": 0, "fits_or_candidate_searches_allowed": 0, "validation_pixels_allowed": 0, "simulator_replays_allowed": 0, "action_or_state_timing_dynamics_camera_workcell_robot_actor_mutations_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"failure_attribution_only": true, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "predictive_simulation": false, "operator_metric_3d_geometry_or_trajectory_calibrated": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

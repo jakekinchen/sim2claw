@@ -1,0 +1,27 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_temporal_robot_residual_attribution_contract.v1",
+  "experiment_id": "OR96_POST_FINAL_TEMPORAL_ROBOT_RESIDUAL_ATTRIBUTION_V1",
+  "proof_class": "post_final_receipt_only_temporal_robot_scene_content_residual_attribution",
+  "sources": {
+    "or94_receipt": {"path": "outputs/observable_registration_post_final_independent_left_right_robot_base_se2_diagnostic_v1/receipt.json", "sha256": "4b67480590a7caf543c7b64050fa8d1abd60f07ff27057a1d580617b24e7b9f5"},
+    "or95_closeout": {"path": "configs/decisions/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1_closeout.json", "sha256": "05c8a71e912a381fcd34f20987daa9d18d0973428fa39cd6cc44f60e186a9b05"},
+    "or95_receipt": {"path": "outputs/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1/receipt.json", "sha256": "9afcd7d4d7f5e433b0f784db39996e8acf4697a99d5f745bcacf7c6eebc6e65f"},
+    "or95_frame_rows": {"path": "outputs/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1/frame_rows.json", "sha256": "7d32235363bf3d90a4185b59291ade3e400616ce6a1de0c843aab89c323b7551"}
+  },
+  "decision_rule": {
+    "select_robot_articulation_and_scene_content_factorization_if": {
+      "motion_union_gate_passes": true,
+      "every_phase_full_frame_gate_passes": true,
+      "minimum_outside_board_mean_gap_to_target": 0.15,
+      "minimum_outside_to_board_mean_gap_ratio": 3.0,
+      "maximum_episode_outside_board_mean_range": 0.05,
+      "minimum_positive_rigid_base_outside_board_gain": 0.01,
+      "maximum_rigid_base_fraction_of_baseline_to_target_gap_recovered": 0.25
+    },
+    "otherwise_if_motion_or_phase_fails": "temporal_control_or_state_alignment",
+    "otherwise": "unresolved_robot_scene_residual"
+  },
+  "resource_boundary": {"receipt_reads_allowed": 3, "frame_rows_manifest_reads_allowed": 1, "physical_frame_reads_allowed": 0, "physical_video_decodes_allowed": 0, "renders_allowed": 0, "fits_allowed": 0, "candidate_selections_allowed": 0, "simulator_replays_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"post_final_diagnostic_only": true, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

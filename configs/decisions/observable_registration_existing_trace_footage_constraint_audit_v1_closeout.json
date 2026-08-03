@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.observable_registration_existing_trace_footage_constraint_audit_closeout.v1",
+  "experiment_id": "OR53_EXISTING_SIMULATOR_TRACE_FOOTAGE_CONSTRAINT_AUDIT_V1",
+  "status": "TERMINAL_EXISTING_FIXED_PAD_TRACE_CORPUS_BIFURCATES_BILATERAL_VS_TIMING_NO_FULL_EVENT_MATCH",
+  "proof_class": "quarantined_zero_new_replay_existing_fixed_pad_trace_corpus_footage_constraint_audit",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_existing_trace_footage_constraint_audit_v1.json",
+    "sha256": "2bb9a92592223497dc493da3c5a08d86ca9e0ae764175852d89d5ce8e88f8e62"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_existing_trace_footage_constraint_audit.py",
+    "sha256": "245f7aa9705c3572f8baae40ea52e685bea36679da8d8f72c7c9eecb37ac7a5d"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_existing_trace_footage_constraint_audit.py",
+    "sha256": "7977022321b9f49a6e78fde56f63bb2d765eff38d3990636a25c26b3bcfccf64",
+    "focused_passed": 6
+  },
+  "rows": {
+    "path": "outputs/observable_registration_existing_trace_footage_constraint_audit_v1/candidate_rows.json",
+    "sha256": "38c936961a40bae50620a10f6d709b5b6148c8bb778a61aa5ea67f7bfeb40f77"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_existing_trace_footage_constraint_audit_v1/receipt.json",
+    "sha256": "c13259fc9d42bf6dd2a5b97d2fac15ad451d7c684d93931c0f93d6eeb135bf5c",
+    "artifact_sha256": "b79cecea2e26c07278c0cc5872c7087ec43aa6d36853132b65b7aa16b5fe86c1"
+  },
+  "result": {
+    "candidate_count": 53,
+    "candidate_count_by_card": {"OR38": 9, "OR49": 19, "OR50": 25},
+    "gate_pass_counts": {
+      "contact_timing": 53,
+      "no_early_motion": 6,
+      "support_loss_timing": 6,
+      "bilateral_contact_timing": 9,
+      "upright_at_sample_260": 6
+    },
+    "gate_count_histogram": {"0": 0, "1": 34, "2": 11, "3": 8, "4": 0, "5": 0},
+    "maximum_preterminal_gate_count": 3,
+    "all_five_gate_candidate_count": 0,
+    "bilateral_motion_and_support_timing_candidate_count": 0,
+    "timing_correct_but_unilateral_candidate_count": 6,
+    "bilateral_and_upright_sample260_candidate_count": 2,
+    "numeric_task_success_candidate_count": 1,
+    "numeric_success_and_all_five_gate_candidate_count": 0,
+    "existing_sampled_single_coordinate_family_closed": true,
+    "unsampled_continuum_exhausted": false
+  },
+  "execution": {
+    "simulator_replays": 0,
+    "new_candidates": 0,
+    "parameter_changes": 0,
+    "new_annotations": 0,
+    "hardware_actions": 0,
+    "heldout_opened": false
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or54_second_successful_same_rig_footage_replication_audit_before_any_new_annotations",
+  "claim_limits": {
+    "metric_pad_geometry": false,
+    "physical_contact_force": false,
+    "bilateral_physical_contact": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "unsampled_coordinate_exhaustion": false
+  }
+}

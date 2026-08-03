@@ -1,0 +1,63 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_independent_left_right_robot_base_se2_diagnostic_contract.v1",
+  "experiment_id": "OR94_POST_FINAL_INDEPENDENT_LEFT_RIGHT_ROBOT_BASE_SE2_DIAGNOSTIC_V1",
+  "proof_class": "post_final_six_frame_renderer_native_independent_left_right_robot_base_se2_diagnostic",
+  "sources": {
+    "or93_closeout": {"path": "configs/decisions/observable_registration_post_final_shared_robot_base_se2_diagnostic_v1_closeout.json", "sha256": "b58eedb205a0b1d79d55b2d83e114e21dca18e1080d87e3fc38cd1351adb90ce"},
+    "or93_contract": {"path": "configs/evaluations/observable_registration_post_final_shared_robot_base_se2_diagnostic_v1.json", "sha256": "d94a0372ad4fc5c896f080221ca4ceec33564f1e34c00277569915054f2e7d7b"},
+    "or93_implementation": {"path": "src/sim2claw/observable_registration_post_final_shared_robot_base_se2_diagnostic.py", "sha256": "d4c58925f154ec8d777e811c463b91568be3c0318d0713ae7a242a5245e2336f"},
+    "or92_contract": {"path": "configs/evaluations/observable_registration_post_final_visual_sanity_residual_attribution_v1.json", "sha256": "d791dafa906e45081c99ec1e71447ff184561c2ce5aaf624e0bfb4e5ee7bec4c"},
+    "or91_contract": {"path": "configs/evaluations/observable_registration_one_shot_final_evaluator_heldout_global_monotone_response_v1.json", "sha256": "0317e03d8003a67c9ab1a339a806f1ccb5392d70303ce888c14afa4b2234ab1e"},
+    "or91_frame_rows": {"path": "outputs/observable_registration_one_shot_final_evaluator_heldout_global_monotone_response_v1/frame_rows.json", "sha256": "0d38c1655d06464a233e74e0b704aaa1ea2f036a27a7ff88c1556660f1618e3a"},
+    "or84_implementation": {"path": "src/sim2claw/observable_registration_board_anchored_workcell_se2_static_development_fit.py", "sha256": "ccf91deda6e640dfed3b76295a73ede6b3d0ea671f1d6207d2beaff3a45266b2"},
+    "or89_implementation": {"path": "src/sim2claw/observable_registration_expanded_development_global_monotone_response_fit.py", "sha256": "c744a39de49ff480911b4faf7a703f235c8817f7eac10ec54fafdc87fa88c501"},
+    "shared_scene_manifest": {"path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/scene_manifest.json", "sha256": "777f915fb7c84d498615f43e54cbeaee47a35494f8166724898ef9dc998f371b", "revision_sha256": "e7d93bb2a5786079131bdfdd82410ffbc108baecd451b0d8a74d9f442aedd3d9"},
+    "or79_native_source": {"path": "tools/renderer/or79_triangle_rasterizer.c", "sha256": "872c5beb0918ffd07e1961eb5bf2119b34b0d7fccf9a419bf06e194c43b39a6b"},
+    "mesh_asset_root": {"path": "third_party/mujoco_menagerie/robotstudio_so101/assets", "hash_source": "shared_scene_manifest.meshes.asset_sha256"}
+  },
+  "samples": [
+    {"recording_id": "20260719T031324Z-bf91502b", "sample": "initial", "evaluation_index": 0, "state_trace_frame_index": 0},
+    {"recording_id": "20260719T031324Z-bf91502b", "sample": "middle", "evaluation_index": 67, "state_trace_frame_index": 137},
+    {"recording_id": "20260719T031324Z-bf91502b", "sample": "terminal", "evaluation_index": 133, "state_trace_frame_index": 273},
+    {"recording_id": "20260719T031715Z-61ebb199", "sample": "initial", "evaluation_index": 0, "state_trace_frame_index": 0},
+    {"recording_id": "20260719T031715Z-61ebb199", "sample": "middle", "evaluation_index": 56, "state_trace_frame_index": 113},
+    {"recording_id": "20260719T031715Z-61ebb199", "sample": "terminal", "evaluation_index": 111, "state_trace_frame_index": 225}
+  ],
+  "frozen_candidate": {
+    "camera": {"name": "or82_shared_board_camera_with_sensor_roll", "position": [-0.3090379966219074, 1.8315362547555094, 1.8471972991650962], "target": [-0.2886205699586948, 0.5026161543277602, 0.9313596232233476], "fov_degrees": 20.0, "roll_degrees": 41.51847641536014},
+    "static_workcell_transform": {"vector": [35.819156790053825, -0.3585471837092544, -0.5415197793190017], "anchor_body_id": 10, "transformed_body_ids": [6, 7, 8, 27, 28]},
+    "baseline_left_robot_transform": {"vector": [35.819156790053825, -0.3585471837092544, -0.5415197793190017], "transformed_body_ids": [29, 30, 31, 32, 33, 34, 35, 36]},
+    "baseline_right_robot_transform": {"vector": [35.819156790053825, -0.3585471837092544, -0.5415197793190017], "transformed_body_ids": [37, 38, 39, 40, 41, 42, 43, 44]},
+    "global_monotone_response": {"bias": 24.0, "low_intensity_slope": 0.85, "high_intensity_slope": 0.25, "fixed_input_knot": 128}
+  },
+  "robot_registration_family": {
+    "parameter_names": ["left_yaw_degrees", "left_translation_x_m", "left_translation_y_m", "right_yaw_degrees", "right_translation_x_m", "right_translation_y_m"],
+    "bounds": [[-180.0, 180.0], [-1.0, 1.0], [-1.0, 1.0], [-180.0, 180.0], [-1.0, 1.0], [-1.0, 1.0]],
+    "shared_across_all_six_frames": true,
+    "z_translation_m": 0.0,
+    "scale": 1.0,
+    "per_episode_parameters": 0
+  },
+  "search": {
+    "renderer": "exact_source_meshes_for_robot_subtrees_only_with_native_z_buffer",
+    "width_px": 160,
+    "height_px": 120,
+    "seed": 9401,
+    "population_size_multiplier": 3,
+    "maximum_iterations": 10,
+    "tolerance": 0.0001,
+    "absolute_tolerance": 0.0001,
+    "polish": false,
+    "workers": 1,
+    "maximum_candidate_evaluations": 198,
+    "maximum_robot_only_mesh_renders": 1200,
+    "objective": "mean_outside_board_robot_silhouette_edge_f1_plus_0p30_mean_board_robot_silhouette_edge_f1"
+  },
+  "renderer": {"width_px": 320, "height_px": 240, "background_rgb": [150, 150, 150], "maximum_triangles_per_mesh_instance": 1000000, "sphere_latitude_segments": 6, "sphere_longitude_segments": 10, "cylinder_segments": 12, "capsule_policy": "depth_union_of_cylinder_and_two_uv_spheres", "lighting": {"world_direction": [0.3, -0.4, 0.85], "ambient": 0.35, "diffuse": 0.65, "two_sided": true}},
+  "regions": {"board_plus_margin": {"points_px": [[-3.0, 66.5], [79.0, 52.0], [176.0, 144.5], [71.5, 193.0]], "dilation_kernel_px_at_320x240": 15}, "outside_board": {"definition": "pixelwise_complement_of_board_plus_margin"}},
+  "metric": {"primary_formula": "1_minus_mean_absolute_bgr_error_divided_by_255", "edge": {"canny_low_threshold": 50, "canny_high_threshold": 150, "tolerance_dilation_kernel_px": 3}},
+  "acceptance": {"minimum_selected_mean_outside_board_edge_f1": 0.35, "minimum_selected_minus_baseline_mean_outside_board_edge_f1": 0.05, "minimum_samples_with_outside_board_edge_f1_delta_at_least_0p02": 4, "minimum_selected_mean_board_plus_margin_edge_f1": 0.50, "minimum_selected_minus_baseline_mean_board_plus_margin_edge_f1": -0.03, "all_gates_required": true},
+  "resource_boundary": {"already_extracted_physical_frame_reads_allowed": 6, "state_trace_frame_reads_allowed": 6, "new_physical_video_decodes_allowed": 0, "independent_parameter_count_allowed": 6, "mesh_asset_reads_allowed": 18, "analytic_or_bounds_proxy_renders_allowed": 0, "exact_robot_only_mesh_search_candidate_evaluations_allowed": 198, "exact_robot_only_mesh_search_renders_allowed": 1200, "exact_full_mesh_baseline_renders_allowed": 6, "exact_full_mesh_selected_renders_allowed": 6, "simulator_replays_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"post_final_retrospective_diagnostic_only": true, "or91_numeric_receipt_changed": false, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

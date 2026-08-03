@@ -1,0 +1,15 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_robot_dynamic_footprint_scale_attribution_closeout.v1",
+  "experiment_id": "OR101_POST_FINAL_ROBOT_DYNAMIC_FOOTPRINT_SCALE_ATTRIBUTION_V1",
+  "status": "PASS_ROBOT_DYNAMIC_FOOTPRINT_MECHANISM_SELECTED",
+  "proof_class": "post_final_eleven_episode_immutable_dynamic_occupancy_robot_footprint_scale_attribution",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_robot_dynamic_footprint_scale_attribution_v1.json", "sha256": "ebab6bf2090e2837e56963da7dea3a53c8d179b621752a6ef99a8fe44d1e5fbf"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_robot_dynamic_footprint_scale_attribution.py", "sha256": "b610917ca4bbfad1cd0dbd404d8c9f9b4c377de12d2343bf91630597407eb20b"},
+  "test": {"path": "tests/test_observable_registration_post_final_robot_dynamic_footprint_scale_attribution.py", "sha256": "c6674bdc663bab0b59cb61190eae3972fc2c01eb6a7a161c9bb3c58b0194f5d0", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_robot_dynamic_footprint_scale_attribution_v1/receipt.json", "sha256": "f6f65b49813bc9d03cfc9b37cc05da0e02bb41f00096efe0259cb67575c1e74a", "artifact_sha256": "e3d8084c147000775bcc7a016b0737dd84a02e165375bf77a176ec2fc1c14ae8"},
+  "result": {"median_physical_to_candidate_area_ratio": 2.033300198807157, "episodes_with_area_ratio_at_least_1p5": 11, "median_physical_to_candidate_bbox_diagonal_ratio": 0.9760920011618796, "mean_dynamic_outside_board_edge_occupancy_f1": 0.5694559225267899, "gates_passed": 7, "gates_total": 7},
+  "selected_mechanism": "robot_articulation_and_timing",
+  "reviewer_decision": "FREEZE_SELECTED_ROBOT_FOOTPRINT_SUCCESSOR",
+  "next_transition": "freeze_or102_robot_articulation_timing_residual_successor",
+  "claims": {"same_video_semantic_match": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

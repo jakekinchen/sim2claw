@@ -1,0 +1,70 @@
+{
+  "schema_version": "sim2claw.observable_registration_unique_asset_full_mesh_zbuffer_capability_closeout.v1",
+  "experiment_id": "OR77_UNIQUE_ASSET_FULL_MESH_ZBUFFER_CAPABILITY_V1",
+  "status": "PASS_UNIQUE_ASSET_FULL_MESH_ZBUFFER_CAPABILITY",
+  "proof_class": "host_native_unique_asset_cached_full_mesh_depth_buffer_capability",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_unique_asset_full_mesh_zbuffer_capability_v1.json",
+    "sha256": "7df341d2643500c3e5a2604c34081f0c4b4768a9ab47e32f5abcf7c0f9fd18a2"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_unique_asset_full_mesh_zbuffer_capability.py",
+    "sha256": "be48474265ed3e1548897549134d5ea17f2da4d9008a5cb4c96aaea877484d4d"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_unique_asset_full_mesh_zbuffer_capability.py",
+    "sha256": "fb97de38a43ba804c470063a27ce6eacc56eb90e20429e5e76b6a432c56e69ef",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_unique_asset_full_mesh_zbuffer_capability_v1/receipt.json",
+    "sha256": "5317af9863a7f7e8904d2ae754503dc068e64c374a8574c1697e277b715aa311",
+    "artifact_sha256": "6b75c535ddcf11917d3c081ce0ba8dbb8f30adf596c94e64b1f70794d91a0922"
+  },
+  "frame": {
+    "path": "outputs/observable_registration_unique_asset_full_mesh_zbuffer_capability_v1/capability_frame.png",
+    "sha256": "a0792179202e516194c36d911de7e0b407cc9629c9a183edd03318280914f63d",
+    "width_px": 320,
+    "height_px": 240
+  },
+  "result": {
+    "gates_passed": 14,
+    "gates_total": 14,
+    "manifest_derived_unique_mesh_asset_count": 18,
+    "unique_mesh_asset_reads": 18,
+    "mesh_definition_count": 36,
+    "mesh_source_triangle_count": 802680,
+    "mesh_raster_triangle_count": 802680,
+    "total_raster_triangle_count": 824944,
+    "depth_buffer_update_count": 243348,
+    "occluded_fragment_count": 18780,
+    "frame_coverage_fraction": 0.9979817708333333,
+    "rgb_standard_deviation": 44.43653986188442,
+    "unique_rgb_triplet_count": 154,
+    "physical_video_reads": 0,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "parameter_fits": 0,
+    "pixel_similarity_achieved": false,
+    "physics_fidelity_achieved": false
+  },
+  "reviewer_decision": "ADVANCE_TO_DEVELOPMENT_STATIC_FULL_MESH_COMPARISON",
+  "next_transition": "freeze_or78_static_development_full_mesh_comparison",
+  "claim_limits": {
+    "full_source_mesh_depth_renderer_capability_only": true,
+    "mesh_source_triangles_complete": true,
+    "analytic_primitive_tessellation_approximate": true,
+    "mujoco_raster_equivalence": false,
+    "full_scene_mesh_exactness": false,
+    "physical_camera_matched": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

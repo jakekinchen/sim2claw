@@ -1,0 +1,112 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_environment_primitive_edge_residual_reattribution_contract.v1",
+  "experiment_id": "OR65_POST_ENVIRONMENT_PRIMITIVE_EDGE_RESIDUAL_REATTRIBUTION_V1",
+  "proof_class": "retained_episode_specific_post_environment_primitive_edge_residual_reattribution",
+  "sources": {
+    "goal_loop": {
+      "path": "docs/autonomous-workflow/goal-loop-physical-simulator-temporal-pixel-similarity-20260802.md",
+      "sha256": "4457ccb8858cd847ba938741afba5c9f861111099f98e19c766193433fb41767"
+    },
+    "or55_contract": {
+      "path": "configs/evaluations/observable_registration_temporal_pixel_similarity_baseline_v1.json",
+      "sha256": "05da35fd381e8cc2ca7e27cb007ea47b6267721247051b7dd4727f147c12ee9b"
+    },
+    "or26_receipt": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/receipt.json",
+      "sha256": "b6589ea2848749a91fda7ea7adfa7838e4f2a8f9f7089141e5570092cbdd9a4e"
+    },
+    "physical_video": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/physical.mp4",
+      "sha256": "00aaf4bed86e25d6a661643335ae577906bf436681fe7b1f09f76a60ea0ce1c8"
+    },
+    "or58_receipt": {
+      "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/receipt.json",
+      "sha256": "7449d46dc672f2ea14b2a34bbe4c393e1df7db0271770ae24107321c4137e330"
+    },
+    "or58_candidate_video": {
+      "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/simulator_candidate.mp4",
+      "sha256": "24d6e1dc3700b1457694b134be7fd95b8cda40d8582e045c3628af7e9726737e"
+    },
+    "or59_receipt": {
+      "path": "outputs/observable_registration_retained_edge_residual_mechanism_diagnosis_v1/receipt.json",
+      "sha256": "5b8ed1c37519edd75083ce4aa72eb23c9f6d50676b4e20d903495fd3db0aa00b"
+    },
+    "or63_scene_spec": {
+      "path": "outputs/observable_registration_renderer_independent_static_environment_scene_specification_v1/scene_spec.json",
+      "sha256": "7dbc87183a327ff8df9ca140cb73e5eea31b28e93bf145d1917521883fd0f1ee"
+    },
+    "or64_receipt": {
+      "path": "outputs/observable_registration_pixel_free_environment_primitive_edge_headroom_v1/receipt.json",
+      "sha256": "9cc233f019f0bae52ecc4ef81ef8514ea681b8becf9bcfb620e5111386a68c7b"
+    },
+    "or64_closeout": {
+      "path": "configs/decisions/observable_registration_pixel_free_environment_primitive_edge_headroom_v1_closeout.json",
+      "sha256": "363345e60bd0b0cda69c54b16526ca6cd5a2f780e759d588f1f4be059f34e916"
+    }
+  },
+  "timeline": {
+    "decoded_frame_count": 531,
+    "scored_sample_range_inclusive": [0, 515],
+    "scored_frame_count": 516,
+    "width_px": 640,
+    "height_px": 480,
+    "fps": 20.0
+  },
+  "counterfactual": {
+    "line_primitive_count": 24,
+    "line_width_px": 1,
+    "union_with_decoded_or58_simulator_canny_edges": true,
+    "metric_inherited_unchanged_from_or55": true,
+    "motion_union_inherited_unchanged_from_or55": true,
+    "board_polygon_inherited_unchanged_from_or26": true
+  },
+  "regions": {
+    "classes": ["motion_union", "nonmotion_board", "nonmotion_outside_board"],
+    "mutually_exclusive": true,
+    "exhaustive": true
+  },
+  "decision_rule": {
+    "select_class_by": "maximum_post_vector_unmatched_edge_mass_then_denominator_then_declared_class_order",
+    "mechanism_by_class": {
+      "motion_union": "pixel_free_dynamic_robot_object_contour_and_event_timing_diagnosis",
+      "nonmotion_board": "pixel_free_board_piece_and_static_robot_finite_geometry_diagnosis",
+      "nonmotion_outside_board": "pixel_free_static_environment_curve_and_finite_shape_primitive_expansion"
+    },
+    "target_pass_allowed": false
+  },
+  "resource_boundary": {
+    "renderer_runs_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "candidate_videos_allowed": 0,
+    "bgr_pixel_outputs_allowed": 0,
+    "image_outputs_allowed": 0,
+    "texture_outputs_allowed": 0,
+    "physical_pixel_composites_allowed": 0,
+    "geometric_warps_allowed": 0,
+    "scene_mutations_allowed": 0,
+    "action_changes_allowed": 0,
+    "state_changes_allowed": 0,
+    "validation_or_stress_selections_allowed": 0
+  },
+  "claim_limits": {
+    "diagnostic_only": true,
+    "edge_only_counterfactual": true,
+    "same_video_target_pass": false,
+    "simulator_render": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

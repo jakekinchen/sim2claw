@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.observable_registration_footage_enclosure_audit_closeout.v1",
+  "experiment_id": "OR52_FOOTAGE_ONLY_PHYSICAL_ENCLOSURE_AUDIT_V1",
+  "status": "PASS_FOOTAGE_ONLY_PERSISTENT_ENCLOSURE_PROXY_SIMULATOR_BILATERAL_CONTACT_ABSENT",
+  "proof_class": "retained_successful_episode_two_pass_image_plane_enclosure_and_closed_command_carry_audit",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_footage_enclosure_audit_v1.json",
+    "sha256": "990a7f5e47ee979c0404bd01ecf91a071183f7d0339c194c87c34902578be468"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_footage_enclosure_audit.py",
+    "sha256": "faefac66a91a2a4f9da4124c370497295048f4a7c851adfa9e240819ab7ffb25"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_footage_enclosure_audit.py",
+    "sha256": "34f9a9e0865f349663d4f9af5b7368ce6ff2e619680991b3f2dd28abcc41b4fc",
+    "focused_passed": 6
+  },
+  "rows": {
+    "path": "outputs/observable_registration_footage_enclosure_audit_v1/enclosure_rows.json",
+    "sha256": "5b5074b9dcd4e54a44588e808fc84f360435df5e079fa05f4fdce7cfed4b8856"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_footage_enclosure_audit_v1/receipt.json",
+    "sha256": "2ae67e31b0201ca29fd8ff17dbc47ac5106cb3c33b06489431a6170685f1f2bb",
+    "artifact_sha256": "54e325d0591a3849deb88aa2012c977ab623ecf61b3d4a5c11869b5e4c7f3b94"
+  },
+  "result": {
+    "coaccepted_carry_row_count": 10,
+    "coaccepted_carry_sample_span": 100,
+    "pass_a_between_jaw_tip_count": 10,
+    "pass_b_between_jaw_tip_count": 10,
+    "closed_command_hold_interval_samples_inclusive": [241, 327],
+    "closed_command_hold_sample_indices": [290, 300, 310, 320],
+    "pass_a_hold_jaw_separation_range_px": 0.21957450276546098,
+    "pass_b_hold_jaw_separation_range_px": 0.4443113161108414,
+    "pass_a_hold_crown_axial_fraction_range": 0.017609716587802304,
+    "pass_b_hold_crown_axial_fraction_range": 0.018200123483657293,
+    "persistent_image_plane_enclosure_proxy": true,
+    "bilateral_physical_contact_proven": false,
+    "simulator_first_named_jaw_contact_sample": 229,
+    "simulator_first_bilateral_jaw_contact_sample": null,
+    "simulator_observed_named_jaw_bodies": [
+      "left_moving_jaw_so101_v1"
+    ]
+  },
+  "execution": {
+    "new_annotations": 0,
+    "simulator_replays": 0,
+    "new_candidates": 0,
+    "parameter_changes": 0,
+    "hardware_actions": 0,
+    "heldout_opened": false
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or53_existing_simulator_trace_footage_constraint_audit",
+  "claim_limits": {
+    "metric_aperture": false,
+    "metric_depth": false,
+    "contact_force": false,
+    "bilateral_physical_contact": false,
+    "camera_calibration": false,
+    "canonical_contact_geometry": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": "sim2claw.observable_registration_outcome_success_robustness_audit_contract.v1",
+  "experiment_id": "OR51_OUTCOME_SUCCESS_ROBUSTNESS_AUDIT_V1",
+  "proof_class": "quarantined_zero_new_replay_local_robustness_and_event_residual_audit",
+  "sources": {
+    "or50_receipt": {
+      "path": "outputs/observable_registration_outcome_informed_upright_basin_v1/receipt.json",
+      "sha256": "20966743ccda3a12bb35c60a829cc4df1ecd0fdec7811a9944839a08c9f84f1b"
+    },
+    "or50_closeout": {
+      "path": "configs/decisions/observable_registration_outcome_informed_upright_basin_v1_closeout.json",
+      "sha256": "38a5cdf33938bad8949ae836e043028c9c3cc871154cbe38eaca4b9d4e460a1a"
+    },
+    "or50_selected_trace": {
+      "path": "outputs/observable_registration_outcome_informed_upright_basin_v1/selected_frozen_rerun_trace.json",
+      "sha256": "7674f78067d20c67ae121b8a938808b4f0f361929d67076a2b4825b17aa67a6f"
+    }
+  },
+  "frozen_surface_audit": {
+    "single_coordinate": "fixed_contact_skin_longitudinal_position",
+    "candidate_count": 25,
+    "selected_index": 14,
+    "selected_fixed_pad_local_z_m": -0.11298,
+    "grid_step_m": 0.00001,
+    "immediate_neighbor_index_offsets": [-1, 0, 1],
+    "minimum_contiguous_numeric_success_count": 3,
+    "require_identical_terminal_gate_vector_in_neighborhood": true,
+    "new_candidate_generation_allowed": false,
+    "parameter_selection_or_refit_allowed": false
+  },
+  "frozen_event_audit": {
+    "required_named_jaw_bodies": [
+      "left_gripper",
+      "left_moving_jaw_so101_v1"
+    ],
+    "required_preterminal_gates": [
+      "contact_timing",
+      "no_early_motion",
+      "support_loss_timing",
+      "bilateral_contact_timing",
+      "upright_at_sample_260"
+    ],
+    "physical_no_motion_before_sample": 247,
+    "physical_support_loss_start_sample": 247,
+    "maximum_tilt_at_sample_260_degrees": 10.0,
+    "require_both_named_jaw_surfaces": true,
+    "require_selection_verification_digest_identity": true
+  },
+  "execution": {
+    "simulator_replays_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "heldout_open_allowed": false,
+    "terminal_evaluator_change_allowed": false,
+    "trajectory_change_allowed": false,
+    "contact_parameter_change_allowed": false
+  },
+  "acceptance": {
+    "pass_requires_local_outcome_continuity_and_all_event_gates": true,
+    "failed_gate_status": "TERMINAL_ISOLATED_OUTCOME_SUCCESS_WRONG_EVENT_TOPOLOGY_EXTERNAL_METRIC_OBSERVATION_REQUIRED",
+    "next_promotable_boundary": "OR48_EXTERNAL_METRIC_PAD_SURFACE_PACKET"
+  },
+  "claim_limits": {
+    "canonical_contact_geometry": false,
+    "heldout_validation": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "policy_transfer": false,
+    "bidirectional_transfer": false,
+    "physical_authority": false
+  },
+  "authority": {
+    "simulator_replay": false,
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

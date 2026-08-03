@@ -1,0 +1,105 @@
+{
+  "schema_version": "sim2claw.observable_registration_retained_edge_residual_mechanism_diagnosis_contract.v1",
+  "experiment_id": "OR59_RETAINED_EDGE_RESIDUAL_MECHANISM_DIAGNOSIS_V1",
+  "proof_class": "retained_episode_specific_evaluator_owned_edge_residual_mechanism_diagnosis",
+  "sources": {
+    "goal_loop": {
+      "path": "docs/autonomous-workflow/goal-loop-physical-simulator-temporal-pixel-similarity-20260802.md",
+      "sha256": "4457ccb8858cd847ba938741afba5c9f861111099f98e19c766193433fb41767"
+    },
+    "or55_contract": {
+      "path": "configs/evaluations/observable_registration_temporal_pixel_similarity_baseline_v1.json",
+      "sha256": "05da35fd381e8cc2ca7e27cb007ea47b6267721247051b7dd4727f147c12ee9b"
+    },
+    "or26_receipt": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/receipt.json",
+      "sha256": "b6589ea2848749a91fda7ea7adfa7838e4f2a8f9f7089141e5570092cbdd9a4e"
+    },
+    "physical_video": {
+      "path": "outputs/observable_registration_visible_divergence_video_v1/physical.mp4",
+      "sha256": "00aaf4bed86e25d6a661643335ae577906bf436681fe7b1f09f76a60ea0ce1c8"
+    },
+    "or58_receipt": {
+      "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/receipt.json",
+      "sha256": "7449d46dc672f2ea14b2a34bbe4c393e1df7db0271770ae24107321c4137e330"
+    },
+    "or58_closeout": {
+      "path": "configs/decisions/observable_registration_edge_preserving_response_frontier_v1_closeout.json",
+      "sha256": "8956e418f919648587a084c5d88055eea3b8a84965b1b5bea457748b2de657c8"
+    },
+    "or58_candidate_video": {
+      "path": "outputs/observable_registration_edge_preserving_response_frontier_v1/simulator_candidate.mp4",
+      "sha256": "24d6e1dc3700b1457694b134be7fd95b8cda40d8582e045c3628af7e9726737e"
+    }
+  },
+  "timeline": {
+    "decoded_frame_count": 531,
+    "scored_sample_range_inclusive": [0, 515],
+    "scored_frame_count": 516,
+    "width_px": 640,
+    "height_px": 480,
+    "fps": 20.0,
+    "phases_inherited_from_or55": true
+  },
+  "regions": {
+    "classes": [
+      "motion_union",
+      "nonmotion_board",
+      "nonmotion_outside_board"
+    ],
+    "mutually_exclusive": true,
+    "exhaustive": true,
+    "board_polygon_source": "or26_receipt.camera_and_display_registration.physical_playing_corners_px",
+    "motion_union_source": "recomputed_unchanged_or55_metric"
+  },
+  "aggregation": {
+    "edge_population_weighted": true,
+    "report_per_frame_rows": true,
+    "report_phase_totals": true,
+    "tile_columns": 8,
+    "tile_rows": 6,
+    "rank_tiles_by": "descending_unmatched_edge_mass"
+  },
+  "decision_rule": {
+    "select_class_by": "maximum_unmatched_edge_mass_then_denominator_then_declared_class_order",
+    "mechanism_by_class": {
+      "motion_union": "robot_object_surface_geometry_and_event_timing",
+      "nonmotion_board": "board_piece_and_static_robot_geometry_materials",
+      "nonmotion_outside_board": "observed_static_environment_geometry_and_materials_without_physical_pixel_background"
+    },
+    "target_pass_allowed": false
+  },
+  "resource_boundary": {
+    "renderer_allowed": false,
+    "dependency_install_allowed": false,
+    "colima_start_allowed": false,
+    "candidate_video_allowed": false
+  },
+  "prohibitions": {
+    "action_change": true,
+    "physics_integration": true,
+    "state_change": true,
+    "renderer": true,
+    "dependency_install": true,
+    "geometric_warp": true,
+    "response_fit": true,
+    "per_frame_transform": true,
+    "phase_or_region_specific_transform": true,
+    "physical_pixel_compositing": true,
+    "physical_pixels_as_texture": true,
+    "background_plate_from_physical_video": true,
+    "candidate_video": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_finite_linear_object_appearance_failure_attribution_closeout.v1",
+  "experiment_id": "OR117_POST_FINAL_FINITE_LINEAR_OBJECT_APPEARANCE_FAILURE_ATTRIBUTION_V1",
+  "status": "PASS_FINITE_LINEAR_OBJECT_TWO_MATERIAL_APPEARANCE_FACTOR_IDENTIFIED",
+  "proof_class": "post_final_finite_linear_object_appearance_failure_attribution",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_finite_linear_object_appearance_failure_attribution_v1.json", "sha256": "c76c1221050aa7645f5886db99807283924fb9494e8d7acb57d0baf9a4dfd66b"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_finite_linear_object_appearance_failure_attribution.py", "sha256": "5b73c539aa06a56a989566190373ba172c644eb48d3f96b2615ab484ea9d343e"},
+  "test": {"path": "tests/test_observable_registration_post_final_finite_linear_object_appearance_failure_attribution.py", "sha256": "73c6abd3710a63deedaea595a353fea26d63966a21a69abe7d43bacaaa185ed5", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_finite_linear_object_appearance_failure_attribution_v1/receipt.json", "sha256": "ca3837a6fd3192d5b685ff749abf5893c50c26d67614ca5bc7b1ba134ed00032", "artifact_sha256": "d9e8d2a3918e3bab2997e5df43b9b91df57d97c01bb08a05caa922d007deaa54"},
+  "diagnostic": {"path": "outputs/observable_registration_post_final_finite_linear_object_appearance_failure_attribution_v1/shaft_terminal_partition.png", "sha256": "132f4b6db3e9fff760af2991d3ba5d36318a54a0f96e8a79004fd2bf74b30f34"},
+  "result": {"shaft_target_median_bgr": [150, 148, 145], "terminal_target_median_bgr": [55, 48, 43], "target_bgr_euclidean_separation": 171.5488268686207, "shaft_signed_physical_minus_candidate_gray": 31.097087378640776, "terminal_signed_physical_minus_candidate_gray": -44.57368421052632, "validation_pixels_read": 0},
+  "reviewer_decision": "FREEZE_TWO_MATERIAL_SHAFT_TERMINAL_CALIBRATION",
+  "next_transition": "freeze_or118_two_material_shaft_terminal_calibration",
+  "claims": {"appearance_factor_identified": true, "two_material_candidate_validated": false, "same_video_semantic_match": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

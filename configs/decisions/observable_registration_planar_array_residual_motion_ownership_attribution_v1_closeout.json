@@ -1,0 +1,64 @@
+{
+  "schema_version": "sim2claw.observable_registration_planar_array_residual_motion_ownership_attribution_closeout.v1",
+  "experiment_id": "OR124_PLANAR_ARRAY_RESIDUAL_MOTION_OWNERSHIP_ATTRIBUTION_V1",
+  "status": "TERMINAL_IMPLEMENTATION_IDENTITY_DRIFT_QUARANTINED",
+  "proof_class": "planar_array_residual_motion_ownership_attribution",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_planar_array_residual_motion_ownership_attribution_v1.json",
+    "receipt_bound_sha256": "516beecd5354230b25c610974b3251ed75324bb7170a5fdd58bce2cd3cc37542",
+    "observed_final_sha256": "aa06c75270a47c3c4a43a517cb04de6a9405bd691c821eecc874073a5a25c5b4",
+    "identity_matches": false
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_planar_array_residual_motion_ownership_attribution.py",
+    "receipt_bound_sha256": "0ef0e9d2054f584005dc2849467ca8f8205ccf4b9d19759054d1c29847ae5fad",
+    "observed_final_sha256": "ef274e8c85452778970266ce56a242c9e923c739e588c2fa39f5da978221f4db",
+    "identity_matches": false
+  },
+  "test": {
+    "path": "tests/test_observable_registration_planar_array_residual_motion_ownership_attribution.py",
+    "receipt_bound_sha256": "8f866f6e31c580d8e0e6942f9de2bb323d52a0afbedf1a73952eadba55e05cc2",
+    "observed_final_sha256": "442f52405af82dacface38334600192d68bd15f674ff019bab0ba31def9c159f",
+    "identity_matches": false,
+    "focused_passed_final_worktree": 3
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_planar_array_residual_motion_ownership_attribution_v1/receipt.json",
+    "sha256": "82f2733aafedbfa3b5372099a03b1a4941e3c99f935ac15bf0f4fcae72114b8e",
+    "artifact_sha256": "32dc4a62dffaef52df2a01906498574dd425f644195c5a69d0b138e963c2be43",
+    "artifact_digest_verified": true,
+    "admitted": false
+  },
+  "identity_drift": {
+    "receipt_precedes_final_implementation": true,
+    "receipt_precedes_final_test": true,
+    "receipt_precedes_final_contract": true,
+    "receipt_binds_nonfinal_source_pair": true
+  },
+  "advisory_only_result": {
+    "receipt_status": "PASS_RESIDUAL_MOTION_OWNERSHIP_ATTRIBUTED",
+    "development_decision": "workcell_static",
+    "corroboration_decision": "workcell_static",
+    "physical_video_decodes": 11,
+    "physical_frame_reads": 256,
+    "admitted": false
+  },
+  "verification": {
+    "receipt_artifact_digest_verified": true,
+    "receipt_source_identities_match_final_files": false,
+    "numeric_result_promoted": false,
+    "second_evaluator_run_performed": false
+  },
+  "reviewer_decision": "QUARANTINE_OR124_AND_FREEZE_IDENTITY_BOUND_REPRODUCTION",
+  "next_transition": "freeze_or124b_identity_bound_residual_motion_ownership_reproduction",
+  "claims": {
+    "motion_ownership_admitted": false,
+    "workcell_static_admitted": false,
+    "dense_renderer_geometry_authorized": false,
+    "specific_object_identity": false,
+    "predictive_simulation": false,
+    "physics_fidelity": false,
+    "physical_transfer": false,
+    "simulator_promotion": false
+  }
+}

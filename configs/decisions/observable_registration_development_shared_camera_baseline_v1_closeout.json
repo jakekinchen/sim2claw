@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.observable_registration_development_shared_camera_baseline_closeout.v1",
+  "experiment_id": "OR72_DEVELOPMENT_SHARED_CAMERA_BASELINE_V1",
+  "status": "TERMINAL_UNTUNED_DEVELOPMENT_BASELINE_BELOW_TARGET",
+  "proof_class": "development_four_episode_untuned_analytic_3d_temporal_pixel_baseline",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_development_shared_camera_baseline_v1.json",
+    "sha256": "8f7366a9a2bf4813712553adb751e5cfd71f5b4addcbb4c36205681c07912440"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_development_shared_camera_baseline.py",
+    "sha256": "78349254095fa46dafa642c59fe6bc1ccf5f234cb24e5ca62db9652e60491038"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_development_shared_camera_baseline.py",
+    "sha256": "60dbaa53fa4135345c2ec3aa1c7b35a7971eaf00bd0484f4fea17473d53bf178",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_development_shared_camera_baseline_v1/receipt.json",
+    "sha256": "9f1b7586c987b56715a73da98add228e98f6ab7fc3ad0191f7d8388070c01919",
+    "artifact_sha256": "d6446b780501138c7b2d500ae5f4b53a82196d22b2dbb84ecbbd69e6aba45aa1"
+  },
+  "rows": {
+    "path": "outputs/observable_registration_development_shared_camera_baseline_v1/rows.json",
+    "sha256": "ba0b33795e9bae638d8268db98e58673741fd21fdf62bfee6621fb805941452d",
+    "artifact_sha256": "b11bb2caa9805d98850050bd243bd910279024be0161cc2a2feb4d2574a75c80",
+    "row_count": 423
+  },
+  "result": {
+    "development_episode_count": 4,
+    "physical_frames_compared": 423,
+    "analytic_frames_rendered": 423,
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.5849209530697365,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.5734822273254394,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.6327538197127202,
+    "pooled_mean_tolerant_edge_f1": 0.10944154767086547,
+    "minimum_episode_mean_full_frame_linear_pixel_similarity": 0.5830798345677396,
+    "maximum_episode_mean_full_frame_linear_pixel_similarity": 0.5858440179962757,
+    "gates_passed": 0,
+    "gates_total": 6,
+    "camera_fits": 0,
+    "parameter_fits": 0,
+    "validation_reads": 0,
+    "evaluator_heldout_reads": 0,
+    "simulator_replays": 0,
+    "pixel_similarity_achieved": false,
+    "physics_fidelity_achieved": false
+  },
+  "reviewer_decision": "FREEZE_BOUNDED_SHARED_CAMERA_APPEARANCE_FAMILY_ON_DEVELOPMENT",
+  "next_transition": "freeze_or73_bounded_shared_camera_appearance_family",
+  "claim_limits": {
+    "development_baseline_only": true,
+    "mujoco_raster_equivalence": false,
+    "mesh_exactness": false,
+    "physical_camera_matched": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

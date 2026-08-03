@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_renderer_native_white_enclosure_shell_closeout.v1",
+  "experiment_id": "OR99_POST_FINAL_RENDERER_NATIVE_WHITE_ENCLOSURE_SHELL_V1",
+  "status": "TERMINAL_RENDERER_NATIVE_WHITE_ENCLOSURE_SHELL_INSUFFICIENT",
+  "proof_class": "post_final_eleven_initial_frame_renderer_native_white_enclosure_shell",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_renderer_native_white_enclosure_shell_v1.json", "sha256": "1c32537890216a903446ecad4c51dcbd6faaf6f2482bee2278f51d23688fbbe7"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_renderer_native_white_enclosure_shell.py", "sha256": "8b47590001b64595338916fdf03591b8936bb440c3b969abbb3c15ae6ebf35a7"},
+  "test": {"path": "tests/test_observable_registration_post_final_renderer_native_white_enclosure_shell.py", "sha256": "717ea001bbb5a76408a249fa68e2990bf106145b02f353be7cd6ede09305333a", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_renderer_native_white_enclosure_shell_v1/receipt.json", "sha256": "4be2ae2eb35438a132e2d28cecdc252858d3f3e2ed0059285a2a238094329a12", "artifact_sha256": "401506c3cf4527dd2109768625ede0f6bc9d4676187b72cea26bd6bffe9985b6"},
+  "result": {"baseline_mean_outside_board_edge_f1": 0.3539635027094212, "shell_mean_outside_board_edge_f1": 0.3606293619757692, "outside_board_edge_f1_delta": 0.006665859266348051, "episodes_with_outside_board_delta_at_least_0p01": 0, "board_plus_margin_edge_f1_delta": 0.0, "full_frame_linear_similarity_delta": 0.0023980289697647095, "gates_passed": 10, "gates_total": 13},
+  "reviewer_decision": "REJECT_SHELL_AND_FREEZE_BOUNDED_RENDERER_NATIVE_ENCLOSURE_PLANES",
+  "next_transition": "freeze_or100_bounded_renderer_native_enclosure_plane_successor",
+  "claims": {"same_video_semantic_match": false, "untouched_cohort_remaining": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

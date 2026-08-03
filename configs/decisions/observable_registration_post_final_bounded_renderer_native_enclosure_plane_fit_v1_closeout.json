@@ -1,0 +1,14 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_bounded_renderer_native_enclosure_plane_fit_closeout.v1",
+  "experiment_id": "OR100_POST_FINAL_BOUNDED_RENDERER_NATIVE_ENCLOSURE_PLANE_FIT_V1",
+  "status": "TERMINAL_BOUNDED_RENDERER_NATIVE_ENCLOSURE_PLANE_DEVELOPMENT_GATE_FAILED",
+  "proof_class": "post_final_seven_development_four_validation_initial_frame_renderer_native_side_wall_plane_fit",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_bounded_renderer_native_enclosure_plane_fit_v1.json", "sha256": "8cdfa534749d485ed3c1000366913d3d5b3eb7901599710744dec93fb39f548b"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_bounded_renderer_native_enclosure_plane_fit.py", "sha256": "acc5bde7f6d020b1b37c73d66a059bdebb35d045baf8a9254700aa40f0575486"},
+  "test": {"path": "tests/test_observable_registration_post_final_bounded_renderer_native_enclosure_plane_fit.py", "sha256": "18f96b58634203224ef8981579a3f7990fa1136f8bcb542c0e49e3fef43bf8ef", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_bounded_renderer_native_enclosure_plane_fit_v1/receipt.json", "sha256": "0f4cc07ce54e25aa77c1e16d75660fe5dca22120c67d66cf53c0771544d9edbc", "artifact_sha256": "da030a2724cfae10445fa28cf657585bfd34fe84bf89426550cb45a68fb59830"},
+  "result": {"selected_local_x_m": -0.3, "shell_development_mean_outside_board_edge_f1": 0.3602956068730996, "selected_development_mean_outside_board_edge_f1": 0.36213677575557235, "outside_board_edge_f1_delta": 0.0018411688824727657, "positions_with_outside_delta_at_least_0p01": 0, "validation_renders": 0, "applicable_gates_passed": 12, "applicable_gates_total": 15},
+  "reviewer_decision": "REJECT_ENCLOSURE_PLANE_AND_PIVOT_TO_ROBOT_ARTICULATION_SCALE",
+  "next_transition": "freeze_or101_robot_articulation_scale_residual_successor",
+  "claims": {"same_video_semantic_match": false, "untouched_cohort_remaining": false, "kinematic_fidelity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

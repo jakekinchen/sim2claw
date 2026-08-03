@@ -1,0 +1,27 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_persistent_static_enclosure_boundary_line_identifiability_closeout.v1",
+  "experiment_id": "OR114_POST_FINAL_PERSISTENT_STATIC_ENCLOSURE_BOUNDARY_LINE_IDENTIFIABILITY_V1",
+  "status": "PASS_PERSISTENT_STATIC_BOUNDARY_LINE_IDENTIFIABLE_ENCLOSURE_SEMANTIC_REJECTED",
+  "proof_class": "post_final_persistent_static_boundary_line_identifiability_with_semantic_enclosure_rejection",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_persistent_static_enclosure_boundary_line_identifiability_v1.json", "sha256": "ab30f61d3b5530fb2f6976822924a0057446679895d54e210531a52ea1b03ab7"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_persistent_static_enclosure_boundary_line_identifiability.py", "sha256": "286499bf4c306bedd650ce72502af763d959d7dd084d1ef7c4cc12c24e276423"},
+  "test": {"path": "tests/test_observable_registration_post_final_persistent_static_enclosure_boundary_line_identifiability.py", "sha256": "a3a2ff2f7fad58b44029aeddac7ec3fff36095e775cc8b855cef0c4cd32c6b68", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_persistent_static_enclosure_boundary_line_identifiability_v1/receipt.json", "sha256": "b7358e4c38d2c3a6f637aa39105ce98cc749a21b6d206ab8e374b375b9e00bca", "artifact_sha256": "c7e23e12328654c6b098ce4fdb3f4147b7887bdf7a377b9c94660d0aa057d549"},
+  "visual_audit": {"path": "outputs/observable_registration_post_final_persistent_static_enclosure_boundary_line_identifiability_v1/persistent_physical_boundary_line_family.png", "sha256": "8e825ef154f46d53469a91a40afdf96e7c16a6245842da2ebf28cb000019cb88", "result": "selected_diagonal_line_repeatedly_terminates_in_a_bounded_loop_like_component_and_is_not_admissible_as_an_infinite_enclosure_seam"},
+  "result": {
+    "selected_orientation_bin_degrees": 30,
+    "shared_angle_degrees": 39.8412028,
+    "shared_rho_px": -61.1501364,
+    "development_supported_positions": 7,
+    "development_position_count": 7,
+    "development_selected_share": 0.7254378032940928,
+    "validation_supported_positions": 3,
+    "validation_position_count": 4,
+    "validation_selected_share": 0.6266866487387914,
+    "image_space_line_family_identifiable": true,
+    "enclosure_plane_semantic_admissible": false
+  },
+  "reviewer_decision": "REJECT_ENCLOSURE_PLANE_SEMANTIC_AND_FREEZE_PERSISTENT_LINEAR_WORKCELL_OBJECT_ATTRIBUTION",
+  "next_transition": "freeze_or115_persistent_linear_workcell_object_attribution",
+  "claims": {"image_space_persistent_line_family": true, "enclosure_plane_identified": false, "metric_3d_geometry": false, "same_video_semantic_match": false, "predictive_simulation": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false}
+}

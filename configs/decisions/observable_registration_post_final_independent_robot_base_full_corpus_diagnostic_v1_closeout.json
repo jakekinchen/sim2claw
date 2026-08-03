@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_closeout.v1",
+  "experiment_id": "OR95_POST_FINAL_INDEPENDENT_ROBOT_BASE_FULL_CORPUS_DIAGNOSTIC_V1",
+  "status": "TERMINAL_RETROSPECTIVE_FULL_CORPUS_SAME_VIDEO_TEMPORAL_REGION_GATES_FAILED",
+  "proof_class": "post_final_all_eleven_episode_frozen_independent_robot_base_full_timeline_diagnostic",
+  "contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+  "implementation": {"path": "src/sim2claw/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic.py", "sha256": "86aa4c076299478d83709225b9aff480b465f7e6038a30fe3aa6c3f7bdd60f27"},
+  "test": {"path": "tests/test_observable_registration_post_final_independent_robot_base_full_corpus_diagnostic.py", "sha256": "7708b93dffed711ce98cb39723d88e10525257063dff6a29ca63577871c42560", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1/receipt.json", "sha256": "9afcd7d4d7f5e433b0f784db39996e8acf4697a99d5f745bcacf7c6eebc6e65f", "artifact_sha256": "06eaaa2a7fef5aab3363aad23e8ef54ecfbe75f1b289391200c96b2324b0da7c"},
+  "result": {
+    "episode_count": 11,
+    "frame_count": 1210,
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.8369945880795313,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.8224323555827141,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.7916431388123817,
+    "pooled_mean_whole_frame_tolerant_edge_f1": 0.45501215952230156,
+    "pooled_mean_board_plus_margin_edge_f1": 0.5713663502061341,
+    "pooled_p10_board_plus_margin_edge_f1": 0.5570008511088017,
+    "pooled_mean_outside_board_edge_f1": 0.35981796747453465,
+    "pooled_p10_outside_board_edge_f1": 0.32455330069899124,
+    "episode_mean_outside_board_edge_f1_range": [0.3472394205173927, 0.3703279824017538],
+    "metric_gates_passed": 6,
+    "metric_gates_total": 10,
+    "integrity_gates_passed": 7,
+    "integrity_gates_total": 7,
+    "fits_or_candidate_selections": 0,
+    "retries": 0
+  },
+  "reviewer_decision": "FREEZE_POST_FINAL_TEMPORAL_ROBOT_RESIDUAL_ATTRIBUTION",
+  "next_transition": "freeze_or96_post_final_temporal_robot_residual_attribution",
+  "claims": {"retrospective_same_video_temporal_region_metric_pass": false, "heldout_validation": false, "prospective_generalization": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false}
+}

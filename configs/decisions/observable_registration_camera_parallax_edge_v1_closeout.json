@@ -1,0 +1,62 @@
+{
+  "schema_version": "sim2claw.observable_registration_camera_parallax_edge_closeout.v1",
+  "experiment_id": "OR57_CAMERA_PARALLAX_EDGE_V1",
+  "status": "TERMINAL_RENDER_RUNTIME_UNAVAILABLE_NO_CANDIDATE",
+  "proof_class": "retained_episode_specific_board_preserving_camera_parallax_edge_alignment",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_camera_parallax_edge_v1.json",
+    "sha256": "d12a92464026e0f6fd0e2ac36c5cfe5a561a51a2f4fd07bc5f82954375435b12"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_camera_parallax_edge.py",
+    "sha256": "2cc3c93f55b30d29b213e5b3b4f4267acaaa79ca02afc322a3eadf72acfd407a"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_camera_parallax_edge.py",
+    "sha256": "fa37a8e5b5025c5379d6d33a8b9d083404e420afcaa8871bb9a9b477c54411c9",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_camera_parallax_edge_v1/receipt.json",
+    "sha256": "46ec5b670f3c1fcc2b615a96065cc0d5e30ca1374b635c5553d75804578497f3",
+    "artifact_sha256": "86c24e2a596f2b42b57a3fe4ce7a7f6de3e0d901687b36879bc3dd1f93db15bb"
+  },
+  "result": {
+    "macos_plain_python_cgl_available": false,
+    "mjpython_uv_standalone_shared_library_compatible": false,
+    "gpt_pro_advisor_available": false,
+    "linux_container_completed": false,
+    "camera_candidates_evaluated": 0,
+    "state_renders": 0,
+    "target_pass": false
+  },
+  "execution": {
+    "camera_candidate_count": 0,
+    "camera_blur_candidate_evaluations": 0,
+    "development_state_renders": 0,
+    "selected_full_state_renders": 0,
+    "physics_integrations": 0,
+    "action_changes": 0,
+    "state_changes": 0,
+    "scene_geometry_changes": 0,
+    "hardware_actions": 0
+  },
+  "runtime_cleanup": {
+    "runaway_mjpython_helpers_terminated": 2054,
+    "mjpython_helpers_remaining": 0,
+    "failed_container_stopped": true,
+    "colima_vm_stopped": true,
+    "persistent_paid_compute_remaining": false,
+    "host_available_space_after_cleanup_mib": 128
+  },
+  "reviewer_decision": "CONTINUE_RETAINED_VIDEO_ONLY",
+  "next_transition": "freeze_or58_edge_preserving_response_frontier",
+  "claim_limits": {
+    "episode_specific_visual_replay_only": false,
+    "metric_camera_calibration": false,
+    "physics_fidelity": false,
+    "global_mapping_approval": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

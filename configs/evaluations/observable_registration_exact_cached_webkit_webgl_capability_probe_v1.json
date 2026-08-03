@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.observable_registration_exact_cached_webkit_webgl_capability_probe_contract.v1",
+  "experiment_id": "OR62_EXACT_CACHED_WEBKIT_WEBGL_CAPABILITY_PROBE_V1",
+  "proof_class": "local_no_download_exact_cached_webkit_webgl_capability_probe",
+  "sources": {
+    "goal_loop": {
+      "path": "docs/autonomous-workflow/goal-loop-physical-simulator-temporal-pixel-similarity-20260802.md",
+      "sha256": "4457ccb8858cd847ba938741afba5c9f861111099f98e19c766193433fb41767"
+    },
+    "or61_closeout": {
+      "path": "configs/decisions/observable_registration_installed_webgl_replay_capability_probe_v1_closeout.json",
+      "sha256": "76b650848424cf7fc670f86ce708e7fbc1109d141e63217b3658225e7470e4e8"
+    },
+    "probe_page": {
+      "path": "outputs/observable_registration_installed_webgl_replay_capability_probe_v1/webgl_probe.html",
+      "sha256": "abdbac7ea8dc445c8205eebaf943d34d54bd154b52b52b10b5acb1217f9ea6ac"
+    },
+    "playwright_skill": {
+      "path": "/Users/kelly/.codex/skills/playwright/SKILL.md",
+      "sha256": "9882ed06b27d8a6e8e5f8610f08845c9aa9b6d90720bc26094cf5fec95ab3b14"
+    },
+    "cached_playwright_cli": {
+      "path": "/Users/kelly/.npm/_npx/31e32ef8478fbf80/node_modules/.bin/playwright-cli",
+      "sha256": "66ea6722d77e57ce1bc7e850cb990d14895d17d8584405ed54a8c72fab38eb75"
+    },
+    "cached_webkit_binary": {
+      "path": "/Users/kelly/Library/Caches/ms-playwright/webkit-2327/pw_run.sh",
+      "sha256": "a85baad3d8c07173ac387a59b41500c382b21ed692afe0964d29aac247ccc63b"
+    }
+  },
+  "runtime": {
+    "playwright_cli_version": "0.1.17",
+    "playwright_version": "1.62.0-alpha-1783623505000",
+    "browser": "webkit",
+    "webkit_revision": 2327,
+    "exact_cache_present": true
+  },
+  "probe": {
+    "maximum_launches": 1,
+    "snapshot_required_after_successful_launch": true,
+    "webgl_result_required": "WEBGL_AVAILABLE",
+    "screenshot_required": true,
+    "close_session_after_probe": true
+  },
+  "resource_boundary": {
+    "network_downloads_allowed": 0,
+    "cache_population_allowed": 0,
+    "package_installs_allowed": 0,
+    "browser_installs_allowed": 0,
+    "system_browser_launches_allowed": 0,
+    "existing_session_attachments_allowed": 0,
+    "system_setting_changes_allowed": 0,
+    "scene_changes_allowed": 0,
+    "candidate_videos_allowed": 0
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

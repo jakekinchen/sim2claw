@@ -1,0 +1,33 @@
+{
+  "schema_version": "sim2claw.observable_registration_expanded_development_global_monotone_response_fit_closeout.v1",
+  "experiment_id": "OR89_EXPANDED_DEVELOPMENT_GLOBAL_MONOTONE_RESPONSE_FIT_V1",
+  "status": "PASS_EXPANDED_DEVELOPMENT_GLOBAL_MONOTONE_RESPONSE_WITH_EDGE_MARGIN",
+  "proof_class": "expanded_development_seven_episode_shared_three_parameter_global_monotone_response_fit",
+  "contract": {"path": "configs/evaluations/observable_registration_expanded_development_global_monotone_response_fit_v1.json", "sha256": "bfe0882c152ddbb52d8b26c4c2fe21dd2ef7dddea6622b6e1c6183f64e78a902"},
+  "implementation": {"path": "src/sim2claw/observable_registration_expanded_development_global_monotone_response_fit.py", "sha256": "c744a39de49ff480911b4faf7a703f235c8817f7eac10ec54fafdc87fa88c501"},
+  "test": {"path": "tests/test_observable_registration_expanded_development_global_monotone_response_fit.py", "sha256": "abdc978068279a180fb6b2cf19e0bf9e461b4e27bc35984652059453a7d82cf4", "focused_passed": 2},
+  "receipt": {"path": "outputs/observable_registration_expanded_development_global_monotone_response_fit_v1/receipt.json", "sha256": "8749d677878f1f74a3b3797b2bf944f747ed572948cf66694fff9ba50510b325", "artifact_sha256": "db8a16718747cc6169da60165f3cc8193cdb92ab056f7ee1f8a6cf5e676bc533"},
+  "result": {
+    "candidate_evaluations": 125,
+    "eligible_candidate_count": 24,
+    "selected_bias": 24.0,
+    "selected_low_intensity_slope": 0.85,
+    "selected_high_intensity_slope": 0.25,
+    "fixed_input_knot": 128,
+    "pooled_mean_full_frame_linear_pixel_similarity": 0.8445704807731982,
+    "pooled_p10_full_frame_linear_pixel_similarity": 0.8283418416976929,
+    "pooled_mean_motion_union_linear_pixel_similarity": 0.8083652256795081,
+    "pooled_mean_tolerant_edge_f1": 0.42573598304971877,
+    "metric_gates_passed": 6,
+    "metric_gates_total": 6,
+    "integrity_gates_passed": 8,
+    "integrity_gates_total": 8,
+    "expanded_development_reads": 7,
+    "fresh_validation_reads": 0,
+    "final_evaluator_heldout_reads": 0,
+    "simulator_replays": 0
+  },
+  "reviewer_decision": "OPEN_REJECT_ONLY_FRESH_VALIDATION_WITH_FROZEN_MONOTONE_RESPONSE",
+  "next_transition": "freeze_or90_reject_only_fresh_validation_global_monotone_response",
+  "claim_limits": {"expanded_development_fit_only": true, "fresh_validation_verified": false, "final_evaluator_heldout_verified": false, "pixel_similarity_achieved": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false}
+}

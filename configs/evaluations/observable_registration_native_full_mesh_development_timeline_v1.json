@@ -1,0 +1,175 @@
+{
+  "schema_version": "sim2claw.observable_registration_native_full_mesh_development_timeline_contract.v1",
+  "experiment_id": "OR80_NATIVE_FULL_MESH_DEVELOPMENT_TIMELINE_V1",
+  "proof_class": "development_four_episode_frozen_camera_native_full_mesh_temporal_pixel_evaluation",
+  "sources": {
+    "or79_closeout": {
+      "path": "configs/decisions/observable_registration_native_rasterizer_byte_equivalence_v1_closeout.json",
+      "sha256": "5d938b795c14f617bdef53d424150be8cc7ee89bd427e0a54d845e16048b54d3"
+    },
+    "or79_implementation": {
+      "path": "src/sim2claw/observable_registration_native_rasterizer_byte_equivalence.py",
+      "sha256": "07f17d14040b265c6367458954bfe3ace1fea53c403a38bbe5c8ae29f10830cf"
+    },
+    "or79_native_source": {
+      "path": "tools/renderer/or79_triangle_rasterizer.c",
+      "sha256": "872c5beb0918ffd07e1961eb5bf2119b34b0d7fccf9a419bf06e194c43b39a6b"
+    },
+    "or79_equivalence_frame": {
+      "recording_id": "20260719T032400Z-052d5137",
+      "path": "outputs/observable_registration_native_rasterizer_byte_equivalence_v1/native_equivalence_frame.png",
+      "sha256": "a0792179202e516194c36d911de7e0b407cc9629c9a183edd03318280914f63d"
+    },
+    "or78_implementation": {
+      "path": "src/sim2claw/observable_registration_static_development_full_mesh_comparison.py",
+      "sha256": "d1cbf5f92cde301c3b07b75bc1b5f3d28f3b890bd99507a52c3e047f4e5047da"
+    },
+    "or74_contract": {
+      "path": "configs/evaluations/observable_registration_frozen_camera_full_development_timeline_v1.json",
+      "sha256": "1768c4248ab79dc642e921812d514046379c4b1646e56d2c44b5621e5161234f"
+    },
+    "or72_contract": {
+      "path": "configs/evaluations/observable_registration_development_shared_camera_baseline_v1.json",
+      "sha256": "8f7366a9a2bf4813712553adb751e5cfd71f5b4addcbb4c36205681c07912440"
+    },
+    "or73_closeout": {
+      "path": "configs/decisions/observable_registration_development_initial_shared_3d_camera_fit_v1_closeout.json",
+      "sha256": "d5dc0d2c507ba541617caec126da0609fa04d7b206fe853425863bfe81b32088"
+    },
+    "shared_scene_manifest": {
+      "path": "src/sim2claw/studio_web/publication/pawn_bg_ranked_grasp_v1/scene_manifest.json",
+      "sha256": "777f915fb7c84d498615f43e54cbeaee47a35494f8166724898ef9dc998f371b",
+      "revision_sha256": "e7d93bb2a5786079131bdfdd82410ffbc108baecd451b0d8a74d9f442aedd3d9"
+    },
+    "mesh_asset_root": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/assets",
+      "hash_source": "shared_scene_manifest.meshes.asset_sha256"
+    }
+  },
+  "selected_camera": {
+    "source": "or73_closeout.selected_camera",
+    "vector": [-0.018840274639885385, 0.4858012879716642, 0.8907875287317824, -70.12462204802789, 83.44262012866398, 1.934007584711076, 64.32524210263325],
+    "position": [0.0562467560625768, 0.2780968153213378, 2.8121428127907477],
+    "target": [-0.018840274639885385, 0.4858012879716642, 0.8907875287317824],
+    "fov_degrees": 64.32524210263325,
+    "refit_allowed": false
+  },
+  "timeline": {
+    "episode_source": "or72_contract.episodes",
+    "development_episode_count": 4,
+    "evaluation_fps": 5.0,
+    "time_origin": "physical_video_frame_zero_equals_state_trace_time_zero",
+    "time_offset_seconds": 0.0,
+    "horizon": "state_trace_complete_duration",
+    "physical_frame_index_formula": "round(t_seconds_times_frame_count_minus_one_divided_by_duration_seconds)",
+    "trace_frame_selection": "nearest_timestamp_no_interpolation",
+    "physical_orientation": "hflip_then_vflip_equivalent_rotate_180_degrees",
+    "missing_frame_policy": "fail_closed_no_substitution"
+  },
+  "renderer": {
+    "implementation": "or78_full_source_mesh_stream_plus_or79_byte_equivalent_native_depth_rasterizer",
+    "width_px": 320,
+    "height_px": 240,
+    "background_rgb": [150, 150, 150],
+    "physical_orientation": "hflip_and_vflip_known_evaluator_orientation",
+    "unique_asset_cache_key": "manifest_asset_url_basename",
+    "mesh_asset_read_policy": "read_each_unique_hash_verified_asset_once_for_all_423_frames",
+    "mesh_triangle_policy": "all_source_triangles_for_every_mesh_definition",
+    "maximum_triangles_per_mesh_instance": 1000000,
+    "sphere_latitude_segments": 6,
+    "sphere_longitude_segments": 10,
+    "cylinder_segments": 12,
+    "capsule_policy": "depth_union_of_cylinder_and_two_uv_spheres",
+    "lighting": {
+      "world_direction": [0.3, -0.4, 0.85],
+      "ambient": 0.35,
+      "diffuse": 0.65,
+      "two_sided": true
+    },
+    "candidate_video_codec": "mp4v"
+  },
+  "metric": {
+    "primary_formula": "1_minus_mean_absolute_bgr_error_divided_by_255",
+    "motion_union": {
+      "grayscale_gaussian_kernel_px": 5,
+      "physical_difference_threshold": 12,
+      "simulator_difference_threshold": 5,
+      "dilation_kernel_px": 7,
+      "minimum_union_pixels": 100
+    },
+    "edge": {
+      "canny_low_threshold": 50,
+      "canny_high_threshold": 150,
+      "tolerance_dilation_kernel_px": 3
+    }
+  },
+  "acceptance": {
+    "minimum_pooled_mean_full_frame_linear_pixel_similarity": 0.8,
+    "minimum_pooled_p10_full_frame_linear_pixel_similarity": 0.75,
+    "minimum_pooled_mean_motion_union_linear_pixel_similarity": 0.75,
+    "minimum_each_phase_mean_full_frame_linear_pixel_similarity": 0.78,
+    "minimum_pooled_mean_tolerant_edge_f1": 0.4,
+    "minimum_each_development_episode_mean_full_frame_linear_pixel_similarity": 0.8,
+    "all_gates_required": true
+  },
+  "gates": {
+    "expected_development_episode_count": 4,
+    "expected_total_frame_count": 423,
+    "expected_unique_mesh_asset_reads": 18,
+    "expected_total_raster_triangle_count_per_frame": 824944,
+    "require_timeline_metric_and_acceptance_equal_to_or74": true,
+    "require_first_bound_episode_frame_equal_to_or78": true
+  },
+  "resource_boundary": {
+    "development_episode_reads_allowed": 4,
+    "development_physical_video_decodes_allowed": 4,
+    "physical_frames_compared_allowed": 423,
+    "native_frames_rendered_allowed": 423,
+    "unique_mesh_asset_reads_allowed": 18,
+    "candidate_videos_allowed": 4,
+    "validation_reads_allowed": 0,
+    "evaluator_heldout_reads_allowed": 0,
+    "simulator_replays_allowed": 0,
+    "camera_fits_allowed": 0,
+    "appearance_fits_allowed": 0,
+    "time_fits_allowed": 0,
+    "state_or_physics_fits_allowed": 0,
+    "hardware_actions_allowed": 0,
+    "paid_compute_allowed": false
+  },
+  "prohibited_candidate_inputs": [
+    "physical_video_pixels",
+    "physical_image_palette",
+    "or63_screen_space_lines",
+    "or66_screen_space_contours",
+    "or67_static_vector_candidate_video",
+    "target_derived_texture_or_background_plate"
+  ],
+  "claim_limits": {
+    "development_full_timeline_evaluation_only": true,
+    "analytic_primitive_tessellation_approximate": true,
+    "mujoco_raster_equivalence": false,
+    "physical_camera_matched": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  }
+}

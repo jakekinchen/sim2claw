@@ -1,0 +1,22 @@
+{
+  "schema_version": "sim2claw.observable_registration_renderer_native_planar_fixture_parameterization_contract.v1",
+  "experiment_id": "OR126_RENDERER_NATIVE_PLANAR_FIXTURE_PARAMETERIZATION_V1",
+  "proof_class": "renderer_native_planar_fixture_parameterization",
+  "sources": {
+    "or125_closeout": {"path": "configs/decisions/observable_registration_workcell_static_component_surface_identification_v1_closeout.json", "sha256": "9965e2060abd6c60c75f348672bf2ffcfc129c4e88b0f4d0329374729ab3ffef", "status": "PASS_DOMINANT_COMPONENT_SUBSET_SEPARATE_STATIC_PLANAR_FIXTURE"},
+    "or125_receipt": {"path": "outputs/observable_registration_workcell_static_component_surface_identification_v1/receipt.json", "sha256": "663f37a053dab8c35a3a992aa03a890603b9afe2fdfac7b31a9ff7f6b143b821", "artifact_sha256": "27475dbf1f3b9e5e61d2a418870779b9ea3dcd1a5fcec703370e4ed344cd08bf"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+    "or116_contract": {"path": "configs/evaluations/observable_registration_post_final_renderer_native_finite_linear_workcell_object_reconstruction_v1.json", "sha256": "ff02ea2a939ebc8ff95d420dd750d6aa4f2f7c93ec51448943bdc0362fabf351"}
+  },
+  "frozen_identities": {
+    "implementation": {"path": "src/sim2claw/observable_registration_renderer_native_planar_fixture_parameterization.py", "sha256": "8ad420bd84c824026ba32d0cadb000271579f90e584a1eecf9819c6bf25b9a12"},
+    "test": {"path": "tests/test_observable_registration_renderer_native_planar_fixture_parameterization.py", "sha256": "3aef506ad1358e134a64144979ebde9087749ffbbe493b0f4a3a6c33ee485259"}
+  },
+  "split": {"development_positions": [1,2,3,4,5,6,7], "corroboration_positions": [8,9,10,11], "corroboration_refit_allowed": false, "untouched_cohort_remaining": false},
+  "parameterization": {"dictionary": "DICT_APRILTAG_36h11", "procedural_cell_count_per_axis": 8, "border_cells": 1, "selected_complete_component_index": 4, "development_corner_estimator": "coordinatewise_median", "physical_pixel_texture_projection": false, "screen_space_overlay": false},
+  "support_plane": {"body_name": "measured_table", "body_id": 8, "geom_name": "tabletop", "geom_id": 101, "surface": "transformed_top_plane"},
+  "gates": {"required_distinct_entry_count": 1, "maximum_corroboration_corner_rms_px": 1.0, "maximum_reprojection_error_px": 1e-9, "required_development_episode_count": 7, "required_corroboration_episode_count": 4},
+  "resource_boundary": {"physical_video_decodes_allowed": 11, "physical_frames_read_allowed": 11, "parameterizations_allowed": 1, "audit_outputs_allowed": 1, "renders_allowed": 0, "physical_pixel_texture_projections_allowed": 0, "candidate_videos_allowed": 0, "parameter_searches_allowed": 0, "retries_allowed": 0, "simulator_replays_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"complete_fixture_only": true, "source_component_index": 4, "individual_marker_identity_measured_as_procedural_entry_only": true, "specific_object_identity": false, "physical_pixel_texture_projection": false, "metric_3d_geometry_calibrated": false, "plane_projection_self_consistency_only": true, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "predictive_simulation": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}

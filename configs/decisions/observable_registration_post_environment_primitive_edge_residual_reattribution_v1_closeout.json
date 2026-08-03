@@ -1,0 +1,71 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_environment_primitive_edge_residual_reattribution_closeout.v1",
+  "experiment_id": "OR65_POST_ENVIRONMENT_PRIMITIVE_EDGE_RESIDUAL_REATTRIBUTION_V1",
+  "status": "PASS_POST_ENVIRONMENT_PRIMITIVE_EDGE_RESIDUAL_REATTRIBUTION",
+  "proof_class": "retained_episode_specific_post_environment_primitive_edge_residual_reattribution",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_post_environment_primitive_edge_residual_reattribution_v1.json",
+    "sha256": "83fbf7321071682b68d233c1880975707af0c2e9f7fba31c684df33066fd5850"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_post_environment_primitive_edge_residual_reattribution.py",
+    "sha256": "a6843d6de375810c091a2ae9c7063420fdd78903f5fb2b49a2ad3f1b65308df1"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_post_environment_primitive_edge_residual_reattribution.py",
+    "sha256": "be04e0b945f11460852668c035d79beedea40f16c6bc548d9b471c41e1043706",
+    "focused_passed": 2,
+    "combined_predecessor_passed": 6
+  },
+  "rows": {
+    "path": "outputs/observable_registration_post_environment_primitive_edge_residual_reattribution_v1/post_vector_edge_region_rows.json",
+    "sha256": "bd710dbcaf7efe8eaf78198751589812bbf70f3003afce10bd897791544905be"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_post_environment_primitive_edge_residual_reattribution_v1/receipt.json",
+    "sha256": "39911971b96dfaf109656e4038ff299ba8e4de742e86978ae07a084e7c4a9502",
+    "artifact_sha256": "c783ed4c492b35f7c8963c183dde9ed25beb81d0d3502d1ce9e00e4f4d06e0b7"
+  },
+  "result": {
+    "or58_mean_edge_f1_reproduced_exactly": true,
+    "or59_aggregate_region_counts_reproduced_exactly": true,
+    "or64_full_24_line_mean_edge_f1_reproduced_exactly": true,
+    "full_24_line_mean_edge_f1": 0.2872480714751123,
+    "outside_board_edge_f1_before": 0.09437742123362987,
+    "outside_board_edge_f1_after": 0.29845144360297765,
+    "outside_board_unmatched_edge_mass_before": 7494697,
+    "outside_board_unmatched_edge_mass_after": 6610852,
+    "outside_board_unmatched_edge_mass_reduction": 883845,
+    "selected_residual_class": "nonmotion_outside_board",
+    "selected_next_mechanism": "pixel_free_static_environment_curve_and_finite_shape_primitive_expansion",
+    "target_pass": false
+  },
+  "execution": {
+    "diagnostic_frame_evaluations": 516,
+    "line_primitives_applied": 24,
+    "renderer_runs": 0,
+    "simulator_replays": 0,
+    "candidate_videos": 0,
+    "bgr_pixel_outputs": 0,
+    "image_outputs": 0,
+    "texture_outputs": 0,
+    "physical_pixel_composites": 0,
+    "geometric_warps": 0,
+    "scene_mutations": 0,
+    "action_changes": 0,
+    "state_changes": 0,
+    "validation_or_stress_selections": 0,
+    "hardware_actions": 0
+  },
+  "reviewer_decision": "CONTINUE",
+  "next_transition": "freeze_or66_pixel_free_static_environment_curve_and_finite_shape_expansion",
+  "claim_limits": {
+    "diagnostic_only": true,
+    "edge_only_counterfactual": true,
+    "same_video_target_pass": false,
+    "simulator_render": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

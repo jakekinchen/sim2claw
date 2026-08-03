@@ -1,0 +1,53 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_visual_sanity_residual_attribution_closeout.v1",
+  "experiment_id": "OR92_POST_FINAL_VISUAL_SANITY_RESIDUAL_ATTRIBUTION_V1",
+  "status": "PASS_ROBOT_WORKCELL_FACTORIZATION_SELECTED",
+  "proof_class": "post_final_evaluator_six_frame_board_vs_outside_visual_sanity_residual_attribution",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_post_final_visual_sanity_residual_attribution_v1.json",
+    "sha256": "d791dafa906e45081c99ec1e71447ff184561c2ce5aaf624e0bfb4e5ee7bec4c"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_post_final_visual_sanity_residual_attribution.py",
+    "sha256": "7b86fcbcd4e64dc58fdf77c5c0a3c6e04cff70e22c7d61edfad36e882e61f74f"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_post_final_visual_sanity_residual_attribution.py",
+    "sha256": "698ace8e88ccaf2921e988f8d6ffac19c2cc441bae1c2925476ab46c197df83d",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_post_final_visual_sanity_residual_attribution_v1/receipt.json",
+    "sha256": "e1eda820b9265467a1eab5b2cad85436106a0876f05b2048af96e0160361fa3a",
+    "artifact_sha256": "88f6b231627a5cc67705ba6b20498420689b3485e2cd9638ff12a17c2c1f4eb2"
+  },
+  "result": {
+    "sampled_frame_pair_count": 6,
+    "mean_board_plus_margin_edge_f1": 0.5443317593950499,
+    "mean_outside_board_edge_f1": 0.30625598849143715,
+    "minimum_outside_board_edge_f1": 0.24363783465725217,
+    "maximum_outside_board_edge_f1": 0.36788277720725066,
+    "gates_passed": 6,
+    "gates_total": 6,
+    "new_physical_video_decodes": 0,
+    "renders": 0,
+    "parameter_fits": 0,
+    "candidate_selections": 0,
+    "simulator_replays": 0
+  },
+  "selected_mechanism": "separate_robot_base_and_static_workcell_registration",
+  "reviewer_decision": "FREEZE_POST_FINAL_SEPARATE_ROBOT_BASE_REGISTRATION_DIAGNOSTIC",
+  "next_transition": "freeze_or93_post_final_separate_robot_base_registration_diagnostic",
+  "claims": {
+    "or91_numeric_receipt_changed": false,
+    "same_video_semantic_match": false,
+    "untouched_cohort_remaining": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

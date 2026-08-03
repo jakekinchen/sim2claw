@@ -1,0 +1,58 @@
+{
+  "schema_version": "sim2claw.observable_registration_json_only_validation_split_restart_closeout.v1",
+  "experiment_id": "OR88_JSON_ONLY_VALIDATION_SPLIT_RESTART_V1",
+  "status": "PASS_JSON_ONLY_VALIDATION_SPLIT_RESTART_FROZEN",
+  "proof_class": "retained_eleven_episode_json_only_split_restart_after_rejected_validation",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_json_only_validation_split_restart_v1.json",
+    "sha256": "ce1f02a995f7479ded9c33a42bed11d33de41991280bf0875122abab17a794b6"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_json_only_validation_split_restart.py",
+    "sha256": "f2f2127c5b9970c5bf8fc55d7e61972669ebaa78b670324d53cdf9eae53eb812"
+  },
+  "test": {
+    "path": "tests/test_observable_registration_json_only_validation_split_restart.py",
+    "sha256": "dc993238ad436cc972f601119e8e19a44b6c8c42b43a838090f04c7cbcd8e2e8",
+    "focused_passed": 2
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_json_only_validation_split_restart_v1/receipt.json",
+    "sha256": "e6b21e0251c93b915c67de95b4d2dddf89fc95d73a27fb60acade37616e37f39",
+    "artifact_sha256": "abdb94873722b802be35b4f099ab8ed624b2d8a43fd2726fbe413bf83627e1fd"
+  },
+  "split_manifest": {
+    "path": "outputs/observable_registration_json_only_validation_split_restart_v1/split_manifest.json",
+    "sha256": "39276fc04c5d593befc6f02ed0373c8a221084e695413d199295cadf13181fa6"
+  },
+  "result": {
+    "episode_count": 11,
+    "expanded_development_count": 7,
+    "fresh_validation_count": 2,
+    "final_evaluator_heldout_count": 2,
+    "physical_video_decodes": 0,
+    "physical_frames_decoded": 0,
+    "renderer_runs": 0,
+    "parameter_fits": 0,
+    "candidate_selections": 0,
+    "simulator_replays": 0,
+    "gates_passed": 8,
+    "gates_total": 8
+  },
+  "reviewer_decision": "ADVANCE_TO_EXPANDED_DEVELOPMENT_GLOBAL_MONOTONE_RESPONSE_FIT",
+  "next_transition": "freeze_or89_expanded_development_global_monotone_response_fit",
+  "claim_limits": {
+    "split_restart_only": true,
+    "fresh_validation_verified": false,
+    "final_evaluator_heldout_verified": false,
+    "pixel_similarity_achieved": false,
+    "camera_fidelity": false,
+    "kinematic_fidelity": false,
+    "event_parity": false,
+    "physics_fidelity": false,
+    "prospective_generalization": false,
+    "physical_transfer": false,
+    "simulator_promotion": false,
+    "task_transfer": false
+  }
+}

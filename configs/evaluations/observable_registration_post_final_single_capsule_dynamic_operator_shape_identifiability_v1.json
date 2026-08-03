@@ -1,0 +1,24 @@
+{
+  "schema_version": "sim2claw.observable_registration_post_final_single_capsule_dynamic_operator_shape_identifiability_contract.v1",
+  "experiment_id": "OR109_POST_FINAL_SINGLE_CAPSULE_DYNAMIC_OPERATOR_SHAPE_IDENTIFIABILITY_V1",
+  "proof_class": "post_final_dynamic_operator_single_capsule_shape_identifiability",
+  "sources": {
+    "or108_closeout": {"path": "configs/decisions/observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy_v1_closeout.json", "sha256": "2cccb8f46f9d38b68670c241583241f6bbb42b0d8bacd497ff83f9158f50bed1"},
+    "or108_contract": {"path": "configs/evaluations/observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy_v1.json", "sha256": "7e7b34af588783f83dbebf464b502188f8540cfa35017d36087301732b19e414"},
+    "or108_receipt": {"path": "outputs/observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy_v1/receipt.json", "sha256": "bb0842d969a2083d86eb8f5f0c87ee7dd08bcc07205f95a9064836c6133d62c4", "artifact_sha256": "ea581454fa8e15ce20e58789b02a76641eba01a5a194c30ff377aa90ddb19fab"},
+    "or108_implementation": {"path": "src/sim2claw/observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy.py", "sha256": "3009af40ead179c9e1a2a70870d2d8777e972bbc917dd4eedeb509b76e4bc6ec"},
+    "or107_contract": {"path": "configs/evaluations/observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution_v1.json", "sha256": "79d3f1f2b5a031fb9d18dbe61f27f9aebc32aadb499870829ade81c6173ed51a"},
+    "or107_implementation": {"path": "src/sim2claw/observable_registration_post_final_exogenous_operator_skin_edge_occupancy_attribution.py", "sha256": "8f04164f952fe4689577df0ecd8e71b04feea21ae3fdd224dcba11090bf6dadc"},
+    "persistent_support": {"path": "outputs/observable_registration_post_final_persistence_subtracted_dynamic_operator_proxy_v1/development_persistent_support.png", "sha256": "1da3c36b1371b0017757723e3afc065294a8e99eca8e318a048ef262ce718a4f"},
+    "or95_contract": {"path": "configs/evaluations/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1.json", "sha256": "d3ee993d1adc60d5f1b05f6ddd673d6945a9943f6e31be9119f498435b9fe0c4"},
+    "or95_frame_rows": {"path": "outputs/observable_registration_post_final_independent_robot_base_full_corpus_diagnostic_v1/frame_rows.json", "sha256": "7d32235363bf3d90a4185b59291ade3e400616ce6a1de0c843aab89c323b7551"}
+  },
+  "split": {"development_positions": [1, 2, 3, 4, 5, 6, 7], "validation_positions": [8, 9, 10, 11], "all_proxy_and_capsule_rules_frozen_before_validation": true, "untouched_cohort_remaining": false},
+  "sampling": {"within_episode_quantiles": [0.25, 0.5, 0.75], "samples_per_episode": 3},
+  "capsule_fit": {"dynamic_present_samples_only": true, "component_policy": "largest_connected_dynamic_component", "axis": "principal_eigenvector_of_component_pixel_coordinates", "endpoint_percentiles": [5.0, 95.0], "radius_percentile_of_absolute_minor_projection": 90.0, "minimum_radius_px": 2, "one_shape_per_present_frame": true, "optimization_or_search": false},
+  "metric": {"iou": "intersection_over_union_of_dynamic_component_and_capsule_mask", "coverage": "intersection_over_dynamic_component", "precision": "intersection_over_capsule_mask"},
+  "acceptance": {"development_minimum_mean_iou": 0.35, "development_minimum_mean_coverage": 0.6, "development_minimum_present_shape_count": 10, "validation_minimum_mean_iou": 0.3, "validation_minimum_mean_coverage": 0.55, "validation_minimum_present_shape_count": 6, "all_gates_required": true},
+  "resource_boundary": {"development_physical_episode_decodes_allowed": 7, "validation_physical_episode_decodes_allowed": 4, "development_physical_frames_read_allowed": 21, "validation_physical_frames_read_allowed": 12, "deterministic_development_shape_estimates_allowed": 21, "deterministic_validation_shape_estimates_allowed": 12, "optimization_searches_allowed": 0, "candidate_video_decodes_allowed": 0, "renders_allowed": 0, "simulator_replays_allowed": 0, "action_or_state_mutations_allowed": 0, "hardware_actions_allowed": 0, "paid_compute_allowed": false},
+  "claim_limits": {"post_final_2d_shape_identifiability_only": true, "person_identity_or_biometric_inference": false, "same_video_semantic_match": false, "untouched_cohort_remaining": false, "operator_3d_geometry_or_trajectory_calibrated": false, "camera_fidelity": false, "kinematic_fidelity": false, "event_parity": false, "physics_fidelity": false, "prospective_generalization": false, "physical_transfer": false, "simulator_promotion": false, "task_transfer": false},
+  "authority": {"camera_open": false, "gateway": false, "heldout_open": false, "paid_compute": false, "physical_motion": false, "serial": false, "simulator_promotion": false, "task_attempt": false, "training": false, "transfer_claim": false}
+}
