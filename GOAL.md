@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OR152_TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT_NO_RETRY`
+Status: `OR153_PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
 
 ## Active mission
 
@@ -9,7 +9,7 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR152_TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT_NO_RETRY`
+`OR153_PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
 
 ## Current card
 
@@ -17,9 +17,9 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_registration_or34_board_coordinate_initialization_replay_v1_closeout.json`.
-- Closeout SHA-256: `6fa4c5c0ed2acd54cd9067a469bd3d764dabb646dd05ab0198ddb55e570baa1c`.
-- Proof class: `one_run_observation_conditioned_or34_geometry_consistent_initialization_natural_dynamics_diagnostic`.
+- Closeout: `configs/decisions/observable_registration_or34_canonical_yaw_reversion_replay_v1_closeout.json`.
+- Closeout SHA-256: `e977a57df5db0224213936b0442d34030dc6b81430bfd1fac2b613c87b6f40f0`.
+- Proof class: `one_run_observation_conditioned_or34_board_consistent_canonical_yaw_reversion_natural_dynamics_diagnostic`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`independent GPT Pro and Fable 5 review of the OR152 counterexample may propose a separately frozen factor; OR152 itself admits no retry or automatic successor`
+`no automatic successor; any new factor requires separate owner authority and independent robot-bound metric registration or load-side contact evidence`
 
 ## Stop conditions
 

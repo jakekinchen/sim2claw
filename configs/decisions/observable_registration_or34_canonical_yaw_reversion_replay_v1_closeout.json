@@ -1,0 +1,88 @@
+{
+  "schema_version": "sim2claw.observable_registration_or34_canonical_yaw_reversion_replay_closeout.v1",
+  "experiment_id": "OR153_OR34_CANONICAL_YAW_REVERSION_REPLAY_V1",
+  "status": "PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE",
+  "proof_class": "one_run_observation_conditioned_or34_board_consistent_canonical_yaw_reversion_natural_dynamics_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_or34_canonical_yaw_reversion_replay_v1.json",
+    "sha256": "01c3724ee2b7f7dd7de1e0682b7c229105729a87dbdbf3507ce46e90cfe7ab8a"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_or34_canonical_yaw_reversion_replay.py",
+    "sha256": "2605503b1a0641f259e3e509012f827f3f4dadacd5dedd3b4e6612fb3271bbd5"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_or34_canonical_yaw_reversion_replay_v1/receipt.json",
+    "sha256": "9c20c02ca258a1e16eda88d87b4222842b8ebb4463e97275da1f02f2ee177a7e",
+    "artifact_sha256": "d76cce2f84c18f5d808004d62adb9ed32ba22d8f8c8534ce40c16debac145a94"
+  },
+  "trace": {
+    "path": "outputs/observable_registration_or34_canonical_yaw_reversion_replay_v1/trace.json",
+    "sha256": "f0a688cd3c83304c59e4a1159aeef7fe02200c368bab4b3a96730e09bf6ea283",
+    "row_count": 531
+  },
+  "executor_log": {
+    "path": "docs/session-logs/225-executor-observable-registration-or153-canonical-yaw-reversion-replay.md",
+    "sha256": "729c4fb8df62795d5cdf36e34268b93d84cfcb9c91ab76733051ea4bd7b8651a",
+    "canonical_replay_count": 1,
+    "temporary_or_prototype_replay_count": 0
+  },
+  "factor_isolation": {
+    "sole_changed_factor": "left_robot_base_yaw_relative_to_table_degrees",
+    "baseline_yaw_relative_to_table_degrees": -82.0,
+    "candidate_yaw_relative_to_table_degrees": -88.0,
+    "scene_semantic_diff_count": 1,
+    "or152_initial_pose_max_abs_change": 0.0,
+    "raw_measured_rows_timestamps_order_interpolation_unchanged": true,
+    "model_solver_contact_object_range_union_evaluator_unchanged": true,
+    "fits": 0,
+    "searches": 0,
+    "retries": 0
+  },
+  "result": {
+    "selected_piece_contact_preserved": true,
+    "selected_jaw_contact_steps": 381,
+    "final_height_error_or152_m": 0.014538801421087988,
+    "final_height_error_or153_m": 0.012650670344653614,
+    "final_height_error_reduction_m": 0.001888131076434374,
+    "final_planar_center_error_or152_m": 0.0689279815842676,
+    "final_planar_center_error_or153_m": 0.12933573788162778,
+    "final_planar_error_reduction_m": -0.06040775629736017,
+    "signed_progress_toward_d2_or152_m": -0.00485455518887039,
+    "signed_progress_toward_d2_or153_m": -0.05403294819148898,
+    "final_upright_tilt_or152_degrees": 102.10419769155233,
+    "final_upright_tilt_or153_degrees": 97.79609357188684,
+    "final_upright_tilt_reduction_degrees": 4.308104119665487,
+    "false_to_true_gate_count": 0,
+    "numeric_task_success": false,
+    "accepted_task_outcome_metric_advancement": true
+  },
+  "review": {
+    "role": "independent_evaluator_advisor",
+    "initial_verdict": "FAIL_METADATA_ONLY",
+    "scientific_outcome": "accepted_narrow_task_outcome_metric_advancement_task_negative",
+    "metadata_blockers_resolved": [
+      "closeout hash-binds the frozen contract, final read-only verifier implementation, receipt, full 531-row trace, and Executor log",
+      "read-only verifier checks the closeout bindings, receipt artifact digest, trace order, and receipt-trace initialization correspondence",
+      "control plane closes terminally without a second replay"
+    ],
+    "final_verdict": "PASS_METADATA_ONLY_REPAIR_NO_SECOND_REPLAY",
+    "residual_blockers": []
+  },
+  "terminal_boundary": {
+    "or153_complete": true,
+    "same_factor_retry_allowed": false,
+    "automatic_successor_admitted": false,
+    "finding": "Removing the outcome-informed six-degree yaw compensation materially improves final height error but materially worsens planar error and D2 progress. The retained data show yaw sensitivity but do not identify a calibrated base yaw or a successful task mechanism.",
+    "reopen_condition": "separately frozen owner-authorized factor supported by independent robot-bound metric registration or load-side contact evidence, not OR153 outcome selection"
+  },
+  "claim_limits": {
+    "action_only_transfer": false,
+    "physical_world_registration": false,
+    "camera_calibration": false,
+    "physics_fidelity": false,
+    "physical_task_success": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `OR152_TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT_NO_RETRY`
+Status: `OR153_PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
 
 Created: `2026-07-29`
 
@@ -392,7 +392,7 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: OR152_TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT_NO_RETRY
+Current state: OR153_PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY
 Active card: none
 Completed: immutable predecessor C0-C9; OR0-OR23, OR26-OR33, OR149, and OR150; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed; camera endpoint REAL-to-SIM 1/1
 Evidence: OR131 reaches `0.841731` global temporal similarity and passes motion, whole-edge, phase, p10, and improvement gates. OR132 finds the remaining regional residual combined/unresolved under the frozen single-successor rule.
@@ -505,3 +505,44 @@ The pawn-XY-only factor is permanently rejected without retry. The closeout
 hash-binds the receipt and full 531-row trace. It admits no automatic successor;
 any next factor must be independently derived and separately frozen rather
 than selected from OR152's outcome.
+
+## OR153 owner-authorized canonical-yaw reversion falsification
+
+GPT Pro and Fable 5 Extra independently inspected exact pushed commit
+`5e01aee055a30642ce5ecc143e9dd5a06781803a`. GPT Pro rejects every claim that
+the retained data identify a robot-to-board calibration or true transfer
+correction. Fable agrees that `-88 degrees` is uncalibrated, but admits one
+narrow falsification: remove OR18's outcome-selected `+6 degree` yaw
+compensation and restore the otherwise identical pre-task OR13 scene exactly
+once.
+
+OR153 therefore preserves OR152's transported pawn XY, settled support Z,
+upright quaternion, all 531 raw measured rows, timestamps, order,
+interpolation, model/solver/contact/object/range settings, settle, and evaluator.
+The only allowed factor is left-base yaw `-82 -> -88 degrees`; a manifest audit
+must prove the OR18 and OR13 scene files differ in exactly that scalar field.
+There is no fit, search, retry, sign test, sweep, paired adjustment, assistance,
+hardware action, held-out open, or paid compute.
+
+Advancement remains the frozen OR152 rule: selected-piece contact plus at least
+one material task-consequence improvement (1 mm planar error, 5 degrees tilt,
+or 1 mm height error), or one false-to-true unchanged task gate. Numeric task
+success requires every unchanged C6/OR34 task gate. Passing only establishes
+sensitivity to removing an outcome-informed compensation; it does not calibrate
+`-88 degrees`, approve a global mapping, prove real-to-sim fidelity, promote the
+simulator, or prove transfer. Failure permanently exhausts this factor.
+
+OR153 closed after exactly one canonical replay and independent Reviewer
+`PASS`. Contact remained present. Final height error improved from
+`14.538801 mm` to `12.650670 mm`, a `1.888131 mm` reduction that clears the
+prospectively frozen 1 mm materiality threshold. This is the admitted tangible
+task-outcome metric advancement.
+
+The counterevidence is larger and remains first-class: final planar error
+regressed from `68.927982 mm` to `129.335738 mm`, signed D2 progress regressed
+from `-4.854555 mm` to `-54.032948 mm`, tilt improved only `4.308104 degrees`
+and missed its 5 degree threshold, no task gate flipped, and numeric task
+success remained false. The pawn did not remain upright or transfer to the next
+square. The closeout hash-binds the frozen contract, final read-only verifier,
+receipt, full 531-row trace, and Executor log. The yaw factor is exhausted
+without retry and admits no automatic successor.

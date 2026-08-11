@@ -2,10 +2,10 @@
   "schema_version": "sim2claw.autonomous_project_state.v1",
   "updated_at": "2026-08-11T00:00:00-05:00",
   "active_campaign": "observable_registration_contact_causality_v1",
-  "current_milestone": "OR152_TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT_NO_RETRY",
+  "current_milestone": "OR153_PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY",
   "training_lock": "closed_until_evaluator_owned_twinworthiness_opens_declared_capability",
   "promotion_owner": "separate_cpu_fp32_consequence_evaluator",
-  "proof_class": "one_run_observation_conditioned_or34_geometry_consistent_initialization_natural_dynamics_diagnostic",
+  "proof_class": "one_run_observation_conditioned_or34_board_consistent_canonical_yaw_reversion_natural_dynamics_diagnostic",
   "four_hour_hil_transaction": {
     "schema_version": "sim2claw.four_hour_hil_transaction.v1",
     "status": "four_physical_attempts_complete_two_admitted_two_rejected_simulator_candidate_rejected_offline_decomposition_frozen_closeout_verification_active",
