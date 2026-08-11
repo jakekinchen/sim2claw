@@ -1,0 +1,86 @@
+{
+  "schema_version": "sim2claw.observable_registration_or34_board_coordinate_initialization_replay_closeout.v1",
+  "experiment_id": "OR152_OR34_BOARD_COORDINATE_INITIALIZATION_REPLAY_V1",
+  "status": "TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT",
+  "proof_class": "one_run_observation_conditioned_or34_geometry_consistent_initialization_natural_dynamics_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_or34_board_coordinate_initialization_replay_v1.json",
+    "sha256": "73b07e83ba59cc82db96c17d67c08dae6645dcddf671ccaafb4cc14a0d3a071c"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_or34_board_coordinate_initialization_replay.py",
+    "sha256": "2dab539d04e4aca4a09dff7afd3b14e5c0fd1ef346cac479a0d361959317354c"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_or34_board_coordinate_initialization_replay_v1/receipt.json",
+    "sha256": "684ee5a2c15e189392fcffeec4275d8c86c58894d2287c1e3485f08315c1610d",
+    "artifact_sha256": "be41a341a207d96092ae8937c616e9fb35bc95a145b499f0f5d045359f5fd960"
+  },
+  "trace": {
+    "path": "outputs/observable_registration_or34_board_coordinate_initialization_replay_v1/trace.json",
+    "sha256": "110c5bc104ef70fd44d97a13ffff65ac386300ac5cc0413e1621d25df1fd2bf2",
+    "row_count": 531
+  },
+  "executor_log": {
+    "path": "docs/session-logs/224-executor-observable-registration-or152-board-coordinate-initialization-replay.md",
+    "sha256": "c4ae1f9425d6fd50c5e942d3fbc62d269b282b35c5fc93b851a3a9ced9b124f1",
+    "canonical_replay_count": 1,
+    "temporary_or_prototype_replay_count": 0
+  },
+  "factor_isolation": {
+    "sole_changed_factor": "selected_pawn_initial_xy_board_coordinate_transport_into_or18_scene",
+    "initial_xy_change_m": 0.013978176136764962,
+    "initial_z_unchanged": true,
+    "initial_orientation_unchanged": true,
+    "raw_measured_rows_timestamps_order_interpolation_unchanged": true,
+    "model_solver_contact_object_range_union_evaluator_unchanged": true,
+    "fits": 0,
+    "searches": 0,
+    "retries": 0
+  },
+  "result": {
+    "selected_piece_contact_preserved": true,
+    "first_contact_sample_or34": 230,
+    "first_contact_sample_or152": 259,
+    "first_motion_sample_or34": 232,
+    "first_motion_sample_or152": 263,
+    "signed_progress_toward_d2_or34_m": 0.08616473459195542,
+    "signed_progress_toward_d2_or152_m": -0.00485455518887039,
+    "final_planar_center_error_or34_m": 0.03394622069649699,
+    "final_planar_center_error_or152_m": 0.0689279815842676,
+    "final_planar_error_reduction_m": -0.034981760887770615,
+    "final_upright_tilt_or34_degrees": 102.10499301968989,
+    "final_upright_tilt_or152_degrees": 102.10419769155233,
+    "false_to_true_gate_count": 0,
+    "numeric_task_success": false,
+    "accepted_task_outcome_metric_advancement": false
+  },
+  "review": {
+    "role": "independent_evaluator_advisor",
+    "initial_verdict": "CONDITIONAL",
+    "scientific_outcome": "accepted_terminal_negative",
+    "metadata_blockers_resolved": [
+      "executor log records the sole canonical command and zero prototype replays",
+      "closeout hash-binds receipt and full 531-row trace",
+      "post-run verifier checks both closeout bindings and receipt-trace initialization correspondence"
+    ],
+    "final_verdict": "PASS_METADATA_ONLY_REPAIR_NO_SECOND_REPLAY",
+    "residual_blockers": []
+  },
+  "terminal_boundary": {
+    "or152_complete": true,
+    "same_factor_retry_allowed": false,
+    "automatic_successor_admitted": false,
+    "finding": "Pawn board-coordinate XY transport alone worsens contact timing, D2 progress, and final planar error. It is rejected as a sufficient task mechanism.",
+    "reopen_condition": "separately frozen owner-authorized factor derived from independent retained evidence, not OR152 outcome selection"
+  },
+  "claim_limits": {
+    "action_only_transfer": false,
+    "physical_world_registration": false,
+    "camera_calibration": false,
+    "physics_fidelity": false,
+    "physical_task_success": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

@@ -1,19 +1,22 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
-  "generated_at": "2026-08-08",
-  "status": "or150_complete_mobile_legible_disclosure_or149_or148_terminal_boundaries_restored",
+  "generated_at": "2026-08-11",
+  "status": "or152_terminal_no_task_outcome_metric_advancement_no_retry",
   "active_card": null,
   "active_card_contract": null,
   "last_card_contract": {
-    "card_id": "OR150",
-    "proof_target": "one_verified_presentation_only_mobile_legible_burned_disclosure_derivative_from_immutable_or149_render",
+    "card_id": "OR152",
+    "proof_target": "one_observation_conditioned_or34_replay_with_board_coordinate_initial_xy_as_the_sole_changed_factor",
     "allowed_paths": [
-      "configs/evaluations/observable_registration_d1_d2_nominal_wrist_mobile_readability_owner_authorization_v1.json",
-      "configs/evaluations/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1.json",
-      "outputs/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1",
-      "configs/decisions/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1_closeout.json",
-      "docs/session-logs/150-executor-observable-registration-d1-d2-nominal-wrist-mobile-readability.md",
+      "configs/evaluations/observable_registration_or34_board_coordinate_initialization_replay_owner_authorization_v1.json",
+      "configs/evaluations/observable_registration_or34_board_coordinate_initialization_replay_v1.json",
+      "src/sim2claw/observable_registration_or34_board_coordinate_initialization_replay.py",
+      "tests/test_observable_registration_or34_board_coordinate_initialization_replay.py",
+      "outputs/observable_registration_or34_board_coordinate_initialization_replay_v1",
+      "configs/decisions/observable_registration_or34_board_coordinate_initialization_replay_v1_closeout.json",
+      "docs/briefs/224-observable-registration-or152-board-coordinate-initialization-replay.md",
+      "docs/session-logs/224-executor-observable-registration-or152-board-coordinate-initialization-replay.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
       "docs/autonomous-workflow/project_state.json",
@@ -25,7 +28,7 @@
       "write"
     ],
     "validation_commands": [
-      "uv run --locked python outputs/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1/verify.py",
+      "uv run --locked pytest -q tests/test_observable_registration_or34_board_coordinate_initialization_replay.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
@@ -90,7 +93,7 @@
     "commit": false,
     "push_origin_main": false
   },
-  "next_transition": null,
+  "next_transition": "independent GPT Pro and Fable 5 review of the OR152 counterexample may propose a separately frozen factor; OR152 itself admits no retry or automatic successor",
   "node_types": [
     "workcell",
     "session",
@@ -136,7 +139,7 @@
     },
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "1d905fe806509d379042a37b1a1fae81e9d8f722b4c6b94aba19d5cac5da6dc0",
+      "sha256": "c1170a97a0cafad07573f08ee6e7e73cb2986050bf8f71109f7571f748111564",
       "proof_class": "campaign_control_state"
     },
     "or149": {
@@ -683,6 +686,16 @@
       "path": "configs/decisions/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1_closeout.json",
       "sha256": "f48bf4ee4b8f160aeec3679a2b3a6089f200fa2599e701dbb0a9376117df2a24",
       "proof_class": "presentation_only_burned_disclosure_mobile_readability_derivative"
+    },
+    "or151": {
+      "path": "configs/decisions/observable_registration_or34_coordinate_landmark_audit_v1_closeout.json",
+      "sha256": "03380ac8713fc0dd5cf6d3bf6fdaa57962f3beb2799371c4a0f768e5eb0d11c9",
+      "proof_class": "frozen_or34_read_only_coordinate_geometry_landmark_registration_audit"
+    },
+    "or152": {
+      "path": "configs/decisions/observable_registration_or34_board_coordinate_initialization_replay_v1_closeout.json",
+      "sha256": "6fa4c5c0ed2acd54cd9067a469bd3d764dabb646dd05ab0198ddb55e570baa1c",
+      "proof_class": "one_run_observation_conditioned_or34_geometry_consistent_initialization_natural_dynamics_diagnostic"
     }
   },
   "nodes": [

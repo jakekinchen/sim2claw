@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.observable_registration_or34_coordinate_landmark_audit_owner_authorization.v1",
+  "date": "2026-08-11",
+  "status": "owner_authorized_bounded_simulator_metric_advancement_lane",
+  "owner_instruction": "okay proceed and keep going until we get a tangible task outcome success metric advancement in the sim. believe in yourself and fallback to the fable and gpt pro advisors when all else fails.",
+  "proof_class": "frozen_or34_read_only_coordinate_geometry_landmark_registration_audit",
+  "execution_boundary": {
+    "read_only_geometry_audits": 1,
+    "simulator_replays": 0,
+    "mujoco_forward_calls_allowed": true,
+    "mujoco_step_calls": 0,
+    "fits": 0,
+    "parameter_searches": 0,
+    "camera_warps_or_fits": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "OR151 may audit immutable OR34 initialization in board coordinates and compiled body, joint, support-plane, and nominal projection landmarks. It cannot step dynamics, change OR34, fit a camera or parameter, claim task success, promote a simulator, or claim transfer."
+}

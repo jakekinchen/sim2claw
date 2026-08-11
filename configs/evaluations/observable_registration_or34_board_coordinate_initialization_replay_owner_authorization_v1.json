@@ -1,0 +1,32 @@
+{
+  "schema_version": "sim2claw.observable_registration_or34_board_coordinate_initialization_replay_owner_authorization.v1",
+  "date": "2026-08-11",
+  "status": "owner_authorized_one_bounded_simulator_metric_advancement_replay",
+  "owner_instruction": "okay proceed and keep going until we get a tangible task outcome success metric advancement in the sim. believe in yourself and fallback to the fable and gpt pro advisors when all else fails.",
+  "prerequisite": "OR151 independent Reviewer PASS",
+  "proof_class": "one_run_observation_conditioned_or34_geometry_consistent_initialization_natural_dynamics_diagnostic",
+  "execution_boundary": {
+    "simulator_replays": 1,
+    "selected_pawn_initial_xy_changes": 1,
+    "all_other_state_model_solver_contact_timing_and_evaluator_changes": 0,
+    "fits": 0,
+    "searches": 0,
+    "retries": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_replay": true,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "OR152 may execute exactly one observation-conditioned natural-dynamics replay with the OR34 selected pawn initial XY transported through OR18 board geometry. It is not action-only transfer, a fit, physical task evidence, simulator promotion, or transfer proof."
+}

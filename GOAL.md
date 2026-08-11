@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OR150_COMPLETE_MOBILE_LEGIBLE_DISCLOSURE_OR149_OR148_TERMINAL_BOUNDARIES_RESTORED`
+Status: `OR152_TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT_NO_RETRY`
 
 ## Active mission
 
@@ -9,7 +9,7 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR150_COMPLETE_MOBILE_LEGIBLE_DISCLOSURE_OR149_OR148_TERMINAL_BOUNDARIES_RESTORED`
+`OR152_TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT_NO_RETRY`
 
 ## Current card
 
@@ -17,9 +17,9 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1_closeout.json`.
-- Closeout SHA-256: `f48bf4ee4b8f160aeec3679a2b3a6089f200fa2599e701dbb0a9376117df2a24`.
-- Proof class: `presentation_only_burned_disclosure_mobile_readability_derivative`.
+- Closeout: `configs/decisions/observable_registration_or34_board_coordinate_initialization_replay_v1_closeout.json`.
+- Closeout SHA-256: `6fa4c5c0ed2acd54cd9067a469bd3d764dabb646dd05ab0198ddb55e570baa1c`.
+- Proof class: `one_run_observation_conditioned_or34_geometry_consistent_initialization_natural_dynamics_diagnostic`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`None`
+`independent GPT Pro and Fable 5 review of the OR152 counterexample may propose a separately frozen factor; OR152 itself admits no retry or automatic successor`
 
 ## Stop conditions
 

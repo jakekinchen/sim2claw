@@ -1,0 +1,60 @@
+{
+  "schema_version": "sim2claw.observable_registration_or34_coordinate_landmark_audit_closeout.v1",
+  "experiment_id": "OR151_OR34_COORDINATE_LANDMARK_AUDIT_V1",
+  "status": "PASS_COORDINATE_FRAME_MISMATCH_CONFIRMED",
+  "proof_class": "frozen_or34_read_only_coordinate_geometry_landmark_registration_audit",
+  "contract": {
+    "path": "configs/evaluations/observable_registration_or34_coordinate_landmark_audit_v1.json",
+    "sha256": "67cafadff71ed8154dd54652cb79ac2c4b9bed7f16b2406ccbd5512da20326aa"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_or34_coordinate_landmark_audit_v1/receipt.json",
+    "sha256": "03316d9241df9f051c472d441908e2a009ccd980e3e6fb627a33151576f737bc",
+    "artifact_sha256": "0b39dbf0cd5c659c25ee37467691676474e313eac6f496a934a8e5e59eda0009"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_or34_coordinate_landmark_audit.py",
+    "sha256": "ceade8fda8abdabbc1a1e380c9c02c5fdc037f2847da5098339002bb7c833536"
+  },
+  "result": {
+    "legacy_d1_planar_error_m": 0.014416000585279764,
+    "transported_d1_planar_error_m": 0.0028250690951594944,
+    "required_initial_xy_change_m": 0.013978176136764962,
+    "body_to_free_joint_translation_error_m": 0.0,
+    "detailed_pawn_minimum_local_z_m": 0.0,
+    "stored_endpoint_z_below_or18_support_plane_m": 0.008000000000000007,
+    "or34_replay_replaced_stored_z_with_scene_support_z": true,
+    "mujoco_step_calls": 0,
+    "simulator_replays": 0
+  },
+  "review": {
+    "role": "independent_evaluator_advisor",
+    "verdict": "PASS",
+    "focused_tests_passed": 3,
+    "blockers": [],
+    "finding": "The board-coordinate transport, body/free-joint base landmark, zero-step boundary, source immutability, and claim limits pass. Freeze exactly one OR152 observation-conditioned replay with selected-pawn initial XY as the sole changed factor."
+  },
+  "successor": {
+    "admitted": true,
+    "card_id": "OR152",
+    "replay_count": 1,
+    "sole_changed_factor": "selected_pawn_initial_xy_board_coordinate_transport_into_or18_scene",
+    "must_preserve": [
+      "OR34 observation-conditioned raw measured robot rows",
+      "source timestamps and row order",
+      "OR18 model, solver, contact, and object parameters",
+      "settled OR18 support Z",
+      "OR34 upright orientation",
+      "OR34 task evaluator"
+    ],
+    "fit_search_retry_allowed": false
+  },
+  "claim_limits": {
+    "physical_world_registration": false,
+    "camera_calibration": false,
+    "physics_fidelity": false,
+    "task_success": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

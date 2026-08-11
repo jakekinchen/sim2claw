@@ -1,0 +1,92 @@
+{
+  "schema_version": "sim2claw.observable_registration_or34_board_coordinate_initialization_replay_contract.v1",
+  "experiment_id": "OR152_OR34_BOARD_COORDINATE_INITIALIZATION_REPLAY_V1",
+  "proof_class": "one_run_observation_conditioned_or34_geometry_consistent_initialization_natural_dynamics_diagnostic",
+  "sources": {
+    "owner_authorization": {
+      "path": "configs/evaluations/observable_registration_or34_board_coordinate_initialization_replay_owner_authorization_v1.json",
+      "sha256": "1c3c297e05c9dd155f72070cfe2d50bfac45bd5a9cefa6377fe61dcbb432901d"
+    },
+    "or151_closeout": {
+      "path": "configs/decisions/observable_registration_or34_coordinate_landmark_audit_v1_closeout.json",
+      "sha256": "03380ac8713fc0dd5cf6d3bf6fdaa57962f3beb2799371c4a0f768e5eb0d11c9"
+    },
+    "or151_receipt": {
+      "path": "outputs/observable_registration_or34_coordinate_landmark_audit_v1/receipt.json",
+      "sha256": "03316d9241df9f051c472d441908e2a009ccd980e3e6fb627a33151576f737bc"
+    },
+    "or34_contract": {
+      "path": "configs/evaluations/observable_registration_measured_state_visual_twin_v1.json",
+      "sha256": "ede7ca2a7f792c096014a90769bb9c024ededb264acb91b6173e97d55dc2011c"
+    },
+    "or34_receipt": {
+      "path": "outputs/observable_registration_measured_state_visual_twin_v1/receipt.json",
+      "sha256": "2548958515f98537446ee24295d33e7d5d4fe1ea2cedc128016c5099c44b2678"
+    },
+    "or34_trace": {
+      "path": "outputs/observable_registration_measured_state_visual_twin_v1/trace.json",
+      "sha256": "fc772a4ba565c1a47a6f737522b659f454932456d046328e6c60d48752f4b927"
+    },
+    "or34_implementation": {
+      "path": "src/sim2claw/observable_registration_measured_state_visual_twin.py",
+      "sha256": "20ae6baf1d2e4768047d65f415584c49232cab0786758e1a30f257be55dedab4"
+    },
+    "or19_contract": {
+      "path": "configs/evaluations/observable_registration_unilateral_push_dynamic_replay_v1.json",
+      "sha256": "df7cf58cf277054aff5727ce4f8364707b29cc1c2ad2181efbb19a4bb657b440"
+    },
+    "or18_scene": {
+      "path": "outputs/observable_registration_unilateral_push_contact_v1/derived_scene_config.json",
+      "sha256": "afc1b762041c9e660de54f3a1dd82343f3184d7333da99c929619d19632497e0"
+    }
+  },
+  "replay": {
+    "one_run_only": true,
+    "robot_driver": "raw_follower_actual_position_degrees",
+    "observation_conditioned": true,
+    "action_only_transfer": false,
+    "row_count": 531,
+    "preserve_source_row_order": true,
+    "preserve_source_timestamps": true,
+    "interpolate_only_between_adjacent_measured_rows_at_native_mujoco_timestep": true,
+    "reuse_or34_or18_model_solver_contact_object_and_range_union": true,
+    "natural_contact_only": true,
+    "post_action_settle_seconds": 1.0,
+    "sole_changed_factor": "selected_pawn_initial_xy_board_coordinate_transport_into_or18_scene",
+    "initial_z_source": "unchanged_or34_settled_or18_support_z",
+    "initial_orientation_source": "unchanged_or34_settled_upright_quaternion",
+    "object_pose_injection_allowed": false,
+    "latch_or_attachment_allowed": false,
+    "endpoint_injection_allowed": false,
+    "action_state_timestamp_model_solver_contact_object_or_evaluator_change_allowed": false,
+    "fit_search_retry_allowed": false
+  },
+  "evaluator": {
+    "identity": "byte_equal_c6_evaluator_used_by_or34",
+    "metric_advancement_is_prospectively_frozen": true,
+    "baseline": {
+      "final_planar_center_error_m": 0.03394622069649699,
+      "final_upright_tilt_degrees": 102.10499301968989,
+      "final_height_error_m": 0.014538794124465904,
+      "selected_piece_contact_required": true,
+      "numeric_task_success": false
+    },
+    "material_improvement_thresholds": {
+      "final_planar_center_error_reduction_m": 0.001,
+      "final_upright_tilt_reduction_degrees": 5.0,
+      "final_height_error_reduction_m": 0.001
+    },
+    "accepted_advancement": "at_least_one_material_task_consequence_improvement_or_one_false_to_true_frozen_task_gate_with_selected_piece_contact_preserved",
+    "report_every_improvement_and_regression": true,
+    "numeric_task_success_requires_all_unchanged_or34_task_gates": true
+  },
+  "claim_limits": {
+    "action_only_transfer": false,
+    "physical_world_registration": false,
+    "camera_calibration": false,
+    "physics_fidelity": false,
+    "physical_task_success": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

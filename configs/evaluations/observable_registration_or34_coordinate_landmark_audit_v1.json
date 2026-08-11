@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.observable_registration_or34_coordinate_landmark_audit_contract.v1",
+  "experiment_id": "OR151_OR34_COORDINATE_LANDMARK_AUDIT_V1",
+  "proof_class": "frozen_or34_read_only_coordinate_geometry_landmark_registration_audit",
+  "sources": {
+    "owner_authorization": {
+      "path": "configs/evaluations/observable_registration_or34_coordinate_landmark_audit_owner_authorization_v1.json",
+      "sha256": "db104b3c21dda41e601b931adcb09df9f98a5f5086dd167116f782ad69416c6f"
+    },
+    "or34_contract": {
+      "path": "configs/evaluations/observable_registration_measured_state_visual_twin_v1.json",
+      "sha256": "ede7ca2a7f792c096014a90769bb9c024ededb264acb91b6173e97d55dc2011c"
+    },
+    "or34_receipt": {
+      "path": "outputs/observable_registration_measured_state_visual_twin_v1/receipt.json",
+      "sha256": "2548958515f98537446ee24295d33e7d5d4fe1ea2cedc128016c5099c44b2678"
+    },
+    "or34_trace": {
+      "path": "outputs/observable_registration_measured_state_visual_twin_v1/trace.json",
+      "sha256": "fc772a4ba565c1a47a6f737522b659f454932456d046328e6c60d48752f4b927"
+    },
+    "or34_closeout": {
+      "path": "configs/decisions/observable_registration_measured_state_visual_twin_v1_closeout.json",
+      "sha256": "0e8d94ac0ed6ddc65ad57a2a46e1cc28fa2db257361b236142bfd4b255759bee"
+    },
+    "physical_endpoint_receipt": {
+      "path": "outputs/retrospective_c922_endpoint_to_sim_v1/receipt.json",
+      "sha256": "3f73fc8cd41365517a287895fc23b973e783e764dee022987cecd28e89c7a011"
+    },
+    "or19_contract": {
+      "path": "configs/evaluations/observable_registration_unilateral_push_dynamic_replay_v1.json",
+      "sha256": "df7cf58cf277054aff5727ce4f8364707b29cc1c2ad2181efbb19a4bb657b440"
+    },
+    "or18_scene": {
+      "path": "outputs/observable_registration_unilateral_push_contact_v1/derived_scene_config.json",
+      "sha256": "afc1b762041c9e660de54f3a1dd82343f3184d7333da99c929619d19632497e0"
+    }
+  },
+  "audit": {
+    "selected_piece": "brown_pawn_d1",
+    "source_square": "d1",
+    "primary_coordinate_system": "board_file_rank_coordinates",
+    "physical_observation_field": "observations.initial.board_coordinate",
+    "legacy_initialization_field": "c6.initialization.physical_d1_world_position_m",
+    "compile_or18_scene_with_canonical_piece_reset": true,
+    "compare_body_xpos_joint_qpos_and_support_plane": true,
+    "nominal_camera_projection_is_diagnostic_only": true
+  },
+  "acceptance": {
+    "source_hashes_match": true,
+    "or34_files_unchanged": true,
+    "mujoco_step_calls": 0,
+    "body_xpos_equals_free_joint_translation_tolerance_m": 1e-12,
+    "remapped_board_coordinate_matches_declared_coordinate_tolerance_squares": 1e-9,
+    "legacy_world_copy_offset_from_or18_d1_minimum_m": 0.01,
+    "remapped_offset_from_or18_d1_maximum_m": 0.005,
+    "successor_admitted_only_if_geometry_mismatch_is_confirmed": true
+  },
+  "claim_limits": {
+    "physical_world_registration": false,
+    "camera_calibration": false,
+    "physics_fidelity": false,
+    "task_success": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `OR150_COMPLETE_MOBILE_LEGIBLE_DISCLOSURE_OR149_OR148_TERMINAL_BOUNDARIES_RESTORED`
+Status: `OR152_TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT_NO_RETRY`
 
 Created: `2026-07-29`
 
@@ -392,7 +392,7 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: OR150_COMPLETE_MOBILE_LEGIBLE_DISCLOSURE_OR149_OR148_TERMINAL_BOUNDARIES_RESTORED
+Current state: OR152_TERMINAL_NO_TASK_OUTCOME_METRIC_ADVANCEMENT_NO_RETRY
 Active card: none
 Completed: immutable predecessor C0-C9; OR0-OR23, OR26-OR33, OR149, and OR150; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed; camera endpoint REAL-to-SIM 1/1
 Evidence: OR131 reaches `0.841731` global temporal similarity and passes motion, whole-edge, phase, p10, and improvement gates. OR132 finds the remaining regional residual combined/unresolved under the frozen single-successor rule.
@@ -458,3 +458,50 @@ website's exact 330 CSS-pixel video width. The final H.264 derivative preserves
 531 frames and carries all three claim-boundary lines legibly. It is the only
 authorized wrist publication video; no WebM or JPEG derivative is admitted.
 No successor opens, and the OR149/OR148 terminal boundaries are restored.
+
+## OR151 owner-authorized coordinate and landmark audit
+
+The owner's August 11 instruction reopens one simulator-only diagnostic card.
+OR151 binds immutable OR34 and asks whether its retained physical pawn XY was
+copied across incompatible world frames instead of transported through the
+retained board-relative coordinate. The primary metric is base-to-board
+geometry; nominal camera projection is diagnostic only.
+
+OR151 permits one OR18 model compilation and `mj_forward`, but zero dynamics
+steps, replays, fits, searches, warps, hardware actions, or paid compute. It
+must audit board geometry, D1 center, copied and transported XY, free-joint and
+body landmarks, support height, and bound-source immutability. Only a reviewed
+pass may admit a separately frozen replay in which pawn initialization is the
+sole changed experimental factor.
+
+OR151 closed with all six gates passing and independent Reviewer `PASS`. The
+legacy copied XY is `14.4160 mm` from OR18 D1; transported board-coordinate XY
+is `2.8251 mm` from D1 and requires a `13.9782 mm` correction. The compiled
+pawn body and free-joint translation agree exactly and the pawn geometry begins
+at local Z zero. OR34's stored endpoint Z was bookkeeping; the replay already
+replaced it with OR18 support Z, so Z is not an OR152 factor.
+
+## OR152 one-run geometry-consistent initialization replay
+
+OR152 freezes one observation-conditioned natural-dynamics replay. It preserves
+the exact OR34 raw measured robot rows, timestamps, row order, interpolation,
+OR18 model/solver/contact/object parameters, support Z, upright quaternion,
+settle, and task evaluator. Selected-pawn initial XY transported through OR18
+board geometry is the sole change. There is no fit, search, retry, action
+repair, retiming, latch, endpoint injection, hardware action, or paid compute.
+
+The write-once evaluator reports every task-consequence improvement and
+regression. A tangible advancement requires at least one prospectively bounded
+material improvement (1 mm planar error, 5 degrees tilt, or 1 mm height error)
+or one false-to-true unchanged task gate, with selected-pawn contact preserved.
+Numeric simulator success still requires all unchanged OR34 gates.
+
+OR152 closed after exactly one canonical replay and independent Reviewer
+`PASS`. Contact remained present, but first contact moved `230→259`, first 1 mm
+motion moved `232→263`, signed D2 progress changed `+86.165→-4.855 mm`, and
+final D2 error regressed `33.946→68.928 mm`. Final tilt remained about `102.1°`,
+no task gate flipped false-to-true, and numeric task success remained false.
+The pawn-XY-only factor is permanently rejected without retry. The closeout
+hash-binds the receipt and full 531-row trace. It admits no automatic successor;
+any next factor must be independently derived and separately frozen rather
+than selected from OR152's outcome.
