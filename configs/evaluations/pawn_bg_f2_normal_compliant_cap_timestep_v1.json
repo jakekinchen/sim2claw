@@ -1,0 +1,101 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_normal_compliant_cap_timestep.v1",
+  "experiment_id": "or138-f2-normal-compliant-cap-timestep-v1",
+  "status": "frozen_before_compile_or_dynamic_execution",
+  "proof_class": "same_episode_action_frozen_simulator_only_reduced_order_normal_compliance_diagnostic",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_f2_normal_compliant_cap_timestep_owner_authorization_v1.json",
+    "sha256": "d9f91aed7d120b9a09a07c23dffe9b84e908135fde924fc7aba7b96d8000df50"
+  },
+  "base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_v1.json",
+    "sha256": "b19ef7631d8f5829b841135fd5b330963ce2d0c11475dd58cb17987d811260ad"
+  },
+  "protocol_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_v1.json",
+    "sha256": "b19ef7631d8f5829b841135fd5b330963ce2d0c11475dd58cb17987d811260ad",
+    "reuse": [
+      "candidate_order",
+      "normal_compliance",
+      "preflight",
+      "rigid_compatibility_reference",
+      "rigid_compatibility_tolerances",
+      "source_boundary_reconstruction",
+      "execution"
+    ]
+  },
+  "or135_base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_deformable_cap_compatibility_v1.json",
+    "sha256": "5539f1712308338c608f7ee9c9ca964c603ae00bce79b6816a827a1507363861"
+  },
+  "additional_source_bindings": {
+    "or137_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_normal_compliant_cap_v1_closeout.json",
+      "sha256": "805577e91d4c86a6299b5173d535540d1ea8b28a51699614e871488fd6a5f400"
+    },
+    "or136_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_deformable_cap_source_boundary_v1_closeout.json",
+      "sha256": "8978bc441eaff1822962002f23b29fe8f83a4e0d83a4ae2eca2567af74dba06e"
+    },
+    "neutral_parameter_source": {
+      "path": "configs/sail/grasp_retention_normal_compliance_v1.json",
+      "sha256": "bd52bb8e34790d3aad4d6598155dba6018a7262101b72d1d0935498facfd0f49"
+    }
+  },
+  "compile_repair": {
+    "only_changed_gate": "compiled_model_timestep_comparison",
+    "rigid_candidate_exact_equality_required": true,
+    "expected_seconds": 0.00225,
+    "absolute_tolerance_seconds": 1E-15,
+    "all_protocol_fields_reused_byte_for_byte": true
+  },
+  "implementation_bindings": {
+    "producer_and_preflight_collector": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap.py",
+      "sha256": "9bfb51b58ddd934de02b40b1bffffe6bab8a020583f8e394b136bdf086493f3e"
+    },
+    "preflight_independent_verifier": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap_preflight_verify.py",
+      "sha256": "97e92e98aafffc7296d5f0e8bedfe579aabb42eb8c2db64924eb7a0101273499"
+    },
+    "task_independent_verifier": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap_verify.py",
+      "sha256": "d03b20ef109c3f15a2830618dd8228f17d95b6df8cd8f1c9ed510d53d11d9379"
+    },
+    "coordinate_runner": {
+      "path": "src/sim2claw/pawn_bg_grasp_coordinate_descent.py",
+      "sha256": "1f2f9aaa5f9cf370284e4ff088f6c33c1d74b589859fa4ecee16617ef822db93"
+    },
+    "contact_prior": {
+      "path": "src/sim2claw/contact_prior.py",
+      "sha256": "9e6056e372aa2747b7619d16e556a68f8a897ac868186084d12addc13ffabe0c"
+    },
+    "trace_collector": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap.py",
+      "sha256": "86173e9ccd2198d6c4d9b6374fd4d7f0fd6370e143cc25d747f37799e176e6b4"
+    },
+    "strict_evaluator": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_verify.py",
+      "sha256": "29b0279d7daab95a7868cca62aa804671899476b505f01a2bae8ea9203847bac"
+    },
+    "compatibility_model_builder": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_compatibility.py",
+      "sha256": "d613cca98a1cc5841c049c23b51622ff7e7bd0235e4e8d9076da5d24b2023fd4"
+    }
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR138 changes only OR137's binary-float timestep comparison. It remains an exact-action simulator-only reduced-order contact sensitivity, not calibration, simulator promotion, or physical transfer."
+}

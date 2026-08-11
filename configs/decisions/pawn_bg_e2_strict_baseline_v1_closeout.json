@@ -1,0 +1,92 @@
+{
+  "schema_version": "sim2claw.pawn_bg_e2_strict_baseline_closeout.v1",
+  "experiment_id": "or148-e2-strict-baseline-v1",
+  "status": "TERMINAL_STRICT_FAILURE_NO_QUALIFIED_PAIR_PRELIFT_TILT_AND_SELECTED_PAWN_COLLATERAL_CONTACT",
+  "proof_class": "retained_outcome_ranked_quarantined_simulator_full_step_strict_negative",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_e2_strict_baseline_v1.json",
+    "sha256": "08932d2fb49ba07e8070094bf9ecfcce92aaa2554c1341f0e5a981d161e61897"
+  },
+  "producer_receipt": {
+    "path": "outputs/pawn_bg_e2_strict_baseline_v1/producer_receipt.json",
+    "sha256": "b20bde162e84c090a0d742a039ddad74014713c01eebc048207fe7bbc86725b9",
+    "receipt_digest": "da3994546ada070c41b22d5b62480bddfab87195b6c696c8cf81799a851c4387"
+  },
+  "independent_verdict": {
+    "path": "outputs/pawn_bg_e2_strict_baseline_v1/independent_verdict.json",
+    "sha256": "df6bbd0116bde5d53459541ea6c1c0c2967096355b75454ade55f84bff7bacba",
+    "decision_digest": "bc822575f1a6e9e96e0182dd8a661eec9c2e5979cfcbb1cd92863cfc0be1a774",
+    "strict_gate_digest": "94ca39b2e81660ab3c3d6baabb89a7c3198b8f6aa26727dc98b89c323be53552",
+    "strict_replay_passed": false
+  },
+  "result": {
+    "exact_action_identity_passed": true,
+    "action_sha256": "a8121830d7a3284094ca0e109d621b7585e4692b86fe33f3fe42cd5c1f412bcc",
+    "complete_step_count": 9443,
+    "trace_sha256": "9dec16e6f6a24d2e9c02172df02f97b916b031be7d5c9bf3bfcce9d534a1ab00",
+    "full_step_array_digest": "445b14b1129d527446071ecb68ee0720867a295714720e89b4cd6e2fbf941cef",
+    "maximum_rise_m": 0.042693666463294755,
+    "maximum_qualified_contact_dwell_seconds": 0.0,
+    "first_qualified_lift_step": null,
+    "maximum_qualified_lift_dwell_seconds": 0.0,
+    "contact_retained_carry_m": 0.0,
+    "first_upright_failure_step": 5306,
+    "first_upright_failure_time_s": 11.969379249997903,
+    "first_40mm_lift_step": 5484,
+    "tilt_at_first_40mm_lift_degrees": 53.135246157299605,
+    "maximum_tilt_degrees": 101.73042081701378,
+    "final_tilt_degrees": 97.79494446673085,
+    "final_center_distance_m": 0.21955672005964716,
+    "strict_wrong_contact_step_count": 22,
+    "wrong_pawn_robot_contact_steps": 0,
+    "maximum_other_pawn_translation_m": 0.00047880102498620185,
+    "maximum_other_pawn_orientation_change_degrees": 1.1501249384221102,
+    "finite_stable_state": true,
+    "confirmation_runs": 0,
+    "renders": 0
+  },
+  "supplementary_non_authoritative_contact_attribution": {
+    "simulator_reruns": 0,
+    "method": "read_only_body_id_decomposition_of_the_frozen_full_step_trace_after_the_verdict",
+    "selected_e2_to_brown_pawn_d1": {
+      "step_count": 8,
+      "first_step": 5552,
+      "last_step": 5559
+    },
+    "selected_e2_to_brown_pawn_a2": {
+      "step_count": 14,
+      "first_step": 7099,
+      "last_step": 7112
+    },
+    "claim_boundary": "This decomposition explains the verifier-owned 22-step strict gate failure but does not revise or promote the frozen verdict."
+  },
+  "mechanism_interpretation": "The current full-step replay reproduces raw lift but never forms the evaluator's qualified opposing pair. Uprightness fails before the first 40 mm rise; E2 is already tilted 53.135 degrees at that lift and later reaches 101.730 degrees. The robot avoids other pawns, but the selected pawn itself contacts D1 and A2 for the verifier-owned total of 22 wrong-contact steps. This is not a near success and does not authorize a passive surface guess.",
+  "hard_stop": {
+    "confirmation_or_render_allowed": false,
+    "parameter_or_geometry_search_allowed": false,
+    "d2_flex_campaign_allowed": false,
+    "force_friction_timing_or_action_fit_allowed": false,
+    "reopen_condition": "independent metric two-sided fingertip geometry and load response, synchronized jaw-to-board registration, pawn shape and base-contact pose, and a fresh prospectively frozen mechanism"
+  },
+  "claim_limits": {
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

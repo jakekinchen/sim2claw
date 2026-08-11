@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_collision_topology_search_verifier_repair_closeout.v1",
+  "experiment_id": "or142-f2-collision-topology-search-verifier-repair-v1",
+  "status": "TERMINAL_FROZEN_COLLISION_COMPOSITIONS_NO_STRICT_PASS",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development_negative",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_collision_topology_search_verifier_repair_v1.json",
+    "sha256": "8712819e56dd4cc58b3a67ff32bfeb44e2073c294582a03c91034f5927f71fdf"
+  },
+  "compile_audit": {
+    "sha256": "d9c3df1e3c4cff1352d43e05ba4bc71c3acd0be0980451b5ad88985d21d4f49b",
+    "passed": true
+  },
+  "rigid_control": {
+    "verdict_sha256": "a8c02ed2a4d463a05805e0215ee0a1017e8831d0b1abb56bcd15249101b7a04e",
+    "compatibility_passed": true,
+    "strict_replay_passed": false
+  },
+  "candidates": [
+    {
+      "candidate_id": "rigid_distal_pads_only",
+      "verdict_sha256": "223541262eb943351fdca9f7fde0a16a8f2a7ffa75bb45a18566916f8997cbda",
+      "strict_replay_passed": false,
+      "maximum_rise_m": 0.004698548743221842,
+      "maximum_tilt_degrees": 21.40976578793481,
+      "maximum_contact_retained_carry_m": 0.0,
+      "final_center_distance_m": 0.051863389568539024
+    },
+    {
+      "candidate_id": "rigid_distal_pads_plus_spheres",
+      "verdict_sha256": "a505f70023db3e2727655296fde400a33d5844cd2c18674d5ab1871dfa442570",
+      "strict_replay_passed": false,
+      "maximum_rise_m": 0.025957191402964264,
+      "maximum_tilt_degrees": 99.7999697887302,
+      "maximum_contact_retained_carry_m": 0.0,
+      "final_center_distance_m": 0.25221778768928843
+    },
+    {
+      "candidate_id": "rigid_distal_pads_plus_boxes",
+      "verdict_sha256": "2b942c983ff6fd4856118f1f5ae5e01e98c442e62a7b30affe54edb978445495",
+      "strict_replay_passed": false,
+      "maximum_rise_m": 0.05245435754568284,
+      "maximum_qualified_lift_dwell_seconds": 0.37125,
+      "maximum_tilt_degrees": 101.65025997963612,
+      "maximum_contact_retained_carry_m": 0.015409618597255117,
+      "final_center_distance_m": 0.2096439270947625
+    }
+  ],
+  "interpretation": "Removing all distal underlayers loses grasp; retaining spheres restores bilateral contact but tips; retaining boxes creates a sustained lift but does not carry far enough and later tips. No frozen composition passes strict evaluation.",
+  "execution_counts": {
+    "compile_audits": 1,
+    "rigid_task_replays": 1,
+    "candidate_task_replays": 3,
+    "confirmation_replays": 0,
+    "renders": 0
+  },
+  "claim_limits": {
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OR133C_TERMINAL_RETAINED_EVIDENCE_REGIONAL_IDENTIFIABILITY_LANE_CLOSED`
+Status: `OR150_COMPLETE_MOBILE_LEGIBLE_DISCLOSURE_OR149_OR148_TERMINAL_BOUNDARIES_RESTORED`
 
 ## Active mission
 
@@ -9,7 +9,7 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR133C_TERMINAL_REGIONAL_DYNAMIC_RESIDUAL_UNIDENTIFIABLE_WITH_RETAINED_EVIDENCE`
+`OR150_COMPLETE_MOBILE_LEGIBLE_DISCLOSURE_OR149_OR148_TERMINAL_BOUNDARIES_RESTORED`
 
 ## Current card
 
@@ -17,9 +17,9 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification_v1_closeout.json`.
-- Closeout SHA-256: `1282522300e27a321891bd0e012d2a951c07a176bcd7e9e10cb3dd20d25aba06`.
-- Proof class: `development_only_read_compute_boundary_residual_identifiability_test`.
+- Closeout: `configs/decisions/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1_closeout.json`.
+- Closeout SHA-256: `f48bf4ee4b8f160aeec3679a2b3a6089f200fa2599e701dbb0a9376117df2a24`.
+- Proof class: `presentation_only_burned_disclosure_mobile_readability_derivative`.
 
 ## Authority
 

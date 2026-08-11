@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_collision_topology_search_verifier_repair_owner_authorization.v1",
+  "authorization_id": "observable-registration-or142-f2-collision-topology-verifier-repair-20260807",
+  "authorized_at": "2026-08-07T16:25:00-05:00",
+  "status": "owner_authorized_import_only_repair_before_fresh_execution",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_collision_topology_search_v1_closeout.json",
+    "sha256": "85c89a1692ddba602e49eaff08772d33bb999ece160b421b5fa101d6dd4b3225",
+    "status": "TERMINAL_VERIFIER_IMPORT_ERROR_AFTER_RIGID_PRODUCTION_NO_TOPOLOGY_CANDIDATES"
+  },
+  "repair": {
+    "scope": "independent_verifier_import_alias_only",
+    "before": "import nonexistent verify_strict_trace symbol",
+    "after": "import verify_trace as verify_strict_trace",
+    "producer_algorithm_changed": false,
+    "candidate_order_or_values_changed": false,
+    "task_outcomes_from_topology_candidates_observed": false,
+    "or141_rigid_trace_reused": false,
+    "fresh_rigid_production_and_verdict_required": true
+  },
+  "search_boundary": {
+    "outcome_informed": true,
+    "same_episode": true,
+    "candidate_order_frozen": true,
+    "stop_at_first_strict_pass": true,
+    "maximum_candidate_task_replays": 3,
+    "maximum_confirmation_replays": 1,
+    "only_contype_and_conaffinity_of_named_existing_distal_geoms_may_change": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "A strict pass may be described only as one same-episode outcome-informed simulator replay success under byte-identical actions. It is not a calibrated twin, held-out validation, simulator promotion, general transfer, or physical transfer."
+}

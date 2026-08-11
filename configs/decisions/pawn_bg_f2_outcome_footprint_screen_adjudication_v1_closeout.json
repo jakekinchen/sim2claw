@@ -1,0 +1,56 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_outcome_footprint_screen_adjudication_closeout.v1",
+  "experiment_id": "or145-f2-outcome-footprint-screen-adjudication-v1",
+  "status": "TERMINAL_F2_RIGID_FOOTPRINT_LANE_NO_STRICT_SUCCESSOR_ADMITTED",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_screen_receipt_adjudication",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_outcome_footprint_screen_adjudication_v1.json",
+    "sha256": "ca41e4e76254760cc461b8b18a4a6723e98527eba2c2903706a6f6717173ac3a"
+  },
+  "receipt": {
+    "path": "outputs/pawn_bg_f2_outcome_footprint_screen_adjudication_v1/receipt.json",
+    "sha256": "46503e19aabf3d490894963b59a9800bc3b2caa8b8d1eb6c554903572fcaf66b",
+    "receipt_digest": "3f0d60eba9c60dc5e230aed7d6761ab47c6f12418c98a3ef76cc1f5ee0514d46"
+  },
+  "verification": {
+    "test_path": "tests/test_pawn_bg_f2_outcome_footprint_screen_verify.py",
+    "test_sha256": "f232e92024fa845f9f316f328da672fb9e1be8064f895be5b60e0ffe647a6522",
+    "tests_passed": 2,
+    "candidate_count": 16,
+    "continuous_upright_pass_count": 0,
+    "strict_successor_admitted_count": 0,
+    "producer_selection_bug_confirmed": true,
+    "simulator_replays_used": 0
+  },
+  "isolated_cell_adjudication": {
+    "candidate_id": "coverage_0.040_width_0.0200",
+    "parameter_digest": "bce9a942343689126dc8f02cc1c9580ba2e927bdd4a12c26f677cf0ffec306e4",
+    "piece_lifted": false,
+    "transported_after_lift": false,
+    "wrong_piece_names": ["brown_pawn_e2", "brown_pawn_g2"],
+    "local_basin_supported": false
+  },
+  "interpretation": "Independent recomputation confirms that OR144 admitted no row. Its producer selected three failed rows without filtering, and the post hoc 40 mm by 20 mm cell is collision-assisted rather than a supported local transfer basin. The F2 rigid-footprint refinement lane is closed.",
+  "claim_limits": {
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "simulator_replay": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

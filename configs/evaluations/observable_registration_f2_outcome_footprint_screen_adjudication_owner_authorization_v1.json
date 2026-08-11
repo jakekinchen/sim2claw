@@ -1,0 +1,39 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_outcome_footprint_screen_adjudication_owner_authorization.v1",
+  "authorization_id": "observable-registration-or145-f2-outcome-footprint-screen-adjudication-20260807",
+  "authorized_at": "2026-08-07T17:20:00-05:00",
+  "status": "owner_authorized_read_only_adjudication_before_execution",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_screen_receipt_adjudication",
+  "predecessor": {
+    "closeout_path": "configs/decisions/pawn_bg_f2_outcome_footprint_screen_v1_closeout.json",
+    "closeout_sha256": "3297ec3f1dea6591fc5dbc3875d75379d82a98e3830b827d4562333040d49b81",
+    "receipt_path": "outputs/pawn_bg_f2_outcome_footprint_screen_v1/receipt.json",
+    "receipt_sha256": "ae98ab916fd61f4bce44454229ae39f52373e9f8dea779a3e738ac753ea15e32"
+  },
+  "objective": "Independently recompute OR144 screen gates, quarantine its unfiltered producer selection field, and close the rigid-footprint lane without a simulator replay.",
+  "execution_boundary": {
+    "simulator_replays": 0,
+    "new_candidates": 0,
+    "parameter_changes": 0,
+    "source_receipt_read_only": true,
+    "independent_gate_recomputation": true,
+    "producer_selected_field_is_non_authoritative": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "simulator_replay": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR145 adjudicates a quarantined outcome-informed simulator screen receipt only; it is not task success, calibration, validation, promotion, general transfer, or physical transfer."
+}

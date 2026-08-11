@@ -1,0 +1,44 @@
+{
+  "schema_version": "sim2claw.observable_registration_c2_strict_baseline_owner_authorization.v1",
+  "authorization_id": "observable-registration-or146-c2-strict-baseline-20260807",
+  "authorized_at": "2026-08-07T17:42:00-05:00",
+  "status": "owner_authorized_c2_exact_baseline_strict_trace_before_execution",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_full_step_strict_baseline",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_outcome_footprint_screen_adjudication_v1_closeout.json",
+    "sha256": "e5bc526116eb2475fc1bb26f342d01d87cf9ed0a7f0127f9df09e31a63ef0a6e",
+    "status": "TERMINAL_F2_RIGID_FOOTPRINT_LANE_NO_STRICT_SUCCESSOR_ADMITTED"
+  },
+  "episode_selection": {
+    "recording_id": "20260719T031324Z-bf91502b",
+    "task": "c2_to_c1",
+    "selection_is_outcome_informed": true,
+    "reason": "The retained cross-episode rank-01 receipt already shows qualified bilateral lift, retained carry, release, and an upright near-target endpoint; independent advisors selected it over F2 before OR146 execution.",
+    "selection_does_not_authorize_success_or_transfer_claim": true
+  },
+  "execution_boundary": {
+    "simulator_replays": 1,
+    "parameter_changes": 0,
+    "candidate_count": 1,
+    "full_step_trace_required": true,
+    "independent_verifier_required": true,
+    "render_authorized": false,
+    "action_assistance": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR146 is one current full-step reproduction of a preexisting outcome-ranked C2 simulator baseline. It cannot establish calibrated geometry, held-out validation, simulator promotion, general transfer, or physical transfer."
+}

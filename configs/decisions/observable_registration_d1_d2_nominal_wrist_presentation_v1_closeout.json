@@ -1,0 +1,147 @@
+{
+  "schema_version": "sim2claw.observable_registration_d1_d2_nominal_wrist_presentation_closeout.v1",
+  "experiment_id": "OR149_D1_D2_NOMINAL_WRIST_PRESENTATION_V1",
+  "status": "PASS_PRESENTATION_ONLY_NOMINAL_WRIST_PUBLICATION_DERIVATIVE",
+  "proof_class": "retained_measured_state_trace_nominal_wrist_projection_presentation_diagnostic",
+  "owner_authorization": {
+    "path": "configs/evaluations/observable_registration_d1_d2_nominal_wrist_presentation_owner_authorization_v1.json",
+    "sha256": "308bc960954a5acec9ac2cc8f234b4df6ecd05ef99acd7bc7d9ea6adb1726f59"
+  },
+  "contract": {
+    "path": "configs/evaluations/observable_registration_d1_d2_nominal_wrist_presentation_v1.json",
+    "sha256": "c0f2805e6f905c6bc248274c916b291b99a4be2af7d37cd86fef63682f027468"
+  },
+  "original_render_receipt": {
+    "path": "outputs/observable_registration_d1_d2_nominal_wrist_presentation_v1/receipt.json",
+    "sha256": "d78584034e7c7a827674c29257b1214fc8528add0d778407caafcaca839dc8ac",
+    "artifact_sha256": "9a8ff6f88db294939eddeb1a1430c9d9c1ebc8f5c9dd7bcf3d1d674f3c1ae693"
+  },
+  "publication_receipt": {
+    "path": "outputs/observable_registration_d1_d2_nominal_wrist_presentation_v1/publication_receipt.json",
+    "sha256": "7d1b3132626e14c5a94964f170d007cfd895b1139a9f383d851e79256dc15dc8",
+    "artifact_sha256": "26a6e79c0ab6d3a34aba99d25c96de3ac04112bc5b9552c4756ea5c861b49c75"
+  },
+  "publication_verifier": {
+    "path": "outputs/observable_registration_d1_d2_nominal_wrist_presentation_v1/verify_publication.py",
+    "sha256": "0bc3d956ea753a1b0a04aea581e80eead5704ce16dfb208c9bf46cdfec0cc71d",
+    "verdict": "pass",
+    "gate_count": 11,
+    "failed_gate_count": 0
+  },
+  "result": {
+    "simulator_render_count": 1,
+    "publication_derivative_count": 1,
+    "publication_derivative_added_simulator_renders": 0,
+    "camera": "left_wrist_cam",
+    "width": 424,
+    "height": 240,
+    "fps": 20,
+    "frame_count": 531,
+    "duration_seconds": 26.55,
+    "publication_video_sha256": "615c9a31d3455b83dcf44bf92886cab9c45bd645e3f81cef1a6df489a06c7f64",
+    "publication_decoded_frame_digest": "7eaa80a59b2183ee870383c51f1cfc595f4afda81e9952b4ab7a185a3d80a127",
+    "poster_sample_index": 248,
+    "poster_sha256": "e98e03db7a3c920fe8368845710307002183484125138d3b27a6682340e83bd9",
+    "compiled_model_mjb_sha256": "2460613ad6796750f243386926238fc8f4b63f6d94fe5a107db533fbd963f2f0",
+    "mujoco_step_calls": 0,
+    "mujoco_step1_calls": 0,
+    "mujoco_step2_calls": 0,
+    "action_integrations": 0,
+    "controller_writes": 0,
+    "fits": 0,
+    "task_evaluations": 0,
+    "simulator_replays": 0
+  },
+  "state_provenance_correction": {
+    "robot_and_camera": "OR34 raw measured physical rows through frozen candidate kinematics",
+    "selected_pawn": "OR34 retained simulated selected-pawn xyz and quaternion rows",
+    "other_pieces": "fresh compiled canonical-reset qpos0; not retained OR34 state; no dynamic pose claim",
+    "superseded_wording": "The original receipt and queue described other pieces as the OR34 canonical initial scene. That wording was too broad because OR149 compiled a fresh canonical-reset model and did not restore OR34's settled full scene.",
+    "full_or34_scene_or_state_claimed": false
+  },
+  "camera_verification": {
+    "compiled_camera_id": 7,
+    "mount_body": "left_camera_mount",
+    "mount_body_id": 35,
+    "declared_resolution": [
+      1920,
+      1080
+    ],
+    "focal_m": [
+      0.003599999938160181,
+      0.003599999938160181
+    ],
+    "sensor_size_m": [
+      0.005760000087320805,
+      0.0032399999909102917
+    ],
+    "camera_calibrated_to_d405": false
+  },
+  "d405_timeline_association": {
+    "schedule_contract_sha256": "ff85692fe8e06d06d40b3c9476dbaa8c854e79960bbec5cabe6a6845ce78b234",
+    "schedule_receipt_sha256": "47f3f2173ef42f4692f08d7e42f4390787370b1098dd968a4e79c72b5ff6e61e",
+    "maximum_d405_association_error_ms": 100.066125,
+    "action_start_video_offset_seconds": 8.499469707952812,
+    "relationship": "sample-time associated for presentation; not exposure synchronized",
+    "camera_exposure_synchronized": false,
+    "device_clock_synchronized": false,
+    "actuator_application_timestamps_available": false,
+    "d405_depth_claimed": false
+  },
+  "publication_disclosure": {
+    "burned_into_video": true,
+    "lines": [
+      "NON-SCORING RETAINED-STATE PROJECTION",
+      "ROBOT/CAMERA: MEASURED JOINTS | PAWN: OR34 SIM TRACE",
+      "OTHER PIECES: FRESH QPOS0 | NOT REPLAY OR TASK SUCCESS"
+    ],
+    "website_adjacent_caption_required": true,
+    "website_may_call_the_pair_synchronized": false,
+    "website_may_call_the_camera_matched_or_calibrated": false
+  },
+  "review": {
+    "independent_visual_review": "conditional pass: the immutable simulator render is visually usable, all 531 frames decode, sample 248 is representative, and the lane is publishable only as an illustrative OR34-derived wrist projection",
+    "evaluator_review_before_repair": "publication blocked until provenance, burned wording, step interception, complete camera identity, exact manifest correspondence, scene lineage, D405 association, and closeout were repaired",
+    "repair_disposition": "all listed publication blockers are bound and independently rechecked by the frozen publication verifier"
+  },
+  "publication_authorization": {
+    "observation_deck_asset_allowed": true,
+    "allowed_video": "outputs/observable_registration_d1_d2_nominal_wrist_presentation_v1/nominal_wrist.publication.mp4",
+    "allowed_receipt": "configs/decisions/observable_registration_d1_d2_nominal_wrist_presentation_v1_closeout.json",
+    "original_unburned_video_allowed_for_publication": false,
+    "required_label": "Nominal simulator wrist projection - uncalibrated",
+    "required_boundary": "Non-scoring retained-state projection; not a replay, task-success result, calibrated D405 view, physics-fidelity result, or transfer evidence."
+  },
+  "claim_limits": {
+    "calibrated_d405_view": false,
+    "same_camera_or_pixel_alignment": false,
+    "camera_calibration": false,
+    "full_or34_scene_replay": false,
+    "physics_fidelity": false,
+    "task_success": false,
+    "global_mapping_approved": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "terminal_boundary": {
+    "or149_complete": true,
+    "successor_admitted": false,
+    "or148_external_observation_boundary_restored": true,
+    "reopen_condition": "new owner authorization with a separately frozen evidence target; OR149 grants no simulator replay, calibration, task, promotion, or transfer authority"
+  }
+}

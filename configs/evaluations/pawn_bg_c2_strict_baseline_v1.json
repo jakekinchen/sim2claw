@@ -1,0 +1,149 @@
+{
+  "schema_version": "sim2claw.pawn_bg_c2_strict_baseline.v1",
+  "experiment_id": "or146-c2-strict-baseline-v1",
+  "status": "frozen_before_execution",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_full_step_strict_baseline",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_c2_strict_baseline_owner_authorization_v1.json",
+    "sha256": "341c038ad27c75d29df618333813174a5cf4635413fc01a92f968bf3404fb9e4"
+  },
+  "base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_inherited_v1.json",
+    "sha256": "02f05cda13997847c8a1df4514cb9890a0f59463839c43ad0253e8bbc0872c1c"
+  },
+  "source_bindings": {
+    "recording_id": "20260719T031324Z-bf91502b",
+    "source_square": "c2",
+    "destination_square": "c1",
+    "samples_sha256": "b93fed706dd205197e9e068aec62d8fe552b822be150218dff5601a1a5eec183",
+    "recording_receipt_sha256": "00d1a6b0375232be753f771b37f28117aa6d370778d16bb9b14ad2892c6a4c2f",
+    "video_sha256": "e5cf0b1ab23174e908d509791653d2289a85770476381931384ea2f7308a867b",
+    "action_sha256": "402a29e4cdc0c4cb90d41a83327ad8df5685544851b4e4d659129b3239744fd6",
+    "timestamp_sha256": "fa5032414da7bfee3dc5e98ce9fb8280db271c0ca9f946b6c043f09ecadc737c",
+    "stage_d_adapter_sha256": "dffa5d78d9457c30bf04d06e3bdcf1da5f9e08a57b76831cee58decb851c3a73",
+    "or145_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_outcome_footprint_screen_adjudication_v1_closeout.json",
+      "sha256": "e5bc526116eb2475fc1bb26f342d01d87cf9ed0a7f0127f9df09e31a63ef0a6e"
+    },
+    "rank01_receipt": {
+      "path": "outputs/pawn_bg_ranked_grasp_gallery_v1/episodes/rank-01-20260719T031324Z-bf91502b/episode_probe_receipt.json",
+      "sha256": "de3f9c6f155487b281ed49d4e34ff528603177ef43634a83b52408301bc04585"
+    },
+    "rank01_state_trace": {
+      "path": "outputs/pawn_bg_ranked_grasp_gallery_v1/episodes/rank-01-20260719T031324Z-bf91502b/state_trace.json",
+      "sha256": "123084f0b8588efa1824299fd5c7d7035653d93b6553c3cdb4cf6f31c95e1d28"
+    },
+    "rank01_scene_manifest": {
+      "path": "outputs/pawn_bg_ranked_grasp_gallery_v1/episodes/rank-01-20260719T031324Z-bf91502b/scene_manifest.json",
+      "sha256": "b7821c8ab4e237c06f52275e99c7a3c16133df28d0e9019c12153aac6ac642bc"
+    }
+  },
+  "implementation_bindings": {
+    "producer": {
+      "path": "src/sim2claw/pawn_bg_c2_strict_baseline.py",
+      "sha256": "b3501ea4c2fffa6f7c4ff1c8c3eb89fc144e590b8a7a4616ea68df03a5730d44"
+    },
+    "verifier": {
+      "path": "src/sim2claw/pawn_bg_c2_strict_baseline_verify.py",
+      "sha256": "cece351888d9dfd56ae868c98959404862b051cac1dd4a676a3649aec4d60edb"
+    },
+    "test": {
+      "path": "tests/test_pawn_bg_c2_strict_baseline.py",
+      "sha256": "8f1c40cc81b5b8d2395c02ecfc9fbfb4a824fb1eddc36a7841c3ea9d50be766d"
+    }
+  },
+  "action_invariance": {
+    "shape": [527, 6],
+    "dtype": "float64",
+    "c_contiguous": true,
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "per_joint_zoh_delay_seconds": [0.11, 0.11, 0.11, 0.11, 0.11, 0.11],
+    "clipped_rows": 0,
+    "initial_state_phase_is_not_an_applied_action_step": true,
+    "no_ik_offsets_clipping_retiming_smoothing_suffix_or_override": true,
+    "no_measured_state_replay_latch_load_hold_or_force_ramp": true
+  },
+  "candidate_order": [
+    {
+      "candidate_id": "c2_rank01_rigid_baseline",
+      "kind": "retained_rank01_parameter_reproduction",
+      "parameter_overrides": {}
+    }
+  ],
+  "c2_parameters": {
+    "fixed_jaw_mesh_collision_enabled": false,
+    "gripper_force_limit_multiplier": 3.0,
+    "gripper_joint_damping_multiplier": 1.0,
+    "gripper_joint_frictionloss_multiplier": 1.0,
+    "gripper_servo_gain_multiplier": 1.0,
+    "moving_jaw_mesh_collision_enabled": false,
+    "pawn_friction_multiplier": 1.0,
+    "pawn_mass_multiplier": 1.0,
+    "rolling_friction_m": 0.0012,
+    "rubber_tip_enabled": true,
+    "simulation_timestep_multiplier": 0.45,
+    "sliding_friction": 1.8,
+    "solref_damping_ratio": 1.2,
+    "solref_time_constant_s": 0.006,
+    "tip_coverage_m": 0.02,
+    "tip_coverage_offset_m": -0.03,
+    "tip_half_width_m": 0.0065,
+    "tip_moving_coverage_offset_m": 0.025,
+    "tip_thickness_m": 0.001,
+    "torsional_friction_m": 0.012
+  },
+  "supplemental_gates": {
+    "minimum_same_pair_bilateral_contact_dwell_seconds": 0.02,
+    "minimum_contact_span_m": 0.005,
+    "minimum_opposing_normal_score": 0.0,
+    "minimum_positive_normal_force_n": 0.0,
+    "minimum_sustained_lift_m": 0.04,
+    "minimum_sustained_lift_seconds": 0.05,
+    "minimum_carry_toward_target_m": 0.022225,
+    "maximum_contact_gap_seconds": 0.02,
+    "whole_base_entry_distance_m": 0.008425,
+    "maximum_final_center_distance_m": 0.006,
+    "maximum_tilt_degrees_every_step": 10.0,
+    "minimum_post_release_settle_seconds": 0.25,
+    "maximum_settled_linear_speed_m_s": 0.02,
+    "maximum_settled_angular_speed_rad_s": 0.25,
+    "maximum_other_pawn_translation_m": 0.006,
+    "maximum_other_pawn_orientation_change_degrees": 5.0,
+    "require_qualified_grasp_then_lift_then_carry_then_target_entry_then_release_then_settle": true,
+    "require_board_support_during_settle": true,
+    "require_no_robot_or_selected_contact_with_wrong_pawn": true,
+    "require_original_reward_pass": true,
+    "require_finite_stable_state": true
+  },
+  "execution": {
+    "simulator_replays": 1,
+    "candidate_count": 1,
+    "parameter_changes": 0,
+    "independent_verification_required": true,
+    "confirmation_runs": 0,
+    "render_runs": 0,
+    "successor_geometry_selection_before_verdict_allowed": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR146 is one current full-step reproduction of a preexisting outcome-ranked C2 simulator baseline. It cannot establish calibrated geometry, held-out validation, simulator promotion, general transfer, or physical transfer."
+}

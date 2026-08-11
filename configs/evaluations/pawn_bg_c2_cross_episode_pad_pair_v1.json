@@ -1,0 +1,101 @@
+{
+  "schema_version": "sim2claw.pawn_bg_c2_cross_episode_pad_pair.v1",
+  "experiment_id": "or147-c2-cross-episode-pad-pair-v1",
+  "status": "frozen_before_execution",
+  "proof_class": "cross_episode_outcome_selected_and_same_episode_diagnosed_quarantined_simulator_candidate",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_c2_cross_episode_pad_pair_owner_authorization_v1.json",
+    "sha256": "96b6ca3e85c467e1cc95f43a3896f856f1ccdd5d84247c2c3fdbef0171fcd4a6"
+  },
+  "base_contract": {
+    "path": "configs/evaluations/pawn_bg_c2_strict_baseline_v1.json",
+    "sha256": "6e701db9272ec2b33cc227d555cfc5933b48b09e8ea13b692e9ac3586800f80a"
+  },
+  "source_bindings": {
+    "or146_closeout": {
+      "path": "configs/decisions/pawn_bg_c2_strict_baseline_v1_closeout.json",
+      "sha256": "8d94d93091345a26b78ec3961186dac0c9229c4ccd9b1cc00362900447600fda"
+    },
+    "or146_verdict": {
+      "path": "outputs/pawn_bg_c2_strict_baseline_v1/task_verdict.json",
+      "sha256": "8cd8843ee6be82181e9c210b5cea8c65df13d9265a07a570cf3f923c9db68d3e"
+    },
+    "or50_receipt": {
+      "path": "outputs/observable_registration_outcome_informed_upright_basin_v1/receipt.json",
+      "sha256": "20966743ccda3a12bb35c60a829cc4df1ecd0fdec7811a9944839a08c9f84f1b"
+    },
+    "or50_closeout": {
+      "path": "configs/decisions/observable_registration_outcome_informed_upright_basin_v1_closeout.json",
+      "sha256": "38a5cdf33938bad8949ae836e043028c9c3cc871154cbe38eaca4b9d4e460a1a"
+    }
+  },
+  "implementation_bindings": {
+    "producer": {
+      "path": "src/sim2claw/pawn_bg_c2_cross_episode_pad_pair.py",
+      "sha256": "9b2b3e4c343a64ed9093640b97c230bd38b433d2d7e84a1bd4581c0e254733b2"
+    },
+    "verifier": {
+      "path": "src/sim2claw/pawn_bg_c2_cross_episode_pad_pair_verify.py",
+      "sha256": "5a8c047a38bef57e8b11382d34b91b35ac270441ee5825802bf7fa2362e8bc68"
+    },
+    "test": {
+      "path": "tests/test_pawn_bg_c2_cross_episode_pad_pair.py",
+      "sha256": "4e69cbe971c81a3f9f9cfd9924d69801623e20b74f8176041c965e6202efb8fe"
+    }
+  },
+  "candidate_order": [
+    {
+      "candidate_id": "c2_or50_fixed_pad_pair_distal_trim_3mm",
+      "kind": "passive_cross_episode_fixed_pad_and_contact_ledger_distal_trim",
+      "parameter_overrides": {
+        "tip_fixed_coverage_offset_m": 0.00752,
+        "fixed_jaw_primitive_collision_enabled": false,
+        "moving_jaw_primitive_collision_enabled": false,
+        "tip_moving_coverage_multiplier": 0.85,
+        "tip_moving_coverage_offset_m": 0.0265
+      }
+    }
+  ],
+  "parameter_overrides": {
+    "tip_fixed_coverage_offset_m": 0.00752,
+    "fixed_jaw_primitive_collision_enabled": false,
+    "moving_jaw_primitive_collision_enabled": false,
+    "tip_moving_coverage_multiplier": 0.85,
+    "tip_moving_coverage_offset_m": 0.0265
+  },
+  "mechanism_invariants": {
+    "fixed_pad_local_z_m": -0.11298,
+    "moving_pad_original_center_local_y_m": -0.072,
+    "moving_pad_candidate_center_local_y_m": -0.0705,
+    "moving_pad_original_full_coverage_m": 0.02,
+    "moving_pad_candidate_full_coverage_m": 0.017,
+    "moving_pad_original_proximal_edge_local_y_m": -0.062,
+    "moving_pad_candidate_proximal_edge_local_y_m": -0.062,
+    "moving_pad_distal_edge_retraction_m": 0.003,
+    "action_controller_force_material_solver_object_and_workcell_pose_changes": 0
+  },
+  "execution": {
+    "simulator_replays": 1,
+    "candidate_count": 1,
+    "confirmation_runs_if_strict_pass": 1,
+    "family_expansion_allowed": false,
+    "adaptive_refinement_allowed": false,
+    "render_only_confirmed_strict_trace": true,
+    "independent_verification_required": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR147 is a single quarantined simulator candidate composed from a cross-episode outcome-selected coordinate and a same-episode contact-ledger trim. Even a confirmed strict pass is not calibration, held-out validation, simulator promotion, general transfer, or physical transfer."
+}

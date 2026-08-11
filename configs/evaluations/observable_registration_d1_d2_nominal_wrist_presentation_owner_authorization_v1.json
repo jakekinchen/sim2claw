@@ -1,0 +1,42 @@
+{
+  "schema_version": "sim2claw.observable_registration_d1_d2_nominal_wrist_presentation_owner_authorization.v1",
+  "authorization_id": "observable-registration-or149-d1-d2-nominal-wrist-presentation-20260808",
+  "authorized_at": "2026-08-08T00:00:00-05:00",
+  "status": "owner_authorized_one_retained_trace_nominal_wrist_presentation_before_render",
+  "owner_instructions": [
+    "did we make sure to get the gripper camera footage too? we need to make sure we show that footage and the simulation angle of this as well",
+    "ok well get the missing sim wrist angle rendered out"
+  ],
+  "proof_class": "retained_measured_state_trace_nominal_wrist_projection_presentation_diagnostic",
+  "episode": {
+    "recording_id": "20260727T041737Z-89190e53",
+    "display_identity": "D1-to-D2 evaluator-reviewed visual identity with raw B2-to-B1 metadata conflict retained",
+    "same_source_episode_required": true
+  },
+  "execution_boundary": {
+    "presentation_renders": 1,
+    "simulator_replays": 0,
+    "mujoco_step_calls": 0,
+    "action_integrations": 0,
+    "camera_or_extrinsic_fits": 0,
+    "state_or_parameter_fits": 0,
+    "contact_or_task_evaluations": 0,
+    "website_publication_requires_verified_closeout": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR149 authorizes one deterministic, non-scoring visualization of the retained OR34 measured-state trace through the unchanged nominal left wrist camera. It does not authorize a simulator replay, a calibrated D405-equivalent view, physics fidelity, task success, global mapping, promotion, or transfer."
+}

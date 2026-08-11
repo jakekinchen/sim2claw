@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_normal_compliant_cap_owner_authorization.v1",
+  "authorization_id": "observable-registration-or137-f2-normal-compliant-cap-20260807",
+  "authorized_at": "2026-08-07T14:40:00-05:00",
+  "status": "owner_authorized_before_new_contract_or_dynamic_execution",
+  "proof_class": "same_episode_action_frozen_simulator_only_reduced_order_normal_compliance_diagnostic",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "objective": "Replace the numerically inadmissible MjFlex caps with one existing passive normal-compliance construction and attempt one strict upright F2-to-F1 simulator replay only after a disposable pre-action stability pass.",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_deformable_cap_source_boundary_v1_closeout.json",
+    "sha256": "8978bc441eaff1822962002f23b29fe8f83a4e0d83a4ae2eca2567af74dba06e",
+    "status": "TERMINAL_FLEX_CAP_PREACTION_NUMERICAL_INSTABILITY_NO_STRICT_PASS"
+  },
+  "advisor_disposition": {
+    "full_dof_flex_rejected_before_contract": true,
+    "reason": "The exact full grid emitted mjWARN_BADQACC at approximately 0.009 seconds, earlier than the trilinear construction. The only warning-free MjFlex regularization used grossly nonphysical node armature and is excluded.",
+    "selected_mechanism": "existing_single_normal_slide_spring_damper_per_rigid_cap",
+    "task_outcomes_used_to_select_parameters": false
+  },
+  "neutral_candidate": {
+    "rubber_tip_normal_compliance_enabled": true,
+    "rubber_tip_compliance_travel_m": 0.002,
+    "rubber_tip_compliance_stiffness_n_per_m": 1000.0,
+    "rubber_tip_compliance_damping_n_s_per_m": 2.0,
+    "rubber_tip_modeled_mass_per_finger_kg": 0.001,
+    "rubber_tip_compliance_compression_only": true,
+    "rubber_tip_compliance_limit_time_constant_s": 0.002,
+    "rubber_tip_compliance_limit_damping_ratio": 1.0,
+    "parameter_source": {
+      "path": "configs/sail/grasp_retention_normal_compliance_v1.json",
+      "sha256": "bd52bb8e34790d3aad4d6598155dba6018a7262101b72d1d0935498facfd0f49"
+    }
+  },
+  "execution_order": {
+    "stage_0": "compile_only_rigid_and_normal_compliant_model_identity",
+    "stage_1": "disposable_rigid_then_normal_compliant_100_step_initial_settle_traces_with_zero_source_action_rows",
+    "on_stage_1_failure": "close_or137_with_zero_task_replays",
+    "stage_2": "one_fresh_rigid_legacy_shoulder_source_boundary_compatibility_replay",
+    "on_stage_2_failure": "close_or137_with_zero_normal_compliant_task_replays",
+    "stage_3": "one_fresh_normal_compliant_exact_action_task_replay",
+    "on_stage_3_pass": "fresh_process_preflight_and_no_refit_task_confirmation",
+    "render_only_confirmed_strict_trace": true,
+    "family_expansion_allowed": false
+  },
+  "unchanged_bindings": {
+    "rigid_compiled_model_sha256": "9e93243ffa094853c37bfe8dfa4378df1b3eb42ff8885af2452dd359530f4ea3",
+    "action_sha256": "ff5845e886aa7f6e65ffa978f758ccb2777fcaac8a71bd51cd02171f61ebdb34",
+    "timestamp_sha256": "69348c0348f855e9196f6a18b1abc990066f26d202ac7b715aca8d80f1087d9f",
+    "no_ik_offsets_clipping_retiming_smoothing_suffix_latch_load_hold_or_control_override": true,
+    "table_board_apriltag_pawns_robot_camera_and_controller_unchanged": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "A passing OR137 result is an action-frozen simulator-only reduced-order contact sensitivity. It is not continuum-rubber calibration, physical fidelity, simulator promotion, or physical transfer."
+}

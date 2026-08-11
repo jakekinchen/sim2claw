@@ -1,0 +1,36 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_normal_compliant_cap_timestep_owner_authorization.v1",
+  "authorization_id": "observable-registration-or138-f2-normal-compliant-cap-timestep-20260807",
+  "authorized_at": "2026-08-07T14:55:00-05:00",
+  "status": "owner_authorized_before_successor_contract_or_dynamic_execution",
+  "proof_class": "same_episode_action_frozen_simulator_only_reduced_order_normal_compliance_diagnostic",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "objective": "Repair only OR137's binary-float timestep comparison under a new identity, then execute the otherwise unchanged paired preflight, rigid compatibility gate, and single compliant task replay protocol.",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_normal_compliant_cap_v1_closeout.json",
+    "sha256": "805577e91d4c86a6299b5173d535540d1ea8b28a51699614e871488fd6a5f400",
+    "status": "TERMINAL_COMPILE_AUDIT_FLOAT_LITERAL_COMPARISON_NO_DYNAMIC_EXECUTION"
+  },
+  "only_repair": {
+    "field": "compiled_model_timestep_seconds",
+    "expected": 0.00225,
+    "absolute_tolerance_seconds": 1E-15,
+    "rigid_and_candidate_must_remain_exactly_equal": true,
+    "model_candidate_parameters_preflight_task_evaluator_and_execution_order_unchanged": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR138 repairs only the compile evaluator's timestep comparison. All action, model, preflight, strict task, and claim boundaries remain unchanged."
+}

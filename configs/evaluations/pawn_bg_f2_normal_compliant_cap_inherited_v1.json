@@ -1,0 +1,102 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_normal_compliant_cap_inherited.v1",
+  "experiment_id": "or140-f2-normal-compliant-cap-inherited-v1",
+  "status": "frozen_before_compile_or_dynamic_execution",
+  "proof_class": "same_episode_action_frozen_simulator_only_inherited_default_soft_limited_normal_compliance_diagnostic",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_f2_normal_compliant_cap_inherited_owner_authorization_v1.json",
+    "sha256": "e3611afd4666a8012ea3681d49cbc988e8776fd45426dd77bafe37fc78a93040"
+  },
+  "base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_timestep_v1.json",
+    "sha256": "d64d85c6bdcc261c72b9b99ba84690780b29e3d44bd428b404ed204881ed5099"
+  },
+  "protocol_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_v1.json",
+    "sha256": "b19ef7631d8f5829b841135fd5b330963ce2d0c11475dd58cb17987d811260ad"
+  },
+  "or135_base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_deformable_cap_compatibility_v1.json",
+    "sha256": "5539f1712308338c608f7ee9c9ca964c603ae00bce79b6816a827a1507363861"
+  },
+  "additional_source_bindings": {
+    "or139_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_normal_compliant_cap_clean_v1_closeout.json",
+      "sha256": "0fc963ea33df5bd12cebfe9370e4c7aa8a485c2e8deb2bd4f80e37c42771d2a0"
+    },
+    "neutral_parameter_source": {
+      "path": "configs/sail/grasp_retention_normal_compliance_v1.json",
+      "sha256": "bd52bb8e34790d3aad4d6598155dba6018a7262101b72d1d0935498facfd0f49"
+    }
+  },
+  "construction_repair": {
+    "mechanism_label": "inherited_default_soft_limited_cap",
+    "dof_armature": 0.005,
+    "dof_frictionloss": 0.1,
+    "fields_are_inherited_from_so101_childclass": true,
+    "not_claimed_as_critical_damping_or_rubber_calibration": true,
+    "travel_stiffness_damping_mass_geometry_material_frames_controller_action_unchanged": true
+  },
+  "preflight_repair": {
+    "diagnosis_informed_by_preaction_only": true,
+    "task_outcomes_opened": false,
+    "maximum_neutral_side_soft_limit_overshoot_m": 0.00001962,
+    "maximum_absolute_cap_displacement_m": 0.000025,
+    "minimum_far_travel_limit_margin_m": 0.0001,
+    "final_window_maximum_cap_position_range_m": 0.00001962,
+    "final_window_maximum_cap_velocity_m_s": 0.001,
+    "final_window_maximum_cap_acceleration_m_s2": 1.0,
+    "robot_encoder_quantum_rad": 0.0015339807878856412,
+    "zero_candidate_cap_contacts": true,
+    "all_task_gates_unchanged": true
+  },
+  "implementation_bindings": {
+    "producer_and_preflight_collector": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap.py",
+      "sha256": "6d74fba9867d6c47bd7dca262a10e189d26b7d4038fcdf3894f6bd224c8315b9"
+    },
+    "preflight_independent_verifier": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap_preflight_verify.py",
+      "sha256": "4060617b6a79779d359d93deb375ca0aeb8d34fde8fce74cba99c77136fc6823"
+    },
+    "task_independent_verifier": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap_verify.py",
+      "sha256": "d03b20ef109c3f15a2830618dd8228f17d95b6df8cd8f1c9ed510d53d11d9379"
+    },
+    "coordinate_runner": {
+      "path": "src/sim2claw/pawn_bg_grasp_coordinate_descent.py",
+      "sha256": "1f2f9aaa5f9cf370284e4ff088f6c33c1d74b589859fa4ecee16617ef822db93"
+    },
+    "contact_prior": {
+      "path": "src/sim2claw/contact_prior.py",
+      "sha256": "9e6056e372aa2747b7619d16e556a68f8a897ac868186084d12addc13ffabe0c"
+    },
+    "trace_collector": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap.py",
+      "sha256": "86173e9ccd2198d6c4d9b6374fd4d7f0fd6370e143cc25d747f37799e176e6b4"
+    },
+    "strict_evaluator": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_verify.py",
+      "sha256": "29b0279d7daab95a7868cca62aa804671899476b505f01a2bae8ea9203847bac"
+    },
+    "compatibility_model_builder": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_compatibility.py",
+      "sha256": "d613cca98a1cc5841c049c23b51622ff7e7bd0235e4e8d9076da5d24b2023fd4"
+    }
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR140 is a prospective simulator-only exact-action trial of a disclosed inherited-default soft-limited cap. It cannot establish rubber calibration, simulator promotion, general transfer, or physical transfer."
+}

@@ -1,0 +1,118 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_deformable_cap_source_boundary_closeout.v1",
+  "experiment_id": "or136-f2-deformable-cap-source-boundary-v1",
+  "status": "TERMINAL_FLEX_CAP_PREACTION_NUMERICAL_INSTABILITY_NO_STRICT_PASS",
+  "proof_class": "quarantined_historical_source_boundary_compatibility_then_same_episode_action_frozen_simulator_only_deformable_contact_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_deformable_cap_source_boundary_v1.json",
+    "sha256": "b0678de4d53e5a3de6c52c3532b4072bb9cfa144ffbed05caf154c993ef1f1db"
+  },
+  "rigid_run": {
+    "candidate_id": "rigid_legacy_shoulder_control",
+    "compiled_model_sha256": "9e93243ffa094853c37bfe8dfa4378df1b3eb42ff8885af2452dd359530f4ea3",
+    "producer_receipt_path": "outputs/pawn_bg_f2_deformable_cap_source_boundary_v1/rigid_legacy_shoulder_control/producer_receipt.json",
+    "producer_receipt_sha256": "bfb04984fa253af9857f4601069370aed566fba2bcafe9a36836f80cca0d7c25",
+    "trace_sha256": "631a4eb1b25be0256302fe71b96ef201d6208b8f7638bb256aedb9cb9b3a5737",
+    "metadata_sha256": "6e03f7b504bad67a091b8604b754a0d462b388f9a8d205397450e36a41a510a9",
+    "independent_verdict_sha256": "3966e1950546c5580a5f74cfcded7695534a103df26e5cfeef9abde044a2877d",
+    "independent_decision_digest": "1444499109a3e3b7c1b9d05ed0daba92c3c537d4260861ebc5d0bb864e326db5",
+    "compatibility_passed": true,
+    "strict_replay_passed": false
+  },
+  "flex_runs": [
+    {
+      "candidate_id": "flex_10_kpa",
+      "compiled_model_sha256": "458e6c24291368ef45dfda18129e35047507c91a59b01d9d7a40a59c21ea5aa4",
+      "producer_receipt_sha256": "0170487e130c3cbbcbc221b99357f583e877e3bef60411bcd32ad700fef0d605",
+      "trace_sha256": "46e2856cfa965237d3dc3043fa22832bf029eb7ba3437dc56af5edf03f27fa79",
+      "metadata_sha256": "dac1a328e02bc819db4881a71255e259b0549cb3a39973b8da5b9aec65fd7249",
+      "independent_verdict_sha256": "44f1ec4d3f2d5412fd2737a4b640595894a610f6bbc941f5686b7745a7363ccc",
+      "independent_decision_digest": "8d30b5f9be5dd51d6ba193d3fc65e7a6bce0064f5fbf8570e8816a91f21cdd9a",
+      "unstable_warning": "mjWARN_BADQACC",
+      "strict_replay_passed": false
+    },
+    {
+      "candidate_id": "flex_25_kpa",
+      "compiled_model_sha256": "0cbcce00662b1b1662f4c7b00d35c0b212314d220cf2b494c7c8d0b3a956b4f7",
+      "producer_receipt_sha256": "201fb82fded8417580293f7479adc3b03e26a698167cb3172c834d99447b37b8",
+      "trace_sha256": "89727b9bcab9682d723775ca02bf96a3e18f8489b35b856b1b5e652e2d390711",
+      "metadata_sha256": "e58cddb6bdcb0aea441e9663d4ef2f799c1a4bbebe90f70b76a3ebdad8cda94b",
+      "independent_verdict_sha256": "ca72d68996e2a452671c254d9feb9a18213873bb5bb6ae032a36e3b4c2db5092",
+      "independent_decision_digest": "291bdb9acdc3e6de8463ed05303bad1b5e5b4a6bbaf809e006c5095b542610f0",
+      "unstable_warning": "mjWARN_BADQACC",
+      "strict_replay_passed": false
+    },
+    {
+      "candidate_id": "flex_63_kpa",
+      "compiled_model_sha256": "5b01d5024466a9976c7ce0e18793431e70cc4daaa17346134982f41f1d262c74",
+      "producer_receipt_sha256": "98db672091fc49c11e6984290e3e516644b64e7d08dadab572816b9be0e823ff",
+      "trace_sha256": "0c1dff00993200ee5bc1bc0a954f0660662db65b5a6a8b7651df0d92e7e7d406",
+      "metadata_sha256": "11da7377f65f669e957004d5d0bb90d71a00987a99dbb58733be08f077ff58bc",
+      "independent_verdict_sha256": "ffe306347d68ac9048a6f17a97d389afaf246197f6f64e1a7ea9cda475b65a2b",
+      "independent_decision_digest": "738f6f4b195ab79b59eb621753f521949fd3aa1a31380ce2c475fb12eee34068",
+      "unstable_warning": "mjWARN_BADQACC",
+      "strict_replay_passed": false
+    },
+    {
+      "candidate_id": "flex_158_kpa",
+      "compiled_model_sha256": "44fb9bce27079c646db1e1a5bc3d2f946dcff4c95cdb6dcc56f0b26028ac4921",
+      "producer_receipt_sha256": "c058f9aef5be181ed74089ef8d5675514049ca71a417a814b21fc798298e5a65",
+      "trace_sha256": "7dc325c9461d2e8132f46286eb41b9f1b9ab49a46f5763c75ba96861cefb87a9",
+      "metadata_sha256": "e88484b54bb3a108c745d1f2935ad70106cacdf7671bf41402565a8ff3a43ebc",
+      "independent_verdict_sha256": "baa7241cf951eb705b5784cb100e54f9a8d00921d360451ceb89b1320654fa03",
+      "independent_decision_digest": "62f98aeb961a3a014bd57cdcc6367f837c7a7e8a864e04cd5f3f66d1847aeb98",
+      "unstable_warning": "mjWARN_BADQACC",
+      "strict_replay_passed": false
+    },
+    {
+      "candidate_id": "flex_400_kpa",
+      "compiled_model_sha256": "4d6e39655ddb44a39353686513c2ee9aea2c65b250e5ecb3eb3cf5524a8d577e",
+      "producer_receipt_sha256": "a280836a84a8e808f4d3db0a34aa88546135f349531ad1922dbb9c6e643fb29c",
+      "trace_sha256": "46f9292f904115a84f85e85320027384b8ec5fb4401ee89a87bb05817b3138fb",
+      "metadata_sha256": "aab17c9db5bfd99f811c228b70fa1528b0053d313af2a7c8acd2d1acd57724e8",
+      "independent_verdict_sha256": "8d326cb0e7a4c29abb2802526f8e689cd7c6cc609aacb1ff2b46311b9e766ee7",
+      "independent_decision_digest": "cfa3bcc3e7e9c7f097f39aad5d6a17a32c80ff403a6c38962435d49a285263b7",
+      "unstable_warning": "mjWARN_BADQACC",
+      "strict_replay_passed": false
+    }
+  ],
+  "diagnosis": {
+    "all_five_flex_candidates_numerically_unstable": true,
+    "instability_observed_during_initial_settle_before_action_replay": true,
+    "qualified_task_trials": 0,
+    "stiffness_effectiveness_conclusion_allowed": false,
+    "interpretation": "Every frozen flex model emitted an acceleration instability during the initial 100-step settle. Continuing through MuJoCo's warning/reset behavior produced non-admissible task traces. This is a cap-construction stability failure, not a ranked stiffness result."
+  },
+  "execution_counts": {
+    "rigid_runs": 1,
+    "flex_runs": 5,
+    "strict_successes": 0,
+    "fresh_no_refit_confirmation_runs": 0,
+    "renders": 0
+  },
+  "next_transition": "new_identity_with_independent_preaction_flex_stability_gate_before_any_action_replay",
+  "claim_limits": {
+    "strict_replay_success": false,
+    "deformable_stiffness_ranked": false,
+    "calibration": false,
+    "heldout_validation": false,
+    "physical_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

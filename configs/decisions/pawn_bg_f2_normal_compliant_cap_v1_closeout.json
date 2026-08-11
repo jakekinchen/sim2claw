@@ -1,0 +1,60 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_normal_compliant_cap_closeout.v1",
+  "experiment_id": "or137-f2-normal-compliant-cap-v1",
+  "status": "TERMINAL_COMPILE_AUDIT_FLOAT_LITERAL_COMPARISON_NO_DYNAMIC_EXECUTION",
+  "proof_class": "same_episode_action_frozen_simulator_only_reduced_order_normal_compliance_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_v1.json",
+    "sha256": "b19ef7631d8f5829b841135fd5b330963ce2d0c11475dd58cb17987d811260ad"
+  },
+  "compile_audit": {
+    "path": "outputs/pawn_bg_f2_normal_compliant_cap_v1/compile_audit.json",
+    "sha256": "ed0ec185d6de158fe2599d4e72e6326291768c49fa4810a1ce199b7cbdca782c",
+    "passed": false,
+    "rigid_compiled_model_identity": true,
+    "no_flex": true,
+    "exactly_two_added_bodies": true,
+    "exactly_two_added_slide_joints": true,
+    "options_unchanged": false,
+    "rigid_compiled_model_sha256": "9e93243ffa094853c37bfe8dfa4378df1b3eb42ff8885af2452dd359530f4ea3",
+    "candidate_compiled_model_sha256": "8e6e6cb50fd45ab3d7474492f6f27318001895ed2d006eacb53fee21e3c71c23"
+  },
+  "diagnosis": {
+    "rigid_and_candidate_timestep_equal": true,
+    "observed_timestep_seconds": 0.0022500000000000003,
+    "failed_comparison": "stored_timestep == decimal_literal_0.00225",
+    "declared_successor_tolerance_seconds": 1E-15,
+    "interpretation": "The frozen compile evaluator used exact binary-float equality against a decimal literal. This is an evaluator-semantics failure before dynamics, not a model-option or compliance failure."
+  },
+  "execution_counts": {
+    "compile_audits": 1,
+    "rigid_preflights": 0,
+    "candidate_preflights": 0,
+    "rigid_task_replays": 0,
+    "candidate_task_replays": 0,
+    "renders": 0
+  },
+  "next_transition": "new_identity_with_absolute_timestep_tolerance_1e_15_and_otherwise_unchanged_or137_protocol",
+  "claim_limits": {
+    "normal_compliance_stability": false,
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

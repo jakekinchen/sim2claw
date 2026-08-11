@@ -1,21 +1,19 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
-  "generated_at": "2026-08-03",
-  "status": "or133c_terminal_retained_evidence_regional_identifiability_lane_closed",
+  "generated_at": "2026-08-08",
+  "status": "or150_complete_mobile_legible_disclosure_or149_or148_terminal_boundaries_restored",
   "active_card": null,
   "active_card_contract": null,
   "last_card_contract": {
-    "card_id": "OR133C",
-    "proof_target": "development_only_read_compute_boundary_residual_identifiability_test",
+    "card_id": "OR150",
+    "proof_target": "one_verified_presentation_only_mobile_legible_burned_disclosure_derivative_from_immutable_or149_render",
     "allowed_paths": [
-      "configs/evaluations/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification_v1.json",
-      "src/sim2claw/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification.py",
-      "tests/test_observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification.py",
-      "outputs/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification_v1",
-      "configs/decisions/observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification_v1_closeout.json",
-      "docs/briefs/212-observable-registration-or133c-union-silhouette-reproduction-repair.md",
-      "docs/session-logs/212-executor-observable-registration-or133c.md",
+      "configs/evaluations/observable_registration_d1_d2_nominal_wrist_mobile_readability_owner_authorization_v1.json",
+      "configs/evaluations/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1.json",
+      "outputs/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1",
+      "configs/decisions/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1_closeout.json",
+      "docs/session-logs/150-executor-observable-registration-d1-d2-nominal-wrist-mobile-readability.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
       "docs/autonomous-workflow/project_state.json",
@@ -27,12 +25,12 @@
       "write"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_observable_registration_union_silhouette_boundary_residual_spatiotemporal_falsification.py",
+      "uv run --locked python outputs/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1/verify.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
-    "commit": true,
-    "push_origin_main": true
+    "commit": false,
+    "push_origin_main": false
   },
   "prior_card_contract": {
     "card_id": "OR133B",
@@ -64,128 +62,17 @@
     "push_origin_main": true
   },
   "previous_card_contract": {
-    "card_id": "OR50",
-    "proof_target": "quarantined_outcome_informed_exact_episode_natural_dynamics_upright_basin_refinement",
+    "card_id": "OR149",
+    "proof_target": "one_verified_retained_or34_trace_nominal_uncalibrated_left_wrist_presentation_render",
     "allowed_paths": [
-      "configs/evaluations/observable_registration_outcome_informed_upright_basin_v1.json",
-      "src/sim2claw/observable_registration_outcome_informed_upright_basin.py",
-      "tests/test_observable_registration_outcome_informed_upright_basin.py",
-      "outputs/observable_registration_outcome_informed_upright_basin_v1",
-      "configs/decisions/observable_registration_outcome_informed_upright_basin_v1_closeout.json",
-      "docs/session-logs/122-executor-observable-registration-or50.md",
-      "configs/evaluations/observable_registration_outcome_informed_fixed_pad_breakpoint_v1.json",
-      "src/sim2claw/observable_registration_outcome_informed_fixed_pad_breakpoint.py",
-      "tests/test_observable_registration_outcome_informed_fixed_pad_breakpoint.py",
-      "outputs/observable_registration_outcome_informed_fixed_pad_breakpoint_v1",
-      "configs/decisions/observable_registration_outcome_informed_fixed_pad_breakpoint_v1_closeout.json",
-      "docs/session-logs/121-executor-observable-registration-or49.md",
-      "configs/evaluations/observable_registration_external_metric_pad_surface_packet_v1.json",
-      "src/sim2claw/observable_registration_external_metric_pad_surface_packet.py",
-      "tests/test_observable_registration_external_metric_pad_surface_packet.py",
-      "outputs/observable_registration_external_metric_pad_surface_packet_v1",
-      "configs/decisions/observable_registration_external_metric_pad_surface_packet_v1_closeout.json",
-      "docs/session-logs/120-executor-observable-registration-or48.md",
-      "configs/evaluations/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1.json",
-      "src/sim2claw/observable_registration_retained_d405_rigid_cad_cant_identifiability.py",
-      "tests/test_observable_registration_retained_d405_rigid_cad_cant_identifiability.py",
-      "outputs/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1",
-      "configs/decisions/observable_registration_retained_d405_rigid_cad_cant_identifiability_v1_closeout.json",
-      "docs/session-logs/119-executor-observable-registration-or46.md",
-      "configs/evaluations/observable_registration_d405_camera_capability_v1.json",
-      "src/sim2claw/observable_registration_d405_camera_capability.py",
-      "tests/test_observable_registration_d405_camera_capability.py",
-      "outputs/observable_registration_d405_camera_capability_v1",
-      "docs/session-logs/118-executor-observable-registration-or45l.md",
-      "configs/evaluations/observable_registration_d405_static_metric_capture_v1.json",
-      "src/sim2claw/observable_registration_d405_static_metric_capture.py",
-      "tests/test_observable_registration_d405_static_metric_capture.py",
-      "outputs/observable_registration_d405_static_metric_capture_v1",
-      "configs/decisions/observable_registration_d405_static_metric_capture_v1_closeout.json",
-      "docs/session-logs/117-executor-observable-registration-or45.md",
-      "configs/evaluations/observable_registration_d405_metric_sidecar_v1.json",
-      "src/sim2claw/observable_registration_d405_metric_sidecar.py",
-      "tools/macos/RealSenseD405MetricRecorder.cpp",
-      "tests/test_observable_registration_d405_metric_sidecar.py",
-      "outputs/observable_registration_d405_metric_sidecar_v1",
-      "configs/decisions/observable_registration_d405_metric_sidecar_v1_closeout.json",
-      "docs/session-logs/116-executor-observable-registration-or44.md",
-      "configs/evaluations/observable_registration_load_side_gripper_calibration_v1.json",
-      "src/sim2claw/observable_registration_load_side_gripper_calibration.py",
-      "tests/test_observable_registration_load_side_gripper_calibration.py",
-      "outputs/observable_registration_load_side_gripper_calibration_v1",
-      "configs/decisions/observable_registration_load_side_gripper_calibration_v1_closeout.json",
-      "docs/session-logs/115-executor-observable-registration-or43.md",
-      "docs/briefs/114-observable-registration-or42-next-mechanism.md",
-      "docs/session-logs/114-executor-observable-registration-or42.md",
-      "configs/evaluations/observable_registration_retained_full_range_gripper_mapping_v1.json",
-      "src/sim2claw/observable_registration_retained_full_range_gripper_mapping.py",
-      "tests/test_observable_registration_retained_full_range_gripper_mapping.py",
-      "outputs/observable_registration_retained_full_range_gripper_mapping_v1",
-      "configs/decisions/observable_registration_retained_full_range_gripper_mapping_v1_closeout.json",
-      "docs/session-logs/113-executor-observable-registration-or41.md",
-      "configs/evaluations/observable_registration_retained_video_jaw_surface_mapping_v1.json",
-      "src/sim2claw/observable_registration_retained_video_jaw_surface_mapping.py",
-      "tests/test_observable_registration_retained_video_jaw_surface_mapping.py",
-      "outputs/observable_registration_retained_video_jaw_surface_mapping_v1",
-      "configs/decisions/observable_registration_retained_video_jaw_surface_mapping_v1_closeout.json",
-      "docs/session-logs/112-executor-observable-registration-or40.md",
-      "configs/evaluations/observable_registration_measured_state_compliance_v1.json",
-      "src/sim2claw/observable_registration_measured_state_compliance.py",
-      "tests/test_observable_registration_measured_state_compliance.py",
-      "outputs/observable_registration_measured_state_compliance_v1",
-      "configs/decisions/observable_registration_measured_state_compliance_v1_closeout.json",
-      "docs/session-logs/111-executor-observable-registration-or39.md",
-      "configs/evaluations/observable_registration_measured_state_pad_bracket_v1.json",
-      "src/sim2claw/observable_registration_measured_state_pad_bracket.py",
-      "tests/test_observable_registration_measured_state_pad_bracket.py",
-      "outputs/observable_registration_measured_state_pad_bracket_v1",
-      "configs/decisions/observable_registration_measured_state_pad_bracket_v1_closeout.json",
-      "docs/session-logs/110-executor-observable-registration-or38.md",
-      "configs/evaluations/observable_registration_measured_state_prior_pad_position_v1.json",
-      "src/sim2claw/observable_registration_measured_state_prior_pad_position.py",
-      "tests/test_observable_registration_measured_state_prior_pad_position.py",
-      "outputs/observable_registration_measured_state_prior_pad_position_v1",
-      "configs/decisions/observable_registration_measured_state_prior_pad_position_v1_closeout.json",
-      "docs/session-logs/109-executor-observable-registration-or37b.md",
-      "configs/evaluations/observable_registration_measured_state_contact_skin_v1.json",
-      "src/sim2claw/observable_registration_measured_state_contact_skin.py",
-      "tests/test_observable_registration_measured_state_contact_skin.py",
-      "outputs/observable_registration_measured_state_contact_skin_v1",
-      "configs/decisions/observable_registration_measured_state_contact_skin_v1_closeout.json",
-      "docs/session-logs/108-executor-observable-registration-or37a.md",
-      "configs/evaluations/observable_registration_measured_state_single_surface_v1.json",
-      "src/sim2claw/observable_registration_measured_state_single_surface.py",
-      "tests/test_observable_registration_measured_state_single_surface.py",
-      "outputs/observable_registration_measured_state_single_surface_v1",
-      "configs/decisions/observable_registration_measured_state_single_surface_v1_closeout.json",
-      "docs/session-logs/107-executor-observable-registration-or36s.md",
-      "configs/evaluations/observable_registration_measured_state_contact_topology_v1.json",
-      "src/sim2claw/observable_registration_measured_state_contact_topology.py",
-      "tests/test_observable_registration_measured_state_contact_topology.py",
-      "outputs/observable_registration_measured_state_contact_topology_v1",
-      "configs/decisions/observable_registration_measured_state_contact_topology_v1_closeout.json",
-      "docs/session-logs/106-executor-observable-registration-or36b.md",
-      "configs/evaluations/observable_registration_measured_state_load_path_v1.json",
-      "src/sim2claw/observable_registration_measured_state_load_path.py",
-      "src/sim2claw/observable_registration_exact_replay_contact_introspection.py",
-      "src/sim2claw/realized_action_outcome_mission.py",
-      "tests/test_observable_registration_measured_state_load_path.py",
-      "outputs/observable_registration_measured_state_load_path_v1",
-      "configs/decisions/observable_registration_measured_state_load_path_v1_closeout.json",
-      "docs/session-logs/105-executor-observable-registration-or35.md",
-      "configs/evaluations/observable_registration_measured_state_visual_twin_v1.json",
-      "src/sim2claw/observable_registration_measured_state_visual_twin.py",
-      "tests/test_observable_registration_measured_state_visual_twin.py",
-      "outputs/observable_registration_measured_state_visual_twin_v1",
-      "configs/decisions/observable_registration_measured_state_visual_twin_v1_closeout.json",
-      "src/sim2claw/visible_divergence_studio.py",
-      "src/sim2claw/studio_web/visible-divergence.html",
-      "src/sim2claw/studio_web/visible-divergence.css",
-      "src/sim2claw/studio_web/visible-divergence.js",
-      "tests/test_visible_divergence_studio.py",
-      "docs/session-logs/104-executor-observable-registration-or34.md",
+      "configs/evaluations/observable_registration_d1_d2_nominal_wrist_presentation_owner_authorization_v1.json",
+      "configs/evaluations/observable_registration_d1_d2_nominal_wrist_presentation_v1.json",
+      "src/sim2claw/observable_registration_d1_d2_nominal_wrist_presentation.py",
+      "tests/test_observable_registration_d1_d2_nominal_wrist_presentation.py",
+      "outputs/observable_registration_d1_d2_nominal_wrist_presentation_v1",
+      "configs/decisions/observable_registration_d1_d2_nominal_wrist_presentation_v1_closeout.json",
+      "docs/session-logs/149-executor-observable-registration-d1-d2-nominal-wrist-presentation.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "docs/autonomous-workflow/observable-registration-successor-goal-loop-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
       "docs/autonomous-workflow/project_state.json",
       "GOAL.md"
@@ -193,28 +80,15 @@
     "allowed_operations": [
       "read",
       "test",
-      "write",
-      "commit"
+      "write"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_observable_registration_outcome_informed_upright_basin.py",
-      "uv run --locked pytest -q tests/test_observable_registration_outcome_informed_fixed_pad_breakpoint.py",
-      "uv run --locked pytest -q tests/test_observable_registration_retained_full_range_gripper_mapping.py",
-      "uv run --locked pytest -q tests/test_observable_registration_retained_video_jaw_surface_mapping.py",
-      "uv run --locked pytest -q tests/test_observable_registration_measured_state_compliance.py",
-      "uv run --locked pytest -q tests/test_observable_registration_measured_state_pad_bracket.py",
-      "uv run --locked pytest -q tests/test_observable_registration_measured_state_prior_pad_position.py",
-      "uv run --locked pytest -q tests/test_observable_registration_measured_state_contact_skin.py",
-      "uv run --locked pytest -q tests/test_observable_registration_measured_state_single_surface.py",
-      "uv run --locked pytest -q tests/test_observable_registration_measured_state_contact_topology.py",
-      "uv run --locked pytest -q tests/test_observable_registration_measured_state_load_path.py",
-      "uv run --locked pytest -q tests/test_observable_registration_measured_state_visual_twin.py tests/test_visible_divergence_studio.py",
-      "uv run --locked pytest -q tests/test_observable_registration_d405_camera_capability.py tests/test_observable_registration_d405_static_metric_capture.py tests/test_observable_registration_d405_metric_sidecar.py",
+      "uv run --locked pytest -q tests/test_observable_registration_d1_d2_nominal_wrist_presentation.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
-    "commit": true,
-    "push_origin_main": true
+    "commit": false,
+    "push_origin_main": false
   },
   "next_transition": null,
   "node_types": [
@@ -262,8 +136,78 @@
     },
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "e3f7ce07721252bb72834f42b341067dd2566f779c1bb439fab53df50df7b527",
+      "sha256": "1d905fe806509d379042a37b1a1fae81e9d8f722b4c6b94aba19d5cac5da6dc0",
       "proof_class": "campaign_control_state"
+    },
+    "or149": {
+      "path": "configs/decisions/observable_registration_d1_d2_nominal_wrist_presentation_v1_closeout.json",
+      "sha256": "86e8ea65ade5c7ad233a27e9169307e3847ff3590b38aa9940cf78463982a284",
+      "proof_class": "retained_measured_state_trace_nominal_wrist_projection_presentation_diagnostic"
+    },
+    "or134_authorization": {
+      "path": "configs/evaluations/observable_registration_f2_deformable_cap_owner_authorization_v1.json",
+      "sha256": "e3e8d8ab2e5b20682c8a42e807e5b24ffcf8b02c8e10f54972da68ca1af501c5",
+      "proof_class": "owner_authorized_quarantined_action_frozen_simulator_only_deformable_contact_diagnostic"
+    },
+    "or144_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_outcome_footprint_screen_v1_closeout.json",
+      "sha256": "3297ec3f1dea6591fc5dbc3875d75379d82a98e3830b827d4562333040d49b81",
+      "proof_class": "same_episode_outcome_informed_quarantined_simulator_development_screen_negative"
+    },
+    "or145_authorization": {
+      "path": "configs/evaluations/observable_registration_f2_outcome_footprint_screen_adjudication_owner_authorization_v1.json",
+      "sha256": "2608f3b1fbe22a3920dcdb48f374e551f6603babea235ed6df7c6c6ab66424ea",
+      "proof_class": "same_episode_outcome_informed_quarantined_simulator_screen_receipt_adjudication"
+    },
+    "or145_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_outcome_footprint_screen_adjudication_v1_closeout.json",
+      "sha256": "e5bc526116eb2475fc1bb26f342d01d87cf9ed0a7f0127f9df09e31a63ef0a6e",
+      "proof_class": "same_episode_outcome_informed_quarantined_simulator_screen_receipt_adjudication"
+    },
+    "or146_authorization": {
+      "path": "configs/evaluations/observable_registration_c2_strict_baseline_owner_authorization_v1.json",
+      "sha256": "341c038ad27c75d29df618333813174a5cf4635413fc01a92f968bf3404fb9e4",
+      "proof_class": "same_episode_outcome_informed_quarantined_simulator_full_step_strict_baseline"
+    },
+    "or146_contract": {
+      "path": "configs/evaluations/pawn_bg_c2_strict_baseline_v1.json",
+      "sha256": "6e701db9272ec2b33cc227d555cfc5933b48b09e8ea13b692e9ac3586800f80a",
+      "proof_class": "same_episode_outcome_informed_quarantined_simulator_full_step_strict_baseline"
+    },
+    "or146_closeout": {
+      "path": "configs/decisions/pawn_bg_c2_strict_baseline_v1_closeout.json",
+      "sha256": "8d94d93091345a26b78ec3961186dac0c9229c4ccd9b1cc00362900447600fda",
+      "proof_class": "same_episode_outcome_informed_quarantined_simulator_full_step_strict_baseline_negative"
+    },
+    "or147_authorization": {
+      "path": "configs/evaluations/observable_registration_c2_cross_episode_pad_pair_owner_authorization_v1.json",
+      "sha256": "96b6ca3e85c467e1cc95f43a3896f856f1ccdd5d84247c2c3fdbef0171fcd4a6",
+      "proof_class": "cross_episode_outcome_selected_and_same_episode_diagnosed_quarantined_simulator_candidate"
+    },
+    "or147_contract": {
+      "path": "configs/evaluations/pawn_bg_c2_cross_episode_pad_pair_v1.json",
+      "sha256": "09eb2fe8898651123f0a69a8f1a4d3d9f532eea6092a5da374dc8d41d040d5aa",
+      "proof_class": "cross_episode_outcome_selected_and_same_episode_diagnosed_quarantined_simulator_candidate"
+    },
+    "or147_closeout": {
+      "path": "configs/decisions/pawn_bg_c2_cross_episode_pad_pair_v1_closeout.json",
+      "sha256": "1b3d6a04da2085f148045b0bf143d57b463baf4a2e72a035dea686c335c9c536",
+      "proof_class": "cross_episode_outcome_selected_and_same_episode_diagnosed_quarantined_simulator_candidate_negative"
+    },
+    "or148_authorization": {
+      "path": "configs/evaluations/observable_registration_e2_strict_baseline_owner_authorization_v1.json",
+      "sha256": "8328ee7633fecfa92a84b5fa2dfd0cde6ccc1a460e1d6d57216a70e4a90f6f80",
+      "proof_class": "retained_outcome_ranked_quarantined_simulator_full_step_strict_diagnostic"
+    },
+    "or148_contract": {
+      "path": "configs/evaluations/pawn_bg_e2_strict_baseline_v1.json",
+      "sha256": "08932d2fb49ba07e8070094bf9ecfcce92aaa2554c1341f0e5a981d161e61897",
+      "proof_class": "retained_outcome_ranked_quarantined_simulator_full_step_strict_diagnostic"
+    },
+    "or148_closeout": {
+      "path": "configs/decisions/pawn_bg_e2_strict_baseline_v1_closeout.json",
+      "sha256": "a3c799ec8f3291218af9c9c78ca4a90e3a9caed0badba2cc19c804de30ec1b54",
+      "proof_class": "retained_outcome_ranked_quarantined_simulator_full_step_strict_negative"
     },
     "or133a": {
       "path": "configs/decisions/observable_registration_renderer_native_regional_residual_attribution_v1_closeout.json",
@@ -734,6 +678,11 @@
       "path": "configs/decisions/observable_registration_camera_parallax_edge_v1_closeout.json",
       "sha256": "f2e7ca0caf2f2dd7d73ed36ee812441a8349216ecaee57454f548b19acade8d6",
       "proof_class": "retained_episode_specific_board_preserving_camera_parallax_edge_alignment_runtime_negative"
+    },
+    "or150": {
+      "path": "configs/decisions/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1_closeout.json",
+      "sha256": "f48bf4ee4b8f160aeec3679a2b3a6089f200fa2599e701dbb0a9376117df2a24",
+      "proof_class": "presentation_only_burned_disclosure_mobile_readability_derivative"
     }
   },
   "nodes": [
@@ -797,9 +746,18 @@
       "status": "accepted",
       "source_binding": "or3",
       "data": {
-        "candidate_contact_samples": [228, 232],
-        "definite_carried_motion_samples": [260, 390],
-        "candidate_release_samples": [400, 407],
+        "candidate_contact_samples": [
+          228,
+          232
+        ],
+        "definite_carried_motion_samples": [
+          260,
+          390
+        ],
+        "candidate_release_samples": [
+          400,
+          407
+        ],
         "fixed_jaw_track_count": 23,
         "moving_jaw_track_count": 23,
         "pawn_crown_track_count": 10,
@@ -1411,9 +1369,15 @@
         "identified_minus_measured_joint_rms_degrees": 0.8936675490378009,
         "identified_minus_measured_end_effector_rms_mm": 7.3913996081347415,
         "raw_state_first_selected_jaw_contact_sample": 230,
-        "physical_contact_interval_samples": [228, 232],
+        "physical_contact_interval_samples": [
+          228,
+          232
+        ],
         "raw_state_first_pawn_motion_over_1mm_sample": 232,
-        "physical_lift_interval_samples": [247, 260],
+        "physical_lift_interval_samples": [
+          247,
+          260
+        ],
         "raw_state_terminal_planar_error_m": 0.03394622069649699,
         "raw_state_final_tilt_degrees": 102.10499301968989,
         "remaining_residual_channel": "jaw_contact_load_path_after_enclosure",
@@ -1480,8 +1444,14 @@
         "single_changed_mechanism": "one_contact_bearing_mesh_surface_per_jaw",
         "first_contact_sample": 231,
         "first_motion_over_1mm_sample": 255,
-        "physical_contact_interval_samples": [228, 232],
-        "physical_lift_interval_samples": [247, 260],
+        "physical_contact_interval_samples": [
+          228,
+          232
+        ],
+        "physical_lift_interval_samples": [
+          247,
+          260
+        ],
         "candidate_first_bilateral_contact": null,
         "candidate_tilt_at_sample_260_degrees": 38.174162610274564,
         "full_physics_driven_replay_pass": false,
@@ -1586,9 +1556,15 @@
           "overhead_c922_contact_view": "insufficient_arm_and_cable_occlusion",
           "wrist_d405_rgb_contact_view": "sufficient_for_image_space_red_pad_surface_extraction",
           "wrist_video_sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c",
-          "wrist_resolution": [424, 240],
+          "wrist_resolution": [
+            424,
+            240
+          ],
           "wrist_fps": 5.0,
-          "mapping_sample_range": [110, 224],
+          "mapping_sample_range": [
+            110,
+            224
+          ],
           "accepted_preterminal_frames": 25,
           "metric_depth_available": false,
           "camera_exposure_synchronized": false,
@@ -1598,8 +1574,14 @@
         "fit_rms_px": 1.7252985013715447,
         "validation_rms_px": 2.280921659972917,
         "zero_play_validation_rms_px": 2.280921659972917,
-        "fit_opening_closing_frames": [4, 4],
-        "validation_opening_closing_frames": [5, 0],
+        "fit_opening_closing_frames": [
+          4,
+          4
+        ],
+        "validation_opening_closing_frames": [
+          5,
+          0
+        ],
         "play_lag_near_optimum_correlation": 0.9861502215485471,
         "fit_mechanism_limit": 1,
         "no_refit_validation_required": true,
@@ -1621,7 +1603,11 @@
         "raw_measured_row_count": 2401,
         "wrist_frame_count": 642,
         "wrist_fps": 5.0,
-        "raw_gripper_cycle_degrees": [1.0688836104513064, 99.5249406175772, 1.66270783847981],
+        "raw_gripper_cycle_degrees": [
+          1.0688836104513064,
+          99.5249406175772,
+          1.66270783847981
+        ],
         "accepted_candidate_frames": 4,
         "candidate_frame_count": 41,
         "selected_play_half_width_raw_degrees": 0.0,
@@ -1732,7 +1718,10 @@
       "label": "Retained D405 rigid-jaw CAD cant identifiability screen",
       "status": "retained_rgb_cant_practically_unidentifiable",
       "data": {
-        "retained_or40_frames": [64, 88],
+        "retained_or40_frames": [
+          64,
+          88
+        ],
         "accepted_frame_count": 25,
         "contact_and_terminal_samples_excluded": true,
         "positive_target": "cad_trusted_non_red_rigid_jaw_edges_only",
@@ -1744,7 +1733,13 @@
           "closing": 5,
           "hold": 11
         },
-        "fold_frame_counts": [11, 8, 4, 1, 1],
+        "fold_frame_counts": [
+          11,
+          8,
+          4,
+          1,
+          1
+        ],
         "validation_and_stress_each_have_only_one_hold_frame": true,
         "prerender_gates_passed": false,
         "cad_renders_run": 0,
@@ -1776,7 +1771,10 @@
         "packet_duration_seconds": 22.1,
         "requested_float64_sha256": "3ab970c0bcb5310e9a3939accce09eb281c9daac939e989749655b91ca8f3aa0",
         "requested_action_bytes_changed": false,
-        "fit_cycles": [1, 2],
+        "fit_cycles": [
+          1,
+          2
+        ],
         "untouched_validation_cycle": 3,
         "stress_cycle": "wide_cycle_1",
         "missing_capabilities": [
@@ -1808,7 +1806,10 @@
         "raw_measured_state_changed": false,
         "timestamps_or_interpolation_changed": false,
         "single_simulator_coordinate": "fixed_contact_skin_longitudinal_position",
-        "fixed_pad_local_z_range_m": [-0.11525, -0.11075],
+        "fixed_pad_local_z_range_m": [
+          -0.11525,
+          -0.11075
+        ],
         "fixed_pad_local_z_step_m": 0.00025,
         "candidate_count": 19,
         "terminal_task_outcome_fit_allowed": true,
@@ -1839,7 +1840,10 @@
         "raw_measured_state_changed": false,
         "timestamps_or_interpolation_changed": false,
         "single_simulator_coordinate": "fixed_contact_skin_longitudinal_position",
-        "fixed_pad_local_z_range_m": [-0.11312, -0.11288],
+        "fixed_pad_local_z_range_m": [
+          -0.11312,
+          -0.11288
+        ],
         "fixed_pad_local_z_step_m": 0.00001,
         "candidate_count": 25,
         "outcome_informed_quarantine_permanent": true,
@@ -1902,7 +1906,10 @@
         "coaccepted_carry_row_count": 10,
         "pass_a_between_jaw_tip_count": 10,
         "pass_b_between_jaw_tip_count": 10,
-        "closed_command_hold_interval_samples_inclusive": [241, 327],
+        "closed_command_hold_interval_samples_inclusive": [
+          241,
+          327
+        ],
         "metric_aperture_proven": false,
         "metric_depth_proven": false,
         "contact_force_proven": false,
@@ -1945,8 +1952,14 @@
         "directory_label": "b5-to-a5",
         "authoritative_receipt_task": "brown_pawn_b2_b2_to_b1",
         "directory_receipt_semantic_conflict": true,
-        "closed_command_hold_interval_samples_inclusive": [226, 351],
-        "frame_range_inclusive": [100, 125],
+        "closed_command_hold_interval_samples_inclusive": [
+          226,
+          351
+        ],
+        "frame_range_inclusive": [
+          100,
+          125
+        ],
         "frame_count": 26,
         "fixed_jaw_tip_two_pass_accepted_count": 26,
         "moving_jaw_tip_two_pass_accepted_count": 26,
@@ -2158,7 +2171,11 @@
       "label": "Pixel-free environment primitive edge headroom",
       "status": "pass_pixel_free_environment_primitive_edge_headroom_advance",
       "data": {
-        "primitive_prefixes": [8, 16, 24],
+        "primitive_prefixes": [
+          8,
+          16,
+          24
+        ],
         "edge_gate": 0.4,
         "or58_mean_edge_f1": 0.18034068783682333,
         "full_24_line_mean_edge_f1": 0.2872480714751123,
@@ -2180,7 +2197,11 @@
       "status": "pass_post_environment_primitive_edge_residual_reattribution",
       "data": {
         "line_primitive_count": 24,
-        "classes": ["motion_union", "nonmotion_board", "nonmotion_outside_board"],
+        "classes": [
+          "motion_union",
+          "nonmotion_board",
+          "nonmotion_outside_board"
+        ],
         "selection_rule": "maximum_unmatched_edge_mass_then_denominator_then_declared_class_order",
         "outside_board_edge_f1_before": 0.09437742123362987,
         "outside_board_edge_f1_after": 0.29845144360297765,
@@ -2222,7 +2243,10 @@
       "status": "proxy_pass_quarantined_screen_space_reward_hack",
       "data": {
         "stroke_width_px": 1,
-        "alpha_candidates": [0.25, 0.5],
+        "alpha_candidates": [
+          0.25,
+          0.5
+        ],
         "palette_color_count": 6,
         "candidate_count": 2,
         "emitted_video_limit": 1,
@@ -2371,7 +2395,10 @@
         "physical_orientation": "hflip_vflip",
         "parameter_count": 7,
         "parameter_family": "target_xyz_azimuth_elevation_distance_vertical_fov",
-        "search_resolution": [160, 120],
+        "search_resolution": [
+          160,
+          120
+        ],
         "search_algorithm": "seeded_scipy_differential_evolution",
         "appearance_fits_allowed": 0,
         "time_fits_allowed": 0,
@@ -2428,7 +2455,11 @@
         "parameter_fits_allowed": 0,
         "validation_reads_allowed": 0,
         "evaluator_heldout_reads_allowed": 0,
-        "decision_candidates": ["renderer_structure", "appearance", "timing"],
+        "decision_candidates": [
+          "renderer_structure",
+          "appearance",
+          "timing"
+        ],
         "paid_compute": false,
         "selected_mechanism": "renderer_structure",
         "mean_gap": 0.018917126421669206,
@@ -2480,7 +2511,6 @@
         "parameter_fits_allowed": 0,
         "paid_compute": false,
         "unique_asset_reads": 18,
-        "mesh_definition_count": 36,
         "mesh_source_triangle_count": 802680,
         "mesh_raster_triangle_count": 802680,
         "total_raster_triangle_count": 824944,
@@ -2618,8 +2648,14 @@
       "status": "pass_board_to_robot_world_registration_selected",
       "data": {
         "development_episode_count": 4,
-        "candidate_sources": ["or81_roll_free", "or82_sensor_roll"],
-        "regions": ["board_plus_margin", "outside_board"],
+        "candidate_sources": [
+          "or81_roll_free",
+          "or82_sensor_roll"
+        ],
+        "regions": [
+          "board_plus_margin",
+          "outside_board"
+        ],
         "fits_allowed": 0,
         "renders_allowed": 0,
         "candidate_images_allowed": 0,
@@ -2640,16 +2676,65 @@
       "data": {
         "development_episode_count": 4,
         "camera_source": "or82_shared_board_camera_with_sensor_roll",
-        "parameter_family": ["workcell_yaw_degrees", "workcell_translation_x_m", "workcell_translation_y_m"],
-        "fixed_board_group_body_ids": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
-        "transformed_workcell_body_ids": [6, 7, 8, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44],
+        "parameter_family": [
+          "workcell_yaw_degrees",
+          "workcell_translation_x_m",
+          "workcell_translation_y_m"
+        ],
+        "fixed_board_group_body_ids": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26
+        ],
+        "transformed_workcell_body_ids": [
+          6,
+          7,
+          8,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44
+        ],
         "appearance_fits_allowed": 0,
         "time_fits_allowed": 0,
         "state_or_physics_fits_allowed": 0,
         "validation_reads_allowed": 0,
         "evaluator_heldout_reads_allowed": 0,
         "paid_compute": false,
-        "selected_vector": [35.819156790053825, -0.3585471837092544, -0.5415197793190017],
+        "selected_vector": [
+          35.819156790053825,
+          -0.3585471837092544,
+          -0.5415197793190017
+        ],
         "mean_board_plus_margin_edge_f1": 0.5423929119695983,
         "mean_outside_board_edge_f1": 0.3712547598257375,
         "mean_whole_frame_tolerant_edge_f1": 0.45290650734552956,
@@ -2696,7 +2781,10 @@
         "development_episode_count": 4,
         "frame_count": 423,
         "candidate_count": 35,
-        "parameter_names": ["uniform_bgr_gain", "uniform_bgr_bias"],
+        "parameter_names": [
+          "uniform_bgr_gain",
+          "uniform_bgr_bias"
+        ],
         "per_channel_parameters": 0,
         "spatial_parameters": 0,
         "per_frame_parameters": 0,
@@ -2749,9 +2837,18 @@
       "label": "JSON-only validation split restart",
       "status": "pass_json_only_split_frozen",
       "data": {
-        "expanded_development_positions": [1, 7],
-        "fresh_validation_positions": [8, 9],
-        "final_evaluator_heldout_positions": [10, 11],
+        "expanded_development_positions": [
+          1,
+          7
+        ],
+        "fresh_validation_positions": [
+          8,
+          9
+        ],
+        "final_evaluator_heldout_positions": [
+          10,
+          11
+        ],
         "split_order_source": "or68_ascending_recording_id_sha256",
         "physical_video_decodes_allowed": 0,
         "renderer_runs_allowed": 0,
@@ -2783,7 +2880,12 @@
         "per_frame_parameters": 0,
         "minimum_development_edge_f1": 0.42,
         "paid_compute": false,
-        "selected_response": [24.0, 0.85, 0.25, 128],
+        "selected_response": [
+          24.0,
+          0.85,
+          0.25,
+          128
+        ],
         "pooled_mean_full_frame_similarity": 0.8445704807731982,
         "pooled_p10_full_frame_similarity": 0.8283418416976929,
         "pooled_mean_motion_union_similarity": 0.8083652256795081,
@@ -2800,7 +2902,10 @@
       "label": "Reject-only fresh validation global monotone response",
       "status": "pass_all_six_fresh_validation_gates",
       "data": {
-        "fresh_validation_positions": [8, 9],
+        "fresh_validation_positions": [
+          8,
+          9
+        ],
         "expected_episode_count": 2,
         "camera_source": "or82_frozen",
         "workcell_transform_source": "or84_frozen",
@@ -2827,7 +2932,10 @@
       "label": "One-shot final evaluator-heldout global monotone response",
       "status": "pass_numeric_gates_post_evaluation_same_video_claim_rejected",
       "data": {
-        "final_evaluator_heldout_positions": [10, 11],
+        "final_evaluator_heldout_positions": [
+          10,
+          11
+        ],
         "expected_episode_count": 2,
         "expected_frame_count": 246,
         "camera_source": "or82_frozen",
@@ -2879,7 +2987,24 @@
       "data": {
         "sampled_frame_pair_count": 6,
         "static_workcell_transform_source": "or84_frozen",
-        "robot_body_ids": [29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44],
+        "robot_body_ids": [
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44
+        ],
         "shared_robot_se2_parameters": 3,
         "renderer_native": true,
         "new_physical_video_decodes_allowed": 0,
@@ -2898,8 +3023,26 @@
       "status": "pass_independent_left_right_robot_base_headroom_selected",
       "data": {
         "sampled_frame_pair_count": 6,
-        "left_robot_body_ids": [29, 30, 31, 32, 33, 34, 35, 36],
-        "right_robot_body_ids": [37, 38, 39, 40, 41, 42, 43, 44],
+        "left_robot_body_ids": [
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36
+        ],
+        "right_robot_body_ids": [
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44
+        ],
         "independent_robot_se2_parameters": 6,
         "renderer_native": true,
         "new_physical_video_decodes_allowed": 0,
@@ -2974,7 +3117,10 @@
       "data": {
         "episode_count": 11,
         "baseline_and_candidate_initial_renders": 22,
-        "ablated_body_ids": [6, 7],
+        "ablated_body_ids": [
+          6,
+          7
+        ],
         "fits_allowed": 0,
         "post_final_diagnostic_only": true,
         "paid_compute": false,
@@ -2992,8 +3138,12 @@
       "data": {
         "episode_count": 11,
         "baseline_and_candidate_initial_renders": 22,
-        "kept_background_geom_names": ["rear_wall"],
-        "removed_background_detail_body_ids": [7],
+        "kept_background_geom_names": [
+          "rear_wall"
+        ],
+        "removed_background_detail_body_ids": [
+          7
+        ],
         "fits_allowed": 0,
         "candidate_searches_allowed": 0,
         "pixel_compositing_allowed": false,
@@ -3011,10 +3161,26 @@
       "label": "Post-final bounded renderer-native enclosure-plane fit",
       "status": "terminal_bounded_renderer_native_enclosure_plane_development_gate_failed",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "side_wall_local_x_candidate_count": 9,
-        "side_wall_local_x_bounds_m": [-0.5, -0.3],
+        "side_wall_local_x_bounds_m": [
+          -0.5,
+          -0.3
+        ],
         "renderer_native_box_primitive": true,
         "per_episode_geometry_allowed": false,
         "pixel_compositing_allowed": false,
@@ -3050,9 +3216,25 @@
       "label": "Post-final global robot-motion lag attribution",
       "status": "terminal_global_robot_motion_lag_insufficient",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
-        "integer_lag_bounds_frames": [-10, 10],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "integer_lag_bounds_frames": [
+          -10,
+          10
+        ],
         "per_episode_lag_allowed": false,
         "renders_allowed": 0,
         "simulator_replays_allowed": 0,
@@ -3086,13 +3268,29 @@
       "label": "Post-final shared shoulder-lift articulation calibration",
       "status": "terminal_development_gate_failed",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "sampled_frames_per_episode": 3,
         "gain_candidate_count": 5,
         "offset_candidate_count": 5,
         "one_global_pair": true,
-        "selected_pair": [0.8, -5.0],
+        "selected_pair": [
+          0.8,
+          -5.0
+        ],
         "development_outside_board_edge_f1_gain": 0.011454898481045583,
         "development_gate_required_gain": 0.02,
         "validation_opened": false,
@@ -3128,14 +3326,30 @@
       "label": "Post-final two-class robot material palette calibration",
       "status": "terminal_development_gate_failed",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "sampled_frames_per_episode": 3,
         "structural_albedo_candidate_count": 4,
         "servo_albedo_candidate_count": 4,
         "one_shared_pair": true,
         "per_frame_side_or_episode_colors": false,
-        "selected_pair": [1.0, 0.5],
+        "selected_pair": [
+          1.0,
+          0.5
+        ],
         "development_full_frame_gain": 0.004504972270556906,
         "development_outside_board_edge_f1_delta": -0.033961305768732575,
         "validation_opened": false,
@@ -3150,8 +3364,21 @@
       "label": "Post-final exogenous operator skin-edge occupancy attribution",
       "status": "terminal_numeric_pass_visual_audit_reject",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "sampled_frames_per_episode": 3,
         "fixed_hsv_ycrcb_skin_proxy": true,
         "renders_allowed": 0,
@@ -3171,8 +3398,21 @@
       "label": "Post-final persistence-subtracted dynamic operator proxy",
       "status": "terminal_pass",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "sampled_frames_per_episode": 3,
         "development_persistent_support_estimates": 1,
         "validation_refits_allowed": 0,
@@ -3192,8 +3432,21 @@
       "label": "Post-final single-capsule dynamic operator shape identifiability",
       "status": "terminal_pass",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "dynamic_present_samples_only": true,
         "one_deterministic_shape_per_frame": true,
         "development_mean_iou": 0.7456964141066199,
@@ -3215,8 +3468,21 @@
       "label": "Post-final renderer-native single-capsule operator reconstruction",
       "status": "terminal_development_gate_failed",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "retained_footage_conditioned_exogenous_actor": true,
         "real_triangulated_3d_capsule": true,
         "native_shared_zbuffer": true,
@@ -3303,8 +3569,21 @@
       "label": "Post-final persistent static enclosure boundary-line identifiability",
       "status": "terminal_pass_semantic_narrowing",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "or97_occupancy_maps_only": true,
         "one_development_selected_orientation_bin": true,
         "validation_refit_allowed": false,
@@ -3327,8 +3606,21 @@
       "label": "Post-final persistent linear workcell object attribution",
       "status": "terminal_pass",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "or97_physical_persistent_panels_only": true,
         "or114_line_parameters_frozen": true,
         "endpoint_and_topology_rule_preregistered": true,
@@ -3351,8 +3643,21 @@
       "label": "Post-final renderer-native finite linear workcell object reconstruction",
       "status": "terminal_negative",
       "data": {
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "one_initial_frame_per_episode": true,
         "tabletop_plane_from_frozen_renderer_scene": true,
         "development_shared_shape_and_material": true,
@@ -3382,8 +3687,16 @@
         "validation_pixels_allowed": false,
         "video_decodes_or_renders_allowed": 0,
         "fits_searches_or_threshold_changes_allowed": 0,
-        "shaft_target_median_bgr": [150, 148, 145],
-        "terminal_target_median_bgr": [55, 48, 43],
+        "shaft_target_median_bgr": [
+          150,
+          148,
+          145
+        ],
+        "terminal_target_median_bgr": [
+          55,
+          48,
+          43
+        ],
         "target_bgr_euclidean_separation": 171.5488268686207,
         "opposite_signed_residuals": true,
         "artifact_sha256": "d9e8d2a3918e3bab2997e5df43b9b91df57d97c01bb08a05caa922d007deaa54",
@@ -3402,8 +3715,16 @@
         "one_selected_pair_validation_without_refit": true,
         "validation_requires_development_gate": true,
         "simulator_replays_allowed": 0,
-        "selected_shaft_target_bgr": [138, 136, 132],
-        "selected_terminal_target_bgr": [55, 48, 43],
+        "selected_shaft_target_bgr": [
+          138,
+          136,
+          132
+        ],
+        "selected_terminal_target_bgr": [
+          55,
+          48,
+          43
+        ],
         "development_full_frame_similarity_delta": 0.0005427471229008266,
         "validation_full_frame_similarity_delta": 0.0005837604403495789,
         "development_outside_board_edge_f1_delta": 0.04450964010930607,
@@ -3531,8 +3852,21 @@
         "secondary_segment_count": 2,
         "support_plane": "or116_exact_tabletop",
         "or119_finite_object_retained": true,
-        "development_positions": [1, 2, 3, 4, 5, 6, 7],
-        "validation_positions": [8, 9, 10, 11],
+        "development_positions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "validation_positions": [
+          8,
+          9,
+          10,
+          11
+        ],
         "validation_requires_development_gate": true,
         "validation_refit_allowed": false,
         "specific_object_identity_allowed": false,
@@ -3717,7 +4051,11 @@
       "label": "Renderer-native clipped planar fixture parameterization",
       "status": "completed_clipped_planar_fixture_parameterized",
       "data": {
-        "source_component_indices": [0, 1, 2],
+        "source_component_indices": [
+          0,
+          1,
+          2
+        ],
         "source_raw_residual_pixel_count": 322,
         "development_gated_no_refit_corroboration": true,
         "procedural_pattern_required": true,

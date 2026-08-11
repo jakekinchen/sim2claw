@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `TERMINAL_RETAINED_EVIDENCE_REGIONAL_IDENTIFIABILITY_LANE_CLOSED`
+Status: `OR150_COMPLETE_MOBILE_LEGIBLE_DISCLOSURE_OR149_OR148_TERMINAL_BOUNDARIES_RESTORED`
 
 Created: `2026-07-29`
 
@@ -65,9 +65,10 @@ task success are accepted only if their frozen evaluator gates pass.
   choice before opening the corresponding outcome.
 - Fit only on declared fit observations. Do not use task outcome, sealed C6
   terminal position, or held-out observations to select parameters for any
-  promotable model. OR49 is the explicit exception: its exact-episode outcome
-  may select a simulator-only diagnostic, which is permanently quarantined
-  from mapping, held-out, promotion, and transfer claims.
+  promotable model. OR49 and owner-authorized OR134 are explicit exceptions:
+  their exact-episode outcomes may select simulator-only diagnostics, which
+  are permanently quarantined from mapping, held-out, promotion, and transfer
+  claims.
 - Keep camera intrinsics, camera extrinsics, robot mapping, jaw geometry,
   contact/object dynamics, and actuator response as separately reported
   channels. A pass in one cannot silently repair another.
@@ -238,6 +239,21 @@ task success are accepted only if their frozen evaluator gates pass.
 | OR133A | `PASS_RETROSPECTIVE_REGIONAL_ATTRIBUTION_COMPLETE` | Attribute OR132's combined residual and ledger prior sibling exposure before freezing any intervention. | Use only OR88 expanded-development positions `1-7`: decode exactly `751` physical and `751` OR131 candidate frames, read seven existing OR132 occupancy maps, and render one `751`-frame front-most group-ID sweep while requiring `825,548` input triangles per frame. Report geometry/photometry, per-group, landmark-conditioning, dynamic-mass, and metadata-only sibling-exposure diagnostics. Protocol constants are declared outcome-informed. Positions `8-11`, sibling pixels, fits, selections, threshold changes, retries, simulator replay, hardware, paid compute, promotion, and transfer remain closed. | Artifact `b0673cb231847f82ee333327c3865cb67d6f6f02521c750e5c7e8307127f678e`. All integrity gates pass. Geometry and shadow routing trigger in `0/7`; boundary-connected operator/cable-like mass triggers in `7/7`. Mean dynamic mass is `20.94%` silhouette-near, `9.64%` shadow-like, `20.53%` operator/cable-like, and `48.89%` unattributed. All 18 recordings and 36 review frames are ledgered; no untouched sibling cohort remains. Only a separately frozen OR133B may continue. |
 | OR133B | `TERMINAL_BOUNDARY_RESIDUAL_REPRODUCTION_INFEASIBLE` | Falsify OR133A's over-strong operator/cable semantics and test whether the measured boundary-connected non-shadow residual is follower-coupled, leader/boundary-track-coupled, confounded, or unidentifiable. | Reproduce the exact OR133A unmatched residual on expanded-development positions `1-7`, with one exact `751`-frame ID-buffer rerender and `1,502` bound video-frame reads. Track border side, component geometry, robot-distance bands, light/dark flags, and deterministic adjacent-frame overlap. Compare fixed lags `-3..3` against 40 circular shifts at least five seconds away for physical follower speed and leader innovation. No intervention, renderer parameter, semantic relabeling, evaluation-partition read, retry, hardware, paid compute, or promotion is allowed. | Split position `1` reproduced the exact `36,648` pixels, but the run failed closed after `222` renders at position `2`. OR133B used separate left/right silhouette distances where OR133A used the union silhouette, introducing an internal group boundary. No receipt or causal result exists; same-card retry is prohibited. Only a new exact-reproduction repair identity is authorized. |
 | OR133C | `TERMINAL_REGIONAL_DYNAMIC_RESIDUAL_UNIDENTIFIABLE_WITH_RETAINED_EVIDENCE` | Repair OR133B's one instrumentation mismatch, then run the unchanged boundary-residual causal falsification. | Use the union robot silhouette for classification exactly as OR133A; retain separate left/right distances only as descriptive fields. Reuse every OR133B episode, frame, threshold, component, track, lag, null, resource, authority, and stop binding unchanged under a new identity. | Artifact `687a9df8c0d754fca14830b8de226abd0c3d17383487e36244c99d09ed2f2d05`. All seven OR133A boundary totals reproduce exactly over `751` frames. Follower-speed association qualifies in `5/7` episodes and leader-innovation association in `3/7`, both below the frozen `6/7` gate. The measured class is only `boundary_connected_nonshadow_residual`; actor/cable identity and every simulator intervention remain unsupported. |
+| OR134 | `TERMINAL_RIGID_CONTROL_IDENTITY_REPRODUCTION_FAILED_NO_FLEX_EXECUTED` | Determine whether a preregistered deformable fingertip-cap mechanism can produce one genuine upright F2-to-F1 simulator replay under the byte-identical retained action sequence. | Run the immutable rigid `0.91` control before any flex member and fail closed if its historical dynamics do not reproduce. | The action remained byte-identical, but the retained rigid result did not reproduce: final distance regressed from `0.007662688 m` to `0.164522288 m`; lift, qualified bilateral contact, and upright changed from true to false. Exactly one rigid run and zero flex runs executed. OR134 provides no candidate evidence and no deformable-cap or contact-cone conclusion. |
+| OR135 | `TERMINAL_INDEPENDENT_COMPATIBILITY_SAMPLING_DOMAIN_MISMATCH_NO_FLEX_EXECUTED` | Restore a fully specified historical rigid-runtime identity, then test the unchanged preregistered flex family only if the rigid compatibility gate passes. | Freeze the historical tree, scene, runtime options, contact prior/material, pad geometry, model arrays, source action/timestamps, initialization, and evaluator before execution. | The compiled model and historical producer/source-boundary rigid metrics reproduced exactly, but the hash-bound verifier compared the retained source-boundary rise to the distinct full-step rise. The independent gate failed; one rigid and zero flex runs executed. This is an evaluator-semantics terminal, not physics incompatibility. |
+| OR136 | `TERMINAL_FLEX_CAP_PREACTION_NUMERICAL_INSTABILITY_NO_STRICT_PASS` | Repair only OR135's sampling-domain mismatch under a new identity, rerun one fresh rigid control, then unlock the unchanged flex family only if the independent compatibility gate passes. | Freeze `maximum_piece_rise_source_boundary_m` solely for historical compatibility and retain `maximum_piece_rise_full_step_m` for unchanged strict lift/carry evaluation. Bind the 439 interval counts, 440 action-boundary rows, 441 legacy rows including terminal, and all three hashes before execution. | The fresh rigid compatibility gate passed. All five frozen flex candidates then emitted `mjWARN_BADQACC` during the initial settle before action replay and failed strict evaluation. One rigid and five flex runs executed; zero flex task trials were admissible, with no stiffness or transfer conclusion. |
+| OR137 | `TERMINAL_COMPILE_AUDIT_FLOAT_LITERAL_COMPARISON_NO_DYNAMIC_EXECUTION` | Replace the numerically inadmissible MjFlex caps with one existing passive single-normal-DOF compliant rigid-cap construction, then attempt the same strict F2-to-F1 replay only after stability and rigid compatibility pass. | Freeze one source-default neutral candidate (`2 mm`, `1000 N/m`, `2 N s/m`, `1 g/finger`, compression-only), preserve the current `0.91` external pad geometry/material/frames/controller and exact action, and independently compare disposable 100-step rigid/candidate initial-settle traces before any task replay. | Rigid MJB, no-flex, and exact two-body/two-joint gates passed. The compile audit failed only because `0.0022500000000000003` was compared to decimal `0.00225` with exact equality. One compile audit and zero dynamic runs executed. |
+| OR138 | `TERMINAL_PAIRED_PREACTION_NONPERTURBATION_GATES_FAILED_NO_TASK_REPLAY` | Repair only OR137's compile-audit timestep comparison, then run its otherwise unchanged normal-compliant-cap protocol. | Require rigid and candidate timesteps to remain exactly equal and compare the stored value to `0.00225 s` with the already declared `1e-15 s` absolute tolerance. Reuse OR137's candidate, paired preflight, rigid compatibility, task evaluator, and execution order unchanged. | Compile passed; rigid preflight passed. Candidate preflight was warning-free and finite with `11.133 µm` peak compression and no new cap contacts, but failed signed soft-limit, final-window motion, and robot nonperturbation gates. Two disposable preflights and zero task replays ran. |
+| OR139 | `TERMINAL_CLEAN_PASSIVE_CAP_NOT_SETTLED_AT_TASK_BOUNDARY_NO_TASK_REPLAY` | Remove robot-default armature/friction accidentally inherited by the two passive cap slides, then prospectively test the same exact-action task only after fresh paired initialization passes. | Set only the two added slide joints to zero armature/frictionloss. Keep `2 mm`, `1000 N/m`, `2 N s/m`, `1 g/finger`, geometry/material/frames/controller/action unchanged. Replace malformed initialization gates with per-finger `2mg/k` soft-limit slack and one-encoder-quantum robot divergence bounds; all task gates remain unchanged. | Compile and rigid preflight passed. The clean cap was warning-free but remained unsettled at the task boundary (`34.392 µm`, `3.414 mm/s`, `7.424 m/s²`). Two disposable preflights and zero task replays ran. |
+| OR140 | `TERMINAL_STRICT_TASK_FAILURE_AND_FULL_REPLAY_CAP_BOUND_VIOLATION` | Prospectively test the unchanged exact-action task using the warning-free inherited-default soft-limited cap after mechanics- and encoder-scale pre-action gates pass. | Retain and explicitly disclose cap armature `0.005` and frictionloss `0.1` inherited from the SO101 childclass; do not describe it as critically damped or calibrated rubber. Require zero cap contact during the 100-step hold and preserve every task gate. | Compile, paired preflight, and rigid compatibility passed. The candidate rose only `23.487 mm`, tipped `102.378 deg`, ended `297.599 mm` from target, contacted a wrong pawn for `782` steps, and moved collateral `251.737 mm`. Independent trace review found task-time cap-range violations beginning at step `4192`. One candidate task replay ran; no confirmation or render ran. |
+| OR141 | `TERMINAL_VERIFIER_IMPORT_ERROR_AFTER_RIGID_PRODUCTION_NO_TOPOLOGY_CANDIDATES` | Find at most one strict same-episode simulator replay success without action assistance after the prospective passive-cap lane is exhausted. | Freeze three collision compositions over existing rigid pad, sphere, and box surfaces; change only named `contype/conaffinity` pairs. Preserve geometry, material, solver, timing, action, and every strict gate. Search in declared order and stop at the first independently verified pass. | Compile passed and one exact-action rigid trace was produced, but the independent verifier imported a nonexistent function symbol. No rigid verdict and zero topology-candidate replays exist. The trace is not reusable; the import-only repair requires a new identity. |
+| OR142 | `TERMINAL_FROZEN_COLLISION_COMPOSITIONS_NO_STRICT_PASS` | Execute OR141's unchanged frozen collision-composition order after repairing only the independent verifier import alias. | Import `verify_trace as verify_strict_trace`; change no producer algorithm, candidate, geometry, action, runtime, or gate. Discard OR141's unverified rigid trace and require a fresh rigid production and verdict. | Rigid compatibility passed. Pads only lost grasp; pads+spheres tipped; pads+boxes rose `52.454 mm` with `0.371 s` qualified lift but retained only `15.410 mm` carry and then tipped. Three candidates ran; no strict pass, confirmation, or render. |
+| OR143 | `TERMINAL_PAD_OFFSET_GRID_NO_UPRIGHT_SCREEN_PASS` | Screen whether rigid-pad contact placement can produce an upright, lifted, destination-directed exact-action consequence before spending full-trace evaluations. | Run one frozen `5x5` grid over fixed/moving pad coverage offsets with fixed thickness multiplier `0.91`; preserve actions and every other parameter. Rank by preregistered outcome order and admit at most three rows to a separate strict card. | All `25` rows were warning-free, but zero held tilt below `10 deg`. The baseline retained the best target result (`7.663 mm`) at `33.168 deg` max tilt; the only transported row tipped `155.447 deg`. Zero rows were admitted to strict evaluation. |
+| OR144 | `TERMINAL_BROAD_FOOTPRINT_GRID_NO_UPRIGHT_PASS_ISOLATED_COLLISION_ASSISTED_CELL` | Test whether a wider/longer rigid contact footprint can supply the missing rotational support without changing action, material, or timing. | Run a frozen `4x4` grid over coverage length `20-50 mm` and half-width `6.5-20 mm`, with offsets and fixed thickness multiplier unchanged. Admit at most three rows only if they pass the screen gates. | All `16` rows were warning-free; zero held tilt below `10 deg`. The post hoc `40 mm × 20 mm` cell was an isolated non-lift with E2 and G2 contacts, not a supported basin. Its neighbors tipped by roughly `98-122 deg`. The producer's unfiltered top-three field is quarantined; zero rows were admitted and no footprint refinement is authorized. |
+| OR145 | `TERMINAL_F2_RIGID_FOOTPRINT_LANE_NO_STRICT_SUCCESSOR_ADMITTED` | Independently recompute OR144's declared screen gates, quarantine its unfiltered producer selection field, and close the rigid-footprint lane without rerunning the simulator. | Bind the exact OR144 contract, receipt, closeout, producer, adjudicator, and tests. Recompute all `16` rows; admission additionally requires qualified lift, zero wrong-pawn contact, and collateral at most `1 mm`. No simulator replay or parameter change is authorized. | Two tests pass. All `16` rows were independently recomputed with zero simulator replays; upright passes and strict admissions are both zero. The producer's three-row selection bug is confirmed. The `40 mm × 20 mm` cell is an E2/G2 collision-assisted non-lift, so the F2 rigid-footprint lane is closed. |
+| OR146 | `TERMINAL_STRICT_FAILURE_EARLY_UNILATERAL_FIXED_JAW_TORQUE_LOCALIZED` | Reproduce the retained rank-01 C2-to-C1 exact-action baseline under the current full-step strict evaluator and localize its wrong-contact and continuous-tilt failures before any new geometry is chosen. | Run exactly one baseline using the hash-bound `527×6` float64 action and timestamps, unchanged rank-01 parameters, legacy shoulder runtime, full step/contact trace, and an independent verifier. No parameter search, trim, action change, control assistance, or physical claim is allowed. | Two tests pass. Exact action/schedule and all `11,851` steps verify. C2 rises `59.213 mm` but reaches `25.027 deg`; D1 moves `254.071 mm`. Original fixed primitives contact at step `4398`, uprightness fails at `5148`, moving-pad contact begins at `5169`, and the fixed pad never contacts. Strict pass is false; the unilateral surface sequence is localized. |
+| OR147 | `TERMINAL_STRICT_FAILURE_EDGE_LOADED_PAIR_LOST_BEFORE_LIFT_AND_D1_CONTACT_REMAINS` | Test one passive C2 mechanism that addresses both OR146 failures without changing the replay: replace unilateral fixed primitives with OR50's separately selected fixed-pad placement and retract only the moving pad's 3 mm D1-facing overhang while preserving its proximal edge. | Run exactly one candidate with fixed-pad extra offset `+7.52 mm`, original jaw primitives collision-inactive, moving-pad coverage `20→17 mm`, and center shift `+1.5 mm`. Preserve the exact `527×6` action, timestamps, controller, force, material, solver, object poses, and workcell. No grid or adaptive retry. | Two tests pass. Exact action/schedule and all `11,851` steps verify. Bilateral dwell improves to `1.3725 s`, tilt to `12.290 deg`, and D1 contact to `82` steps, but the qualified pair unloads at only `22.894 mm` rise. Later `52.877 mm` rise is non-opposing; qualified lift/carry remain zero, D1 moves `38.449 mm` and rotates `179.946 deg`, and final C1 error is `37.021 mm`. No confirmation or render ran; further pad trim/offset fitting is closed. |
+| OR148 | `TERMINAL_STRICT_FAILURE_NO_QUALIFIED_PAIR_PRELIFT_TILT_AND_SELECTED_PAWN_COLLATERAL_CONTACT` | Reproduce the retained rank-02 E2-to-E1 exact-action baseline under the current full-step strict evaluator and localize its pre-lift upright failure without selecting a mechanism. | Run exactly one baseline using the hash-bound `418×6` float64 action and timestamps, unchanged retained V3 parameters, legacy shoulder runtime, full step/contact trace, and an independent verifier. Record every-step tilt, per-geom/per-jaw contact witnesses and loads, first `10 deg` crossing, first `40 mm` lift, wrong contacts, and collateral. No parameter change, successor selection, confirmation, render, action change, or physical claim is allowed. | Two tests and all provenance gates pass. Exact action/schedule and all `9,443` steps verify. Raw rise reaches `42.694 mm`, but the qualified opposing pair never forms; uprightness fails before lift, tilt is `53.135 deg` at first `40 mm`, and maximum tilt is `101.730 deg`. The strict evaluator finds `22` selected-pawn/wrong-pawn contact steps, final E1 error is `219.557 mm`, and strict pass is false. No confirmation or render ran; no simulator-only passive successor is admitted. |
 
 ## Pi IMX708 auxiliary evidence and timing contract
 
@@ -376,13 +392,69 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: TERMINAL_RETAINED_EVIDENCE_REGIONAL_IDENTIFIABILITY_LANE_CLOSED
+Current state: OR150_COMPLETE_MOBILE_LEGIBLE_DISCLOSURE_OR149_OR148_TERMINAL_BOUNDARIES_RESTORED
 Active card: none
-Completed: immutable predecessor C0-C9; OR0-OR23 and OR26-OR33; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed; camera endpoint REAL-to-SIM 1/1
+Completed: immutable predecessor C0-C9; OR0-OR23, OR26-OR33, OR149, and OR150; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed; camera endpoint REAL-to-SIM 1/1
 Evidence: OR131 reaches `0.841731` global temporal similarity and passes motion, whole-edge, phase, p10, and improvement gates. OR132 finds the remaining regional residual combined/unresolved under the frozen single-successor rule.
 Pi intake: the original successful source has no Pi view. OR22A validates the motion-curve method on 3/4 contact-free runs, but both guarded-run target applications fail their frozen gates and remain unsynchronized context only.
 Aligned and mapped: exact OR19 action/model reproduction and the contact/lift/carry-start event timeline are accepted; each candidate consequence mechanism and its missing physical discriminator is explicit in OR23.
 Remaining: no retained-footage card can identify or validate a regional simulator intervention. New capture would need independent actor/cable observability, but the owner confirms that hardware is no longer available.
 External boundary: the owner confirms that no further hardware access is available. OR48 remains a historical external-input packet, not an actionable next step.
-Next step: none in the current goal loop. Preserve OR131's `0.841731` global temporal result and OR133C's terminal identifiability negative without claiming regional resolution, event parity, physics fidelity, or transfer.
+Next step: acquire independent two-sided fingertip geometry and jaw-frame registration, load-dependent pad deformation/contact-patch data, synchronized jaw-to-board pose, pawn geometry/base-contact pose, and a fresh prospectively frozen physical evidence split. Until those inputs exist, no simulator-only passive surface, friction, offset, force, timing, action, scene, or evaluator change is admitted.
 ```
+
+## OR149 owner-authorized presentation-only transition
+
+The owner's August 8 instructions require the retained physical D405 wrist RGB
+to be shown with a simulator wrist angle. This opens one presentation-only card
+without reopening OR148 or any physics, calibration, task, promotion, or
+transfer lane.
+
+OR149 rendered the existing 531-row OR34 trace once through the unchanged compiled
+`left_wrist_cam`. Robot pose is a direct kinematic projection of each retained
+raw-measured row, the selected pawn pose is copied from that same retained OR34
+trace, and all other pieces use fresh compiled canonical-reset `qpos0`. They are
+not restored retained OR34 states and carry no dynamic-pose claim.
+`mj_forward` is allowed only to update kinematics and rasterization. `mj_step`,
+action integration, controller writes, contact/task scoring, fitting, retiming,
+pixel warping, camera changes, and physical-video-derived extrinsics are
+forbidden. The artifact must say nominal and uncalibrated, and must not claim a
+matched D405 view, physics fidelity, task success, or transfer.
+
+The card stops if any frozen source hash drifts, if `left_wrist_cam` is absent or
+differs from the vendored model, if a complete frame cannot be generated without
+stepping simulation, or if independent media and claim verification fails.
+
+OR149 closed with one 424×240 H.264 render at 20 fps for 531 frames and a
+presentation-only derivative with an inseparable claim disclosure. The frozen
+publication verifier passes 11/11 gates, including disabled `mj_step`,
+`mj_step1`, and `mj_step2` during context construction; exact camera mount,
+intrinsics, sensor size, resolution, pose, and field of view; exact trace and
+frame-manifest correspondence; bound current scene lineage and compiled model;
+and the frozen D405 sample-association schedule. The D405 lane is sample-time
+associated for presentation, not exposure synchronized. This closes only the
+missing nominal simulator wrist angle. It is not a D405 calibration, complete
+OR34 scene replay, physics replay, task-success result, promotion, or transfer
+result. No successor is admitted and the OR148 external-observation boundary is
+restored.
+
+## OR150 owner-authorized mobile disclosure readability repair
+
+The owner's mobile-responsive website instruction and the final independent
+visual review open one presentation-only repair. OR149's immutable simulator
+render remains unchanged. OR150 may create one H.264 derivative from that
+render with larger burned disclosure text and an exact representative poster.
+
+The repair adds zero simulator renders, replays, MuJoCo calls, action or state
+changes, fits, controller writes, scoring, task evaluation, hardware actions,
+or paid compute. It must preserve 424×240, 20 fps, 531 frames, and the OR149
+camera/state provenance. Publication stays blocked until the derivative,
+poster, receipt, visible disclosure, and mobile website presentation verify.
+No calibration, physics fidelity, task success, promotion, or transfer claim is
+admitted.
+
+OR150 closed with 9/9 verifier gates and an independent visual pass at the
+website's exact 330 CSS-pixel video width. The final H.264 derivative preserves
+531 frames and carries all three claim-boundary lines legibly. It is the only
+authorized wrist publication video; no WebM or JPEG derivative is admitted.
+No successor opens, and the OR149/OR148 terminal boundaries are restored.

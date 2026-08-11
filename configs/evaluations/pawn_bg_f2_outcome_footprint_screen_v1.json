@@ -1,0 +1,60 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_outcome_footprint_screen.v1",
+  "experiment_id": "or144-f2-outcome-footprint-screen-v1",
+  "status": "frozen_before_execution",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development_screen",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_f2_outcome_footprint_screen_owner_authorization_v1.json",
+    "sha256": "e936280f5ec9b7c348f4bcc265fbd97d956316d2a5f16e6701d5502175e20ba0"
+  },
+  "source_bindings": {
+    "or143_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_outcome_geometry_screen_v1_closeout.json",
+      "sha256": "39da198f403f7f5b581cc3554a94b9a6a3c21165905438a7f96153f6b2c4055f"
+    },
+    "rigid_0p91_receipt": {
+      "path": "outputs/pawn_bg_grasp_episode_probes/f2_fixed_tip_grid_0p91.json",
+      "sha256": "6817e09f5027191b9c132a0a12904194ef3339a6240708f035cc52e92d0a2b53"
+    },
+    "runtime_contract": {
+      "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_inherited_v1.json",
+      "sha256": "02f05cda13997847c8a1df4514cb9890a0f59463839c43ad0253e8bbc0872c1c"
+    }
+  },
+  "implementation_bindings": {
+    "screen": {
+      "path": "src/sim2claw/pawn_bg_f2_outcome_geometry_screen.py",
+      "sha256": "a4503c8b04ceaf94664a8a93922e34f8103bceeb277d2c390205f115907baa2c"
+    }
+  },
+  "recording_id": "20260719T032620Z-0c7e3d86",
+  "action_sha256": "ff5845e886aa7f6e65ffa978f758ccb2777fcaac8a71bd51cd02171f61ebdb34",
+  "timestamp_sha256": "69348c0348f855e9196f6a18b1abc990066f26d202ac7b715aca8d80f1087d9f",
+  "grid": {
+    "coverage_lengths_m": [0.02, 0.03, 0.04, 0.05],
+    "half_widths_m": [0.0065, 0.01, 0.015, 0.02],
+    "fixed_thickness_multiplier": 0.91,
+    "fixed_coverage_offset_m": -0.03,
+    "moving_coverage_offset_m": 0.025,
+    "candidate_count": 16
+  },
+  "screen_gates": {
+    "continuous_upright_maximum_tilt_degrees": 10.0,
+    "minimum_rise_m": 0.04,
+    "warning_count": 0
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR144 is an outcome-informed simulator screen, not strict evaluation, calibration, validation, promotion, general transfer, or physical transfer."
+}

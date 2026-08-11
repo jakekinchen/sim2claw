@@ -1,0 +1,73 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_deformable_cap_source_boundary_owner_authorization.v1",
+  "authorization_id": "observable-registration-or136-f2-deformable-cap-source-boundary-20260807",
+  "authorized_at": "2026-08-07T13:42:00-05:00",
+  "status": "owner_authorized_before_new_contract_implementation_or_dynamic_execution",
+  "proof_class": "quarantined_historical_source_boundary_compatibility_then_same_episode_action_frozen_simulator_only_deformable_contact_diagnostic",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "objective": "Repair only OR135's independent compatibility sampling domain, rerun one fresh rigid control, then test the unchanged deformable-cap family only after an independent compatibility pass.",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_deformable_cap_compatibility_v1_closeout.json",
+    "sha256": "403ab290863a386bd49b844e3d7350582c85b2fc357dc9d3884ed600c923d762",
+    "status": "TERMINAL_INDEPENDENT_COMPATIBILITY_SAMPLING_DOMAIN_MISMATCH_NO_FLEX_EXECUTED"
+  },
+  "frozen_sampling_repair": {
+    "historical_compatibility_metric": "maximum_piece_rise_source_boundary_m",
+    "historical_compatibility_expected_m": 0.0423955399520729,
+    "historical_compatibility_absolute_tolerance_m": 1e-12,
+    "strict_metric": "maximum_piece_rise_full_step_m",
+    "strict_full_step_lift_and_carry_logic_unchanged": true,
+    "or135_full_step_observation_is_acceptance_target": false,
+    "interval_count": 439,
+    "interval_step_count_sum": 9731,
+    "full_trace_step_count": 9932,
+    "terminal_step_count": 200,
+    "action_boundary_row_count": 440,
+    "action_boundary_last_index": 9731,
+    "legacy_row_count_including_terminal": 441,
+    "legacy_terminal_index": 9931,
+    "interval_step_counts_sha256": "d8cf9c444dbdc27bdf5e8d0d4e52c9d26da699c41da22cab661c030fa384de39",
+    "action_boundary_indices_sha256": "c87d57adc00d46ef4220b19cd994a8c48f18c0550b279770ac3248cc7c3a4c62",
+    "legacy_rows_including_terminal_sha256": "3edcdd78c2c41f4e0755030870fea9264422486e4242402c44bdba59f78ebc28",
+    "rounding": "python_round_ties_to_even",
+    "already_read_or135_trace_may_satisfy_or136": false,
+    "fresh_rigid_replay_required": true
+  },
+  "unchanged_bindings": {
+    "compiled_model_sha256": "9e93243ffa094853c37bfe8dfa4378df1b3eb42ff8885af2452dd359530f4ea3",
+    "action_sha256": "ff5845e886aa7f6e65ffa978f758ccb2777fcaac8a71bd51cd02171f61ebdb34",
+    "timestamp_sha256": "69348c0348f855e9196f6a18b1abc990066f26d202ac7b715aca8d80f1087d9f",
+    "candidate_order": [
+      "rigid_legacy_shoulder_control",
+      "flex_10_kpa",
+      "flex_25_kpa",
+      "flex_63_kpa",
+      "flex_158_kpa",
+      "flex_400_kpa"
+    ],
+    "post_outcome_baseline_changes_allowed": false,
+    "family_expansion_allowed": false
+  },
+  "execution_order": {
+    "stage_1": "one_fresh_rigid_legacy_shoulder_compatibility_run",
+    "on_stage_1_failure": "close_or136_with_zero_flex_runs",
+    "on_stage_1_pass": "run_unchanged_flex_family_in_order",
+    "fresh_process_single_thread_no_refit_confirmation_required_for_strict_pass": true,
+    "independent_verifier_required": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR136 changes only the historical compatibility sampling domain under a new identity. Full-step semantic gates remain strict. The legacy shoulder collider remains a compatibility fixture, not measured geometry or physical fidelity."
+}

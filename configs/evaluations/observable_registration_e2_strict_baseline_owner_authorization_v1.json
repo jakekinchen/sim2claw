@@ -1,0 +1,45 @@
+{
+  "schema_version": "sim2claw.observable_registration_e2_strict_baseline_owner_authorization.v1",
+  "authorization_id": "observable-registration-or148-e2-strict-baseline-20260807",
+  "authorized_at": "2026-08-07T19:20:00-05:00",
+  "status": "owner_authorized_e2_exact_baseline_strict_trace_before_execution",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "proof_class": "retained_outcome_ranked_quarantined_simulator_full_step_strict_diagnostic",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_c2_cross_episode_pad_pair_v1_closeout.json",
+    "sha256": "1b3d6a04da2085f148045b0bf143d57b463baf4a2e72a035dea686c335c9c536",
+    "status": "TERMINAL_STRICT_FAILURE_EDGE_LOADED_PAIR_LOST_BEFORE_LIFT_AND_D1_CONTACT_REMAINS"
+  },
+  "episode_selection": {
+    "recording_id": "20260719T031615Z-0e058ca2",
+    "task": "e2_to_e1",
+    "selection_is_outcome_informed": true,
+    "reason": "Independent review selected the only retained greater-than-40-mm-lift episode with zero wrong-pawn robot contact and sub-millimetre collateral for one current full-step localization of its pre-lift upright failure. No mechanism or parameter is selected from its outcome.",
+    "selection_does_not_authorize_success_or_transfer_claim": true
+  },
+  "execution_boundary": {
+    "simulator_replays": 1,
+    "parameter_changes": 0,
+    "candidate_count": 1,
+    "full_step_trace_required": true,
+    "independent_verifier_required": true,
+    "render_authorized": false,
+    "action_assistance": false,
+    "successor_mechanism_authorized": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR148 is one parameter-unchanged current full-step diagnostic of a previously opened, outcome-ranked E2 simulator replay. It cannot establish success, calibrated geometry, held-out validation, simulator promotion, general transfer, or physical transfer."
+}

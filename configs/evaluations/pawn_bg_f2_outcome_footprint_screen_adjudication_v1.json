@@ -1,0 +1,69 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_outcome_footprint_screen_adjudication.v1",
+  "experiment_id": "or145-f2-outcome-footprint-screen-adjudication-v1",
+  "status": "frozen_before_execution",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_screen_receipt_adjudication",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_f2_outcome_footprint_screen_adjudication_owner_authorization_v1.json",
+    "sha256": "2608f3b1fbe22a3920dcdb48f374e551f6603babea235ed6df7c6c6ab66424ea"
+  },
+  "source_bindings": {
+    "or144_contract": {
+      "path": "configs/evaluations/pawn_bg_f2_outcome_footprint_screen_v1.json",
+      "sha256": "46970a459527917f714c1627de421d5405d57cbfe59db8b62493bfffc8942040"
+    },
+    "or144_receipt": {
+      "path": "outputs/pawn_bg_f2_outcome_footprint_screen_v1/receipt.json",
+      "sha256": "ae98ab916fd61f4bce44454229ae39f52373e9f8dea779a3e738ac753ea15e32"
+    },
+    "or144_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_outcome_footprint_screen_v1_closeout.json",
+      "sha256": "3297ec3f1dea6591fc5dbc3875d75379d82a98e3830b827d4562333040d49b81"
+    },
+    "or144_producer": {
+      "path": "src/sim2claw/pawn_bg_f2_outcome_geometry_screen.py",
+      "sha256": "a4503c8b04ceaf94664a8a93922e34f8103bceeb277d2c390205f115907baa2c"
+    },
+    "adjudicator": {
+      "path": "src/sim2claw/pawn_bg_f2_outcome_footprint_screen_verify.py",
+      "sha256": "5dcd7d3abe5a3506c4b606dd5abacc165c5239915a7f93038eab05710203b765"
+    },
+    "adjudicator_test": {
+      "path": "tests/test_pawn_bg_f2_outcome_footprint_screen_verify.py",
+      "sha256": "f232e92024fa845f9f316f328da672fb9e1be8064f895be5b60e0ffe647a6522"
+    }
+  },
+  "recording_id": "20260719T032620Z-0c7e3d86",
+  "action_sha256": "ff5845e886aa7f6e65ffa978f758ccb2777fcaac8a71bd51cd02171f61ebdb34",
+  "timestamp_sha256": "69348c0348f855e9196f6a18b1abc990066f26d202ac7b715aca8d80f1087d9f",
+  "rules": {
+    "maximum_tilt_degrees": 10.0,
+    "minimum_rise_m": 0.04,
+    "warning_count": 0,
+    "piece_lifted_required": true,
+    "wrong_piece_contact_count": 0,
+    "maximum_other_piece_displacement_m": 0.001
+  },
+  "expected": {
+    "candidate_count": 16,
+    "strict_successor_admission_maximum": 0,
+    "simulator_replays": 0,
+    "isolated_cell_parameter_digest": "bce9a942343689126dc8f02cc1c9580ba2e927bdd4a12c26f677cf0ffec306e4"
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "simulator_replay": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR145 adjudicates a quarantined outcome-informed simulator screen receipt only; it is not task success, calibration, validation, promotion, general transfer, or physical transfer."
+}

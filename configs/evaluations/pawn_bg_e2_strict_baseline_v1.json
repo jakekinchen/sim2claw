@@ -1,0 +1,160 @@
+{
+  "schema_version": "sim2claw.pawn_bg_e2_strict_baseline.v1",
+  "experiment_id": "or148-e2-strict-baseline-v1",
+  "status": "frozen_before_execution",
+  "proof_class": "retained_outcome_ranked_quarantined_simulator_full_step_strict_diagnostic",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_e2_strict_baseline_owner_authorization_v1.json",
+    "sha256": "8328ee7633fecfa92a84b5fa2dfd0cde6ccc1a460e1d6d57216a70e4a90f6f80"
+  },
+  "base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_inherited_v1.json",
+    "sha256": "02f05cda13997847c8a1df4514cb9890a0f59463839c43ad0253e8bbc0872c1c"
+  },
+  "source_bindings": {
+    "recording_id": "20260719T031615Z-0e058ca2",
+    "source_square": "e2",
+    "destination_square": "e1",
+    "catalog_label_conflict_disclosed": true,
+    "folder_and_receipt_label_authoritative_for_task_geometry": true,
+    "samples_sha256": "7b77747478e8a33e48e3de30ffbbdf132e6c05827468b3ab16c3757d7e4aa71b",
+    "recording_receipt_sha256": "bb272674590b66d3ad9e01f7a5418fd5f9fdf5abe2deeb2a1d650df73583e5d5",
+    "video_sha256": "e0605b185b805c46eff952d5d822727024e0b94c125166e6dbe15f2959b8d02c",
+    "action_sha256": "a8121830d7a3284094ca0e109d621b7585e4692b86fe33f3fe42cd5c1f412bcc",
+    "timestamp_sha256": "167c067692d1a94d2603ece6e786951098e319d73748d1c83d73357f2651ceeb",
+    "stage_d_adapter_sha256": "dffa5d78d9457c30bf04d06e3bdcf1da5f9e08a57b76831cee58decb851c3a73",
+    "or147_closeout": {
+      "path": "configs/decisions/pawn_bg_c2_cross_episode_pad_pair_v1_closeout.json",
+      "sha256": "1b3d6a04da2085f148045b0bf143d57b463baf4a2e72a035dea686c335c9c536"
+    },
+    "rank02_receipt": {
+      "path": "outputs/pawn_bg_ranked_grasp_gallery_v1/episodes/rank-02-20260719T031615Z-0e058ca2/episode_probe_receipt.json",
+      "sha256": "7078d5ea769289cb9496f940667a3e94b3a8c966927e0c1b36776e5d279adf04"
+    },
+    "rank02_state_trace": {
+      "path": "outputs/pawn_bg_ranked_grasp_gallery_v1/episodes/rank-02-20260719T031615Z-0e058ca2/state_trace.json",
+      "sha256": "ae205fe15b87148f6ed10e83332bf888177760272aadd4d2c421ba9d671f09a1"
+    },
+    "rank02_scene_manifest": {
+      "path": "outputs/pawn_bg_ranked_grasp_gallery_v1/episodes/rank-02-20260719T031615Z-0e058ca2/scene_manifest.json",
+      "sha256": "b7821c8ab4e237c06f52275e99c7a3c16133df28d0e9019c12153aac6ac642bc"
+    }
+  },
+  "implementation_bindings": {
+    "producer": {
+      "path": "src/sim2claw/pawn_bg_e2_strict_baseline.py",
+      "sha256": "78d6e69a52cc32ad049e259008c9715b8fa61fcffc0cabb3896de256be1c38f9"
+    },
+    "verifier": {
+      "path": "src/sim2claw/pawn_bg_e2_strict_baseline_verify.py",
+      "sha256": "8f9d108d31ae3c6aefcfcc178bc9ef69635a1346999de8ac98ae9ed3ca76d1d5"
+    },
+    "test": {
+      "path": "tests/test_pawn_bg_e2_strict_baseline.py",
+      "sha256": "f579b1099cae8bb085b41c9bfdc8b92f75b0e4e33dcdc43b46d2bcf20cd0557f"
+    }
+  },
+  "action_invariance": {
+    "shape": [418, 6],
+    "dtype": "float64",
+    "c_contiguous": true,
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "per_joint_zoh_delay_seconds": [0.11, 0.11, 0.11, 0.11, 0.11, 0.11],
+    "clipped_rows": 0,
+    "initial_state_phase_is_not_an_applied_action_step": true,
+    "no_ik_offsets_clipping_retiming_smoothing_suffix_or_override": true,
+    "no_measured_state_replay_latch_load_hold_or_force_ramp": true
+  },
+  "candidate_order": [
+    {
+      "candidate_id": "e2_rank02_rigid_baseline",
+      "kind": "retained_rank02_parameter_reproduction",
+      "parameter_overrides": {}
+    }
+  ],
+  "e2_parameters": {
+    "fixed_jaw_mesh_collision_enabled": false,
+    "gripper_force_limit_multiplier": 3.0,
+    "gripper_joint_damping_multiplier": 1.0,
+    "gripper_joint_frictionloss_multiplier": 1.0,
+    "gripper_servo_gain_multiplier": 1.0,
+    "moving_jaw_mesh_collision_enabled": false,
+    "pawn_friction_multiplier": 1.0,
+    "pawn_mass_multiplier": 1.0,
+    "rolling_friction_m": 0.0012,
+    "rubber_tip_enabled": true,
+    "simulation_timestep_multiplier": 0.45,
+    "sliding_friction": 1.8,
+    "solref_damping_ratio": 1.2,
+    "solref_time_constant_s": 0.006,
+    "tip_coverage_m": 0.02,
+    "tip_coverage_offset_m": -0.03,
+    "tip_half_width_m": 0.0065,
+    "tip_moving_coverage_offset_m": 0.025,
+    "tip_thickness_m": 0.001,
+    "torsional_friction_m": 0.012
+  },
+  "supplemental_gates": {
+    "minimum_same_pair_bilateral_contact_dwell_seconds": 0.02,
+    "minimum_contact_span_m": 0.005,
+    "minimum_opposing_normal_score": 0.0,
+    "minimum_positive_normal_force_n": 0.0,
+    "minimum_sustained_lift_m": 0.04,
+    "minimum_sustained_lift_seconds": 0.05,
+    "minimum_carry_toward_target_m": 0.022225,
+    "maximum_contact_gap_seconds": 0.02,
+    "whole_base_entry_distance_m": 0.008425,
+    "maximum_final_center_distance_m": 0.006,
+    "maximum_tilt_degrees_every_step": 10.0,
+    "minimum_post_release_settle_seconds": 0.25,
+    "maximum_settled_linear_speed_m_s": 0.02,
+    "maximum_settled_angular_speed_rad_s": 0.25,
+    "maximum_other_pawn_translation_m": 0.006,
+    "maximum_other_pawn_orientation_change_degrees": 5.0,
+    "require_qualified_grasp_then_lift_then_carry_then_target_entry_then_release_then_settle": true,
+    "require_board_support_during_settle": true,
+    "require_no_robot_or_selected_contact_with_wrong_pawn": true,
+    "require_original_reward_pass": true,
+    "require_finite_stable_state": true
+  },
+  "diagnostic_requirements": {
+    "every_step_tilt": true,
+    "per_geom_per_jaw_contact_witnesses": true,
+    "normal_and_tangential_contact_loads": true,
+    "first_10_degree_crossing": true,
+    "tilt_at_first_40mm_lift": true,
+    "wrong_contact_and_collateral_recomputed": true,
+    "producer_success_boolean_not_authoritative": true
+  },
+  "execution": {
+    "simulator_replays": 1,
+    "candidate_count": 1,
+    "parameter_changes": 0,
+    "independent_verification_required": true,
+    "confirmation_runs": 0,
+    "render_runs": 0,
+    "successor_geometry_selection_before_verdict_allowed": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR148 is one parameter-unchanged current full-step diagnostic of a previously opened, outcome-ranked E2 simulator replay. It cannot establish success, calibrated geometry, held-out validation, simulator promotion, general transfer, or physical transfer."
+}

@@ -1,0 +1,58 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_collision_topology_search_closeout.v1",
+  "experiment_id": "or141-f2-collision-topology-search-v1",
+  "status": "TERMINAL_VERIFIER_IMPORT_ERROR_AFTER_RIGID_PRODUCTION_NO_TOPOLOGY_CANDIDATES",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development_infrastructure_failure",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_collision_topology_search_v1.json",
+    "sha256": "0075c9b6db04c2647159145bd00ea2e6ff21425bb9f2b7f77c52a22abddf0e35"
+  },
+  "compile_audit": {
+    "path": "outputs/pawn_bg_f2_collision_topology_search_v1/compile_audit.json",
+    "sha256": "c3c6598929e5471980ca260140b1e8172c0fd34ded45f816e04d695c196bf877",
+    "passed": true
+  },
+  "rigid_producer": {
+    "trace_sha256": "631a4eb1b25be0256302fe71b96ef201d6208b8f7638bb256aedb9cb9b3a5737",
+    "metadata_sha256": "574f69a3cfc7afe89a30aa55a62e394b2486ae04ca98a4445f371e127cdc7f0c",
+    "receipt_sha256": "a3c109ae2d5a3826df9b174c7dc146023a21b5986eaa4a7dee6e38f0ca64f4d4",
+    "action_sha256": "ff5845e886aa7f6e65ffa978f758ccb2777fcaac8a71bd51cd02171f61ebdb34",
+    "clipped_action_rows": 0,
+    "independent_verdict_produced": false
+  },
+  "failure": {
+    "stage": "independent_verifier_import_before_evaluation",
+    "error": "ImportError: cannot import name verify_strict_trace from sim2claw.pawn_bg_f2_deformable_cap_verify",
+    "topology_candidate_task_replays": 0,
+    "rigid_trace_reusable_for_successor": false,
+    "repair_scope": "import_alias_only"
+  },
+  "execution_counts": {
+    "compile_audits": 1,
+    "rigid_task_productions": 1,
+    "rigid_independent_verdicts": 0,
+    "topology_candidate_task_replays": 0,
+    "confirmation_replays": 0,
+    "renders": 0
+  },
+  "claim_limits": {
+    "rigid_compatibility_passed": false,
+    "strict_replay_success": false,
+    "topology_behavior_observed": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

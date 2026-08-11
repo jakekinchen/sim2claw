@@ -1,0 +1,71 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_outcome_geometry_screen.v1",
+  "experiment_id": "or143-f2-outcome-geometry-screen-v1",
+  "status": "frozen_before_execution",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development_screen",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_f2_outcome_geometry_screen_owner_authorization_v1.json",
+    "sha256": "7691f36b9909c68a72554e63bb037f8eaef7374c050474aaa053c9b66c26b626"
+  },
+  "source_bindings": {
+    "or142_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_collision_topology_search_verifier_repair_v1_closeout.json",
+      "sha256": "151f70cc95069077f1ed4eaad5a450c92cbeaf5b9c3bccc1525f0332eeba7b7d"
+    },
+    "rigid_0p91_receipt": {
+      "path": "outputs/pawn_bg_grasp_episode_probes/f2_fixed_tip_grid_0p91.json",
+      "sha256": "6817e09f5027191b9c132a0a12904194ef3339a6240708f035cc52e92d0a2b53"
+    },
+    "runtime_contract": {
+      "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_inherited_v1.json",
+      "sha256": "02f05cda13997847c8a1df4514cb9890a0f59463839c43ad0253e8bbc0872c1c"
+    }
+  },
+  "implementation_bindings": {
+    "screen": {
+      "path": "src/sim2claw/pawn_bg_f2_outcome_geometry_screen.py",
+      "sha256": "d7aaa5c2f67f7762072e931122abcf2fd33e2f654ede854ae783d25d74a543e7"
+    }
+  },
+  "recording_id": "20260719T032620Z-0c7e3d86",
+  "action_sha256": "ff5845e886aa7f6e65ffa978f758ccb2777fcaac8a71bd51cd02171f61ebdb34",
+  "timestamp_sha256": "69348c0348f855e9196f6a18b1abc990066f26d202ac7b715aca8d80f1087d9f",
+  "grid": {
+    "fixed_coverage_offsets_m": [-0.04, -0.035, -0.03, -0.025, -0.02],
+    "moving_coverage_offsets_m": [0.015, 0.02, 0.025, 0.03, 0.035],
+    "fixed_thickness_multiplier": 0.91,
+    "candidate_count": 25
+  },
+  "ranking_order": [
+    "continuous_upright",
+    "piece_lifted",
+    "transported_after_lift",
+    "whole_base_inside_destination",
+    "no_wrong_piece_robot_contact",
+    "minimum_collateral_translation",
+    "minimum_final_target_distance",
+    "maximum_rise",
+    "minimum_maximum_tilt",
+    "fixed_offset",
+    "moving_offset"
+  ],
+  "screen_gates": {
+    "continuous_upright_maximum_tilt_degrees": 10.0,
+    "minimum_rise_m": 0.04,
+    "warning_count": 0
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR143 is an outcome-informed simulator screen, not strict evaluation, calibration, validation, promotion, general transfer, or physical transfer."
+}

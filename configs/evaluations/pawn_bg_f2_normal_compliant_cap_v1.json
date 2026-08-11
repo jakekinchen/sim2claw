@@ -1,0 +1,176 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_normal_compliant_cap.v1",
+  "experiment_id": "or137-f2-normal-compliant-cap-v1",
+  "status": "frozen_before_compile_or_dynamic_execution",
+  "proof_class": "same_episode_action_frozen_simulator_only_reduced_order_normal_compliance_diagnostic",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_f2_normal_compliant_cap_owner_authorization_v1.json",
+    "sha256": "bf90a3e915d14e0924d0983e05b66c33bc0a763fa92383295a79bc8ac7349d6b"
+  },
+  "base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_deformable_cap_source_boundary_v1.json",
+    "sha256": "b0678de4d53e5a3de6c52c3532b4072bb9cfa144ffbed05caf154c993ef1f1db"
+  },
+  "or135_base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_deformable_cap_compatibility_v1.json",
+    "sha256": "5539f1712308338c608f7ee9c9ca964c603ae00bce79b6816a827a1507363861"
+  },
+  "additional_source_bindings": {
+    "or136_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_deformable_cap_source_boundary_v1_closeout.json",
+      "sha256": "8978bc441eaff1822962002f23b29fe8f83a4e0d83a4ae2eca2567af74dba06e"
+    },
+    "neutral_parameter_source": {
+      "path": "configs/sail/grasp_retention_normal_compliance_v1.json",
+      "sha256": "bd52bb8e34790d3aad4d6598155dba6018a7262101b72d1d0935498facfd0f49"
+    }
+  },
+  "candidate_order": [
+    {
+      "candidate_id": "rigid_legacy_shoulder_control",
+      "kind": "rigid",
+      "parameter_overrides": {}
+    },
+    {
+      "candidate_id": "normal_compliant_prior_k1000",
+      "kind": "normal_compliant",
+      "parameter_overrides": {
+        "rubber_tip_normal_compliance_enabled": true,
+        "rubber_tip_compliance_travel_m": 0.002,
+        "rubber_tip_compliance_stiffness_n_per_m": 1000.0,
+        "rubber_tip_compliance_damping_n_s_per_m": 2.0,
+        "rubber_tip_modeled_mass_per_finger_kg": 0.001,
+        "rubber_tip_compliance_compression_only": true,
+        "rubber_tip_compliance_limit_time_constant_s": 0.002,
+        "rubber_tip_compliance_limit_damping_ratio": 1.0
+      }
+    }
+  ],
+  "normal_compliance": {
+    "mechanism": "one_passive_normal_slide_spring_damper_per_rigid_cap",
+    "continuum_flex": false,
+    "family_or_search": false,
+    "fixed_joint_range_m": [-0.002, 0.0],
+    "moving_joint_range_m": [0.0, 0.002],
+    "spring_reference_m": 0.0,
+    "external_geometry": "unchanged_rigid_0p91_wrapper_envelope",
+    "friction_solref_solimp_condim": "unchanged_from_rigid_0p91_contact_prior",
+    "table_board_apriltag_pawns_robot_controller_and_action": "unchanged",
+    "parameter_selection_used_or136_task_outcomes": false
+  },
+  "preflight": {
+    "settle_steps": 100,
+    "timestep_seconds": 0.00225,
+    "duration_seconds": 0.225,
+    "record_before_mj_forward": true,
+    "record_after_mj_forward_and_every_step": true,
+    "source_action_rows_consumed": 0,
+    "state_discarded_before_task_replay": true,
+    "warnings_allowed": 0,
+    "all_state_control_pose_and_contact_values_finite": true,
+    "initial_hold_control_byte_identical": true,
+    "maximum_absolute_cap_displacement_m": 0.000025,
+    "maximum_peak_cap_acceleration_m_s2": 100.0,
+    "final_window_steps": 20,
+    "final_window_maximum_cap_velocity_m_s": 0.001,
+    "final_window_maximum_cap_acceleration_m_s2": 1.0,
+    "final_window_maximum_cap_position_range_m": 0.000001,
+    "minimum_far_travel_limit_margin_m": 0.0001,
+    "maximum_robot_joint_position_difference_from_rigid_rad": 0.0001,
+    "maximum_robot_joint_velocity_difference_from_rigid_rad_s": 0.001,
+    "maximum_pawn_center_difference_from_rigid_m": 0.00001,
+    "maximum_pawn_orientation_difference_from_rigid_degrees": 0.01,
+    "static_table_board_apriltag_pose_tolerance": 1E-12,
+    "new_cap_contact_pairs_allowed_relative_to_rigid": 0,
+    "independent_verifier_ignores_producer_booleans": true,
+    "claim": "initial_hold_numerical_stability_and_scene_nonperturbation_only"
+  },
+  "rigid_compatibility_reference": {
+    "compiled_model_sha256": "9e93243ffa094853c37bfe8dfa4378df1b3eb42ff8885af2452dd359530f4ea3",
+    "final_target_distance_m": 0.007662688216203823,
+    "maximum_piece_rise_source_boundary_m": 0.0423955399520729,
+    "piece_lifted_source_boundary": true,
+    "qualified_bilateral_contact_observed": true,
+    "upright_terminal": true
+  },
+  "rigid_compatibility_tolerances": {
+    "compiled_model_sha256_exact": true,
+    "final_target_distance_absolute_m": 1E-12,
+    "maximum_piece_rise_source_boundary_absolute_m": 1E-12,
+    "booleans_exact": true
+  },
+  "source_boundary_reconstruction": {
+    "rounding": "python_round_ties_to_even",
+    "interval_count": 439,
+    "interval_step_count_sum": 9731,
+    "full_trace_step_count": 9932,
+    "terminal_step_count": 200,
+    "action_boundary_row_count": 440,
+    "action_boundary_last_index": 9731,
+    "legacy_row_count_including_terminal": 441,
+    "legacy_terminal_index": 9931,
+    "interval_step_counts_sha256": "d8cf9c444dbdc27bdf5e8d0d4e52c9d26da699c41da22cab661c030fa384de39",
+    "action_boundary_indices_sha256": "c87d57adc00d46ef4220b19cd994a8c48f18c0550b279770ac3248cc7c3a4c62",
+    "legacy_rows_including_terminal_sha256": "3edcdd78c2c41f4e0755030870fea9264422486e4242402c44bdba59f78ebc28"
+  },
+  "execution": {
+    "compile_audit_runs": 1,
+    "paired_disposable_preflight_runs": 2,
+    "task_runs_if_preflight_fails": 0,
+    "rigid_task_runs_if_preflight_passes": 1,
+    "candidate_task_runs_if_rigid_compatibility_passes": 1,
+    "fresh_process_preflight_and_no_refit_confirmation_required_for_strict_pass": true,
+    "family_expansion_allowed": false,
+    "render_only_confirmed_strict_trace": true,
+    "continuous_full_replay_warning_and_finite_gates_unchanged": true
+  },
+  "implementation_bindings": {
+    "producer_and_preflight_collector": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap.py",
+      "sha256": "d9ff89ce53b2e79a83aad30913197d31dde3a5731941358966f58fc11fb52a5a"
+    },
+    "preflight_independent_verifier": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap_preflight_verify.py",
+      "sha256": "97e92e98aafffc7296d5f0e8bedfe579aabb42eb8c2db64924eb7a0101273499"
+    },
+    "task_independent_verifier": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap_verify.py",
+      "sha256": "d03b20ef109c3f15a2830618dd8228f17d95b6df8cd8f1c9ed510d53d11d9379"
+    },
+    "coordinate_runner": {
+      "path": "src/sim2claw/pawn_bg_grasp_coordinate_descent.py",
+      "sha256": "1f2f9aaa5f9cf370284e4ff088f6c33c1d74b589859fa4ecee16617ef822db93"
+    },
+    "contact_prior": {
+      "path": "src/sim2claw/contact_prior.py",
+      "sha256": "9e6056e372aa2747b7619d16e556a68f8a897ac868186084d12addc13ffabe0c"
+    },
+    "trace_collector": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap.py",
+      "sha256": "86173e9ccd2198d6c4d9b6374fd4d7f0fd6370e143cc25d747f37799e176e6b4"
+    },
+    "strict_evaluator": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_verify.py",
+      "sha256": "29b0279d7daab95a7868cca62aa804671899476b505f01a2bae8ea9203847bac"
+    },
+    "compatibility_model_builder": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_compatibility.py",
+      "sha256": "d613cca98a1cc5841c049c23b51622ff7e7bd0235e4e8d9076da5d24b2023fd4"
+    }
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR137 is an exact-action simulator-only reduced-order contact sensitivity. A pass does not calibrate rubber, validate physical fidelity, promote a simulator, or prove physical transfer."
+}

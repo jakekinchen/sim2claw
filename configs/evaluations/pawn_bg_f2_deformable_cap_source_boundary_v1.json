@@ -1,0 +1,112 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_deformable_cap_source_boundary.v1",
+  "experiment_id": "or136-f2-deformable-cap-source-boundary-v1",
+  "status": "frozen_before_dynamic_execution",
+  "proof_class": "quarantined_historical_source_boundary_compatibility_then_same_episode_action_frozen_simulator_only_deformable_contact_diagnostic",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_f2_deformable_cap_source_boundary_owner_authorization_v1.json",
+    "sha256": "7745a45c17b1a94578d2ba48eef9c565833e7a784fc2d7eaa6fa431015b9760c"
+  },
+  "base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_deformable_cap_compatibility_v1.json",
+    "sha256": "5539f1712308338c608f7ee9c9ca964c603ae00bce79b6816a827a1507363861",
+    "reuse": [
+      "source_bindings",
+      "historical_runtime_identity",
+      "action_invariance",
+      "rigid_parameters",
+      "candidate_order",
+      "flex_caps",
+      "supplemental_gates"
+    ]
+  },
+  "additional_source_bindings": {
+    "or135_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_deformable_cap_compatibility_v1_closeout.json",
+      "sha256": "403ab290863a386bd49b844e3d7350582c85b2fc357dc9d3884ed600c923d762"
+    }
+  },
+  "rigid_compatibility_reference": {
+    "compiled_model_sha256": "9e93243ffa094853c37bfe8dfa4378df1b3eb42ff8885af2452dd359530f4ea3",
+    "final_target_distance_m": 0.007662688216203823,
+    "maximum_piece_rise_source_boundary_m": 0.0423955399520729,
+    "piece_lifted_source_boundary": true,
+    "qualified_bilateral_contact_observed": true,
+    "upright_terminal": true
+  },
+  "rigid_compatibility_tolerances": {
+    "compiled_model_sha256_exact": true,
+    "final_target_distance_absolute_m": 1e-12,
+    "maximum_piece_rise_source_boundary_absolute_m": 1e-12,
+    "booleans_exact": true
+  },
+  "source_boundary_reconstruction": {
+    "rounding": "python_round_ties_to_even",
+    "interval_count": 439,
+    "interval_step_count_sum": 9731,
+    "full_trace_step_count": 9932,
+    "terminal_step_count": 200,
+    "action_boundary_row_count": 440,
+    "action_boundary_last_index": 9731,
+    "legacy_row_count_including_terminal": 441,
+    "legacy_terminal_index": 9931,
+    "interval_step_counts_sha256": "d8cf9c444dbdc27bdf5e8d0d4e52c9d26da699c41da22cab661c030fa384de39",
+    "action_boundary_indices_sha256": "c87d57adc00d46ef4220b19cd994a8c48f18c0550b279770ac3248cc7c3a4c62",
+    "legacy_rows_including_terminal_sha256": "3edcdd78c2c41f4e0755030870fea9264422486e4242402c44bdba59f78ebc28",
+    "historical_compatibility_uses_only_source_boundary_metric": true,
+    "strict_evaluator_uses_full_integration_step_trace": true,
+    "full_step_rise_is_not_compared_to_historical_source_boundary_rise": true
+  },
+  "execution": {
+    "rigid_compatibility_runs": 1,
+    "flex_runs_if_compatibility_passes": 5,
+    "flex_runs_if_compatibility_fails": 0,
+    "candidate_family_expansion_allowed": false,
+    "selection": "first_strict_passing_flex_candidate_in_declared_order",
+    "fresh_process_single_thread_no_refit_confirmation_required": true,
+    "independent_verifier_must_ignore_producer_gate_booleans": true,
+    "or135_trace_may_satisfy_or136": false,
+    "render_only_verified_trace": true
+  },
+  "implementation_bindings": {
+    "producer": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_source_boundary.py",
+      "sha256": "6593aa801da9980b5e14a4e9d3d648f53f95f666367c9022f6313b50b3f2f9a0"
+    },
+    "independent_verifier": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_source_boundary_verify.py",
+      "sha256": "95f399071b95af9ab0434e6735a4c6dcafd66c983c1f5739cdd4a7368eee6616"
+    },
+    "strict_evaluator": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_verify.py",
+      "sha256": "29b0279d7daab95a7868cca62aa804671899476b505f01a2bae8ea9203847bac"
+    },
+    "trace_collector": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap.py",
+      "sha256": "86173e9ccd2198d6c4d9b6374fd4d7f0fd6370e143cc25d747f37799e176e6b4"
+    },
+    "compatibility_model_builder": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_compatibility.py",
+      "sha256": "d613cca98a1cc5841c049c23b51622ff7e7bd0235e4e8d9076da5d24b2023fd4"
+    },
+    "contact_endpoint_resolver": {
+      "path": "src/sim2claw/mujoco_contact_endpoints.py",
+      "sha256": "61a788a91c2ebf2c572cd5510c084aa5182519159d44edf3b9089589976ee215"
+    }
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR136 changes only the historical compatibility sampling domain. Strict full-step lift, carry, upright, release, settle, collateral, action, and contact gates remain unchanged. The legacy shoulder collider is a compatibility fixture, not measured geometry or physical fidelity."
+}

@@ -1,0 +1,126 @@
+{
+  "schema_version": "sim2claw.observable_registration_d1_d2_nominal_wrist_presentation_contract.v1",
+  "experiment_id": "OR149_D1_D2_NOMINAL_WRIST_PRESENTATION_V1",
+  "proof_class": "retained_measured_state_trace_nominal_wrist_projection_presentation_diagnostic",
+  "sources": {
+    "owner_authorization": {
+      "path": "configs/evaluations/observable_registration_d1_d2_nominal_wrist_presentation_owner_authorization_v1.json",
+      "sha256": "308bc960954a5acec9ac2cc8f234b4df6ecd05ef99acd7bc7d9ea6adb1726f59"
+    },
+    "or34_contract": {
+      "path": "configs/evaluations/observable_registration_measured_state_visual_twin_v1.json",
+      "sha256": "ede7ca2a7f792c096014a90769bb9c024ededb264acb91b6173e97d55dc2011c"
+    },
+    "or34_trace": {
+      "path": "outputs/observable_registration_measured_state_visual_twin_v1/trace.json",
+      "sha256": "fc772a4ba565c1a47a6f737522b659f454932456d046328e6c60d48752f4b927"
+    },
+    "or34_receipt": {
+      "path": "outputs/observable_registration_measured_state_visual_twin_v1/receipt.json",
+      "sha256": "2548958515f98537446ee24295d33e7d5d4fe1ea2cedc128016c5099c44b2678"
+    },
+    "or34_closeout": {
+      "path": "configs/decisions/observable_registration_measured_state_visual_twin_v1_closeout.json",
+      "sha256": "0e8d94ac0ed6ddc65ad57a2a46e1cc28fa2db257361b236142bfd4b255759bee"
+    },
+    "physical_wrist_rgb": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_d405.browser.mp4",
+      "sha256": "2d0cf208465d984afc9a601da305e8ce1d94ddba124d05674ec18d5df1be830c"
+    },
+    "physical_recording_receipt": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/recording_receipt.json",
+      "sha256": "74a3da30468922df00dfefd12e38ff346b2fd59fb5752458477be29360b9e0d3"
+    },
+    "physical_wrist_sidecar": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/wrist_video.json",
+      "sha256": "95f4c29bf1e7eebc4ab46d46d943b3134d142f05eb742165c354533e7088a8cb"
+    },
+    "so101_model": {
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+      "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+    },
+    "wrist_camera_ancestry": {
+      "path": "configs/decisions/calibration_graph_wrist_camera_kinematic_ancestry_v1.json",
+      "sha256": "3e65536edb2a7e9950fdb3565c15905e63219bfdf6b6e0303660f6d8ba7e1b7c"
+    }
+  },
+  "frozen_executable": {
+    "renderer": {
+      "path": "src/sim2claw/observable_registration_d1_d2_nominal_wrist_presentation.py",
+      "sha256": "4ef96924796d3a334cd68550c405ff891a57e9afce3caafd733d57663f3adcf4"
+    },
+    "verifier": {
+      "path": "tests/test_observable_registration_d1_d2_nominal_wrist_presentation.py",
+      "sha256": "30031e7828f5beffe7e05a3f423d70493d9a69b3ddf9b832872d9c25c612888b"
+    }
+  },
+  "trace_projection": {
+    "row_count": 531,
+    "output_fps": 20,
+    "robot_pose_source": "or34_trace.raw_measured_physical_direct_kinematic_projection",
+    "selected_pawn_pose_source": "or34_trace.selected_pawn_position_m_and_selected_pawn_quaternion_wxyz",
+    "other_piece_pose_source": "or34_canonical_initial_scene",
+    "between_row_interpolation": false,
+    "mujoco_forward_for_kinematics_and_rasterization_only": true,
+    "mujoco_step_calls": 0,
+    "action_or_controller_writes": 0,
+    "contact_or_task_metrics": 0
+  },
+  "camera": {
+    "compiled_name": "left_wrist_cam",
+    "mount_body": "left_camera_mount",
+    "model_local_position_m": [0.0, 0.055, -0.045],
+    "model_local_quaternion_wxyz": [0.9596616526574011, -0.281157451295294, 0.0, 0.0],
+    "declared_resolution": [1920, 1080],
+    "focal_m": [0.0036, 0.0036],
+    "sensor_size_m": [0.00576, 0.00324],
+    "vertical_fov_degrees": 48.4554929911,
+    "provenance": "vendored_upstream_simulator_geometry_not_calibrated_d405_extrinsics",
+    "camera_or_display_refit": false,
+    "pixel_warp": false
+  },
+  "render": {
+    "width": 424,
+    "height": 240,
+    "fps": 20,
+    "frame_count": 531,
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "overlay_text": "NOMINAL SIM WRIST / UNCALIBRATED",
+    "poster_sample_index": 248
+  },
+  "acceptance": {
+    "all_source_hashes_exact": true,
+    "camera_identity_exact": true,
+    "trace_rows_and_timestamps_exact": true,
+    "all_selected_poses_finite_and_quaternions_normalized": true,
+    "zero_step_or_action_integration_proven": true,
+    "output_media_identity_exact": true,
+    "independent_decoded_frame_digest_required": true,
+    "claim_labels_exact": true
+  },
+  "authority": {
+    "camera_open": false,
+    "gateway": false,
+    "heldout_open": false,
+    "paid_compute": false,
+    "physical_motion": false,
+    "serial": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "task_attempt": false,
+    "training": false,
+    "transfer_claim": false
+  },
+  "claim_limits": {
+    "calibrated_d405_view": false,
+    "same_camera_or_pixel_alignment": false,
+    "camera_calibration": false,
+    "physics_fidelity": false,
+    "task_success": false,
+    "global_mapping_approved": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

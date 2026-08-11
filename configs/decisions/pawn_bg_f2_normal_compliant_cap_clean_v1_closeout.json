@@ -1,0 +1,70 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_normal_compliant_cap_clean_closeout.v1",
+  "experiment_id": "or139-f2-normal-compliant-cap-clean-v1",
+  "status": "TERMINAL_CLEAN_PASSIVE_CAP_NOT_SETTLED_AT_TASK_BOUNDARY_NO_TASK_REPLAY",
+  "proof_class": "same_episode_action_frozen_simulator_only_clean_passive_normal_compliance_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_clean_v1.json",
+    "sha256": "43006e3d4f98fce1c00fc1f1e478c872083d3de1e7ab59ab1c3214b7618b37f2"
+  },
+  "compile_audit": {
+    "path": "outputs/pawn_bg_f2_normal_compliant_cap_clean_v1/compile_audit.json",
+    "sha256": "a2361a7cf87d348c34dc27cb0ad539a7735e1fc2e979553c5aaf378e2df9c607",
+    "passed": true,
+    "candidate_compiled_model_sha256": "219eb2d3520ab4f6ff89825e82ecd77f706f98f30e888c321e43fd2d383a9ba7",
+    "cap_armature_zero": true,
+    "cap_frictionloss_zero": true
+  },
+  "rigid_preflight": {
+    "trace_sha256": "96e8e2dc212001117ea774bca6cc2d4a2cb8f78eee7e1e471afbfaf613c2d6e1",
+    "metadata_sha256": "8c1e225700245a6f55636ba6ef4666f0f1dbb2eae778942b8a6e215d7fd9457d",
+    "independent_verdict_sha256": "1e35b23e1a1e42e1034c9d3392e6451e2bd36c6e79a78cc0c2d733c43330a5eb",
+    "passed": true
+  },
+  "candidate_preflight": {
+    "trace_sha256": "ad7d6bcdf3778753063297a1e435153c0381792e72561c5bce8f4fe6417111f0",
+    "metadata_sha256": "b46ef79bdcf4cf70318d0fd13cb2546424e7c2c923abcd517dffc7e87bbafda2",
+    "independent_verdict_sha256": "9e6d03f6e74ff2192ba395499c1db5357ede610b2a333bd466b75ec5151783f1",
+    "independent_decision_digest": "d4396e23f3100cf51b1a572704ff8807f3f50fb5fec3abcd4db39ab74021d726",
+    "passed": false,
+    "source_action_rows_consumed": 0,
+    "warning_count_sum": 0,
+    "maximum_neutral_side_soft_limit_overshoot_m": 0.000034392481110434266,
+    "maximum_absolute_cap_displacement_m": 0.000034392481110434266,
+    "final_window_maximum_absolute_cap_velocity_m_s": 0.0034138134761265366,
+    "final_window_maximum_absolute_cap_acceleration_m_s2": 7.424057004602458,
+    "final_window_maximum_cap_position_range_m": 0.000019871880663009883
+  },
+  "interpretation": "Removing inherited armature and friction produced a finite warning-free hold, but the clean cap remained dynamically unsettled at the exact 0.225-second task boundary. It is rejected without consuming the action replay.",
+  "execution_counts": {
+    "compile_audits": 1,
+    "rigid_preflights": 1,
+    "candidate_preflights": 1,
+    "rigid_task_replays": 0,
+    "candidate_task_replays": 0,
+    "renders": 0
+  },
+  "next_transition": "new_identity_for_explicitly_disclosed_inherited_default_soft_limited_cap_with_mechanics_and_encoder_scale_preflight_gates",
+  "claim_limits": {
+    "task_behavior_observed": false,
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

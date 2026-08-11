@@ -1,0 +1,231 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_deformable_cap_owner_authorization.v1",
+  "authorization_id": "observable-registration-or134-f2-deformable-cap-20260807",
+  "authorized_at": "2026-08-07T12:23:08-05:00",
+  "status": "owner_authorized_before_contract_implementation_or_dynamic_execution",
+  "proof_class": "quarantined_outcome_informed_same_episode_action_frozen_simulator_only_deformable_contact_diagnostic",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "objective": "Produce one independently verified simulator-only F2-to-F1 replay that carries the selected pawn upright through transfer and releases it settled on F1 while preserving the exact source action bytes and schedule.",
+  "predecessors": {
+    "campaign_graph": {
+      "path": "configs/sail/observable_registration_current_graph_v1.json",
+      "sha256": "8b8837d127562aa355f723f9a262faf93a72ddd97e3c630144fc341f2d11424f"
+    },
+    "task_queue": {
+      "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
+      "sha256": "e3f7ce07721252bb72834f42b341067dd2566f779c1bb439fab53df50df7b527"
+    },
+    "rigid_control_receipt": {
+      "path": "outputs/pawn_bg_grasp_episode_probes/f2_fixed_tip_grid_0p91.json",
+      "sha256": "6817e09f5027191b9c132a0a12904194ef3339a6240708f035cc52e92d0a2b53"
+    },
+    "original_reward": {
+      "path": "configs/evaluations/pawn_bg_sim_reward_v1.json",
+      "sha256": "e702ad7fa3a366bc24c552c4cd0e5df66842d5fe7f6ef824266b8cfb2ee8d0c7"
+    }
+  },
+  "episode_provenance": {
+    "recording_id": "20260719T032620Z-0c7e3d86",
+    "move": "f2_to_f1",
+    "source_samples_sha256": "11be4473baba000566a7d7147fb99144e6302cdfd9258fcdfdd7c59531ca2a70",
+    "source_receipt_sha256": "03e883b919bf6c754685dc9023677569f662116d4e383132c17886e3bf64f631",
+    "source_video_sha256": "b3fe1f4b99b1bd7697695c8ed9093ccef8d08da22cdb889ee1a3f460af6d2081",
+    "action_shape": [
+      440,
+      6
+    ],
+    "action_dtype": "float64_c_contiguous",
+    "action_sha256": "ff5845e886aa7f6e65ffa978f758ccb2777fcaac8a71bd51cd02171f61ebdb34",
+    "normalized_timestamp_float64_sha256": "69348c0348f855e9196f6a18b1abc990066f26d202ac7b715aca8d80f1087d9f",
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "adapter": "stage_d_lift",
+    "adapter_sha256": "dffa5d78d9457c30bf04d06e3bdcf1da5f9e08a57b76831cee58decb851c3a73",
+    "clipped_action_rows": 0,
+    "application_schedule": "per_joint_zero_order_hold",
+    "application_delay_seconds_by_joint": [
+      0.11,
+      0.11,
+      0.11,
+      0.11,
+      0.11,
+      0.11
+    ]
+  },
+  "frozen_rigid_control": {
+    "parameter_digest": "2dacfd11afe9cf1670881908d31bdb8198eac5bf538e8d14f9a851dc5b498007",
+    "tip_fixed_thickness_multiplier": 0.91,
+    "tip_thickness_m": 0.001,
+    "tip_half_width_m": 0.0065,
+    "tip_coverage_m": 0.02,
+    "tip_coverage_offset_m": -0.03,
+    "tip_moving_coverage_offset_m": 0.025,
+    "sliding_friction": 1.8,
+    "torsional_friction_m": 0.012,
+    "rolling_friction_m": 0.0012,
+    "solref_time_constant_s": 0.006,
+    "solref_damping_ratio": 1.2,
+    "simulation_timestep_multiplier": 0.45,
+    "gripper_force_limit_multiplier": 3.0,
+    "fixed_jaw_mesh_collision_enabled": false,
+    "moving_jaw_mesh_collision_enabled": false
+  },
+  "frozen_candidate_family": {
+    "ordered_candidate_ids": [
+      "rigid_0p91_control",
+      "flex_10_kpa",
+      "flex_25_kpa",
+      "flex_63_kpa",
+      "flex_158_kpa",
+      "flex_400_kpa"
+    ],
+    "youngs_modulus_pa_by_flex_candidate": [
+      10000.0,
+      25000.0,
+      63000.0,
+      158000.0,
+      400000.0
+    ],
+    "poisson_ratio": 0.45,
+    "damping": 0.02,
+    "mass_kg_per_cap": 0.001,
+    "contact_radius_m": 0.0,
+    "contact_bit": 128,
+    "contact": {
+      "selfcollide": "none",
+      "internal": false,
+      "condim": 6,
+      "friction": [
+        1.8,
+        0.012,
+        0.0012
+      ],
+      "solref": [
+        0.006,
+        1.2
+      ]
+    },
+    "fixed_cap": {
+      "parent_body": "left_gripper",
+      "center_parent_xyz_m": [
+        -0.00939,
+        0.0,
+        -0.1205
+      ],
+      "outer_half_extent_xyz_m": [
+        0.00041,
+        0.0065,
+        0.01
+      ],
+      "count": [
+        3,
+        3,
+        5
+      ],
+      "spacing_m": [
+        0.00041,
+        0.0065,
+        0.005
+      ],
+      "pinned_trilinear_node_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "contact_face": "positive_local_x"
+    },
+    "moving_cap": {
+      "parent_body": "left_moving_jaw_so101_v1",
+      "center_parent_xyz_m": [
+        -0.0108,
+        -0.072,
+        0.01875
+      ],
+      "outer_half_extent_xyz_m": [
+        0.0005,
+        0.01,
+        0.0065
+      ],
+      "count": [
+        3,
+        5,
+        3
+      ],
+      "spacing_m": [
+        0.0005,
+        0.005,
+        0.0065
+      ],
+      "pinned_trilinear_node_ids": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "contact_face": "negative_local_x"
+    },
+    "collision_isolation": "caps use contact bit 0x80 with zero conaffinity; every pawn collision geom gains affinity bit 0x80; caps cannot contact the jaw, table, board, or AprilTag",
+    "only_scene_delta": "disable collision and rendering on the outward portions of the two rigid pad wrappers and replace only those portions with the declared isolated flex caps; retain all original jaw-anchor geometry",
+    "no_family_expansion_after_outcome": true
+  },
+  "frozen_supplemental_evaluator": {
+    "original_reward_must_remain_byte_identical": true,
+    "minimum_same_pair_bilateral_contact_dwell_seconds": 0.02,
+    "minimum_contact_span_m": 0.005,
+    "minimum_opposing_normal_score": 0.0,
+    "minimum_sustained_lift_m": 0.04,
+    "minimum_sustained_lift_seconds": 0.05,
+    "minimum_genuine_carry_toward_target_m": 0.022225,
+    "maximum_bilateral_contact_gap_seconds": 0.02,
+    "whole_base_target_entry_distance_m": 0.008425,
+    "maximum_final_center_distance_m": 0.006,
+    "maximum_tilt_degrees_at_every_step": 10.0,
+    "minimum_post_release_settle_seconds": 0.25,
+    "maximum_final_linear_speed_m_s": 0.02,
+    "maximum_final_angular_speed_rad_s": 0.25,
+    "maximum_other_pawn_translation_m": 0.006,
+    "maximum_other_pawn_orientation_change_degrees": 5.0,
+    "require_board_support_during_settle": true,
+    "require_no_wrong_pawn_contact": true,
+    "require_lift_then_carry_then_target_entry_then_release_then_settle": true,
+    "require_full_integration_step_trace": true,
+    "require_flex_and_geom_contact_identity": true,
+    "require_separate_verifier_recomputation": true,
+    "require_fresh_single_thread_no_refit_repeat": true,
+    "require_identical_model_action_schedule_trace_and_gate_digests": true
+  },
+  "forbidden_assistance": [
+    "inverse_kinematics",
+    "action_offsets",
+    "action_clipping",
+    "retiming",
+    "smoothing",
+    "corrective_suffix",
+    "endpoint_injection",
+    "measured_state_forcing",
+    "object_weld_or_latch",
+    "load_hold",
+    "force_latch_or_ramp",
+    "control_override"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "A passing OR134 result may be described only as an action-frozen, outcome-informed, same-episode simulator replay success. It is not calibration, held-out validation, sim-to-real transfer, physical replay proof, or physical authority."
+}

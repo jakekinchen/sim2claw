@@ -1,0 +1,48 @@
+{
+  "schema_version": "sim2claw.observable_registration_c2_cross_episode_pad_pair_owner_authorization.v1",
+  "authorization_id": "observable-registration-or147-c2-cross-episode-pad-pair-20260807",
+  "authorized_at": "2026-08-07T18:04:00-05:00",
+  "status": "owner_authorized_single_passive_composite_candidate_before_execution",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "proof_class": "cross_episode_outcome_selected_and_same_episode_diagnosed_quarantined_simulator_candidate",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_c2_strict_baseline_v1_closeout.json",
+    "sha256": "8d94d93091345a26b78ec3961186dac0c9229c4ccd9b1cc00362900447600fda",
+    "status": "TERMINAL_STRICT_FAILURE_EARLY_UNILATERAL_FIXED_JAW_TORQUE_LOCALIZED"
+  },
+  "mechanism": {
+    "fixed_side": "Use OR50's separately outcome-selected fixed-pad coordinate without C2 refit and remove the original jaw primitive contacts that OR146 proves create the early unilateral load.",
+    "moving_side": "Retract only the 3 mm D1-facing distal end while preserving the original proximal edge used by the retained C2 carry contact patch.",
+    "fixed_pad_offset_m": 0.00752,
+    "moving_pad_coverage_multiplier": 0.85,
+    "moving_pad_center_offset_m": 0.0265,
+    "moving_pad_full_coverage_before_m": 0.02,
+    "moving_pad_full_coverage_after_m": 0.017,
+    "fit_on_or147_result": false,
+    "action_assistance": false
+  },
+  "execution_boundary": {
+    "candidate_runs": 1,
+    "confirmation_runs_if_and_only_if_strict_pass": 1,
+    "family_expansion": false,
+    "adaptive_refinement": false,
+    "full_step_trace_required": true,
+    "independent_verifier_required": true,
+    "render_only_confirmation_if_strict_pass": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR147 is a single quarantined simulator candidate composed from a cross-episode outcome-selected coordinate and a same-episode contact-ledger trim. Even a confirmed strict pass is not calibration, held-out validation, simulator promotion, general transfer, or physical transfer."
+}

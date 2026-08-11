@@ -1,0 +1,103 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_deformable_cap_compatibility_owner_authorization.v1",
+  "authorization_id": "observable-registration-or135-f2-deformable-cap-compatibility-20260807",
+  "authorized_at": "2026-08-07T13:14:00-05:00",
+  "status": "owner_authorized_before_compatibility_contract_or_dynamic_execution",
+  "proof_class": "quarantined_historical_runtime_compatibility_then_same_episode_action_frozen_simulator_only_deformable_contact_diagnostic",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "objective": "First reproduce the retained rigid F2-to-F1 dynamics under a fully specified historical runtime/model identity; only then test the unchanged deformable-cap family for one independently verified upright simulator-only transfer.",
+  "predecessors": {
+    "or134_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_deformable_cap_v1_closeout.json",
+      "sha256": "43a383ab05c28c0319d58bdb34ab58e8c6e240dbe7bb8c4104d1cfd336713019",
+      "status": "TERMINAL_RIGID_CONTROL_IDENTITY_REPRODUCTION_FAILED_NO_FLEX_EXECUTED"
+    },
+    "or134_authorization": {
+      "path": "configs/evaluations/observable_registration_f2_deformable_cap_owner_authorization_v1.json",
+      "sha256": "e3e8d8ab2e5b20682c8a42e807e5b24ffcf8b02c8e10f54972da68ca1af501c5"
+    },
+    "historical_rigid_receipt": {
+      "path": "outputs/pawn_bg_grasp_episode_probes/f2_fixed_tip_grid_0p91.json",
+      "sha256": "6817e09f5027191b9c132a0a12904194ef3339a6240708f035cc52e92d0a2b53"
+    }
+  },
+  "diagnosed_identity_break": {
+    "last_reproducing_commit": "2fe32cf29b73420d109ce967c9b4c80c858900e4",
+    "last_reproducing_tree": "103252e6004d5d5936e542638f2ef1069056d1d8",
+    "first_nonreproducing_commit": "90900423fcefa5af519677f24489262483808840",
+    "first_nonreproducing_tree": "5699d84e1b572a568ba6a8a4e4e63b58448d7523",
+    "only_changed_dynamic_source": "src/sim2claw/scene.py",
+    "change": "left_and_right_shoulder_servo_collision_box_local_x_half_extent_0.023_to_0.0124_m",
+    "read_only_reproduction": {
+      "before_change_final_target_distance_m": 0.007662688216203823,
+      "before_change_maximum_piece_rise_m": 0.0423955399520729,
+      "after_change_final_target_distance_m": 0.1645222882509468,
+      "after_change_maximum_piece_rise_m": 0.015010064375820864
+    },
+    "interpretation": "The retained near-transfer depends on a legacy over-broad shoulder collision approximation. OR135 may restore it only as a named compatibility diagnostic and may not call it measured geometry or physical fidelity."
+  },
+  "historical_runtime_identity": {
+    "reference_commit": "2fe32cf29b73420d109ce967c9b4c80c858900e4",
+    "reference_tree": "103252e6004d5d5936e542638f2ef1069056d1d8",
+    "scene_sha256": "01366394bb10cc789956e59965b32b3f8d009df5ccba9390894b139b02639206",
+    "coordinate_runner_sha256": "fe938637ceb106faadcb85bcb04db0847c69943e2c5fe3f72f1d4cc2b6b867bf",
+    "workcell_builder_sha256": "17190f9d81f6ade18f51036bf80a140e21643c1b06e8ad57a3295784cb7e0a4d",
+    "contact_prior_loader_sha256": "9e6056e372aa2747b7619d16e556a68f8a897ac868186084d12addc13ffabe0c",
+    "grasp_contract_sha256": "6f39692ede95e1fc581826699ba107b6b9814a776a0751dbc6a13ce25e6e9847",
+    "contact_prior_sha256": "1845ed4b598696d407919f84a31f6a01e206035c70ed2294dcb5f46feda5c6ea",
+    "historical_uv_lock_sha256": "9c7b001bea367c3bf3aca156cf0f7d59a0cc5709b3b9ca47f2eefefd7a6ee3db",
+    "current_uv_lock_sha256": "5eafcbf2b6e6f08dbbbefd61716e6763a089ab094578ccfabcfeae5333d73499",
+    "mujoco_version": "3.10.0",
+    "numpy_version": "2.2.6",
+    "contact_cone": "elliptic",
+    "contact_solver": "newton",
+    "integrator": "implicitfast",
+    "iterations": 10,
+    "ls_iterations": 20,
+    "noslip_iterations": 0,
+    "friction_impratio": 10.0,
+    "timestep_seconds_after_multiplier": 0.00225,
+    "legacy_shoulder_box_half_extent_xyz_m": [0.023, 0.015, 0.01],
+    "current_shoulder_box_half_extent_xyz_m": [0.0124, 0.015, 0.01]
+  },
+  "execution_order": {
+    "stage_1": "one_rigid_legacy_shoulder_compatibility_run",
+    "stage_1_gate": "reproduce_retained_rigid_control_with_preregistered_tolerance_and_model_signature",
+    "on_stage_1_failure": "close_or135_with_zero_flex_runs",
+    "on_stage_1_pass": "run_unchanged_flex_10_25_63_158_400_kpa_family_in_order",
+    "fresh_process_single_thread_no_refit_confirmation_required": true,
+    "independent_full_step_trace_verifier_required": true,
+    "post_outcome_baseline_changes_allowed": false,
+    "family_expansion_allowed": false
+  },
+  "forbidden_assistance": [
+    "inverse_kinematics",
+    "action_offsets",
+    "action_clipping",
+    "retiming",
+    "smoothing",
+    "corrective_suffix",
+    "endpoint_injection",
+    "measured_state_forcing",
+    "object_weld_or_latch",
+    "load_hold",
+    "force_latch_or_ramp",
+    "control_override",
+    "outcome_selected_scene_geometry"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "The legacy shoulder collider is a compatibility fixture, not measured table, robot, AprilTag, or pawn geometry. A passing result is only a quarantined same-episode simulator replay success and cannot establish physical fidelity or transfer."
+}

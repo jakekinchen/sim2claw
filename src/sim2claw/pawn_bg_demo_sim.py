@@ -14,7 +14,7 @@ import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import mujoco
 import numpy as np
@@ -25,6 +25,7 @@ from .contact_prior import (
     load_simulator_variant,
     read_contact_prior_snapshot,
 )
+from .mujoco_contact_endpoints import FlexContactSemantic, resolve_contact_pair
 from .pawn_bg_reward import CONTRACT_PATH, load_reward_contract, score_episode, sha256_file
 from .scene import (
     CURRENT_TASK_PIECE_LAYOUT,
@@ -142,12 +143,16 @@ def _piece_bodies(model: mujoco.MjModel) -> dict[str, int]:
 def _contact_flags(
     model: mujoco.MjModel, data: mujoco.MjData, *, selected_body: int,
     piece_body_ids: set[int], robot_body_ids: set[int], jaw_body_ids: set[int],
+    flex_semantics: Mapping[int, FlexContactSemantic] | None = None,
 ) -> tuple[bool, bool]:
     selected_jaw = False
     wrong_piece = False
     for contact_index in range(data.ncon):
         contact = data.contact[contact_index]
-        bodies = {int(model.geom_bodyid[contact.geom1]), int(model.geom_bodyid[contact.geom2])}
+        endpoint_1, endpoint_2 = resolve_contact_pair(
+            model, contact, flex_semantics=flex_semantics
+        )
+        bodies = {endpoint_1.body_id, endpoint_2.body_id}
         if selected_body in bodies and bodies & jaw_body_ids:
             selected_jaw = True
         contacted_pieces = bodies & piece_body_ids
@@ -160,11 +165,13 @@ def _trace_row(
     model: mujoco.MjModel, data: mujoco.MjData, *, selected_body: int,
     selected_dof: int, piece_bodies: dict[str, int], initial_piece_positions: dict[str, np.ndarray],
     robot_body_ids: set[int], jaw_body_ids: set[int],
+    flex_semantics: Mapping[int, FlexContactSemantic] | None = None,
 ) -> dict[str, Any]:
     selected_contact, wrong_contact = _contact_flags(
         model, data, selected_body=selected_body,
         piece_body_ids=set(piece_bodies.values()), robot_body_ids=robot_body_ids,
         jaw_body_ids=jaw_body_ids,
+        flex_semantics=flex_semantics,
     )
     collateral = max(
         (

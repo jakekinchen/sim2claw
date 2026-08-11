@@ -44,7 +44,7 @@ import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import mujoco
 import numpy as np
@@ -269,6 +269,7 @@ def build_workcell_model(
     *,
     piece_layout: str = "sparse_two_sided_pawns",
     contact_variant: Any | None = None,
+    spec_mutator: Callable[[mujoco.MjSpec], None] | None = None,
 ) -> dict[str, Any]:
     scene_kwargs = {
         "piece_layout": piece_layout,
@@ -289,6 +290,8 @@ def build_workcell_model(
         from .contact_prior import apply_contact_variant
 
         apply_contact_variant(spec, contact_variant)
+    if spec_mutator is not None:
+        spec_mutator(spec)
     model = spec.compile()
     if (
         candidate.base_z_offset_m

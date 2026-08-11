@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.observable_registration_d1_d2_nominal_wrist_mobile_readability_owner_authorization.v1",
+  "authorization_id": "observable-registration-or150-d1-d2-nominal-wrist-mobile-readability-20260808",
+  "authorized_at": "2026-08-08T00:00:00-05:00",
+  "status": "owner_authorized_one_presentation_only_mobile_readability_derivative",
+  "owner_instructions": [
+    "can you update the latest Side-by-side simultaneous demonstration on the website that we had put it on before, and make sure that it's responsive for mobile as well",
+    "did we make sure to get the gripper camera footage too? we need to make sure we show that footage and the simulation angle of this as well",
+    "ok well get the missing sim wrist angle rendered out"
+  ],
+  "trigger": "independent final visual review found OR149's complete burned disclosure too small at 390 CSS pixels",
+  "proof_class": "presentation_only_burned_disclosure_mobile_readability_derivative",
+  "execution_boundary": {
+    "presentation_derivatives": 1,
+    "simulator_renders": 0,
+    "simulator_replays": 0,
+    "mujoco_calls": 0,
+    "action_integrations": 0,
+    "camera_or_extrinsic_fits": 0,
+    "state_or_parameter_fits": 0,
+    "contact_or_task_evaluations": 0,
+    "source_state_changes": 0,
+    "website_publication_requires_verified_closeout": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR150 may create one presentation-only derivative from the immutable OR149 source render with larger burned disclosure text. It grants no simulator render, replay, calibration, task, promotion, or transfer authority."
+}

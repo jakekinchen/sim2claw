@@ -1,0 +1,76 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_deformable_cap_compatibility_closeout.v1",
+  "experiment_id": "or135-f2-deformable-cap-compatibility-v1",
+  "status": "TERMINAL_INDEPENDENT_COMPATIBILITY_SAMPLING_DOMAIN_MISMATCH_NO_FLEX_EXECUTED",
+  "proof_class": "quarantined_historical_runtime_compatibility_then_same_episode_action_frozen_simulator_only_deformable_contact_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_deformable_cap_compatibility_v1.json",
+    "sha256": "5539f1712308338c608f7ee9c9ca964c603ae00bce79b6816a827a1507363861"
+  },
+  "rigid_run": {
+    "candidate_id": "rigid_legacy_shoulder_control",
+    "compiled_model_sha256": "9e93243ffa094853c37bfe8dfa4378df1b3eb42ff8885af2452dd359530f4ea3",
+    "producer_receipt_path": "outputs/pawn_bg_f2_deformable_cap_compatibility_v1/rigid_legacy_shoulder_control/producer_receipt.json",
+    "producer_receipt_sha256": "1e09fc4aab33c46317e41b66778c13c30d3ebdf32da1a9da9588162121e1b5dd",
+    "trace_path": "outputs/pawn_bg_f2_deformable_cap_compatibility_v1/rigid_legacy_shoulder_control/full_step_trace.npz",
+    "trace_sha256": "631a4eb1b25be0256302fe71b96ef201d6208b8f7638bb256aedb9cb9b3a5737",
+    "trace_step_count": 9932,
+    "metadata_sha256": "6e03f7b504bad67a091b8604b754a0d462b388f9a8d205397450e36a41a510a9",
+    "independent_verdict_path": "outputs/pawn_bg_f2_deformable_cap_compatibility_v1/rigid_legacy_shoulder_control/compatibility_verdict.json",
+    "independent_verdict_sha256": "dac8ba799203321da7664c401dabe8fe73b30c8cd327d0e0d700bddac29660bc",
+    "independent_decision_digest": "8d7d7408c104c1ceaba440d073c37feb86474c770609213e6a778343dbf66cbe",
+    "producer_compatibility_passed": true,
+    "independent_compatibility_passed": false,
+    "strict_replay_passed": false
+  },
+  "sampling_domain_diagnosis": {
+    "historical_source_boundary_maximum_piece_rise_m": 0.0423955399520729,
+    "or135_full_integration_step_maximum_piece_rise_m": 0.04667828504443183,
+    "historical_source_boundary_recomputed_from_or135_trace_m": 0.0423955399520729,
+    "historical_source_boundary_reproduction_exact": true,
+    "full_step_peak_row": 4805,
+    "interval_step_count": 439,
+    "interval_step_count_sum": 9731,
+    "full_trace_step_count": 9932,
+    "terminal_step_count": 200,
+    "action_boundary_row_count": 440,
+    "action_boundary_last_index": 9731,
+    "legacy_row_count_including_terminal": 441,
+    "legacy_terminal_index": 9931,
+    "interval_step_counts_sha256": "d8cf9c444dbdc27bdf5e8d0d4e52c9d26da699c41da22cab661c030fa384de39",
+    "action_boundary_indices_sha256": "c87d57adc00d46ef4220b19cd994a8c48f18c0550b279770ac3248cc7c3a4c62",
+    "legacy_rows_including_terminal_sha256": "3edcdd78c2c41f4e0755030870fea9264422486e4242402c44bdba59f78ebc28",
+    "interpretation": "OR135 compared a retained source-boundary statistic to a different full-step statistic. The rigid dynamics and compiled model reproduced; the frozen independent compatibility gate nevertheless failed and cannot be changed after outcome read."
+  },
+  "execution_counts": {
+    "rigid_runs": 1,
+    "flex_runs": 0,
+    "fresh_rigid_run_required_under_successor": true
+  },
+  "next_transition": "OR136_new_identity_with_separate_source_boundary_compatibility_and_full_step_strict_metrics",
+  "claim_limits": {
+    "physics_incompatibility_conclusion": false,
+    "deformable_cap_conclusion": false,
+    "strict_replay_success": false,
+    "calibration": false,
+    "heldout_validation": false,
+    "physical_fidelity": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

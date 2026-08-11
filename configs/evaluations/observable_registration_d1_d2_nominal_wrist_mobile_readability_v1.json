@@ -1,0 +1,67 @@
+{
+  "schema_version": "sim2claw.observable_registration_d1_d2_nominal_wrist_mobile_readability_contract.v1",
+  "experiment_id": "OR150_D1_D2_NOMINAL_WRIST_MOBILE_READABILITY_V1",
+  "proof_class": "presentation_only_burned_disclosure_mobile_readability_derivative",
+  "sources": {
+    "owner_authorization": {
+      "path": "configs/evaluations/observable_registration_d1_d2_nominal_wrist_mobile_readability_owner_authorization_v1.json",
+      "sha256": "c26bb8ed4e7124b34db7c2e533701d256a022898c8b822f9c16a3f291bf6462e"
+    },
+    "or149_closeout": {
+      "path": "configs/decisions/observable_registration_d1_d2_nominal_wrist_presentation_v1_closeout.json",
+      "sha256": "86e8ea65ade5c7ad233a27e9169307e3847ff3590b38aa9940cf78463982a284"
+    },
+    "or149_original_receipt": {
+      "path": "outputs/observable_registration_d1_d2_nominal_wrist_presentation_v1/receipt.json",
+      "sha256": "d78584034e7c7a827674c29257b1214fc8528add0d778407caafcaca839dc8ac"
+    },
+    "or149_immutable_source_video": {
+      "path": "outputs/observable_registration_d1_d2_nominal_wrist_presentation_v1/nominal_wrist.mp4",
+      "sha256": "4c21dbfb70421a328e3453bdacc886e91a5932d770664979226c36e3d873a44f"
+    }
+  },
+  "output": {
+    "width": 424,
+    "height": 240,
+    "fps": 20,
+    "frame_count": 531,
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "poster_sample_index": 248,
+    "overlay_position": {
+      "x": 0,
+      "y": 27,
+      "width": 424,
+      "height": 61
+    },
+    "minimum_font_point_size": 11,
+    "burned_disclosure": [
+      "NON-SCORING RETAINED-STATE PROJECTION",
+      "MEASURED JOINTS + OR34 PAWN | OTHER PIECES: FRESH QPOS0",
+      "NOT REPLAY | NOT TASK SUCCESS | NOT PHYSICS FIDELITY | NOT TRANSFER"
+    ]
+  },
+  "execution_boundary": {
+    "presentation_derivatives": 1,
+    "simulator_renders": 0,
+    "simulator_replays": 0,
+    "mujoco_calls": 0,
+    "action_integrations": 0,
+    "controller_writes": 0,
+    "fits": 0,
+    "task_evaluations": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "claim_limits": {
+    "calibrated_d405_view": false,
+    "same_camera_or_pixel_alignment": false,
+    "camera_calibration": false,
+    "full_or34_scene_replay": false,
+    "physics_fidelity": false,
+    "task_success": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

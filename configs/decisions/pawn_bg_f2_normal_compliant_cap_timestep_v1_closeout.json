@@ -1,0 +1,92 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_normal_compliant_cap_timestep_closeout.v1",
+  "experiment_id": "or138-f2-normal-compliant-cap-timestep-v1",
+  "status": "TERMINAL_PAIRED_PREACTION_NONPERTURBATION_GATES_FAILED_NO_TASK_REPLAY",
+  "proof_class": "same_episode_action_frozen_simulator_only_reduced_order_normal_compliance_diagnostic",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_timestep_v1.json",
+    "sha256": "d64d85c6bdcc261c72b9b99ba84690780b29e3d44bd428b404ed204881ed5099"
+  },
+  "compile_audit": {
+    "path": "outputs/pawn_bg_f2_normal_compliant_cap_timestep_v1/compile_audit.json",
+    "sha256": "eacd0a25dd76ee9ab789837435057cfafdeddc3dd24969af8c3f3d559e069686",
+    "passed": true,
+    "rigid_compiled_model_sha256": "9e93243ffa094853c37bfe8dfa4378df1b3eb42ff8885af2452dd359530f4ea3",
+    "candidate_compiled_model_sha256": "8e6e6cb50fd45ab3d7474492f6f27318001895ed2d006eacb53fee21e3c71c23"
+  },
+  "rigid_preflight": {
+    "trace_sha256": "96e8e2dc212001117ea774bca6cc2d4a2cb8f78eee7e1e471afbfaf613c2d6e1",
+    "metadata_sha256": "5509d3426f0f22933336859755d465468870d7a096e20b5216eb61f3a1ee3d3a",
+    "independent_verdict_sha256": "ad74c7893d3d6dd406ab00f168268c34e8da716ae691c955362c3a19bfa16195",
+    "passed": true,
+    "source_action_rows_consumed": 0
+  },
+  "candidate_preflight": {
+    "candidate_id": "normal_compliant_prior_k1000",
+    "trace_sha256": "2b0e000e4ccb91e86c1b303f59cae51ea99ad46127cb96f528f9b260eebbedef",
+    "metadata_sha256": "536f4d4ff52f07302726efa224e921f45858eec14ab05e9befd7f690e9cb52df",
+    "independent_verdict_sha256": "5555d6d5f2487413adc65347a7756940300b47ee3cf27d4e4f3e9408d7908601",
+    "independent_decision_digest": "8d5ed905e3bae564f7c1af30b5de9c3b4ae76f0c9c537c58d68150c70c392b2b",
+    "passed": false,
+    "source_action_rows_consumed": 0,
+    "warning_count_sum": 0,
+    "all_recorded_values_finite": true,
+    "new_cap_contact_pairs": [],
+    "maximum_absolute_cap_displacement_m": 0.000011133221983464173,
+    "peak_absolute_cap_acceleration_m_s2": 0.6036349427301425,
+    "final_window_maximum_absolute_cap_velocity_m_s": 0.0005046066333705096,
+    "final_window_maximum_absolute_cap_acceleration_m_s2": 0.20448207972339957,
+    "maximum_pawn_center_difference_m": 0.0,
+    "maximum_pawn_orientation_difference_degrees": 0.0000072445096183544,
+    "failed_gates": {
+      "cap_joints_within_ranges": {
+        "maximum_soft_limit_overshoot_m": 0.000003482422269126183
+      },
+      "cap_final_position_range_guard": {
+        "observed_m": 0.000006336824523682637,
+        "maximum_m": 0.000001
+      },
+      "robot_position_nonperturbation": {
+        "observed_rad": 0.0005415250093181445,
+        "maximum_rad": 0.0001
+      },
+      "robot_velocity_nonperturbation": {
+        "observed_rad_s": 0.057253760907604145,
+        "maximum_rad_s": 0.001
+      }
+    }
+  },
+  "interpretation": "The candidate is warning-free and bounded during the canonical initial hold, but the frozen paired nonperturbation gates fail. OR138 cannot consume the task action or infer task behavior.",
+  "execution_counts": {
+    "compile_audits": 1,
+    "rigid_preflights": 1,
+    "candidate_preflights": 1,
+    "rigid_task_replays": 0,
+    "candidate_task_replays": 0,
+    "renders": 0
+  },
+  "next_transition": "advisor_review_of_construction_scale_preflight_semantics_under_new_identity_or_mechanism_rejection",
+  "claim_limits": {
+    "initial_hold_stable": false,
+    "task_behavior_observed": false,
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

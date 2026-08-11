@@ -1,0 +1,69 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_collision_topology_search_owner_authorization.v1",
+  "authorization_id": "observable-registration-or141-f2-collision-topology-search-20260807",
+  "authorized_at": "2026-08-07T16:12:00-05:00",
+  "status": "owner_authorized_outcome_informed_quarantined_development_before_search_execution",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_normal_compliant_cap_inherited_v1_closeout.json",
+    "sha256": "0f814242eb624f2e79a3f4c2cc93526e0925bf6160d41c8eac96ae6b3c57f8f2",
+    "status": "TERMINAL_STRICT_TASK_FAILURE_AND_FULL_REPLAY_CAP_BOUND_VIOLATION"
+  },
+  "advisor_boundary": {
+    "passive_cap_lane_closed": true,
+    "safe_prospective_transfer_candidate_available": false,
+    "continued_task_search_must_be_outcome_informed_and_quarantined": true,
+    "no_task_success_or_physical_transfer_claim_from_search_selection": true
+  },
+  "structural_basis": {
+    "rigid_pad_coordinates_unchanged": true,
+    "moving_pad_coverage_axis_interval_m": [-0.082, -0.062],
+    "moving_box2_coverage_axis_interval_m": [-0.08, -0.072],
+    "moving_box3_coverage_axis_interval_m": [-0.072, -0.062],
+    "coactive_moving_pad_box_overlap_is_compiled": true,
+    "task_trace_simultaneously_contacts_pad_and_underlayer_primitives": true,
+    "search_changes_only_collision_enable_bits_on_existing_distal_surfaces": true
+  },
+  "objective": "Find at most one exact-action strict simulator replay success by testing a frozen collision-composition order over existing rigid jaw surfaces, then independently reproduce it without refit.",
+  "search_boundary": {
+    "outcome_informed": true,
+    "same_episode": true,
+    "candidate_order_frozen_before_execution": true,
+    "stop_at_first_strict_pass": true,
+    "maximum_candidate_task_replays": 3,
+    "maximum_confirmation_replays": 1,
+    "parameter_values_fit": false,
+    "existing_geom_pose_size_material_friction_solver_timing_action_unchanged": true,
+    "only_contype_and_conaffinity_of_named_existing_distal_geoms_may_change": true
+  },
+  "forbidden": [
+    "ik",
+    "action_offset",
+    "action_clipping",
+    "retiming",
+    "smoothing",
+    "action_suffix",
+    "endpoint_injection",
+    "measured_state_forcing",
+    "latch",
+    "load_hold",
+    "force_ramp",
+    "control_override",
+    "object_pose_injection"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "A strict pass may be described only as one same-episode outcome-informed simulator replay success under byte-identical actions. It is not a calibrated twin, held-out validation, simulator promotion, general transfer, or physical transfer."
+}

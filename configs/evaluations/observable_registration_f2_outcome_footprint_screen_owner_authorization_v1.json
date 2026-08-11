@@ -1,0 +1,41 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_outcome_footprint_screen_owner_authorization.v1",
+  "authorization_id": "observable-registration-or144-f2-outcome-footprint-screen-20260807",
+  "authorized_at": "2026-08-07T17:02:00-05:00",
+  "status": "owner_authorized_outcome_informed_quarantined_screen_before_execution",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development_screen",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_outcome_geometry_screen_v1_closeout.json",
+    "sha256": "39da198f403f7f5b581cc3554a94b9a6a3c21165905438a7f96153f6b2c4055f",
+    "status": "TERMINAL_PAD_OFFSET_GRID_NO_UPRIGHT_SCREEN_PASS"
+  },
+  "objective": "Screen whether a larger rigid contact footprint supplies rotational support while preserving the exact replay action.",
+  "search_boundary": {
+    "outcome_informed": true,
+    "same_episode": true,
+    "grid_frozen_before_execution": true,
+    "candidate_count": 16,
+    "coverage_length_values_m": [0.02, 0.03, 0.04, 0.05],
+    "half_width_values_m": [0.0065, 0.01, 0.015, 0.02],
+    "fixed_thickness_multiplier": 0.91,
+    "fixed_and_moving_offsets_unchanged": true,
+    "full_strict_candidates_maximum": 3,
+    "screen_cannot_claim_strict_success": true,
+    "action_assistance": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR144 is an outcome-informed simulator screen, not strict evaluation, calibration, validation, promotion, general transfer, or physical transfer."
+}

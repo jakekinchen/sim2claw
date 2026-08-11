@@ -1,0 +1,66 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_normal_compliant_cap_inherited_owner_authorization.v1",
+  "authorization_id": "observable-registration-or140-f2-normal-compliant-cap-inherited-20260807",
+  "authorized_at": "2026-08-07T15:42:00-05:00",
+  "status": "owner_authorized_before_successor_contract_or_dynamic_execution",
+  "proof_class": "same_episode_action_frozen_simulator_only_inherited_default_soft_limited_normal_compliance_diagnostic",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "objective": "Prospectively test the unchanged exact-action task using the warning-free inherited-default soft-limited cap that passed mechanics- and encoder-scale pre-action diagnostics.",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_normal_compliant_cap_clean_v1_closeout.json",
+    "sha256": "0fc963ea33df5bd12cebfe9370e4c7aa8a485c2e8deb2bd4f80e37c42771d2a0",
+    "status": "TERMINAL_CLEAN_PASSIVE_CAP_NOT_SETTLED_AT_TASK_BOUNDARY_NO_TASK_REPLAY"
+  },
+  "mechanism_disclosure": {
+    "label": "inherited_default_soft_limited_cap",
+    "dof_armature": 0.005,
+    "dof_frictionloss": 0.1,
+    "travel_m": 0.002,
+    "stiffness_n_per_m": 1000.0,
+    "damping_n_s_per_m": 2.0,
+    "body_mass_kg_per_finger": 0.001,
+    "interpretation_excluded": [
+      "critical_damping",
+      "rubber_calibration",
+      "measured_material_model"
+    ],
+    "external_geometry_material_frames_controller_and_action_unchanged": true
+  },
+  "preflight_gate_repair": {
+    "diagnosis_informed_by_preaction_only": true,
+    "task_action_or_outcome_observed": false,
+    "maximum_neutral_side_soft_limit_overshoot_m": 0.00001962,
+    "maximum_absolute_cap_displacement_m": 0.000025,
+    "minimum_far_travel_limit_margin_m": 0.0001,
+    "final_window_maximum_cap_position_range_m": 0.00001962,
+    "final_window_maximum_cap_velocity_m_s": 0.001,
+    "final_window_maximum_cap_acceleration_m_s2": 1.0,
+    "servo_encoder_quantum_rad": 0.0015339807878856412,
+    "candidate_cap_contacts_during_initial_hold": 0,
+    "all_task_gates_unchanged": true
+  },
+  "execution_order": [
+    "one_compile_audit",
+    "fresh_disposable_rigid_preflight",
+    "fresh_disposable_inherited_candidate_preflight",
+    "if_both_pass_one_fresh_rigid_compatibility_task_replay",
+    "if_compatibility_passes_one_fresh_inherited_candidate_task_replay",
+    "if_strict_pass_fresh_process_preflight_and_no_refit_task_confirmation",
+    "render_confirmed_trace_only"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR140 is diagnosis-informed only by pre-action initialization. Any pass is simulator-only same-episode action-frozen evidence for a disclosed inherited-default cap, not rubber calibration, simulator promotion, general transfer, or physical transfer."
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_outcome_geometry_screen_closeout.v1",
+  "experiment_id": "or143-f2-outcome-geometry-screen-v1",
+  "status": "TERMINAL_PAD_OFFSET_GRID_NO_UPRIGHT_SCREEN_PASS",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development_screen_negative",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_outcome_geometry_screen_v1.json",
+    "sha256": "50671bc57b6a32f4ad8e0ffc39c0a6c8eb1e3716e571aaeefddeef9cacfc4ac7"
+  },
+  "receipt": {
+    "path": "outputs/pawn_bg_f2_outcome_geometry_screen_v1/receipt.json",
+    "sha256": "a5130d1dbf2a1c552d8bbf68174f9f0e0399743771674548969739169dc38f0d",
+    "candidate_count": 25
+  },
+  "result": {
+    "continuous_upright_pass_count": 0,
+    "rise_pass_count": 5,
+    "warning_free_count": 25,
+    "best_destination_candidate": "fixed_-0.030_moving_+0.025",
+    "best_destination_distance_m": 0.007662688216203823,
+    "best_destination_maximum_tilt_degrees": 33.16800218467696,
+    "only_transport_candidate": "fixed_-0.025_moving_+0.015",
+    "only_transport_maximum_tilt_degrees": 155.4474767338545,
+    "strict_candidates_admitted": 0
+  },
+  "interpretation": "Moving the unchanged pad footprint along the two jaw coverage axes does not produce an upright exact-action replay. No row merits full strict evaluation because every row fails the screen's continuous-upright invariant.",
+  "claim_limits": {
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

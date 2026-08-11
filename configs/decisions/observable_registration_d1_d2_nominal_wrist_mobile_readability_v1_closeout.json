@@ -1,0 +1,110 @@
+{
+  "schema_version": "sim2claw.observable_registration_d1_d2_nominal_wrist_mobile_readability_closeout.v1",
+  "experiment_id": "OR150_D1_D2_NOMINAL_WRIST_MOBILE_READABILITY_V1",
+  "status": "PASS_PRESENTATION_ONLY_MOBILE_LEGIBLE_DISCLOSURE_DERIVATIVE",
+  "proof_class": "presentation_only_burned_disclosure_mobile_readability_derivative",
+  "owner_authorization": {
+    "path": "configs/evaluations/observable_registration_d1_d2_nominal_wrist_mobile_readability_owner_authorization_v1.json",
+    "sha256": "c26bb8ed4e7124b34db7c2e533701d256a022898c8b822f9c16a3f291bf6462e"
+  },
+  "contract": {
+    "path": "configs/evaluations/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1.json",
+    "sha256": "3559931f871d0820027bd95df4205c995b7f8efc459d581207e104154f6a08e5"
+  },
+  "or149_predecessor_closeout": {
+    "path": "configs/decisions/observable_registration_d1_d2_nominal_wrist_presentation_v1_closeout.json",
+    "sha256": "86e8ea65ade5c7ad233a27e9169307e3847ff3590b38aa9940cf78463982a284"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1/receipt.json",
+    "sha256": "0a4d1247259cbb734430a854b96ebe048818a291be973320cbdc92229bb60c2d",
+    "artifact_sha256": "a12cb044a1e1c0d1c741f5409f38fba2e3f29119852a289c206f7265412337ea"
+  },
+  "verifier": {
+    "path": "outputs/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1/verify.py",
+    "sha256": "3d1b8fd3cdbfc7c286723db54671ce6021285588d22ca29283249aec300eb953",
+    "verdict": "pass",
+    "gate_count": 9,
+    "failed_gate_count": 0
+  },
+  "result": {
+    "source_simulator_render_count": 1,
+    "additional_simulator_render_count": 0,
+    "presentation_derivative_count": 1,
+    "width": 424,
+    "height": 240,
+    "fps": 20,
+    "frame_count": 531,
+    "duration_seconds": 26.55,
+    "video_sha256": "e7c2c46a85ed428b22aa6e47883ac6e7b3fc077f1263bce2bdc3e8dfc1b5c794",
+    "decoded_frame_digest": "59fcdbf67b0283bca5147f1d8bdda942b090bb15af9d6ab3ebd0cdb377307868",
+    "poster_sample_index": 248,
+    "poster_sha256": "d2e881b72729adba0841048030907c8c8954eb9ad19e7d6f86dcb3847977232f",
+    "overlay_sha256": "d72a1ea15db5cc6efd35ab8bf54528bd29a489db7aba9e587d31c01f4cb3b778",
+    "minimum_font_point_size": 11,
+    "maximum_font_point_size": 13,
+    "simulator_replays": 0,
+    "mujoco_calls": 0,
+    "action_integrations": 0,
+    "fits": 0,
+    "task_evaluations": 0
+  },
+  "mobile_readability": {
+    "review_width_css_px": 330,
+    "source_to_review_scale": 0.7783018868,
+    "minimum_effective_font_css_px": 8.5613207547,
+    "poster_reviewed_at_exact_330_px_width": true,
+    "all_three_burned_disclosure_lines_legible": true,
+    "selected_pawn_and_jaws_remain_visible": true,
+    "burned_disclosure": [
+      "NON-SCORING RETAINED-STATE PROJECTION",
+      "MEASURED JOINTS + OR34 PAWN | OTHER PIECES: FRESH QPOS0",
+      "NOT REPLAY | NOT TASK SUCCESS | NOT PHYSICS FIDELITY | NOT TRANSFER"
+    ]
+  },
+  "state_provenance": {
+    "robot_and_camera": "OR34 raw measured physical rows through frozen candidate kinematics",
+    "selected_pawn": "OR34 retained simulated selected-pawn pose rows",
+    "other_pieces": "fresh compiled canonical-reset qpos0; not retained OR34 state; no dynamic pose claim"
+  },
+  "publication_authorization": {
+    "observation_deck_asset_allowed": true,
+    "allowed_video": "outputs/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1/nominal_wrist.mobile_readable.mp4",
+    "allowed_poster": "outputs/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1/poster_sample_248.png",
+    "allowed_receipt": "configs/decisions/observable_registration_d1_d2_nominal_wrist_mobile_readability_v1_closeout.json",
+    "webm_or_jpeg_derivatives_allowed": false,
+    "website_adjacent_full_claim_boundary_required": true,
+    "website_scoreboard_must_not_imply_wrist_camera_synchronization": true
+  },
+  "claim_limits": {
+    "calibrated_d405_view": false,
+    "same_camera_or_pixel_alignment": false,
+    "camera_calibration": false,
+    "full_or34_scene_replay": false,
+    "physics_fidelity": false,
+    "task_success": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "terminal_boundary": {
+    "or150_complete": true,
+    "successor_admitted": false,
+    "or149_and_or148_terminal_boundaries_restored": true,
+    "reopen_condition": "new owner authorization with a separately frozen evidence target; OR150 grants no simulator, calibration, task, promotion, or transfer authority"
+  }
+}

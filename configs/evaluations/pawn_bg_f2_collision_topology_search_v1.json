@@ -1,0 +1,123 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_collision_topology_search.v1",
+  "experiment_id": "or141-f2-collision-topology-search-v1",
+  "status": "frozen_before_compile_or_dynamic_execution",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_f2_collision_topology_search_owner_authorization_v1.json",
+    "sha256": "77c95468102ec67c365d94800ee98aa9ffa1980b8296176291e9c9e5628739d2"
+  },
+  "base_contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_inherited_v1.json",
+    "sha256": "02f05cda13997847c8a1df4514cb9890a0f59463839c43ad0253e8bbc0872c1c"
+  },
+  "source_bindings": {
+    "or140_closeout": {
+      "path": "configs/decisions/pawn_bg_f2_normal_compliant_cap_inherited_v1_closeout.json",
+      "sha256": "0f814242eb624f2e79a3f4c2cc93526e0925bf6160d41c8eac96ae6b3c57f8f2"
+    }
+  },
+  "candidate_order": [
+    {
+      "candidate_id": "rigid_legacy_shoulder_control",
+      "kind": "rigid_control",
+      "disabled_geom_names": []
+    },
+    {
+      "candidate_id": "rigid_distal_pads_only",
+      "kind": "existing_surface_collision_composition",
+      "disabled_geom_names": [
+        "left_fixed_jaw_sph_tip1",
+        "left_fixed_jaw_sph_tip2",
+        "left_fixed_jaw_sph_tip3",
+        "left_fixed_jaw_box3",
+        "left_fixed_jaw_box4",
+        "left_fixed_jaw_box5",
+        "left_fixed_jaw_box6",
+        "left_fixed_jaw_box7",
+        "left_moving_jaw_sph_tip1",
+        "left_moving_jaw_sph_tip2",
+        "left_moving_jaw_sph_tip3",
+        "left_moving_jaw_box2",
+        "left_moving_jaw_box3"
+      ]
+    },
+    {
+      "candidate_id": "rigid_distal_pads_plus_spheres",
+      "kind": "existing_surface_collision_composition",
+      "disabled_geom_names": [
+        "left_fixed_jaw_box3",
+        "left_fixed_jaw_box4",
+        "left_fixed_jaw_box5",
+        "left_fixed_jaw_box6",
+        "left_fixed_jaw_box7",
+        "left_moving_jaw_box2",
+        "left_moving_jaw_box3"
+      ]
+    },
+    {
+      "candidate_id": "rigid_distal_pads_plus_boxes",
+      "kind": "existing_surface_collision_composition",
+      "disabled_geom_names": [
+        "left_fixed_jaw_sph_tip1",
+        "left_fixed_jaw_sph_tip2",
+        "left_fixed_jaw_sph_tip3",
+        "left_moving_jaw_sph_tip1",
+        "left_moving_jaw_sph_tip2",
+        "left_moving_jaw_sph_tip3"
+      ]
+    }
+  ],
+  "topology_search": {
+    "selection_semantics": "same_episode_outcome_informed_stop_at_first_independent_strict_pass",
+    "all_geometry_pose_size_material_friction_solref_solimp_runtime_and_actions_unchanged": true,
+    "only_named_contype_conaffinity_pairs_change_from_1_to_0": true,
+    "pass_requires_all_original_and_supplemental_strict_gates": true,
+    "failure_does_not_authorize_parameter_tuning": true
+  },
+  "execution": {
+    "single_thread": true,
+    "fresh_rigid_compatibility_required": true,
+    "candidate_order_mandatory": true,
+    "stop_at_first_strict_pass": true,
+    "fresh_process_no_refit_confirmation_required_after_first_pass": true,
+    "confirmation_must_match_model_action_timestamp_source_index_and_gate_digests": true,
+    "render_only_after_confirmation": true
+  },
+  "implementation_bindings": {
+    "producer": {
+      "path": "src/sim2claw/pawn_bg_f2_collision_topology_search.py",
+      "sha256": "e5fdffe9c173ef9de364d7c2122a3866438c3d186e9c7897d4bf3c4c9af678e9"
+    },
+    "independent_verifier": {
+      "path": "src/sim2claw/pawn_bg_f2_collision_topology_search_verify.py",
+      "sha256": "fdd3b4b41ef1d06240aa8337c2d19a0611b37ff3a9be6d8d766c39a1ae6bdff5"
+    },
+    "trace_collector": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap.py",
+      "sha256": "86173e9ccd2198d6c4d9b6374fd4d7f0fd6370e143cc25d747f37799e176e6b4"
+    },
+    "strict_evaluator": {
+      "path": "src/sim2claw/pawn_bg_f2_deformable_cap_verify.py",
+      "sha256": "29b0279d7daab95a7868cca62aa804671899476b505f01a2bae8ea9203847bac"
+    },
+    "compatibility_wrapper": {
+      "path": "src/sim2claw/pawn_bg_f2_normal_compliant_cap_verify.py",
+      "sha256": "d03b20ef109c3f15a2830618dd8228f17d95b6df8cd8f1c9ed510d53d11d9379"
+    }
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR141 may yield only one same-episode outcome-informed quarantined simulator replay success under exact actions. It is not calibrated, held-out, promoted, generally transferable, or physical-transfer evidence."
+}

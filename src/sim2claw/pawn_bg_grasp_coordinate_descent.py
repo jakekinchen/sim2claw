@@ -8,7 +8,7 @@ import math
 from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 import matplotlib
 
@@ -25,6 +25,11 @@ from .contact_prior import (
 from .grasp import _pinch_point
 from .interaction_events import extract_event_indices
 from .learning_factory_artifacts import atomic_write_json, canonical_digest, sha256_file
+from .mujoco_contact_endpoints import (
+    FlexContactSemantic,
+    flex_semantics_from_names,
+    resolve_contact_pair,
+)
 from .paths import REPO_ROOT
 from .pawn_bg_action_frozen_gap import _array_sha256, _load_partition, _reconstruct_stage_d
 from .pawn_bg_demo_sim import BASELINE_PIECE_BY_FILE, _piece_bodies, _trace_row
@@ -861,37 +866,53 @@ def _jaw_contact_geometry(
     selected_body: int,
     fixed_jaw_bodies: set[int],
     moving_jaw_bodies: set[int],
+    flex_semantics: Mapping[int, FlexContactSemantic] | None = None,
 ) -> dict[str, Any]:
     contacts: dict[str, list[dict[str, Any]]] = {"fixed": [], "moving": []}
     for contact_index in range(data.ncon):
         contact = data.contact[contact_index]
-        body1 = int(model.geom_bodyid[contact.geom1])
-        body2 = int(model.geom_bodyid[contact.geom2])
+        endpoint1, endpoint2 = resolve_contact_pair(
+            model, contact, flex_semantics=flex_semantics
+        )
+        body1 = endpoint1.body_id
+        body2 = endpoint2.body_id
         if selected_body not in (body1, body2):
             continue
-        jaw_body = body2 if body1 == selected_body else body1
-        side = (
-            "fixed"
-            if jaw_body in fixed_jaw_bodies
-            else "moving" if jaw_body in moving_jaw_bodies else None
-        )
+        pawn_endpoint = endpoint1 if body1 == selected_body else endpoint2
+        jaw_endpoint = endpoint2 if body1 == selected_body else endpoint1
+        jaw_body = jaw_endpoint.body_id
+        side = jaw_endpoint.role
+        if side not in {"fixed", "moving"}:
+            side = (
+                "fixed"
+                if jaw_body in fixed_jaw_bodies
+                else "moving" if jaw_body in moving_jaw_bodies else None
+            )
         if side is None:
             continue
+        if pawn_endpoint.geom_id < 0:
+            raise GraspCoordinateDescentError(
+                "selected pawn contact endpoint must be a rigid geom"
+            )
         normal = np.asarray(contact.frame[:3], dtype=np.float64)
         # MuJoCo's contact normal points from geom1 toward geom2. Orient every
         # stored normal from the jaw toward the selected pawn.
-        if jaw_body == body2:
+        if jaw_endpoint.side == 1:
             normal = -normal
         norm = float(np.linalg.norm(normal))
         if norm > 0.0:
             normal = normal / norm
         constraint_force = np.zeros(6, dtype=np.float64)
         mujoco.mj_contactForce(model, data, contact_index, constraint_force)
-        jaw_geom = int(contact.geom2 if jaw_body == body2 else contact.geom1)
-        pawn_geom = int(contact.geom1 if jaw_body == body2 else contact.geom2)
+        jaw_geom = jaw_endpoint.geom_id
+        pawn_geom = pawn_endpoint.geom_id
         position = np.asarray(contact.pos, dtype=np.float64).copy()
-        jaw_rotation = np.asarray(data.geom_xmat[jaw_geom], dtype=np.float64).reshape(
-            3, 3
+        jaw_rotation = (
+            None
+            if jaw_geom < 0
+            else np.asarray(data.geom_xmat[jaw_geom], dtype=np.float64).reshape(
+                3, 3
+            )
         )
         pawn_rotation = np.asarray(
             data.geom_xmat[pawn_geom], dtype=np.float64
@@ -907,22 +928,35 @@ def _jaw_contact_geometry(
                     or f"body_{jaw_body}"
                 ),
                 "jaw_geom_id": jaw_geom,
-                "jaw_geom_name": (
-                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, jaw_geom)
-                    or f"geom_{jaw_geom}"
+                "jaw_flex_id": jaw_endpoint.flex_id,
+                "jaw_elem_id": jaw_endpoint.elem_id,
+                "jaw_geom_name": jaw_endpoint.object_name,
+                "jaw_geom_type": (
+                    "FLEX"
+                    if jaw_geom < 0
+                    else mujoco.mjtGeom(int(model.geom_type[jaw_geom])).name
                 ),
-                "jaw_geom_type": mujoco.mjtGeom(
-                    int(model.geom_type[jaw_geom])
-                ).name,
-                "jaw_geom_local_position_m": np.asarray(
-                    model.geom_pos[jaw_geom], dtype=np.float64
-                ).copy(),
-                "jaw_geom_size_m": np.asarray(
-                    model.geom_size[jaw_geom], dtype=np.float64
-                ).copy(),
-                "jaw_geom_world_basis_rows": jaw_rotation.copy(),
+                "jaw_geom_local_position_m": (
+                    None
+                    if jaw_geom < 0
+                    else np.asarray(
+                        model.geom_pos[jaw_geom], dtype=np.float64
+                    ).copy()
+                ),
+                "jaw_geom_size_m": (
+                    None
+                    if jaw_geom < 0
+                    else np.asarray(
+                        model.geom_size[jaw_geom], dtype=np.float64
+                    ).copy()
+                ),
+                "jaw_geom_world_basis_rows": (
+                    None if jaw_rotation is None else jaw_rotation.copy()
+                ),
                 "contact_position_in_jaw_geom_frame_m": (
-                    jaw_rotation.T
+                    None
+                    if jaw_rotation is None
+                    else jaw_rotation.T
                     @ (position - np.asarray(data.geom_xpos[jaw_geom]))
                 ),
                 "pawn_geom_id": pawn_geom,
@@ -1046,6 +1080,7 @@ def _wrong_piece_robot_contacts(
     selected_body: int,
     piece_bodies: dict[str, int],
     robot_body_ids: set[int],
+    flex_semantics: Mapping[int, FlexContactSemantic] | None = None,
 ) -> list[dict[str, Any]]:
     """Return identity-rich wrong-piece contacts for mechanism diagnosis.
 
@@ -1057,20 +1092,27 @@ def _wrong_piece_robot_contacts(
     observations: list[dict[str, Any]] = []
     for contact_index in range(data.ncon):
         contact = data.contact[contact_index]
-        geom1 = int(contact.geom1)
-        geom2 = int(contact.geom2)
-        body1 = int(model.geom_bodyid[geom1])
-        body2 = int(model.geom_bodyid[geom2])
-        for piece_body, robot_body, piece_geom, robot_geom in (
-            (body1, body2, geom1, geom2),
-            (body2, body1, geom2, geom1),
+        endpoint1, endpoint2 = resolve_contact_pair(
+            model, contact, flex_semantics=flex_semantics
+        )
+        for piece_endpoint, robot_endpoint in (
+            (endpoint1, endpoint2),
+            (endpoint2, endpoint1),
         ):
+            piece_body = piece_endpoint.body_id
+            robot_body = robot_endpoint.body_id
             if (
                 piece_body == selected_body
                 or piece_body not in piece_names
                 or robot_body not in robot_body_ids
             ):
                 continue
+            if piece_endpoint.geom_id < 0:
+                raise GraspCoordinateDescentError(
+                    "wrong-pawn contact endpoint must be a rigid geom"
+                )
+            piece_geom = piece_endpoint.geom_id
+            robot_geom = robot_endpoint.geom_id
             observations.append(
                 {
                     "piece_name": piece_names[piece_body],
@@ -1092,26 +1134,41 @@ def _wrong_piece_robot_contacts(
                         or f"body_{robot_body}"
                     ),
                     "robot_body_id": robot_body,
-                    "robot_geom_name": (
-                        mujoco.mj_id2name(
-                            model, mujoco.mjtObj.mjOBJ_GEOM, robot_geom
-                        )
-                        or f"geom_{robot_geom}"
-                    ),
+                    "robot_geom_name": robot_endpoint.object_name,
                     "robot_geom_id": robot_geom,
-                    "robot_geom_type": mujoco.mjtGeom(
-                        int(model.geom_type[robot_geom])
-                    ).name,
-                    "robot_geom_local_position_m": np.asarray(
-                        model.geom_pos[robot_geom], dtype=np.float64
-                    ).tolist(),
-                    "robot_geom_size_m": np.asarray(
-                        model.geom_size[robot_geom], dtype=np.float64
-                    ).tolist(),
-                    "robot_geom_mesh_id": int(model.geom_dataid[robot_geom]),
-                    "robot_geom_contype": int(model.geom_contype[robot_geom]),
-                    "robot_geom_conaffinity": int(
-                        model.geom_conaffinity[robot_geom]
+                    "robot_flex_id": robot_endpoint.flex_id,
+                    "robot_elem_id": robot_endpoint.elem_id,
+                    "robot_geom_type": (
+                        "FLEX"
+                        if robot_geom < 0
+                        else mujoco.mjtGeom(int(model.geom_type[robot_geom])).name
+                    ),
+                    "robot_geom_local_position_m": (
+                        None
+                        if robot_geom < 0
+                        else np.asarray(
+                            model.geom_pos[robot_geom], dtype=np.float64
+                        ).tolist()
+                    ),
+                    "robot_geom_size_m": (
+                        None
+                        if robot_geom < 0
+                        else np.asarray(
+                            model.geom_size[robot_geom], dtype=np.float64
+                        ).tolist()
+                    ),
+                    "robot_geom_mesh_id": (
+                        -1 if robot_geom < 0 else int(model.geom_dataid[robot_geom])
+                    ),
+                    "robot_geom_contype": (
+                        int(model.flex_contype[robot_endpoint.flex_id])
+                        if robot_geom < 0
+                        else int(model.geom_contype[robot_geom])
+                    ),
+                    "robot_geom_conaffinity": (
+                        int(model.flex_conaffinity[robot_endpoint.flex_id])
+                        if robot_geom < 0
+                        else int(model.geom_conaffinity[robot_geom])
                     ),
                     "contact_position_xyz_m": np.asarray(
                         contact.pos, dtype=np.float64
@@ -1253,6 +1310,10 @@ def _run_episode(
     contract_path: Path,
     state_trace_output_directory: Path | None = None,
     retention_trace_enabled: bool = False,
+    spec_mutator: Any | None = None,
+    flex_semantic_declarations: Mapping[str, tuple[str, str]] | None = None,
+    integration_step_observer: Any | None = None,
+    initial_settle_observer: Any | None = None,
 ) -> dict[str, Any]:
     effective_workcell = replace(
         workcell,
@@ -1296,8 +1357,15 @@ def _run_episode(
         contract_path=contract_path,
         contact_snapshot=contact_snapshot,
     )
-    binding = build_workcell_model(effective_workcell, contact_variant=variant)
+    binding = build_workcell_model(
+        effective_workcell,
+        contact_variant=variant,
+        spec_mutator=spec_mutator,
+    )
     model, data = binding["model"], binding["data"]
+    flex_semantics = flex_semantics_from_names(
+        model, flex_semantic_declarations or {}
+    )
     _apply_model_coordinates(
         model, data, binding=binding, parameters=parameters
     )
@@ -1386,8 +1454,21 @@ def _run_episode(
     data.qvel[selected_dof : selected_dof + 6] = 0.0
     data.qpos[qpos_addresses] = mapped["measured"][0]
     data.ctrl[actuator_ids] = mapped["measured"][0]
+    if initial_settle_observer is not None:
+        initial_settle_observer.start(model=model, data=data)
     mujoco.mj_forward(model, data)
-    mujoco.mj_step(model, data, nstep=100)
+    if initial_settle_observer is None:
+        mujoco.mj_step(model, data, nstep=100)
+    else:
+        initial_settle_observer.after_forward(model=model, data=data)
+        for settle_step in range(100):
+            mujoco.mj_step(model, data)
+            initial_settle_observer.capture(
+                model=model,
+                data=data,
+                settle_step=settle_step + 1,
+            )
+        initial_settle_observer.finish(model=model, data=data)
 
     state_recorder: EpisodeStateTraceRecorder | None = None
     state_trace_path: Path | None = None
@@ -1402,6 +1483,7 @@ def _run_episode(
             fps=30,
             proof_class="retained_action_frozen_simulation_replay",
             manifest_url=media_url(scene_manifest_path),
+            flex_semantics=flex_semantics,
         )
         state_recorder.capture(data, phase="initial", force=True)
 
@@ -1466,6 +1548,7 @@ def _run_episode(
             initial_piece_positions=initial_positions,
             robot_body_ids=robot_body_ids,
             jaw_body_ids=jaw_body_ids,
+            flex_semantics=flex_semantics,
         )
 
     nominal_gain = model.actuator_gainprm[:, 0].copy()
@@ -1603,8 +1686,11 @@ def _run_episode(
         ):
             for contact_index in range(data.ncon):
                 contact = data.contact[contact_index]
-                body1 = int(model.geom_bodyid[contact.geom1])
-                body2 = int(model.geom_bodyid[contact.geom2])
+                endpoint1, endpoint2 = resolve_contact_pair(
+                    model, contact, flex_semantics=flex_semantics
+                )
+                body1 = endpoint1.body_id
+                body2 = endpoint2.body_id
                 if (
                     body1 in jaw_body_ids
                     and body2 in piece_body_ids
@@ -1810,6 +1896,7 @@ def _run_episode(
             selected_body=selected_body,
             fixed_jaw_bodies=fixed_jaw_bodies,
             moving_jaw_bodies=moving_jaw_bodies,
+            flex_semantics=flex_semantics,
         )
         bilateral = bool(contact["bilateral_contact"])
         qualified = bool(
@@ -1876,6 +1963,7 @@ def _run_episode(
             selected_body=selected_body,
             piece_bodies=piece_bodies,
             robot_body_ids=robot_body_ids,
+            flex_semantics=flex_semantics,
         ):
             key = "|".join(
                 str(observation[field])
@@ -2151,8 +2239,9 @@ def _run_episode(
             "per-joint application delays must remain within [0, 0.3] seconds"
         )
 
-    def delayed_action(now: float) -> np.ndarray:
-        indices = [
+    def delayed_source_indices(now: float) -> np.ndarray:
+        return np.asarray(
+            [
             max(
                 0,
                 int(
@@ -2161,7 +2250,12 @@ def _run_episode(
                 ),
             )
             for joint_delay in delay_by_joint
-        ]
+            ],
+            dtype=np.int32,
+        )
+
+    def delayed_action(now: float) -> np.ndarray:
+        indices = delayed_source_indices(now)
         return np.asarray(
             [actions[index, joint] for joint, index in enumerate(indices)],
             dtype=np.float64,
@@ -2194,23 +2288,62 @@ def _run_episode(
         data.qvel[dof_addresses] = velocity
         mujoco.mj_forward(model, data)
 
+    interval_step_counts = [
+        max(1, round(float(times[index + 1] - times[index]) / timestep))
+        for index in range(len(times) - 1)
+    ]
+    if integration_step_observer is not None:
+        integration_step_observer.start(
+            model=model,
+            data=data,
+            expected_step_count=1 + sum(interval_step_counts) + 200,
+            selected_body=selected_body,
+            selected_dof=selected_dof,
+            piece_bodies=piece_bodies,
+            initial_piece_positions=initial_positions,
+            target_position_xyz_m=target_xyz,
+            robot_body_ids=robot_body_ids,
+            fixed_jaw_body_ids=fixed_jaw_bodies,
+            moving_jaw_body_ids=moving_jaw_bodies,
+            flex_semantics=flex_semantics,
+            actuator_ids=actuator_ids,
+            qpos_addresses=qpos_addresses,
+            timestep=timestep,
+        )
+        integration_step_observer.capture(
+            model=model,
+            data=data,
+            episode_time_s=0.0,
+            source_indices=delayed_source_indices(float(times[0])),
+            requested_action=delayed_action(float(times[0])),
+            phase="initial",
+        )
+
     for row_index, timestamp in enumerate(times):
         simulated_states[row_index] = data.qpos[qpos_addresses]
         if row_index == len(times) - 1:
             break
         interval = float(times[row_index + 1] - timestamp)
-        for step in range(max(1, round(interval / timestep))):
+        for step in range(interval_step_counts[row_index]):
             now = float(timestamp) + step * timestep
-            source_index = max(
-                0,
-                int(np.searchsorted(times, now - delay, side="right") - 1),
-            )
+            source_indices = delayed_source_indices(now)
+            source_index = int(source_indices[0])
             if measured_state_replay:
                 force_measured_robot_state(now)
-            apply_response(delayed_action(now))
+            requested_action = delayed_action(now)
+            apply_response(requested_action)
             mujoco.mj_step(model, data)
             if measured_state_replay:
                 force_measured_robot_state(min(now + timestep, times[-1]))
+            if integration_step_observer is not None:
+                integration_step_observer.capture(
+                    model=model,
+                    data=data,
+                    episode_time_s=float(now - times[0] + timestep),
+                    source_indices=source_indices,
+                    requested_action=requested_action,
+                    phase="action_replay",
+                )
             observe_dense(
                 episode_time_s=float(now - times[0]),
                 source_index=source_index,
@@ -2233,7 +2366,9 @@ def _run_episode(
             np.searchsorted(times, float(times[-1]) - delay, side="right") - 1
         ),
     )
-    apply_response(delayed_action(float(times[-1])))
+    final_source_indices = delayed_source_indices(float(times[-1]))
+    final_requested_action = delayed_action(float(times[-1]))
+    apply_response(final_requested_action)
     for _ in range(200):
         if measured_state_replay:
             force_measured_robot_state(float(times[-1]))
@@ -2241,6 +2376,17 @@ def _run_episode(
         mujoco.mj_step(model, data)
         if measured_state_replay:
             force_measured_robot_state(float(times[-1]))
+        if integration_step_observer is not None:
+            integration_step_observer.capture(
+                model=model,
+                data=data,
+                episode_time_s=float(
+                    times[-1] - times[0] + (_ + 1) * timestep
+                ),
+                source_indices=final_source_indices,
+                requested_action=final_requested_action,
+                phase="terminal_settle",
+            )
         observe_dense(
             episode_time_s=float(times[-1] - times[0] + (_ + 1) * timestep),
             source_index=final_index,
@@ -2249,6 +2395,8 @@ def _run_episode(
         if state_recorder is not None:
             state_recorder.capture(data, phase="terminal_settle")
     trace.append(trace_row())
+    if integration_step_observer is not None:
+        integration_step_observer.finish(model=model, data=data)
 
     state_trace_artifact = None
     if state_recorder is not None and state_trace_path is not None:
@@ -2910,6 +3058,10 @@ def run_grasp_episode_probe(
     contract_path: Path = CONTRACT_PATH,
     state_trace_output_directory: Path | None = None,
     retention_trace_enabled: bool = False,
+    spec_mutator: Any | None = None,
+    flex_semantic_declarations: Mapping[str, tuple[str, str]] | None = None,
+    integration_step_observer: Any | None = None,
+    initial_settle_observer: Any | None = None,
 ) -> dict[str, Any]:
     """Replay one retained episode with diagnostic mechanism instrumentation."""
 
@@ -2947,6 +3099,10 @@ def run_grasp_episode_probe(
         contract_path=contract_path,
         state_trace_output_directory=state_trace_output_directory,
         retention_trace_enabled=retention_trace_enabled,
+        spec_mutator=spec_mutator,
+        flex_semantic_declarations=flex_semantic_declarations,
+        integration_step_observer=integration_step_observer,
+        initial_settle_observer=initial_settle_observer,
     )
     receipt = {
         "schema_version": "sim2claw.pawn_bg_grasp_episode_probe.v1",

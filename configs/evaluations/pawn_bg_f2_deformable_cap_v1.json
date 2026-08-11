@@ -1,0 +1,272 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_deformable_cap.v1",
+  "experiment_id": "or134-f2-deformable-cap-v1",
+  "status": "frozen_before_dynamic_execution",
+  "proof_class": "quarantined_outcome_informed_same_episode_action_frozen_simulator_only_deformable_contact_diagnostic",
+  "authorization": {
+    "path": "configs/evaluations/observable_registration_f2_deformable_cap_owner_authorization_v1.json",
+    "sha256": "e3e8d8ab2e5b20682c8a42e807e5b24ffcf8b02c8e10f54972da68ca1af501c5"
+  },
+  "source_bindings": {
+    "recording_id": "20260719T032620Z-0c7e3d86",
+    "source_square": "f2",
+    "destination_square": "f1",
+    "samples_sha256": "11be4473baba000566a7d7147fb99144e6302cdfd9258fcdfdd7c59531ca2a70",
+    "recording_receipt_sha256": "03e883b919bf6c754685dc9023677569f662116d4e383132c17886e3bf64f631",
+    "video_sha256": "b3fe1f4b99b1bd7697695c8ed9093ccef8d08da22cdb889ee1a3f460af6d2081",
+    "action_sha256": "ff5845e886aa7f6e65ffa978f758ccb2777fcaac8a71bd51cd02171f61ebdb34",
+    "timestamp_sha256": "69348c0348f855e9196f6a18b1abc990066f26d202ac7b715aca8d80f1087d9f",
+    "stage_d_adapter_sha256": "dffa5d78d9457c30bf04d06e3bdcf1da5f9e08a57b76831cee58decb851c3a73",
+    "grasp_contract": {
+      "path": "configs/optimization/pawn_bg_grasp_coordinate_descent_v1.json",
+      "sha256": "6f39692ede95e1fc581826699ba107b6b9814a776a0751dbc6a13ce25e6e9847"
+    },
+    "action_frozen_contract": {
+      "path": "configs/optimization/pawn_bg_action_frozen_gap_v1.json",
+      "sha256": "ee7ab8e18e2ba3e3d64e1664f3e50894b97e35a762a4c4bf457d70c4fdd165a3"
+    },
+    "catalog": {
+      "path": "configs/data/physical_pawn_move_catalog_20260719.json",
+      "sha256": "7eb770b5be222ef970b97e1c1128f604121d324bb573672b9f8ef9b40a36a15e"
+    },
+    "split": {
+      "path": "configs/sysid/physical_pawn_sysid_split_v1.json",
+      "sha256": "1aa839a31b896a26a000ed27ff649232427e3406403c66d7fe79c60b0a0acb08"
+    },
+    "calibration": {
+      "path": "calibration/so101/follower_arm.json",
+      "sha256": "192404b6d3c1337495d69649969459aa9d3f66816cd916c67da2588815e93ec4"
+    },
+    "contact_prior": {
+      "path": "configs/simulation/rubber_tip_contact_sensitivity_v1.json",
+      "sha256": "1845ed4b598696d407919f84a31f6a01e206035c70ed2294dcb5f46feda5c6ea"
+    },
+    "original_reward": {
+      "path": "configs/evaluations/pawn_bg_sim_reward_v1.json",
+      "sha256": "e702ad7fa3a366bc24c552c4cd0e5df66842d5fe7f6ef824266b8cfb2ee8d0c7"
+    },
+    "rigid_control": {
+      "path": "outputs/pawn_bg_grasp_episode_probes/f2_fixed_tip_grid_0p91.json",
+      "sha256": "6817e09f5027191b9c132a0a12904194ef3339a6240708f035cc52e92d0a2b53",
+      "parameter_digest": "2dacfd11afe9cf1670881908d31bdb8198eac5bf538e8d14f9a851dc5b498007"
+    }
+  },
+  "action_invariance": {
+    "shape": [
+      440,
+      6
+    ],
+    "dtype": "float64",
+    "c_contiguous": true,
+    "joint_order": [
+      "shoulder_pan",
+      "shoulder_lift",
+      "elbow_flex",
+      "wrist_flex",
+      "wrist_roll",
+      "gripper"
+    ],
+    "per_joint_zoh_delay_seconds": [
+      0.11,
+      0.11,
+      0.11,
+      0.11,
+      0.11,
+      0.11
+    ],
+    "clipped_rows": 0,
+    "no_ik_offsets_clipping_retiming_smoothing_suffix_or_override": true,
+    "no_measured_state_replay_latch_load_hold_or_force_ramp": true
+  },
+  "rigid_parameters": {
+    "fixed_jaw_mesh_collision_enabled": false,
+    "gripper_force_limit_multiplier": 3.0,
+    "gripper_joint_damping_multiplier": 1.0,
+    "gripper_joint_frictionloss_multiplier": 1.0,
+    "gripper_servo_gain_multiplier": 1.0,
+    "moving_jaw_mesh_collision_enabled": false,
+    "pawn_friction_multiplier": 1.0,
+    "pawn_mass_multiplier": 1.0,
+    "rolling_friction_m": 0.0012,
+    "rubber_tip_enabled": true,
+    "simulation_timestep_multiplier": 0.45,
+    "sliding_friction": 1.8,
+    "solref_damping_ratio": 1.2,
+    "solref_time_constant_s": 0.006,
+    "tip_coverage_m": 0.02,
+    "tip_coverage_offset_m": -0.03,
+    "tip_fixed_thickness_multiplier": 0.91,
+    "tip_half_width_m": 0.0065,
+    "tip_moving_coverage_offset_m": 0.025,
+    "tip_thickness_m": 0.001,
+    "torsional_friction_m": 0.012
+  },
+  "candidate_order": [
+    {
+      "candidate_id": "rigid_0p91_control",
+      "kind": "rigid",
+      "youngs_modulus_pa": null
+    },
+    {
+      "candidate_id": "flex_10_kpa",
+      "kind": "flex",
+      "youngs_modulus_pa": 10000.0
+    },
+    {
+      "candidate_id": "flex_25_kpa",
+      "kind": "flex",
+      "youngs_modulus_pa": 25000.0
+    },
+    {
+      "candidate_id": "flex_63_kpa",
+      "kind": "flex",
+      "youngs_modulus_pa": 63000.0
+    },
+    {
+      "candidate_id": "flex_158_kpa",
+      "kind": "flex",
+      "youngs_modulus_pa": 158000.0
+    },
+    {
+      "candidate_id": "flex_400_kpa",
+      "kind": "flex",
+      "youngs_modulus_pa": 400000.0
+    }
+  ],
+  "flex_caps": {
+    "contact_bit": 128,
+    "radius_m": 0.0,
+    "mass_kg_per_cap": 0.001,
+    "poisson_ratio": 0.45,
+    "damping_seconds": 0.02,
+    "internal": false,
+    "selfcollide": "none",
+    "edge_equality": false,
+    "condim": 6,
+    "friction": [
+      1.8,
+      0.012,
+      0.0012
+    ],
+    "solref": [
+      0.006,
+      1.2
+    ],
+    "solimp": [
+      0.9,
+      0.95,
+      0.001,
+      0.5,
+      2.0
+    ],
+    "fixed": {
+      "flex_name": "or134_fixed_cap",
+      "parent_body": "left_gripper",
+      "center_parent_xyz_m": [
+        -0.00939,
+        0.0,
+        -0.1205
+      ],
+      "count": [
+        3,
+        3,
+        5
+      ],
+      "spacing_m": [
+        0.00041,
+        0.0065,
+        0.005
+      ],
+      "pinned_node_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "rigid_wrapper_name_contains": "left_rubber_tip_fixed_"
+    },
+    "moving": {
+      "flex_name": "or134_moving_cap",
+      "parent_body": "left_moving_jaw_so101_v1",
+      "center_parent_xyz_m": [
+        -0.0108,
+        -0.072,
+        0.01875
+      ],
+      "count": [
+        3,
+        5,
+        3
+      ],
+      "spacing_m": [
+        0.0005,
+        0.005,
+        0.0065
+      ],
+      "pinned_node_ids": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "rigid_wrapper_name_contains": "left_rubber_tip_moving_"
+    },
+    "pawn_contact_affinity_rule": "bitwise_or_0x80_on_every_brown_or_tan_pawn_collision_geom",
+    "forbidden_cap_contacts": [
+      "robot",
+      "table",
+      "board",
+      "apriltag"
+    ]
+  },
+  "supplemental_gates": {
+    "minimum_same_pair_bilateral_contact_dwell_seconds": 0.02,
+    "minimum_contact_span_m": 0.005,
+    "minimum_opposing_normal_score": 0.0,
+    "minimum_positive_normal_force_n": 0.0,
+    "minimum_sustained_lift_m": 0.04,
+    "minimum_sustained_lift_seconds": 0.05,
+    "minimum_carry_toward_target_m": 0.022225,
+    "maximum_contact_gap_seconds": 0.02,
+    "whole_base_entry_distance_m": 0.008425,
+    "maximum_final_center_distance_m": 0.006,
+    "maximum_tilt_degrees_every_step": 10.0,
+    "minimum_post_release_settle_seconds": 0.25,
+    "maximum_settled_linear_speed_m_s": 0.02,
+    "maximum_settled_angular_speed_rad_s": 0.25,
+    "maximum_other_pawn_translation_m": 0.006,
+    "maximum_other_pawn_orientation_change_degrees": 5.0,
+    "require_qualified_grasp_then_lift_then_carry_then_target_entry_then_release_then_settle": true,
+    "require_board_support_during_settle": true,
+    "require_no_robot_or_selected_contact_with_wrong_pawn": true,
+    "require_original_reward_pass": true,
+    "require_finite_stable_state": true
+  },
+  "execution": {
+    "candidate_family_runs": 6,
+    "candidate_family_expansion_allowed": false,
+    "selection": "first_passing_candidate_in_declared_order",
+    "fresh_process_single_thread_no_refit_confirmation_required": true,
+    "independent_verifier_must_ignore_producer_gate_booleans": true,
+    "render_only_verified_trace": true
+  },
+  "scene_invariance": {
+    "bind_runtime_post_settle_initial_state": true,
+    "compare_objects_by_name": true,
+    "table_board_apriltag_robot_and_all_pawn_geometry_and_pose_unchanged": true,
+    "only_flex_node_bodies_joints_caps_rigid_wrapper_exclusion_and_pawn_affinity_bit_may_change": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "A pass is a permanently quarantined, outcome-informed, same-episode simulator-only replay success. It is not calibration, held-out validation, physical replay proof, simulator promotion, or sim-to-real transfer."
+}

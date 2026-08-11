@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
+import mujoco
 import numpy as np
 
 from sim2claw.pawn_bg_actuator_sysid import _apply_parameters, load_candidate
@@ -13,6 +14,7 @@ from sim2claw.pawn_bg_workcell_fit import (
     WorkcellCandidate,
     WorkcellFitError,
     _product_episodes,
+    build_workcell_model,
     load_workcell_contract,
 )
 from sim2claw.scene import board_square_center, load_capture_config
@@ -120,6 +122,35 @@ class PawnBGWorkcellFitTests(unittest.TestCase):
         self.assertAlmostEqual(candidate.board_yaw_relative_to_table_degrees, 184.9)
         self.assertEqual(candidate.joint_zero_offsets_rad[1], 0.32)
         self.assertEqual(candidate.adapter().body_joint_signs, (1, 1, 1, 1, 1))
+
+    def test_spec_mutator_runs_before_compile_and_default_is_noop(self) -> None:
+        candidate = WorkcellCandidate(
+            board_yaw_relative_to_table_degrees=184.9,
+            board_center_in_table_frame_xy_m=(-0.01, -0.066),
+            joint_zero_offsets_rad=(0.0,) * 5,
+            joint_range_envelope_rad=tuple((-2.0, 2.0) for _ in range(5)),
+        )
+        baseline = build_workcell_model(candidate)
+        visited: list[int] = []
+
+        def mutate(spec: mujoco.MjSpec) -> None:
+            visited.append(len(spec.geoms))
+            spec.worldbody.add_geom(
+                name="test_precompile_marker",
+                type=mujoco.mjtGeom.mjGEOM_SPHERE,
+                size=[0.001, 0.0, 0.0],
+                contype=0,
+                conaffinity=0,
+            )
+
+        mutated = build_workcell_model(candidate, spec_mutator=mutate)
+        marker = mujoco.mj_name2id(
+            mutated["model"],
+            mujoco.mjtObj.mjOBJ_GEOM,
+            "test_precompile_marker",
+        )
+        self.assertEqual(visited, [baseline["model"].ngeom])
+        self.assertGreaterEqual(marker, 0)
 
 
 if __name__ == "__main__":

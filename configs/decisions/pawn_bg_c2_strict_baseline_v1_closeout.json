@@ -1,0 +1,63 @@
+{
+  "schema_version": "sim2claw.pawn_bg_c2_strict_baseline_closeout.v1",
+  "experiment_id": "or146-c2-strict-baseline-v1",
+  "status": "TERMINAL_STRICT_FAILURE_EARLY_UNILATERAL_FIXED_JAW_TORQUE_LOCALIZED",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_full_step_strict_baseline_negative",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_c2_strict_baseline_v1.json",
+    "sha256": "6e701db9272ec2b33cc227d555cfc5933b48b09e8ea13b692e9ac3586800f80a"
+  },
+  "producer_receipt": {
+    "path": "outputs/pawn_bg_c2_strict_baseline_v1/producer_receipt.json",
+    "sha256": "3aa7423e19c90c508599cd2e94623544dc42a44655f5e9bb2c0e4373f0d9db88",
+    "receipt_digest": "28b48bbb8083a476815b42abd55dd85fbf3773c38f408b2bf6c328d2d844cb73"
+  },
+  "independent_verdict": {
+    "path": "outputs/pawn_bg_c2_strict_baseline_v1/task_verdict.json",
+    "sha256": "8cd8843ee6be82181e9c210b5cea8c65df13d9265a07a570cf3f923c9db68d3e",
+    "decision_digest": "5b2debfc0b730bac6384a9574da0400f4eaffdd2e71f9c07c2bb378eb59b304d",
+    "strict_replay_passed": false
+  },
+  "result": {
+    "exact_action_identity_passed": true,
+    "complete_step_count": 11851,
+    "maximum_rise_m": 0.0592126829093651,
+    "maximum_tilt_degrees": 25.026504326109052,
+    "first_upright_failure_step": 5148,
+    "first_upright_failure_time_s": 11.622220332985279,
+    "first_fixed_jaw_selected_contact_step": 4398,
+    "first_moving_jaw_selected_contact_step": 5169,
+    "added_fixed_pad_selected_contact_count": 0,
+    "same_pair_bilateral_contact_dwell_seconds": 0.0,
+    "qualified_lift": false,
+    "contact_retained_carry_m": 0.0,
+    "final_center_distance_m": 0.010070294091397312,
+    "wrong_pawn": "brown_pawn_d1",
+    "wrong_contact_step_count": 238,
+    "maximum_other_pawn_translation_m": 0.2540714247492843,
+    "maximum_other_pawn_orientation_change_degrees": 179.98514817278976,
+    "finite_stable_state": true
+  },
+  "mechanism_interpretation": "The current baseline begins loading C2 through original fixed-jaw primitives roughly 1.69 s before the moving rubber pad reaches C2. Continuous uprightness fails 0.047 s before moving-pad contact, while the added fixed pad never contacts. The next bounded mechanism may replace those unilateral original surfaces with the independently retained OR50 fixed-pad placement, without changing the action or fitting a value to C2.",
+  "claim_limits": {
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

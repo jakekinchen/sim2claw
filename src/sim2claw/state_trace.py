@@ -9,11 +9,12 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import mujoco
 import numpy as np
 
+from .mujoco_contact_endpoints import FlexContactSemantic, resolve_contact_pair
 from .paths import DEFAULT_CAPTURE_CONFIG, REPO_ROOT, SO101_MODEL_PATH
 from .scene import build_scene_spec, initialize_robot_poses
 
@@ -193,6 +194,7 @@ class EpisodeStateTraceRecorder:
         fps: int = DEFAULT_TRACE_FPS,
         proof_class: str = "simulation_episode_state_trace",
         manifest_url: str | None = None,
+        flex_semantics: Mapping[int, FlexContactSemantic] | None = None,
     ) -> None:
         if fps < 1:
             raise ValueError("trace fps must be positive")
@@ -201,6 +203,7 @@ class EpisodeStateTraceRecorder:
         self.fps = fps
         self.proof_class = proof_class
         self.manifest_url = manifest_url or f"/api/scene?layout={piece_layout}"
+        self.flex_semantics = dict(flex_semantics or {})
         self.body_names = [
             _name(model, mujoco.mjtObj.mjOBJ_BODY, body_id)
             for body_id in range(model.nbody)
@@ -215,8 +218,13 @@ class EpisodeStateTraceRecorder:
         seen: set[tuple[int, int]] = set()
         for contact_index in range(data.ncon):
             contact = data.contact[contact_index]
-            body_1 = int(self.model.geom_bodyid[contact.geom1])
-            body_2 = int(self.model.geom_bodyid[contact.geom2])
+            endpoint_1, endpoint_2 = resolve_contact_pair(
+                self.model,
+                contact,
+                flex_semantics=self.flex_semantics,
+            )
+            body_1 = endpoint_1.body_id
+            body_2 = endpoint_2.body_id
             if body_1 == body_2:
                 continue
             pair = tuple(sorted((body_1, body_2)))

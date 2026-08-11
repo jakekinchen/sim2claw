@@ -1,0 +1,61 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_normal_compliant_cap_clean_owner_authorization.v1",
+  "authorization_id": "observable-registration-or139-f2-normal-compliant-cap-clean-20260807",
+  "authorized_at": "2026-08-07T15:15:00-05:00",
+  "status": "owner_authorized_before_successor_contract_or_dynamic_execution",
+  "proof_class": "same_episode_action_frozen_simulator_only_clean_passive_normal_compliance_diagnostic",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "objective": "Remove two inherited robot-default dynamics from the passive cap slides, repair only the mechanically malformed initial-hold gates, and prospectively attempt the unchanged exact-action task under a new identity.",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_normal_compliant_cap_timestep_v1_closeout.json",
+    "sha256": "76b52fc2104fa6460d500ecfa993a98d8e892f4ec8de4617a5fe44d7fef1cc72",
+    "status": "TERMINAL_PAIRED_PREACTION_NONPERTURBATION_GATES_FAILED_NO_TASK_REPLAY"
+  },
+  "construction_repair": {
+    "scope": "only_the_two_added_normal_slide_joints",
+    "dof_armature_before": 0.005,
+    "dof_armature_after": 0.0,
+    "dof_frictionloss_before": 0.1,
+    "dof_frictionloss_after": 0.0,
+    "reason": "The fields were inherited from the SO101 childclass, not declared by the neutral cap prior. They changed generalized inertia and dominated the spring force.",
+    "travel_stiffness_damping_mass_geometry_material_frames_controller_and_action_unchanged": true
+  },
+  "preflight_gate_repair": {
+    "diagnosis_informed_by_or138_preaction_only": true,
+    "task_action_or_outcome_observed": false,
+    "maximum_neutral_side_soft_limit_overshoot_m": 0.00001962,
+    "overshoot_derivation": "per_finger_2g_apparent_load_allowance_2_times_0p001kg_times_9p81m_s2_divided_by_1000N_m",
+    "maximum_absolute_cap_displacement_m": 0.000025,
+    "minimum_far_travel_limit_margin_m": 0.0001,
+    "final_window_maximum_cap_position_range_m": 0.00001962,
+    "final_window_maximum_cap_velocity_m_s": 0.001,
+    "final_window_maximum_cap_acceleration_m_s2": 1.0,
+    "servo_encoder_quantum_rad": 0.0015339807878856412,
+    "robot_gate": "for_every_joint_and_row_abs_dq_plus_0p00225_times_abs_dqvel_lte_one_encoder_quantum",
+    "all_other_or138_gates_unchanged": true
+  },
+  "execution_order": [
+    "one_compile_audit",
+    "fresh_disposable_rigid_preflight",
+    "fresh_disposable_clean_candidate_preflight",
+    "if_both_pass_one_fresh_rigid_compatibility_task_replay",
+    "if_compatibility_passes_one_fresh_clean_candidate_task_replay",
+    "if_strict_pass_fresh_process_preflight_and_no_refit_task_confirmation",
+    "render_confirmed_trace_only"
+  ],
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR139 is diagnosis-informed only by pre-action initialization. Task success remains prospective. A pass is simulator-only reduced-order contact sensitivity, not rubber calibration, simulator promotion, or physical transfer."
+}

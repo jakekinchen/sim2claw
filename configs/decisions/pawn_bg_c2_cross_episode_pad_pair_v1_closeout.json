@@ -1,0 +1,73 @@
+{
+  "schema_version": "sim2claw.pawn_bg_c2_cross_episode_pad_pair_closeout.v1",
+  "experiment_id": "or147-c2-cross-episode-pad-pair-v1",
+  "status": "TERMINAL_STRICT_FAILURE_EDGE_LOADED_PAIR_LOST_BEFORE_LIFT_AND_D1_CONTACT_REMAINS",
+  "proof_class": "cross_episode_outcome_selected_and_same_episode_diagnosed_quarantined_simulator_full_step_strict_negative",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_c2_cross_episode_pad_pair_v1.json",
+    "sha256": "09eb2fe8898651123f0a69a8f1a4d3d9f532eea6092a5da374dc8d41d040d5aa"
+  },
+  "producer_receipt": {
+    "path": "outputs/pawn_bg_c2_cross_episode_pad_pair_v1/producer_receipt.json",
+    "sha256": "3e775a7e18e306ec72d713f22c5b44b01ffde0dc1c4d2db41de4c44fec21dca2",
+    "receipt_digest": "2f9d43cb7d537950014ee5b17d9652a115e44edbc0d0b129a83005a30d23fd3b"
+  },
+  "independent_verdict": {
+    "path": "outputs/pawn_bg_c2_cross_episode_pad_pair_v1/task_verdict.json",
+    "sha256": "fa1d0c463849edb394f109ee461aab25b1975de6a12f52812eed7c9bcc3cf7eb",
+    "decision_digest": "06f82af84f25d56fad7f4bb9954462fbc25e0b44238fcec35c4bb294a67986de",
+    "strict_gate_digest": "c86087b783b705a9f16e3a94cb8c0cc660377241055b0aa38562f98319627be4",
+    "strict_replay_passed": false
+  },
+  "result": {
+    "exact_action_identity_passed": true,
+    "complete_step_count": 11851,
+    "same_pair_bilateral_contact_dwell_seconds": 1.3725,
+    "qualified_pair_first_step": 5391,
+    "qualified_pair_last_step": 6000,
+    "maximum_rise_while_qualified_m": 0.022893933203838368,
+    "first_qualified_lift_step": null,
+    "maximum_qualified_lift_dwell_seconds": 0.0,
+    "contact_retained_carry_m": 0.0,
+    "maximum_rise_m": 0.0528768512651292,
+    "maximum_tilt_degrees": 12.290065337403487,
+    "first_upright_failure_step": 6135,
+    "first_upright_failure_time_s": 13.853299958026502,
+    "final_center_distance_m": 0.037020906357661844,
+    "wrong_pawn": "brown_pawn_d1",
+    "wrong_contact_step_count": 82,
+    "maximum_other_pawn_translation_m": 0.03844859412280814,
+    "maximum_other_pawn_orientation_change_degrees": 179.94555423047925,
+    "finite_stable_state": true,
+    "confirmation_runs": 0,
+    "renders": 0
+  },
+  "mechanism_interpretation": "The two pads form a qualified pair for 1.3725 s and reduce tilt and D1 collateral relative to OR146, but the pair unloads at only 22.894 mm rise. The later 52.877 mm rise occurs through high, non-opposing crown contacts. C2 and D1 occupy overlapping distal moving-pad contact regions, so further uniform trimming would remove the already edge-loaded C2 path. The final target error regresses from 10.070 mm to 37.021 mm. This is a causal tradeoff, not a near-pass.",
+  "hard_stop": {
+    "confirmation_or_render_allowed": false,
+    "more_pad_trim_or_offset_search_allowed": false,
+    "force_friction_timing_or_action_fit_allowed": false,
+    "reopen_condition": "independent metric pad shape, deformation, force, or mechanically grounded scene registration evidence supporting a prospectively frozen distinct mechanism"
+  },
+  "claim_limits": {
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

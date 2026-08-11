@@ -1,0 +1,100 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_normal_compliant_cap_inherited_closeout.v1",
+  "experiment_id": "or140-f2-normal-compliant-cap-inherited-v1",
+  "status": "TERMINAL_STRICT_TASK_FAILURE_AND_FULL_REPLAY_CAP_BOUND_VIOLATION",
+  "proof_class": "same_episode_action_frozen_simulator_only_inherited_default_soft_limited_normal_compliance_negative",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_normal_compliant_cap_inherited_v1.json",
+    "sha256": "02f05cda13997847c8a1df4514cb9890a0f59463839c43ad0253e8bbc0872c1c"
+  },
+  "compile_audit": {
+    "path": "outputs/pawn_bg_f2_normal_compliant_cap_inherited_v1/compile_audit.json",
+    "sha256": "8705bd2a5d253e97f874bd7e236811b31a4fd5d52998700e3db0a87c4b4c0250",
+    "passed": true,
+    "candidate_compiled_model_sha256": "8e6e6cb50fd45ab3d7474492f6f27318001895ed2d006eacb53fee21e3c71c23",
+    "cap_armature": 0.005,
+    "cap_frictionloss": 0.1
+  },
+  "paired_preflight": {
+    "rigid_trace_sha256": "1a82d9c875786c11ddd771f7e023009faf1c612b62a416db1b5fcae41e9003d4",
+    "rigid_metadata_sha256": "5c01c9546356c72bdb7cca93162e8feb387bb80cb9f30603efdfa6e12f39954c",
+    "rigid_verdict_sha256": "8519f990f35c004ebcdd220a7ec9ad76554e46d9e64a3c5506377fb26e52e1e2",
+    "candidate_trace_sha256": "abf5a7ad5d934f1fb8c7d196bd43587ef4946b496dfe8ffc824e96712466124d",
+    "candidate_metadata_sha256": "983d43d9468c2033dd479c33f89d87119723f00e92317b9028a475cfecbb0360",
+    "candidate_verdict_sha256": "88449ad8785fd1382111bcd508e1ecb6a1fac8d0869bcefc41a6b05ab5c4d023",
+    "both_passed": true,
+    "candidate_warning_count": 0,
+    "candidate_cap_contact_pairs": 0,
+    "source_action_rows_consumed": 0
+  },
+  "rigid_task_control": {
+    "trace_sha256": "631a4eb1b25be0256302fe71b96ef201d6208b8f7638bb256aedb9cb9b3a5737",
+    "metadata_sha256": "6e03f7b504bad67a091b8604b754a0d462b388f9a8d205397450e36a41a510a9",
+    "independent_verdict_sha256": "ab085a10b7e1045a410acc5175056cd1175303db06e688d9bc170411b2eb6c62",
+    "compatibility_passed": true,
+    "strict_replay_passed": false,
+    "final_target_distance_m": 0.007662688216203823,
+    "maximum_rise_m": 0.04667828504443183,
+    "maximum_tilt_degrees": 33.16800218467696
+  },
+  "candidate_task": {
+    "trace_sha256": "5a7b711df56daaeac6f46ec4a3889884bdba8188eb9f21da015eb2ea464d73d7",
+    "metadata_sha256": "7ee373abd5c50c8963c436526bc7409fc225f6aaa97d4ae41448c1fffe700087",
+    "independent_verdict_sha256": "49cb5ae9dcd324891c48edf8719047bd068b7379cfc2916e9b7f73a8efccf8d7",
+    "independent_decision_digest": "9056b29f388239df6f92f325ec99fbf41998acc0183ce3e61845c59e5b04eb13",
+    "strict_replay_passed": false,
+    "maximum_rise_m": 0.023486569079869235,
+    "maximum_tilt_degrees": 102.37793075397391,
+    "final_target_distance_m": 0.29759859814310435,
+    "maximum_contact_retained_carry_m": 0.0,
+    "wrong_contact_step_count": 782,
+    "maximum_other_pawn_translation_m": 0.2517373188605276,
+    "maximum_other_pawn_orientation_change_degrees": 179.97499981532673
+  },
+  "independent_full_replay_cap_bound_audit": {
+    "verdict_mutated": false,
+    "full_trace_cap_coordinates_were_not_task_gated": true,
+    "first_declared_bound_violation_step": 4192,
+    "first_declared_bound_violation_time_seconds": 9.463298,
+    "first_declared_bound_violation_source_index": 186,
+    "moving_joint_observed_range_m": [-0.001315365, 0.003839893],
+    "fixed_joint_observed_range_m": [-0.002345373, 0.000196302],
+    "maximum_moving_neutral_side_overrun_m": 0.001315365,
+    "maximum_moving_far_side_overrun_m": 0.001839893,
+    "maximum_fixed_neutral_side_overrun_m": 0.000196302,
+    "maximum_fixed_far_side_overrun_m": 0.000345373,
+    "interpretation": "Finite and warning-free did not preserve the declared bounded mechanism during task execution."
+  },
+  "interpretation": "The runtime and rigid history reproduced, but the inherited-default cap failed the unchanged strict task and violated its own declared task-time travel semantics. The deformable and reduced-order compliance lane is terminal; no task replay confirmation or render is authorized.",
+  "execution_counts": {
+    "compile_audits": 1,
+    "rigid_preflights": 1,
+    "candidate_preflights": 1,
+    "rigid_task_replays": 1,
+    "candidate_task_replays": 1,
+    "confirmation_replays": 0,
+    "renders": 0
+  },
+  "next_transition": "new_identity_for_no_dynamics_physical_contact_frame_observability_audit_before_any_new_geometry_or_frame_intervention",
+  "claim_limits": {
+    "task_behavior_observed": true,
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

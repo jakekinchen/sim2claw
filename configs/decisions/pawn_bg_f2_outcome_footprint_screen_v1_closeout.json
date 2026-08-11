@@ -1,0 +1,49 @@
+{
+  "schema_version": "sim2claw.pawn_bg_f2_outcome_footprint_screen_closeout.v1",
+  "experiment_id": "or144-f2-outcome-footprint-screen-v1",
+  "status": "TERMINAL_BROAD_FOOTPRINT_GRID_NO_UPRIGHT_PASS_ISOLATED_COLLISION_ASSISTED_CELL",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development_screen_negative",
+  "contract": {
+    "path": "configs/evaluations/pawn_bg_f2_outcome_footprint_screen_v1.json",
+    "sha256": "46970a459527917f714c1627de421d5405d57cbfe59db8b62493bfffc8942040"
+  },
+  "receipt": {
+    "path": "outputs/pawn_bg_f2_outcome_footprint_screen_v1/receipt.json",
+    "sha256": "ae98ab916fd61f4bce44454229ae39f52373e9f8dea779a3e738ac753ea15e32",
+    "candidate_count": 16
+  },
+  "result": {
+    "continuous_upright_pass_count": 0,
+    "warning_free_count": 16,
+    "isolated_cell_candidate": "coverage_0.040_width_0.0200",
+    "isolated_cell_maximum_tilt_degrees": 16.594,
+    "isolated_cell_maximum_rise_m": 0.0438,
+    "isolated_cell_final_target_distance_m": 0.0125,
+    "isolated_cell_piece_lifted": false,
+    "isolated_cell_transported_after_lift": false,
+    "isolated_cell_wrong_piece_names": ["brown_pawn_e2", "brown_pawn_g2"],
+    "local_basin_supported": false,
+    "producer_selected_field_authoritative": false,
+    "strict_candidates_admitted": 0
+  },
+  "interpretation": "No broad footprint row meets the upright screen gate. The post hoc 40 mm coverage and 20 mm half-width cell is an isolated collision-assisted non-lift with E2 and G2 contacts; its neighbors do not support a local basin and no refinement is authorized from it. The producer's top-three field is unfiltered and non-authoritative because no row passed all screen gates.",
+  "claim_limits": {
+    "strict_replay_success": false,
+    "calibration": false,
+    "simulator_promotion": false,
+    "task_transfer": false,
+    "physical_transfer": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  }
+}

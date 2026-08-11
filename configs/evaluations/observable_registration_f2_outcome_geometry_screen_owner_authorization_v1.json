@@ -1,0 +1,38 @@
+{
+  "schema_version": "sim2claw.observable_registration_f2_outcome_geometry_screen_owner_authorization.v1",
+  "authorization_id": "observable-registration-or143-f2-outcome-geometry-screen-20260807",
+  "authorized_at": "2026-08-07T16:48:00-05:00",
+  "status": "owner_authorized_outcome_informed_quarantined_screen_before_execution",
+  "owner_authorization": "okay use your advisors and get unblocked and continue until the goal is reached",
+  "proof_class": "same_episode_outcome_informed_quarantined_simulator_development_screen",
+  "predecessor": {
+    "path": "configs/decisions/pawn_bg_f2_collision_topology_search_verifier_repair_v1_closeout.json",
+    "sha256": "151f70cc95069077f1ed4eaad5a450c92cbeaf5b9c3bccc1525f0332eeba7b7d",
+    "status": "TERMINAL_FROZEN_COLLISION_COMPOSITIONS_NO_STRICT_PASS"
+  },
+  "objective": "Screen a frozen 5x5 grid of existing rigid pad coverage offsets under byte-identical actions, then admit at most three ranked rows to a separate full strict card.",
+  "search_boundary": {
+    "outcome_informed": true,
+    "same_episode": true,
+    "grid_frozen_before_execution": true,
+    "candidate_count": 25,
+    "fixed_thickness_multiplier": 0.91,
+    "full_strict_candidates_maximum": 3,
+    "screen_cannot_claim_strict_success": true,
+    "action_assistance": false
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_promotion": false,
+    "transfer_claim": false,
+    "commit": false,
+    "push_origin_main": false
+  },
+  "claim_boundary": "OR143 is an outcome-informed simulator screen, not strict evaluation, calibration, validation, promotion, general transfer, or physical transfer."
+}
