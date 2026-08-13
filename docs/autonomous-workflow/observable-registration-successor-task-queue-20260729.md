@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `OR153_PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
+Status: `OR154_PASS_GATE_LEVEL_TASK_OUTCOME_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
 
 Created: `2026-07-29`
 
@@ -392,7 +392,7 @@ and must be completed before invoking that boundary.
 ## Progress ledger
 
 ```text
-Current state: OR153_PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY
+Current state: OR154_PASS_GATE_LEVEL_TASK_OUTCOME_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY
 Active card: none
 Completed: immutable predecessor C0-C9; OR0-OR23, OR26-OR33, OR149, and OR150; OR7C/OR7D and OR24/OR25 not run because their prerequisites failed; camera endpoint REAL-to-SIM 1/1
 Evidence: OR131 reaches `0.841731` global temporal similarity and passes motion, whole-edge, phase, p10, and improvement gates. OR132 finds the remaining regional residual combined/unresolved under the frozen single-successor rule.
@@ -546,3 +546,44 @@ success remained false. The pawn did not remain upright or transfer to the next
 square. The closeout hash-binds the frozen contract, final read-only verifier,
 receipt, full 531-row trace, and Executor log. The yaw factor is exhausted
 without retry and admits no automatic successor.
+
+## OR154 owner-authorized exact-D1-center gate-advancement replay
+
+The owner's August 13 instruction authorizes continued simulator optimization
+and action-data calibration when supported. The immediate smallest factor is
+not an action mutation: OR151 proved that OR152/OR153 corrected OR34's material
+coordinate-frame mismatch but intentionally preserved a measured `2.825 mm`
+within-square offset. The owner identifies the physical pawn as centered.
+
+OR154 therefore clones OR153 and changes only selected-pawn initialization from
+the retained fractional board coordinate `[3.5686454773, 0.4876092970]` to the
+exact canonical D1 center `[3.5, 0.5]`. It preserves the `-88 degree` scene,
+support Z, upright quaternion, all 531 raw measured rows, timestamps, row order,
+native-timestep interpolation, model, solver, contact and object parameters,
+joint-range union, settle, and evaluator. There is one canonical replay, no
+prototype, fit, search, retry, sweep, action repair, hardware, or paid compute.
+
+The acceptance rule is stricter than OR153: selected-pawn contact must remain
+true, at least one unchanged frozen task gate must flip false-to-true, and no
+currently true gate may regress; alternatively all gates must pass. Metric-only
+improvement does not count. Exact centering is an
+owner-declared canonical task sensitivity, not a physical measurement or
+calibration. Failure permanently exhausts this factor without retry; any later
+action calibration must be separately frozen from pre-outcome retained evidence.
+
+OR154 closed after exactly one independently pre-reviewed canonical replay.
+Selected-pawn contact remained true, while `settled_height` and `upright`
+flipped false-to-true and no previously true task gate regressed. Final height
+error fell from `12.650670 mm` to `0.000063 mm`, final tilt fell from
+`97.796094 degrees` to `0.002665 degrees`, and final planar error fell from
+`129.335738 mm` to `45.856146 mm`.
+
+The result remains task-negative. `composable_center` is still false, signed
+D2 progress is `-5.171794 mm`, maximum planar displacement is only
+`6.611064 mm`, and numeric task success is false. The pawn remained upright at
+support height but did not transfer to D2. Independent Reviewer verdict is
+`ACCEPT_GATE_LEVEL_ADVANCEMENT_TASK_NEGATIVE`. The exact-centering factor is
+exhausted without retry and admits no automatic successor. This is a bounded
+observation-conditioned simulator sensitivity result, not physical
+calibration, action calibration, physics fidelity, simulator promotion, or
+transfer evidence.

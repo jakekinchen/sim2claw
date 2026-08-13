@@ -1,0 +1,68 @@
+{
+  "schema_version": "sim2claw.observable_registration_or153_exact_d1_center_replay_closeout.v1",
+  "date": "2026-08-13",
+  "status": "PASS_GATE_LEVEL_TASK_OUTCOME_ADVANCEMENT_TASK_NEGATIVE",
+  "review": {
+    "role": "independent_evaluator_advisor",
+    "verdict": "ACCEPT_GATE_LEVEL_ADVANCEMENT_TASK_NEGATIVE",
+    "scientific_outcome": "accepted_gate_level_advancement_numeric_task_negative",
+    "evidence": {
+      "selected_piece_contact_preserved": true,
+      "false_to_true_gates": [
+        "settled_height",
+        "upright"
+      ],
+      "true_to_false_gate_regressions": [],
+      "numeric_task_success": false,
+      "remaining_false_gates": [
+        "composable_center"
+      ]
+    },
+    "claim_boundary": "OR154 proves a bounded gate-level simulator advancement under exact canonical D1 initialization. It does not prove destination-square transfer, numeric simulator task success, physical measurement, camera, robot, or action calibration, physics fidelity, physical task success, simulator promotion, or transfer."
+  },
+  "owner_authorization": {
+    "path": "configs/evaluations/observable_registration_or153_exact_d1_center_replay_owner_authorization_v1.json",
+    "sha256": "eb9d60ac99f6ecbf1efebb61177a92b4bf486dea03a92c05daa115ee0feda1f0"
+  },
+  "contract": {
+    "path": "configs/evaluations/observable_registration_or153_exact_d1_center_replay_v1.json",
+    "sha256": "8a78167b8cc6f3262e4addd10df3e0987344388fbd7594c9bccdba6dd7a2272d"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_or153_exact_d1_center_replay.py",
+    "sha256": "0d4808ddcfdbd894ad3553cfd4d3df21555739da1bb4859fe0aacc25fedbe8f8"
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_or153_exact_d1_center_replay_v1/receipt.json",
+    "sha256": "e8eb180d2e5ad8db5ca695599dc0c77d6aa4c84cfee1df80e43f2fcf75974ca9",
+    "artifact_sha256": "694eff1a7e9b4e9559eeac9307ade24ef9e986c5f59d22040c4b4328211ddb1c"
+  },
+  "trace": {
+    "path": "outputs/observable_registration_or153_exact_d1_center_replay_v1/trace.json",
+    "sha256": "d1491815e682e7cadd7772c50b265e25596661ffd816a2fe6497850ac4562bb4",
+    "row_count": 531,
+    "row_order_preserved": true,
+    "timestamp_identity_sha256": "68e87c15992123e4415b2a3ec6d1a8e68cffd1ca642ac35002ed255544829f48"
+  },
+  "executor_log": {
+    "path": "docs/session-logs/226-executor-observable-registration-or154-exact-d1-center-replay.md",
+    "sha256": "994316ab71c13db42959d7708ceba0815c219bd56a9e391bb3733a61c5a0b7f8",
+    "canonical_replay_count": 1,
+    "temporary_or_prototype_replay_count": 0
+  },
+  "execution": {
+    "simulator_replays": 1,
+    "prototype_or_temporary_replays": 0,
+    "fits": 0,
+    "searches": 0,
+    "retries": 0,
+    "renders": 0,
+    "action_mutations": 0,
+    "retimings": 0,
+    "hardware_actions": 0,
+    "paid_compute": false,
+    "retry_allowed": false
+  },
+  "automatic_successor": false,
+  "successor": null
+}

@@ -1,0 +1,169 @@
+{
+  "schema_version": "sim2claw.observable_registration_or153_exact_d1_center_replay_contract.v1",
+  "experiment_id": "OR154_OR153_EXACT_D1_CENTER_REPLAY_V1",
+  "proof_class": "one_run_observation_conditioned_or34_canonical_d1_center_sensitivity_natural_dynamics_diagnostic",
+  "sources": {
+    "owner_authorization": {
+      "path": "configs/evaluations/observable_registration_or153_exact_d1_center_replay_owner_authorization_v1.json",
+      "sha256": "eb9d60ac99f6ecbf1efebb61177a92b4bf486dea03a92c05daa115ee0feda1f0"
+    },
+    "or151_closeout": {
+      "path": "configs/decisions/observable_registration_or34_coordinate_landmark_audit_v1_closeout.json",
+      "sha256": "03380ac8713fc0dd5cf6d3bf6fdaa57962f3beb2799371c4a0f768e5eb0d11c9"
+    },
+    "or151_contract": {
+      "path": "configs/evaluations/observable_registration_or34_coordinate_landmark_audit_v1.json",
+      "sha256": "67cafadff71ed8154dd54652cb79ac2c4b9bed7f16b2406ccbd5512da20326aa"
+    },
+    "or151_receipt": {
+      "path": "outputs/observable_registration_or34_coordinate_landmark_audit_v1/receipt.json",
+      "sha256": "03316d9241df9f051c472d441908e2a009ccd980e3e6fb627a33151576f737bc"
+    },
+    "or152_closeout": {
+      "path": "configs/decisions/observable_registration_or34_board_coordinate_initialization_replay_v1_closeout.json",
+      "sha256": "6fa4c5c0ed2acd54cd9067a469bd3d764dabb646dd05ab0198ddb55e570baa1c"
+    },
+    "or152_contract": {
+      "path": "configs/evaluations/observable_registration_or34_board_coordinate_initialization_replay_v1.json",
+      "sha256": "73b07e83ba59cc82db96c17d67c08dae6645dcddf671ccaafb4cc14a0d3a071c"
+    },
+    "or152_receipt": {
+      "path": "outputs/observable_registration_or34_board_coordinate_initialization_replay_v1/receipt.json",
+      "sha256": "684ee5a2c15e189392fcffeec4275d8c86c58894d2287c1e3485f08315c1610d"
+    },
+    "or152_trace": {
+      "path": "outputs/observable_registration_or34_board_coordinate_initialization_replay_v1/trace.json",
+      "sha256": "110c5bc104ef70fd44d97a13ffff65ac386300ac5cc0413e1621d25df1fd2bf2"
+    },
+    "or153_closeout": {
+      "path": "configs/decisions/observable_registration_or34_canonical_yaw_reversion_replay_v1_closeout.json",
+      "sha256": "e977a57df5db0224213936b0442d34030dc6b81430bfd1fac2b613c87b6f40f0"
+    },
+    "or153_contract": {
+      "path": "configs/evaluations/observable_registration_or34_canonical_yaw_reversion_replay_v1.json",
+      "sha256": "01c3724ee2b7f7dd7de1e0682b7c229105729a87dbdbf3507ce46e90cfe7ab8a"
+    },
+    "or153_receipt": {
+      "path": "outputs/observable_registration_or34_canonical_yaw_reversion_replay_v1/receipt.json",
+      "sha256": "9c20c02ca258a1e16eda88d87b4222842b8ebb4463e97275da1f02f2ee177a7e"
+    },
+    "or153_trace": {
+      "path": "outputs/observable_registration_or34_canonical_yaw_reversion_replay_v1/trace.json",
+      "sha256": "f0a688cd3c83304c59e4a1159aeef7fe02200c368bab4b3a96730e09bf6ea283"
+    },
+    "or153_implementation": {
+      "path": "src/sim2claw/observable_registration_or34_canonical_yaw_reversion_replay.py",
+      "sha256": "2605503b1a0641f259e3e509012f827f3f4dadacd5dedd3b4e6612fb3271bbd5"
+    },
+    "or153_executor_log": {
+      "path": "docs/session-logs/225-executor-observable-registration-or153-canonical-yaw-reversion-replay.md",
+      "sha256": "729c4fb8df62795d5cdf36e34268b93d84cfcb9c91ab76733051ea4bd7b8651a"
+    },
+    "or34_contract": {
+      "path": "configs/evaluations/observable_registration_measured_state_visual_twin_v1.json",
+      "sha256": "ede7ca2a7f792c096014a90769bb9c024ededb264acb91b6173e97d55dc2011c"
+    },
+    "or34_receipt": {
+      "path": "outputs/observable_registration_measured_state_visual_twin_v1/receipt.json",
+      "sha256": "2548958515f98537446ee24295d33e7d5d4fe1ea2cedc128016c5099c44b2678"
+    },
+    "or34_trace": {
+      "path": "outputs/observable_registration_measured_state_visual_twin_v1/trace.json",
+      "sha256": "fc772a4ba565c1a47a6f737522b659f454932456d046328e6c60d48752f4b927"
+    },
+    "or19_contract": {
+      "path": "configs/evaluations/observable_registration_unilateral_push_dynamic_replay_v1.json",
+      "sha256": "df7cf58cf277054aff5727ce4f8364707b29cc1c2ad2181efbb19a4bb657b440"
+    },
+    "or13_scene": {
+      "path": "outputs/post_hackathon_home_workspace_geometry_camera_v2/derived_scene_config.json",
+      "sha256": "9298ca9f70a3cff87c06cf73b6b343f5bbb927d13f6c9a5427242c2fabf7ed03"
+    },
+    "implementation": {
+      "path": "src/sim2claw/observable_registration_or153_exact_d1_center_replay.py",
+      "sha256": "0d4808ddcfdbd894ad3553cfd4d3df21555739da1bb4859fe0aacc25fedbe8f8"
+    }
+  },
+  "replay": {
+    "one_run_only": true,
+    "clone_of": "OR153_OR34_CANONICAL_YAW_REVERSION_REPLAY_V1",
+    "sole_changed_factor": "selected_pawn_initial_board_coordinate",
+    "baseline_board_coordinate": [
+      3.568645477294922,
+      0.48760929703712463
+    ],
+    "candidate_board_coordinate": [
+      3.5,
+      0.5
+    ],
+    "preserved_or153_semantics": {
+      "robot_driver": "raw_follower_actual_position_degrees",
+      "observation_conditioned": true,
+      "action_only_transfer": false,
+      "row_count": 531,
+      "preserve_source_row_order": true,
+      "preserve_source_timestamps": true,
+      "interpolate_only_between_adjacent_measured_rows_at_native_mujoco_timestep": true,
+      "natural_contact_only": true,
+      "post_action_settle_seconds": 1.0,
+      "candidate_yaw_relative_to_table_degrees": -88.0
+    },
+    "reuse_or153_support_z_upright_quaternion_model_solver_contact_object_range_union_settle_and_evaluator": true,
+    "prototype_or_temporary_replay_allowed": false,
+    "render_allowed": false,
+    "action_mutation_allowed": false,
+    "retiming_allowed": false,
+    "object_pose_injection_allowed": false,
+    "latch_or_attachment_allowed": false,
+    "endpoint_injection_allowed": false,
+    "model_solver_contact_object_range_or_evaluator_change_allowed": false,
+    "fit_search_retry_allowed": false
+  },
+  "baseline": {
+    "identity": "immutable_or153_receipt_and_trace",
+    "or153_receipt_artifact_sha256": "d76cce2f84c18f5d808004d62adb9ed32ba22d8f8c8534ce40c16debac145a94",
+    "gates": {
+      "composable_center": false,
+      "other_pieces_stationary": true,
+      "selected_piece_contact": true,
+      "settled_angular": true,
+      "settled_height": false,
+      "settled_linear": true,
+      "upright": false
+    },
+    "numeric_task_success": false
+  },
+  "preserved_state": {
+    "yaw_relative_to_table_degrees": -88.0,
+    "support_z_m": 0.8078731144774739,
+    "upright_quaternion_wxyz": [
+      0.9865171261706333,
+      -0.000037893177544806166,
+      0.000001548044619844598,
+      -0.16365805306719602
+    ],
+    "raw_measured_sha256": "ec75ad25adf9957311e837744af7340e27b602cfec5a2985db7841b5c3558312",
+    "timestamps_sha256": "68e87c15992123e4415b2a3ec6d1a8e68cffd1ca642ac35002ed255544829f48",
+    "row_count": 531,
+    "range_expansions_source": "immutable_or153_receipt.factor_isolation.range_expansions",
+    "model_solver_contact_object_and_evaluator_source": "immutable_or153_contract_and_transitive_sources"
+  },
+  "acceptance": {
+    "numeric_task_success_is_accepted": true,
+    "selected_piece_contact_must_remain_true": true,
+    "minimum_false_to_true_frozen_task_gates": 1,
+    "maximum_true_to_false_frozen_task_gate_regressions": 0,
+    "metric_only_improvement_is_accepted": false,
+    "accepted_advancement": "numeric_task_success_or_contact_preserved_plus_at_least_one_false_to_true_frozen_task_gate_and_zero_true_to_false_gate_regressions"
+  },
+  "claim_limits": {
+    "action_only_transfer": false,
+    "physical_world_registration": false,
+    "camera_calibration": false,
+    "action_calibration": false,
+    "physics_fidelity": false,
+    "physical_task_success": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": "sim2claw.observable_registration_or153_exact_d1_center_replay_owner_authorization.v1",
+  "date": "2026-08-13",
+  "status": "owner_authorized_one_bounded_simulator_exact_d1_center_replay",
+  "owner_instruction": "okay then proceed with the sim optimizations and any necessary calibrations of the action data if needed. keep working until we get a task level success advancement",
+  "prerequisite": "OR153 independently closed; OR151 proved that the historical OR34 site video used a 14.416 mm frame-mismatched initialization and that OR152/OR153 preserve a 2.825 mm measured within-square offset; the owner identifies the physical pawn as centered and authorizes continued simulator-only optimization",
+  "proof_class": "one_run_observation_conditioned_or34_canonical_d1_center_sensitivity_natural_dynamics_diagnostic",
+  "execution_boundary": {
+    "simulator_replays": 1,
+    "selected_pawn_initial_board_coordinate_changes": 1,
+    "baseline_board_coordinate": [
+      3.568645477294922,
+      0.48760929703712463
+    ],
+    "candidate_board_coordinate": [
+      3.5,
+      0.5
+    ],
+    "all_robot_action_timestamp_order_interpolation_yaw_model_solver_contact_object_range_and_evaluator_changes": 0,
+    "fits": 0,
+    "searches": 0,
+    "retries": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "acceptance_boundary": {
+    "selected_piece_contact_must_remain_true": true,
+    "at_least_one_unchanged_frozen_task_gate_must_flip_false_to_true_or_numeric_task_success": true,
+    "true_to_false_frozen_task_gate_regressions_allowed": false,
+    "metric_only_improvement_is_not_accepted": true
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_replay": true,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "OR154 may execute exactly one observation-conditioned natural-dynamics replay cloned from OR153 whose sole changed factor is selected-pawn initialization from the retained fractional D1 coordinate to the exact canonical D1 center. It is an owner-declared canonical-centering sensitivity, not a physical measurement, camera or robot calibration, action-only transfer, physical task evidence, simulator promotion, or transfer proof. Failure permanently exhausts this exact-centering factor without retry."
+}

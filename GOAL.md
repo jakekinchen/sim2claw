@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OR153_PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
+Status: `OR154_PASS_GATE_LEVEL_TASK_OUTCOME_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
 
 ## Active mission
 
@@ -9,7 +9,7 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR153_PASS_TASK_OUTCOME_METRIC_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
+`OR154_PASS_GATE_LEVEL_TASK_OUTCOME_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
 
 ## Current card
 
@@ -17,9 +17,9 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_registration_or34_canonical_yaw_reversion_replay_v1_closeout.json`.
-- Closeout SHA-256: `e977a57df5db0224213936b0442d34030dc6b81430bfd1fac2b613c87b6f40f0`.
-- Proof class: `one_run_observation_conditioned_or34_board_consistent_canonical_yaw_reversion_natural_dynamics_diagnostic`.
+- Closeout: `configs/decisions/observable_registration_or153_exact_d1_center_replay_v1_closeout.json`.
+- Closeout SHA-256: `13ded62b32122532bb0ebb0454ed656df9614aaf929d98f7861526e2d2032a76`.
+- Proof class: `one_run_observation_conditioned_or34_canonical_d1_center_sensitivity_natural_dynamics_diagnostic`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`no automatic successor; any new factor requires separate owner authority and independent robot-bound metric registration or load-side contact evidence`
+`no automatic successor; any action-data calibration requires a separately frozen pre-outcome or cross-episode mechanism that addresses transport/contact and passes independent review`
 
 ## Stop conditions
 
