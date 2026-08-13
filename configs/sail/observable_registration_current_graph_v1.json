@@ -2,9 +2,39 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-08-13",
-  "status": "or155_pass_spatial_closure_locus_and_non_named_mesh_contact_attributed_no_successor",
-  "active_card": null,
-  "active_card_contract": null,
+  "status": "or156_active_source_clock_rebinding_falsification",
+  "active_card": "OR156",
+  "active_card_contract": {
+    "card_id": "OR156",
+    "proof_target": "one_read_only_known_result_reproduction_bounding_sample_completion_versus_follower_position_read_clock_effects_on_closure_window_frame_association_and_replay_elapsed_time",
+    "allowed_paths": [
+      "configs/evaluations/observable_registration_source_clock_provenance_audit_owner_authorization_v1.json",
+      "configs/evaluations/observable_registration_source_clock_provenance_audit_v1.json",
+      "src/sim2claw/observable_registration_source_clock_provenance_audit.py",
+      "tests/test_observable_registration_source_clock_provenance_audit.py",
+      "outputs/observable_registration_source_clock_provenance_audit_v1",
+      "configs/decisions/observable_registration_source_clock_provenance_audit_v1_closeout.json",
+      "docs/briefs/228-observable-registration-or156-source-clock-provenance-audit.md",
+      "docs/session-logs/228-executor-observable-registration-or156-source-clock-provenance-audit.md",
+      "docs/reviewer-messages/228-observable-registration-or156-source-clock-provenance-audit.md",
+      "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
+      "configs/sail/observable_registration_current_graph_v1.json",
+      "docs/autonomous-workflow/project_state.json",
+      "GOAL.md"
+    ],
+    "allowed_operations": [
+      "read",
+      "test",
+      "write"
+    ],
+    "validation_commands": [
+      "uv run --locked pytest -q tests/test_observable_registration_source_clock_provenance_audit.py",
+      "uv run --locked sim2claw check --profile agent",
+      "uv run --locked sim2claw agent-goal --check"
+    ],
+    "commit": true,
+    "push_origin_main": true
+  },
   "last_card_contract": {
     "card_id": "OR155",
     "proof_target": "one_read_only_zero_dynamics_known_result_reproduction_of_or154_closure_locus_and_contact_geometry_attribution",
@@ -94,7 +124,7 @@
     "commit": false,
     "push_origin_main": false
   },
-  "next_transition": "external-input boundary; no automatic successor, fit, correction, or replay is admitted without genuinely new pre-outcome or cross-episode evidence and independent review",
+  "next_transition": "execute exactly one read-only OR156 known-result source-clock provenance audit; no replay, retiming, action mutation, fit, correction, or successor selection",
   "node_types": [
     "workcell",
     "session",
@@ -140,7 +170,7 @@
     },
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "20909340410b347e9079b6894e4e3d1ebc7c65a2d315b1b5b91feb75eb9551fc",
+      "sha256": "e0d3eacc59ef973d63ef8f814d9c1b1a4e03e37cdbb7da5c69a71016b9bdd079",
       "proof_class": "campaign_control_state"
     },
     "or155": {

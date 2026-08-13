@@ -1,0 +1,52 @@
+{
+  "schema_version": "sim2claw.observable_registration_source_clock_provenance_audit_owner_authorization.v1",
+  "date": "2026-08-13",
+  "status": "owner_authorized_read_only_source_clock_provenance_audit",
+  "owner_instructions": [
+    "ok what can be done without any new hardware tests? lets do all of that and see how things end up",
+    "can you advance"
+  ],
+  "advisor_disposition": {
+    "repository_commit_reviewed": "0a38cea05da0667b6869f1ad9380f2fa37615729",
+    "gpt_pro": "NO_GO_RETAINED_DATA_ONLY_TASK_REPLAY_STATIC_READ_ONLY_ASSOCIATION_DIAGNOSTIC_ALLOWED",
+    "fable_5_extra": "NO_GO_RETAINED_DATA_ONLY_TASK_REPLAY_FRESH_OR9_STATIC_VALIDATION_ACQUISITION_REQUIRED_FOR_REGISTRATION",
+    "answers_shared_between_advisors": false,
+    "advisory_only": true
+  },
+  "proof_class": "retrospective_known_result_read_only_source_clock_provenance_and_frame_association_diagnostic",
+  "execution_boundary": {
+    "sample_rows_read": 531,
+    "camera_callback_rows_read": 1236,
+    "frame_association_clock_variants": 2,
+    "mujoco_forward_calls": 0,
+    "mujoco_step_calls": 0,
+    "simulator_replays": 0,
+    "fits": 0,
+    "searches": 0,
+    "renders": 0,
+    "task_evaluations": 0,
+    "action_or_timestamp_mutations": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "known_result_boundary": {
+    "local_ad_hoc_timing_inspection_preceded_contract_freeze": true,
+    "prospective_factor_selection_allowed": false,
+    "simulator_success_claim_allowed": false,
+    "purpose": "reproduce, hash-bind, and independently review whether the two retained same-process row clocks materially change closure-window frame association or replay elapsed time"
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "OR156 may only read hash-bound retained telemetry and callback timestamps, recompute nearest-frame bindings under the sample-completion and follower-position-read clocks, and report their difference. It cannot mutate timestamps or actions, step or replay dynamics, fit a phase correction, identify exposure or actuator-application time, choose a registration/contact correction, open a successor, claim task success, promote the simulator, or claim physical transfer."
+}

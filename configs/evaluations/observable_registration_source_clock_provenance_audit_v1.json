@@ -1,0 +1,96 @@
+{
+  "schema_version": "sim2claw.observable_registration_source_clock_provenance_audit_contract.v1",
+  "experiment_id": "OR156_SOURCE_CLOCK_PROVENANCE_AUDIT_V1",
+  "proof_class": "retrospective_known_result_read_only_source_clock_provenance_and_frame_association_diagnostic",
+  "sources": {
+    "owner_authorization": {
+      "path": "configs/evaluations/observable_registration_source_clock_provenance_audit_owner_authorization_v1.json",
+      "sha256": "26643ec6ba33552f5260457cc497da7c11e25640d11f1e7cb35208f0681c1946"
+    },
+    "or155_closeout": {
+      "path": "configs/decisions/observable_registration_or154_closure_locus_audit_v1_closeout.json",
+      "sha256": "fe213dcb12bfc4414aa1057f54076b84c04f3b6a417caed9cc76c4785294455a"
+    },
+    "physical_observation_closeout": {
+      "path": "configs/decisions/observable_physical_episode_observations_v1_closeout.json",
+      "sha256": "4d64346dfbf671e04a6d05ac204f2381abfc650a2c7bbe2418b471b26c6469bf"
+    },
+    "or149_closeout": {
+      "path": "configs/decisions/observable_registration_d1_d2_nominal_wrist_presentation_v1_closeout.json",
+      "sha256": "86e8ea65ade5c7ad233a27e9169307e3847ff3590b38aa9940cf78463982a284"
+    },
+    "physical_schedule": {
+      "path": "configs/evaluations/observable_physical_episode_schedule_v2.json",
+      "sha256": "ff85692fe8e06d06d40b3c9476dbaa8c854e79960bbec5cabe6a6845ce78b234"
+    },
+    "recording_receipt": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/recording_receipt.json",
+      "sha256": "74a3da30468922df00dfefd12e38ff346b2fd59fb5752458477be29360b9e0d3"
+    },
+    "samples": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/samples.jsonl",
+      "sha256": "ad606b9b917d985a4e866399a0c2d44adb12f3b48d310aa11452de9e03e73302"
+    },
+    "camera_callbacks": {
+      "path": "datasets/manipulation_source_recordings/d1-to-d2__20260727T041737Z-89190e53/native_dual_camera/camera_callback_timestamps.jsonl",
+      "sha256": "8d8f25bdf6293e3291d09f8abed04df9deaa7177aa45c711db4b298fe153e6d7"
+    },
+    "implementation": {
+      "path": "src/sim2claw/observable_registration_source_clock_provenance_audit.py",
+      "sha256": "0e79ef5bedadbd923ed10b4d3ca2e620a35a389c0fc759e425bf08a248492143"
+    }
+  },
+  "audit": {
+    "known_result_reproduction": true,
+    "primary_clock_field": "sample_completed_monotonic_seconds",
+    "alternate_clock_field": "follower_position_read_completed_monotonic_seconds",
+    "closure_samples": [224, 228, 232, 241],
+    "frame_roles": ["c922", "d405"],
+    "frame_association_policy": "unchanged_nearest_host_continuous_timestamp_with_lower_frame_index_tie_break",
+    "elapsed_rebinding_policy": "each_clock_zeroed_at_its_own_sample_zero_then_alternate_minus_primary",
+    "outcome_or_task_metric_may_select_a_parameter": false,
+    "admissible_successor_may_be_opened": false
+  },
+  "known_result_acceptance": {
+    "maximum_full_trace_direct_shift_ms": 7.18,
+    "maximum_full_trace_elapsed_delta_ms": 6.01,
+    "maximum_closure_direct_shift_ms": 0.04,
+    "maximum_closure_elapsed_delta_ms": 1.15,
+    "closure_frame_bindings_must_be_unchanged_for_roles": ["c922", "d405"],
+    "actuator_application_or_ack_timestamp_available_rows": 0,
+    "device_clock_synchronized_rows": 0,
+    "admissible_fit_rows": 0,
+    "untouched_validation_cohorts": 0
+  },
+  "execution": {
+    "sample_rows_read": 531,
+    "camera_callback_rows_read": 1236,
+    "frame_association_clock_variants": 2,
+    "mujoco_forward_calls": 0,
+    "mujoco_step_calls": 0,
+    "simulator_replays": 0,
+    "fits": 0,
+    "searches": 0,
+    "renders": 0,
+    "task_evaluations": 0,
+    "action_or_timestamp_mutations": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "claim_limits": {
+    "new_task_outcome_evidence": false,
+    "simulator_task_success": false,
+    "physical_timing_calibration": false,
+    "camera_calibration": false,
+    "actuator_timing_calibration": false,
+    "timestamp_correction": false,
+    "robot_or_jaw_registration_calibration": false,
+    "contact_geometry_calibration": false,
+    "global_mapping_approved": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "physical_task_success": false,
+    "transfer_claim": false
+  },
+  "output_directory": "outputs/observable_registration_source_clock_provenance_audit_v1"
+}

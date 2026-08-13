@@ -636,3 +636,42 @@ clock, and actuator-application timestamps are unavailable. With zero
 admissible fit rows and zero untouched validation cohorts, no timing, aperture,
 registration, collision, or contact correction is admitted. OR155 advances
 discrepancy attribution only—not task success—and opens no successor.
+
+## OR156 owner-authorized source-clock provenance audit
+
+The owner's August 13 instruction authorizes continued no-new-hardware
+advancement. GPT Pro and Fable 5 Extra independently inspected exact pushed
+commit `0a38cea05da0667b6869f1ad9380f2fa37615729`; both reject another retained-
+data-only task replay. No unexhausted factor has both admissible fit rows and an
+untouched validation cohort. GPT Pro explicitly permits a static read-only
+association diagnostic. Fable points to the already-frozen fresh OR9 static
+validation acquisition as the smallest later route to spatial identification.
+
+OR156 therefore tests one narrower retained-data question: whether rebinding
+the 531 physical rows from the frozen sample-completion clock to the immediately
+preceding follower-position-read clock materially changes closure timing or
+which retained C922/D405 frames are selected. It reads the hash-bound sample and
+callback ledgers, preserves the frozen nearest-host-time association rule, and
+performs no timestamp mutation. No MuJoCo call, replay, render, fit, search,
+task evaluation, action change, hardware action, or paid compute is allowed.
+
+The timing values were inspected before the contract was frozen. OR156 is a
+known-result, permanently quarantined diagnostic that cannot fit or select a
+retiming value, correct the simulator, open a successor replay, or advance task
+success. Its sole advancement criterion is durable falsification or retention
+of this exact software-clock explanation under independent review.
+
+The one official audit passed. At closure samples `224`, `228`, `232`, and
+`241`, the direct read-to-sample-completion interval is at most `0.039208 ms`;
+the largest relative elapsed-time perturbation after zeroing each clock at row
+zero is `1.142334 ms`. Every selected C922 and D405 closure frame is identical
+under both clocks. Across the entire 531-row trace, the largest elapsed
+perturbation is `5.998042 ms`; the original D405 association uncertainty still
+reaches `100.066125 ms`, and every row lacks actuator application/ack time and
+a synchronized device clock.
+
+OR156 therefore eliminates this software row-clock choice as an explanation
+for the visible closure lead and as a basis for retiming the replay. It does not
+identify camera exposure or actuator-application time, and it leaves OR155's
+spatial/contact discrepancy unresolved. Task success remains unchanged and no
+successor is opened pending independent review.

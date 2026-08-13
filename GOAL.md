@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OR155_PASS_SPATIAL_CLOSURE_LOCUS_AND_NON_NAMED_MESH_CONTACT_ATTRIBUTED_NO_SUCCESSOR`
+Status: `OR156_ACTIVE_SOURCE_CLOCK_REBINDING_FALSIFICATION`
 
 ## Active mission
 
@@ -9,17 +9,15 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR155_PASS_SPATIAL_CLOSURE_LOCUS_AND_NON_NAMED_MESH_CONTACT_ATTRIBUTED_NO_SUCCESSOR`
+`OR156_ACTIVE_SOURCE_CLOCK_REBINDING_FALSIFICATION`
 
 ## Current card
 
-`none` — the campaign is at an external-input boundary
+`OR156`
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_registration_or154_closure_locus_audit_v1_closeout.json`.
-- Closeout SHA-256: `fe213dcb12bfc4414aa1057f54076b84c04f3b6a417caed9cc76c4785294455a`.
-- Proof class: `retrospective_known_result_zero_dynamics_or154_closure_locus_and_contact_geometry_attribution_diagnostic`.
+- Proof class: `retrospective_known_result_read_only_source_clock_provenance_and_frame_association_diagnostic`.
 
 ## Authority
 
@@ -34,7 +32,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`external-input boundary; no automatic successor, fit, correction, or replay is admitted without genuinely new pre-outcome or cross-episode evidence and independent review`
+`execute exactly one read-only OR156 known-result source-clock provenance audit; no replay, retiming, action mutation, fit, correction, or successor selection`
 
 ## Stop conditions
 
