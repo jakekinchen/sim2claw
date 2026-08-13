@@ -2,9 +2,10 @@
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
   "generated_at": "2026-08-13",
-  "status": "or156_active_source_clock_rebinding_falsification",
-  "active_card": "OR156",
-  "active_card_contract": {
+  "status": "or156_pass_source_clock_rebinding_too_small_at_closure_no_successor",
+  "active_card": null,
+  "active_card_contract": null,
+  "last_card_contract": {
     "card_id": "OR156",
     "proof_target": "one_read_only_known_result_reproduction_bounding_sample_completion_versus_follower_position_read_clock_effects_on_closure_window_frame_association_and_replay_elapsed_time",
     "allowed_paths": [
@@ -29,37 +30,6 @@
     ],
     "validation_commands": [
       "uv run --locked pytest -q tests/test_observable_registration_source_clock_provenance_audit.py",
-      "uv run --locked sim2claw check --profile agent",
-      "uv run --locked sim2claw agent-goal --check"
-    ],
-    "commit": true,
-    "push_origin_main": true
-  },
-  "last_card_contract": {
-    "card_id": "OR155",
-    "proof_target": "one_read_only_zero_dynamics_known_result_reproduction_of_or154_closure_locus_and_contact_geometry_attribution",
-    "allowed_paths": [
-      "configs/evaluations/observable_registration_or154_closure_locus_audit_owner_authorization_v1.json",
-      "configs/evaluations/observable_registration_or154_closure_locus_audit_v1.json",
-      "src/sim2claw/observable_registration_or154_closure_locus_audit.py",
-      "tests/test_observable_registration_or154_closure_locus_audit.py",
-      "outputs/observable_registration_or154_closure_locus_audit_v1",
-      "configs/decisions/observable_registration_or154_closure_locus_audit_v1_closeout.json",
-      "docs/briefs/227-observable-registration-or155-closure-locus-audit.md",
-      "docs/session-logs/227-executor-observable-registration-or155-closure-locus-audit.md",
-      "docs/reviewer-messages/227-observable-registration-or155-closure-locus-audit.md",
-      "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "configs/sail/observable_registration_current_graph_v1.json",
-      "docs/autonomous-workflow/project_state.json",
-      "GOAL.md"
-    ],
-    "allowed_operations": [
-      "read",
-      "test",
-      "write"
-    ],
-    "validation_commands": [
-      "uv run --locked pytest -q tests/test_observable_registration_or154_closure_locus_audit.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
@@ -124,7 +94,7 @@
     "commit": false,
     "push_origin_main": false
   },
-  "next_transition": "execute exactly one read-only OR156 known-result source-clock provenance audit; no replay, retiming, action mutation, fit, correction, or successor selection",
+  "next_transition": "external-input boundary; the retained software row-clock candidate is exhausted and no replay, retiming, fit, correction, or successor is admitted without genuinely new independent evidence",
   "node_types": [
     "workcell",
     "session",
@@ -170,8 +140,13 @@
     },
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "e0d3eacc59ef973d63ef8f814d9c1b1a4e03e37cdbb7da5c69a71016b9bdd079",
+      "sha256": "22e306e529cfe23daa67350259cb137876a9579044f49a242a2245aaf738a39a",
       "proof_class": "campaign_control_state"
+    },
+    "or156": {
+      "path": "configs/decisions/observable_registration_source_clock_provenance_audit_v1_closeout.json",
+      "sha256": "c60fbca17a68db7fef1eb08e1846e1b342f1edaceda41b5726e94ceca1912a9a",
+      "proof_class": "retrospective_known_result_read_only_source_clock_provenance_and_frame_association_diagnostic"
     },
     "or155": {
       "path": "configs/decisions/observable_registration_or154_closure_locus_audit_v1_closeout.json",

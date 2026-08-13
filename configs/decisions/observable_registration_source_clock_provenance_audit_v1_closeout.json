@@ -1,0 +1,86 @@
+{
+  "schema_version": "sim2claw.observable_registration_source_clock_provenance_audit_closeout.v1",
+  "date": "2026-08-13",
+  "status": "PASS_SOURCE_CLOCK_REBINDING_TOO_SMALL_AT_CLOSURE_NO_SUCCESSOR",
+  "review": {
+    "role": "independent_evaluator_advisor",
+    "candidate_commit": "51352a9d5f3ccf899bf0cb79a79e86c3023ac1aa",
+    "verdict": "PASS_TO_CLOSE_STOP_EXTERNAL_INPUT_BOUNDARY",
+    "scientific_outcome": "accepted_known_result_source_clock_falsification_no_task_advancement",
+    "evidence": {
+      "closure_direct_clock_shift_max_ms": 0.039207981899380684,
+      "closure_elapsed_rebinding_delta_max_ms": 1.142333960160613,
+      "closure_c922_and_d405_frame_bindings_unchanged": true,
+      "full_trace_elapsed_rebinding_delta_max_ms": 5.998042062856257,
+      "maximum_d405_primary_association_error_ms": 100.066125,
+      "actuator_application_or_ack_timestamp_available_rows": 0,
+      "device_clock_synchronized_rows": 0,
+      "task_level_success_advanced": false,
+      "admissible_task_successor": false
+    },
+    "claim_boundary": "OR156 falsifies only the sample-completion versus immediately preceding follower-position-read clock choice under the frozen nearest-host-time and lower-frame-index association plus relative elapsed-time rebind. It does not identify or falsify camera exposure timing, actuator-application timing, device-clock error, another clock source, spatial registration, contact geometry, simulator task success, physical task success, promotion, or transfer."
+  },
+  "owner_authorization": {
+    "path": "configs/evaluations/observable_registration_source_clock_provenance_audit_owner_authorization_v1.json",
+    "sha256": "26643ec6ba33552f5260457cc497da7c11e25640d11f1e7cb35208f0681c1946"
+  },
+  "contract": {
+    "path": "configs/evaluations/observable_registration_source_clock_provenance_audit_v1.json",
+    "sha256": "9825a72ca3fa008d8272844cf45b4f301cbbbf9ce18a8bd88add2f0aa60ee04a"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_source_clock_provenance_audit.py",
+    "sha256": "0e79ef5bedadbd923ed10b4d3ca2e620a35a389c0fc759e425bf08a248492143"
+  },
+  "tests": {
+    "path": "tests/test_observable_registration_source_clock_provenance_audit.py",
+    "sha256": "685d4fdd02e02becb60cf7c12ae73e3845b31d90d6cfd6a6516b16d4a9ff95a8",
+    "focused_tests_passed": 3
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_source_clock_provenance_audit_v1/receipt.json",
+    "sha256": "37a0aa946a7b69bb3feda14f7e8111949f6f4ec9308194c27b4126215079a4a7",
+    "artifact_sha256": "a7286e739bffb65134e9006629f0c99a686106370fd785859a11423aa8962819"
+  },
+  "executor_log": {
+    "path": "docs/session-logs/228-executor-observable-registration-or156-source-clock-provenance-audit.md",
+    "sha256": "5f3a7048aab57afca91fa594046a57c46f1a45af14f3c1f3d0c3d4e335180d45",
+    "official_audit_invocations": 1
+  },
+  "reviewer_message": {
+    "path": "docs/reviewer-messages/228-observable-registration-or156-source-clock-provenance-audit.md",
+    "sha256": "e457b4223e8b12df70bc3482ce258b1021f124df51eb45bae49635d1580470d6"
+  },
+  "result": {
+    "sample_count": 531,
+    "camera_callback_count": 1236,
+    "closure_samples": [224, 228, 232, 241],
+    "closure_direct_clock_shift_max_ms": 0.039207981899380684,
+    "closure_elapsed_rebinding_delta_max_ms": 1.142333960160613,
+    "closure_c922_and_d405_frame_bindings_unchanged": true,
+    "full_trace_elapsed_rebinding_delta_max_ms": 5.998042062856257,
+    "full_trace_elapsed_rebinding_delta_max_sample": 220,
+    "maximum_d405_primary_association_error_ms": 100.066125,
+    "sample_completion_versus_follower_read_clock_explains_visible_closure_lead": false,
+    "camera_exposure_time_identified": false,
+    "actuator_application_time_identified": false,
+    "software_row_clock_candidate_exhausted": true
+  },
+  "execution": {
+    "sample_rows_read": 531,
+    "camera_callback_rows_read": 1236,
+    "frame_association_clock_variants": 2,
+    "mujoco_forward_calls": 0,
+    "mujoco_step_calls": 0,
+    "simulator_replays": 0,
+    "fits": 0,
+    "searches": 0,
+    "renders": 0,
+    "task_evaluations": 0,
+    "action_or_timestamp_mutations": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "automatic_successor": false,
+  "successor": null
+}

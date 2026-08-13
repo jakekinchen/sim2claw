@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OR156_ACTIVE_SOURCE_CLOCK_REBINDING_FALSIFICATION`
+Status: `OR156_PASS_SOURCE_CLOCK_REBINDING_TOO_SMALL_AT_CLOSURE_NO_SUCCESSOR`
 
 ## Active mission
 
@@ -9,14 +9,16 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR156_ACTIVE_SOURCE_CLOCK_REBINDING_FALSIFICATION`
+`OR156_PASS_SOURCE_CLOCK_REBINDING_TOO_SMALL_AT_CLOSURE_NO_SUCCESSOR`
 
 ## Current card
 
-`OR156`
+`none` — the campaign is at an external-input boundary
 
 ## Current evidence
 
+- Closeout: `configs/decisions/observable_registration_source_clock_provenance_audit_v1_closeout.json`.
+- Closeout SHA-256: `c60fbca17a68db7fef1eb08e1846e1b342f1edaceda41b5726e94ceca1912a9a`.
 - Proof class: `retrospective_known_result_read_only_source_clock_provenance_and_frame_association_diagnostic`.
 
 ## Authority
@@ -32,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`execute exactly one read-only OR156 known-result source-clock provenance audit; no replay, retiming, action mutation, fit, correction, or successor selection`
+`external-input boundary; the retained software row-clock candidate is exhausted and no replay, retiming, fit, correction, or successor is admitted without genuinely new independent evidence`
 
 ## Stop conditions
 

@@ -673,5 +673,11 @@ a synchronized device clock.
 OR156 therefore eliminates this software row-clock choice as an explanation
 for the visible closure lead and as a basis for retiming the replay. It does not
 identify camera exposure or actuator-application time, and it leaves OR155's
-spatial/contact discrepancy unresolved. Task success remains unchanged and no
-successor is opened pending independent review.
+spatial/contact discrepancy unresolved. Task success remains unchanged.
+
+Independent Reviewer verdict is
+`PASS_TO_CLOSE_STOP_EXTERNAL_INPUT_BOUNDARY` after an exact raw-ledger
+rederivation at pushed commit `51352a9`. The reviewer confirms that OR156
+falsifies only this exact software-clock choice—not exposure time, actuator-
+application time, device-clock error, another clock, or the spatial/contact
+cause. No successor is opened.
