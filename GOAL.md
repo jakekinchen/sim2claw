@@ -1,6 +1,6 @@
 # sim2claw Goal
 
-Status: `OR154_PASS_GATE_LEVEL_TASK_OUTCOME_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
+Status: `OR155_PASS_SPATIAL_CLOSURE_LOCUS_AND_NON_NAMED_MESH_CONTACT_ATTRIBUTED_NO_SUCCESSOR`
 
 ## Active mission
 
@@ -9,7 +9,7 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current milestone
 
-`OR154_PASS_GATE_LEVEL_TASK_OUTCOME_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
+`OR155_PASS_SPATIAL_CLOSURE_LOCUS_AND_NON_NAMED_MESH_CONTACT_ATTRIBUTED_NO_SUCCESSOR`
 
 ## Current card
 
@@ -17,9 +17,9 @@ hardware, held-out, training, promotion, or paid-compute boundaries.
 
 ## Current evidence
 
-- Closeout: `configs/decisions/observable_registration_or153_exact_d1_center_replay_v1_closeout.json`.
-- Closeout SHA-256: `13ded62b32122532bb0ebb0454ed656df9614aaf929d98f7861526e2d2032a76`.
-- Proof class: `one_run_observation_conditioned_or34_canonical_d1_center_sensitivity_natural_dynamics_diagnostic`.
+- Closeout: `configs/decisions/observable_registration_or154_closure_locus_audit_v1_closeout.json`.
+- Closeout SHA-256: `fe213dcb12bfc4414aa1057f54076b84c04f3b6a417caed9cc76c4785294455a`.
+- Proof class: `retrospective_known_result_zero_dynamics_or154_closure_locus_and_contact_geometry_attribution_diagnostic`.
 
 ## Authority
 
@@ -34,7 +34,7 @@ All current external authorities are false: `camera_open, gateway, heldout_open,
 
 ## Next transition
 
-`no automatic successor; any action-data calibration requires a separately frozen pre-outcome or cross-episode mechanism that addresses transport/contact and passes independent review`
+`external-input boundary; no automatic successor, fit, correction, or replay is admitted without genuinely new pre-outcome or cross-episode evidence and independent review`
 
 ## Stop conditions
 

@@ -1,6 +1,6 @@
 # Observable Registration and Contact-Causality Successor Queue
 
-Status: `OR154_PASS_GATE_LEVEL_TASK_OUTCOME_ADVANCEMENT_TASK_NEGATIVE_NO_RETRY`
+Status: `OR155_PASS_SPATIAL_CLOSURE_LOCUS_AND_NON_NAMED_MESH_CONTACT_ATTRIBUTED_NO_SUCCESSOR`
 
 Created: `2026-07-29`
 
@@ -587,3 +587,52 @@ exhausted without retry and admits no automatic successor. This is a bounded
 observation-conditioned simulator sensitivity result, not physical
 calibration, action calibration, physics fidelity, simulator promotion, or
 transfer evidence.
+
+## OR155 owner-authorized closure-locus and contact-provenance audit
+
+The owner's August 13 observation is that the nominal simulator wrist view
+appears to close before the gripper reaches the center of D1. GPT Pro and Fable
+5 Extra independently inspected pushed commit `d4f477b` and both reject a new
+task replay: no retained candidate is simultaneously unexhausted,
+independently selected, and backed by an untouched validation cohort. Both
+admit a read-only diagnostic.
+
+OR155 therefore reproduces an already explored result rather than opening a
+new factor. It binds exact OR154 and OR149 sources, compares requested, sent,
+and raw measured gripper rows, computes the named jaw-tip midpoint relative to
+exact D1 during samples `224`, `228`, `232`, `236`, and `241`, and reconstructs
+the compiled collision geometry at OR154's first broad selected-piece contact
+sample. `mj_forward` is allowed; every MuJoCo step entry point, replay, fit,
+search, render, task evaluation, timestamp rebinding, action mutation, scene
+change, collision change, hardware action, and paid-compute path is forbidden.
+
+The local geometry inspection preceded contract freeze. OR155 is therefore a
+known-result, permanently quarantined reproduction whose only possible pass is
+a hash-bound discrepancy attribution. It cannot select a correction or admit
+a successor replay. After independent review, the campaign returns to the
+external-input boundary unless genuinely new pre-outcome or cross-episode
+evidence appears.
+
+OR155 closed after exactly one independently pre-reviewed audit invocation.
+The official path used six `mj_forward` calls and zero dynamics steps, replays,
+fits, searches, renders, task evaluations, mutations, hardware actions, or paid
+compute. The read-only verifier reproduced receipt artifact
+`48f1f25a57bb6438c8b8aa38ebae054533dc34cd15d6e992f161db73377f526f`.
+
+At closed-command hold sample `241`, the simulated named-jaw midpoint remains
+`34.481658 mm` from exact D1, offset `[-8.120161,+33.511904] mm` in table XY.
+The raw measured gripper is more open than the sent value at samples `224`,
+`232`, and `241`, so the retained encoder evidence rejects early physical
+actuator closure. At OR154 broad contact sample `271`, the closest compiled
+collision is a non-named fixed-gripper CAD mesh at `-0.129711 mm`; the nearest
+named jaw is still `+4.523143 mm` clear. A body-level contact pair therefore
+does not prove named-jaw, bilateral, or pad enclosure.
+
+Independent Reviewer verdict is
+`PASS_TO_CLOSE_STOP_EXTERNAL_INPUT_BOUNDARY`. OR149's visible timing remains
+non-identifying because its nominal wrist camera is uncalibrated to D405, its
+association error reaches `100.066125 ms`, and synchronized exposure, device
+clock, and actuator-application timestamps are unavailable. With zero
+admissible fit rows and zero untouched validation cohorts, no timing, aperture,
+registration, collision, or contact correction is admitted. OR155 advances
+discrepancy attribution only—not task success—and opens no successor.

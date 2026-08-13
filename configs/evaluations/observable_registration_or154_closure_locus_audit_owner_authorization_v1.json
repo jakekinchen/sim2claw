@@ -1,0 +1,49 @@
+{
+  "schema_version": "sim2claw.observable_registration_or154_closure_locus_audit_owner_authorization.v1",
+  "date": "2026-08-13",
+  "status": "owner_authorized_read_only_closure_locus_discrepancy_audit",
+  "owner_instructions": [
+    "create a advisors-skill that just instructs to use the gpt pro research skill and fable 5 on the desktop and to consult these services for any blockers or to assist in advancing. and after this, use this skill to continue task level success advancement",
+    "also the gripper closes a bit before the first square's center compared to the real footage so we need to hone in on this discrepancy"
+  ],
+  "advisor_disposition": {
+    "gpt_pro": "NO_GO_TASK_REPLAY_READ_ONLY_TIMESTAMP_OR_GEOMETRY_AUDIT_ALLOWED",
+    "fable_5_extra": "NO_GO_TASK_REPLAY_READ_ONLY_ZERO_DYNAMICS_EXPOSURE_GAUGE_AND_JAW_LOCUS_AUDIT_ALLOWED",
+    "answers_shared_between_advisors": false,
+    "advisory_only": true
+  },
+  "proof_class": "retrospective_known_result_zero_dynamics_or154_closure_locus_and_contact_geometry_attribution_diagnostic",
+  "execution_boundary": {
+    "read_only_geometry_audits": 1,
+    "mujoco_forward_calls_allowed": true,
+    "mujoco_step_calls": 0,
+    "simulator_replays": 0,
+    "fits": 0,
+    "searches": 0,
+    "parameter_or_action_changes": 0,
+    "renders": 0,
+    "task_evaluations": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "known_result_boundary": {
+    "local_ad_hoc_geometry_inspection_preceded_contract_freeze": true,
+    "prospective_factor_selection_allowed": false,
+    "simulator_success_claim_allowed": false,
+    "purpose": "reproduce, hash-bind, and independently review the already observed closure-locus and contact-geometry discrepancy"
+  },
+  "authority": {
+    "physical_motion": false,
+    "camera_open": false,
+    "serial": false,
+    "gateway": false,
+    "heldout_open": false,
+    "task_attempt": false,
+    "training": false,
+    "paid_compute": false,
+    "simulator_replay": false,
+    "simulator_promotion": false,
+    "transfer_claim": false
+  },
+  "claim_boundary": "OR155 may only reproduce existing OR154 states with mj_forward, compare immutable command and measured rows, and attribute the broad body-level contact witness to compiled geometry. It cannot step dynamics, refit timing or registration, mutate actions, select a successor value, retry OR154, claim simulator task success, promote a simulator, or claim physical transfer."
+}

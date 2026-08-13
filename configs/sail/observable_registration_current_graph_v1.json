@@ -1,23 +1,23 @@
 {
   "schema_version": "sim2claw.sail_current_campaign_graph_config.v1",
   "campaign_id": "observable_registration_contact_causality_v1",
-  "generated_at": "2026-08-11",
-  "status": "or154_pass_gate_level_task_outcome_advancement_task_negative_no_retry",
+  "generated_at": "2026-08-13",
+  "status": "or155_pass_spatial_closure_locus_and_non_named_mesh_contact_attributed_no_successor",
   "active_card": null,
   "active_card_contract": null,
   "last_card_contract": {
-    "card_id": "OR154",
-    "proof_target": "one_observation_conditioned_or153_replay_with_exact_canonical_d1_center_as_the_sole_changed_factor_and_gate_level_advancement_required",
+    "card_id": "OR155",
+    "proof_target": "one_read_only_zero_dynamics_known_result_reproduction_of_or154_closure_locus_and_contact_geometry_attribution",
     "allowed_paths": [
-      "configs/evaluations/observable_registration_or153_exact_d1_center_replay_owner_authorization_v1.json",
-      "configs/evaluations/observable_registration_or153_exact_d1_center_replay_v1.json",
-      "src/sim2claw/observable_registration_or153_exact_d1_center_replay.py",
-      "tests/test_observable_registration_or153_exact_d1_center_replay.py",
-      "outputs/observable_registration_or153_exact_d1_center_replay_v1",
-      "configs/decisions/observable_registration_or153_exact_d1_center_replay_v1_closeout.json",
-      "docs/briefs/226-observable-registration-or154-exact-d1-center-replay.md",
-      "docs/session-logs/226-executor-observable-registration-or154-exact-d1-center-replay.md",
-      "docs/reviewer-messages/226-observable-registration-or154-exact-d1-center-replay.md",
+      "configs/evaluations/observable_registration_or154_closure_locus_audit_owner_authorization_v1.json",
+      "configs/evaluations/observable_registration_or154_closure_locus_audit_v1.json",
+      "src/sim2claw/observable_registration_or154_closure_locus_audit.py",
+      "tests/test_observable_registration_or154_closure_locus_audit.py",
+      "outputs/observable_registration_or154_closure_locus_audit_v1",
+      "configs/decisions/observable_registration_or154_closure_locus_audit_v1_closeout.json",
+      "docs/briefs/227-observable-registration-or155-closure-locus-audit.md",
+      "docs/session-logs/227-executor-observable-registration-or155-closure-locus-audit.md",
+      "docs/reviewer-messages/227-observable-registration-or155-closure-locus-audit.md",
       "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
       "configs/sail/observable_registration_current_graph_v1.json",
       "docs/autonomous-workflow/project_state.json",
@@ -29,7 +29,7 @@
       "write"
     ],
     "validation_commands": [
-      "uv run --locked pytest -q tests/test_observable_registration_or153_exact_d1_center_replay.py",
+      "uv run --locked pytest -q tests/test_observable_registration_or154_closure_locus_audit.py",
       "uv run --locked sim2claw check --profile agent",
       "uv run --locked sim2claw agent-goal --check"
     ],
@@ -94,7 +94,7 @@
     "commit": false,
     "push_origin_main": false
   },
-  "next_transition": "no automatic successor; any action-data calibration requires a separately frozen pre-outcome or cross-episode mechanism that addresses transport/contact and passes independent review",
+  "next_transition": "external-input boundary; no automatic successor, fit, correction, or replay is admitted without genuinely new pre-outcome or cross-episode evidence and independent review",
   "node_types": [
     "workcell",
     "session",
@@ -140,8 +140,13 @@
     },
     "queue": {
       "path": "docs/autonomous-workflow/observable-registration-successor-task-queue-20260729.md",
-      "sha256": "927640179ec05f4e5fd511cf1afec1edb250035cd91cb0ea021b4ec774228f94",
+      "sha256": "20909340410b347e9079b6894e4e3d1ebc7c65a2d315b1b5b91feb75eb9551fc",
       "proof_class": "campaign_control_state"
+    },
+    "or155": {
+      "path": "configs/decisions/observable_registration_or154_closure_locus_audit_v1_closeout.json",
+      "sha256": "fe213dcb12bfc4414aa1057f54076b84c04f3b6a417caed9cc76c4785294455a",
+      "proof_class": "retrospective_known_result_zero_dynamics_or154_closure_locus_and_contact_geometry_attribution_diagnostic"
     },
     "or149": {
       "path": "configs/decisions/observable_registration_d1_d2_nominal_wrist_presentation_v1_closeout.json",

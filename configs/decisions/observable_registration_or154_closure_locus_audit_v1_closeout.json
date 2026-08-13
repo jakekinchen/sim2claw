@@ -1,0 +1,81 @@
+{
+  "schema_version": "sim2claw.observable_registration_or154_closure_locus_audit_closeout.v1",
+  "date": "2026-08-13",
+  "status": "PASS_SPATIAL_CLOSURE_LOCUS_AND_NON_NAMED_MESH_CONTACT_ATTRIBUTED_NO_SUCCESSOR",
+  "review": {
+    "role": "independent_evaluator_advisor",
+    "verdict": "PASS_TO_CLOSE_STOP_EXTERNAL_INPUT_BOUNDARY",
+    "scientific_outcome": "accepted_known_result_discrepancy_attribution_no_task_advancement",
+    "evidence": {
+      "spatial_closure_locus_mismatch_reproduced": true,
+      "early_actuator_closure_supported": false,
+      "broad_body_contact_is_named_jaw_contact": false,
+      "named_jaw_pair_enclosure_proved": false,
+      "admissible_fit_rows": 0,
+      "untouched_validation_cohorts": 0,
+      "task_level_success_advanced": false,
+      "admissible_task_successor": false
+    },
+    "claim_boundary": "OR155 attributes the retained visible discrepancy to a displaced named-jaw closure locus and a broad body contact first supported by a non-named fixed-gripper CAD mesh. It does not calibrate timing, camera, aperture, robot or jaw registration, collision geometry, contact, or physics; it does not prove named-jaw enclosure, simulator task success, physical task success, promotion, or transfer."
+  },
+  "owner_authorization": {
+    "path": "configs/evaluations/observable_registration_or154_closure_locus_audit_owner_authorization_v1.json",
+    "sha256": "de5864900c169a27f248dd7dcb2849dc2a0d2f1f406c5fbc0233e64456f34cc9"
+  },
+  "contract": {
+    "path": "configs/evaluations/observable_registration_or154_closure_locus_audit_v1.json",
+    "sha256": "aec090846c9751bc81531a48b396ac5adb99877279f687e4dd4b034cd435732d"
+  },
+  "implementation": {
+    "path": "src/sim2claw/observable_registration_or154_closure_locus_audit.py",
+    "sha256": "95282e62665c758bbeb3ba2fa853d79d7c090ae2eca8768aecf99a009372f6c8"
+  },
+  "tests": {
+    "path": "tests/test_observable_registration_or154_closure_locus_audit.py",
+    "sha256": "0abc709f893936cc370845496c6360b5f5c0bc290e8b99d9b037da1c8ca519c1",
+    "focused_tests_passed": 3,
+    "step_entry_points_guarded": [
+      "mj_step",
+      "mj_step1",
+      "mj_step2"
+    ]
+  },
+  "receipt": {
+    "path": "outputs/observable_registration_or154_closure_locus_audit_v1/receipt.json",
+    "sha256": "d6cead85f5a749710d9712712beb72c09aa8bec108dd7e7673f76f75fb0cca44",
+    "artifact_sha256": "48f1f25a57bb6438c8b8aa38ebae054533dc34cd15d6e992f161db73377f526f"
+  },
+  "executor_log": {
+    "path": "docs/session-logs/227-executor-observable-registration-or155-closure-locus-audit.md",
+    "sha256": "bb5397a5d397b018054c5a0dd1a34f28c8bfc181a14b3b3b0818d5d6d74911de",
+    "official_audit_invocations": 1
+  },
+  "result": {
+    "requested_closed_hold_start_sample": 241,
+    "physical_first_definite_enclosure_sample": 232,
+    "or154_first_broad_contact_sample": 271,
+    "closed_hold_midpoint_planar_distance_to_exact_d1_mm": 34.48165763950403,
+    "closed_hold_midpoint_minus_exact_d1_xy_mm": [
+      -8.120161364085526,
+      33.51190375059554
+    ],
+    "nearest_compiled_non_named_mesh_signed_distance_mm": -0.12971134827055545,
+    "nearest_named_jaw_signed_distance_mm": 4.523142675759959,
+    "maximum_d405_association_error_ms": 100.066125,
+    "raw_measured_more_open_than_sent_at_samples_224_232_241": true
+  },
+  "execution": {
+    "mujoco_forward_calls": 6,
+    "mujoco_step_calls": 0,
+    "simulator_replays": 0,
+    "fits": 0,
+    "searches": 0,
+    "renders": 0,
+    "task_evaluations": 0,
+    "action_or_timestamp_mutations": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "automatic_successor": false,
+  "successor": null
+}

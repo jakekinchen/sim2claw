@@ -1,0 +1,125 @@
+{
+  "schema_version": "sim2claw.observable_registration_or154_closure_locus_audit_contract.v1",
+  "experiment_id": "OR155_OR154_CLOSURE_LOCUS_AUDIT_V1",
+  "proof_class": "retrospective_known_result_zero_dynamics_or154_closure_locus_and_contact_geometry_attribution_diagnostic",
+  "sources": {
+    "owner_authorization": {
+      "path": "configs/evaluations/observable_registration_or154_closure_locus_audit_owner_authorization_v1.json",
+      "sha256": "de5864900c169a27f248dd7dcb2849dc2a0d2f1f406c5fbc0233e64456f34cc9"
+    },
+    "or154_contract": {
+      "path": "configs/evaluations/observable_registration_or153_exact_d1_center_replay_v1.json",
+      "sha256": "8a78167b8cc6f3262e4addd10df3e0987344388fbd7594c9bccdba6dd7a2272d"
+    },
+    "or154_receipt": {
+      "path": "outputs/observable_registration_or153_exact_d1_center_replay_v1/receipt.json",
+      "sha256": "e8eb180d2e5ad8db5ca695599dc0c77d6aa4c84cfee1df80e43f2fcf75974ca9"
+    },
+    "or154_trace": {
+      "path": "outputs/observable_registration_or153_exact_d1_center_replay_v1/trace.json",
+      "sha256": "d1491815e682e7cadd7772c50b265e25596661ffd816a2fe6497850ac4562bb4"
+    },
+    "or154_closeout": {
+      "path": "configs/decisions/observable_registration_or153_exact_d1_center_replay_v1_closeout.json",
+      "sha256": "13ded62b32122532bb0ebb0454ed656df9614aaf929d98f7861526e2d2032a76"
+    },
+    "physical_event_closeout": {
+      "path": "configs/decisions/observable_physical_episode_observations_v1_closeout.json",
+      "sha256": "4d64346dfbf671e04a6d05ac204f2381abfc650a2c7bbe2418b471b26c6469bf"
+    },
+    "or149_publication_receipt": {
+      "path": "outputs/observable_registration_d1_d2_nominal_wrist_presentation_v1/publication_receipt.json",
+      "sha256": "7d1b3132626e14c5a94964f170d007cfd895b1139a9f383d851e79256dc15dc8"
+    },
+    "or2_mapping_closeout": {
+      "path": "configs/decisions/observable_robot_jaw_mapping_v1_closeout.json",
+      "sha256": "28461906ca0b3cb8e67e5e68471f434c3498ea425bb8b6f93f4512baf6cf5da1"
+    },
+    "or12_metrology_closeout": {
+      "path": "configs/decisions/post_hackathon_home_workspace_metrology_v1_closeout.json",
+      "sha256": "a90cc5ff58b6a28dc9d0b6550b22521ab08d86bac16db7a8b867ea576cee404d"
+    },
+    "retained_proxy_closeout": {
+      "path": "configs/decisions/retained_rgb_contact_consequence_proxies_v1_closeout.json",
+      "sha256": "a73155e5af4f2904d30210b8f91d982ad3d3dbfd53f7cf10435ee7e057b18798"
+    },
+    "second_episode_contract": {
+      "path": "configs/evaluations/observable_registration_second_success_footage_replication_v1.json",
+      "sha256": "37c256dcb2c9275ff5dfea9217a5e5070681c8a1b91f582495d2fd3d6008b89c"
+    },
+    "or31_closeout": {
+      "path": "configs/decisions/observable_registration_sample232_base_xy_aperture_refinement_v1_closeout.json",
+      "sha256": "f08b324f6309b637c618f70d62370852320fc1a6980df5c24eb0180704bd027e"
+    },
+    "or32_closeout": {
+      "path": "configs/decisions/observable_registration_sample232_base_yaw_path_geometry_v1_closeout.json",
+      "sha256": "4cbd6e84a3c692e825dedcae813aecb8f372b6b9ed0d6ae21967de77bbf2646d"
+    },
+    "or33_closeout": {
+      "path": "configs/decisions/observable_registration_sample232_wrist_path_geometry_v1_closeout.json",
+      "sha256": "1381e35644c7a17e35d2e3989eaeac54d25b234c087b3632ba6360d931d05b4b"
+    },
+    "implementation": {
+      "path": "src/sim2claw/observable_registration_or154_closure_locus_audit.py",
+      "sha256": "95282e62665c758bbeb3ba2fa853d79d7c090ae2eca8768aecf99a009372f6c8"
+    }
+  },
+  "audit": {
+    "known_result_reproduction": true,
+    "samples": [
+      224,
+      228,
+      232,
+      236,
+      241
+    ],
+    "or154_first_broad_contact_sample": 271,
+    "or154_first_motion_over_1mm_sample": 292,
+    "robot_driver": "raw_follower_actual_position_degrees_through_frozen_or154_mapping",
+    "pawn_state_at_contact": "immutable_or154_trace_row",
+    "closure_locus_reference": "exact_canonical_d1_center",
+    "collision_scope": "all_enabled_compiled_collision_geoms_on_left_gripper_and_left_moving_jaw_bodies_with_named_jaw_geoms_reported_separately",
+    "outcome_or_task_metric_may_select_a_parameter": false,
+    "admissible_successor_may_be_opened": false
+  },
+  "known_result_acceptance": {
+    "requested_closed_hold_start_sample": 241,
+    "minimum_closed_hold_midpoint_distance_to_exact_d1_m": 0.03,
+    "raw_measured_gripper_must_be_more_open_than_sent_at_samples": [
+      224,
+      232,
+      241
+    ],
+    "nearest_contact_sample_271_collision_must_be_non_named_geom": true,
+    "nearest_named_jaw_collision_distance_must_be_positive": true,
+    "admissible_fit_rows": 0,
+    "untouched_validation_cohorts": 0
+  },
+  "execution": {
+    "mujoco_forward_calls": 6,
+    "mujoco_step_calls": 0,
+    "simulator_replays": 0,
+    "fits": 0,
+    "searches": 0,
+    "renders": 0,
+    "task_evaluations": 0,
+    "action_or_timestamp_mutations": 0,
+    "hardware_actions": 0,
+    "paid_compute": false
+  },
+  "claim_limits": {
+    "new_task_outcome_evidence": false,
+    "simulator_task_success": false,
+    "physical_timing_calibration": false,
+    "camera_calibration": false,
+    "robot_or_jaw_registration_calibration": false,
+    "aperture_calibration": false,
+    "contact_geometry_calibration": false,
+    "global_mapping_approved": false,
+    "physics_fidelity": false,
+    "simulator_promotion": false,
+    "physical_task_success": false,
+    "transfer_claim": false
+  },
+  "output_directory": "outputs/observable_registration_or154_closure_locus_audit_v1"
+}
