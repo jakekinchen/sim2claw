@@ -17,7 +17,7 @@ card, no execution admission. Implementation branch: `codex/operations-atlas`.
 | M1 Evidence audit | Account for repository agent logs and decision records; derive cited operational lessons and architecture gaps | Three independent audits, explicit coverage and exclusions, no inferred capability promotion | complete |
 | M2 Usable CLI | Incrementally index evidence; search, inspect lessons, show current authority and an explicit architecture map; record human observations | Real-corpus run plus adversarial indexing, drift and input tests | complete |
 | M3 Human visibility | Terminal progress/watch and an interactive, inspectable local report use the same evidence model | Exercise search/filter/details, source provenance, fresh/stale display, event feedback | delivered; browser visual gate unavailable |
-| M4 Independent closeout | Reviewer checks implementation, reproducibility and claim boundaries; documented operating path and future gates | Focused/adjacent tests, live campaign checks, scoped commit and durable reviewer decision | active |
+| M4 Independent closeout | Reviewer checks implementation, reproducibility and claim boundaries; documented operating path and future gates | Focused/adjacent tests, live campaign checks, scoped commit and durable reviewer decision | complete for software scope |
 
 One milestone is active at a time. Implementations can be delegated in parallel
 within the current acceptance gate. Audit reports live beside this ledger.
@@ -67,6 +67,15 @@ report was generated. Browser Use refused its local-file URL and prohibited
 workarounds, so real-browser interaction/layout remains an open validation gate.
 No authority or external resource is needed to use the delivered terminal path.
 
-Pending independent final disposition and scoped commit. Perfection is not a testable
+Implementation committed as `de2a94b` on `codex/operations-atlas`. Independent
+review records PASS for bounded software R1, with 68 focused tests and separately
+reproduced adversarial cases. The broader adjacent validation passed 140 tests.
+The immutable final review receipt is retained at
+`outputs/operations-audit/review-final-receipt.json`; its SHA-256 is
+`03baa087ebc644bce8fa99672b65d3a11d697e044bfe2e1dbb7180f1ddbec236`.
+Only the browser interaction/layout gate remains unavailable for this release.
+No simulation/evaluator/campaign source or external authority was changed.
+
+Perfection is not a testable
 completion claim. The first release must satisfy every gate above and leave a
 ranked, dependency-mapped expansion plan with measurable acceptance criteria.

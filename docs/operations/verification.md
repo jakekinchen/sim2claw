@@ -3,6 +3,9 @@
 Candidate date: 2026-09-05. Baseline: `9a91ba850149270685076ceade762bb367808f31`.
 Branch: `codex/operations-atlas`. This verifies a software operations foundation,
 not a simulator, learned policy, physical task, or future architecture milestone.
+Implementation commit: `de2a94b`. Independent review passed 68 focused tests
+and the additional adversarial cases documented in `review.md`; these focused
+tests are included in, not added to, the 140-test adjacent total below.
 
 ## Automated checks
 

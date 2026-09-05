@@ -512,7 +512,7 @@
     {
       "id": "R1",
       "title": "Evidence index and visible operations",
-      "state": "implemented_pending_review",
+      "state": "software_review_passed_visual_qa_unverified",
       "depends_on": [],
       "gate": "Complete explicit corpus coverage, source retrieval, cited lessons, bounded context, feedback and interactive report pass independent review"
     },
