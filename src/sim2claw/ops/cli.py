@@ -59,6 +59,16 @@ def build_parser() -> argparse.ArgumentParser:
         description="Write a saved excerpt browser. Runtime JSON search indexes narrative words, not raw numeric arrays; exact source spans remain available through show.",
     )
     report.add_argument("--output", type=Path, default=Path("outputs/operations/report.html"))
+    adapter = commands.add_parser("adapter", help="exchange native workspace metadata with a training dojo")
+    actions = adapter.add_subparsers(dest="adapter_command", required=True)
+    actions.add_parser("export", help="emit a source-hashed native workspace envelope")
+    actions.add_parser("conformance", help="run shared synthetic metadata acceptance/rejection fixtures")
+    check = actions.add_parser("check", help="validate a saved peer envelope without executing it")
+    check.add_argument("path", type=Path)
+    check.add_argument("--source-root", type=Path, help="optionally verify declared sources in the producer checkout")
+    compare = actions.add_parser("compare", help="compare metadata contracts and explain native ABI differences")
+    compare.add_argument("path", type=Path)
+    compare.add_argument("--peer-root", type=Path, help="optionally verify peer source bytes and Git HEAD")
     return parser
 
 
@@ -79,6 +89,28 @@ def _terminal(value: str) -> str:
 
 
 def _human(command: str, result: Any) -> str:
+    if command == "adapter" and isinstance(result, dict):
+        schema = result.get("schema_version")
+        if schema == "robotics.workspace_conformance.v1":
+            cases = result["cases"]
+            return (f"Shared conformance: {sum(case['passed'] for case in cases)}/{len(cases)} cases passed\n"
+                    f"Schema SHA-256: {result['contract_sha256']}\n"
+                    + "\n".join(f"Failed: {case['id']}" for case in cases if not case["passed"])
+                    + "\nSynthetic metadata only; no policy or execution authority.")
+        if schema == "robotics.workspace_validation.v1":
+            return (f"Workspace {result['workspace_id']}: {'valid' if result['valid'] else 'rejected'} metadata\n"
+                    f"Source verification: {result['source_verification']['status']}\n"
+                    + "\n".join(result["errors"])
+                    + "\nNative acceptance and execution remain separate.")
+        if schema == "robotics.workspace_compatibility.v1":
+            lines = [f"{result['local_workspace']} ↔ {result['peer_workspace']}: "
+                     f"{'compatible' if result['metadata_compatible'] else 'rejected'} metadata",
+                     f"Verification: {result['level']}; peer sources {result['peer_validation']['source_verification']['status']}"]
+            lines.extend(f"{item['local']} / {item['peer']}: differences in {', '.join(item['differences']) or 'no declared fields'}"
+                         for item in result["profile_comparisons"])
+            lines.extend(result["peer_validation"]["errors"])
+            lines.extend(["Policy portability: not established. Execution authorized: false.", f"Next gate: {result['next_gate']}"])
+            return "\n".join(lines)
     if command == "index" and isinstance(result, dict):
         return "\n".join([
             f"Indexed {result.get('indexed', 0)} of {result.get('total', 0)} discovered sources.",
@@ -188,7 +220,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             last_progress = now
 
     try:
-        if args.command == "index":
+        if args.command == "adapter":
+            from .adapter import check_conformance, compare_workspaces, export_workspace, load_exchange, validate_workspace
+
+            if args.adapter_command == "export":
+                result = export_workspace(root)
+            elif args.adapter_command == "conformance":
+                result = check_conformance(root)
+            elif args.adapter_command == "check":
+                source_root = args.source_root.expanduser().resolve() if args.source_root else None
+                result = validate_workspace(root, load_exchange(args.path.expanduser()), source_root)
+            else:
+                peer_root = args.peer_root.expanduser().resolve() if args.peer_root else None
+                result = compare_workspaces(root, load_exchange(args.path.expanduser()), peer_root)
+            _emit("adapter", result, as_json=args.as_json)
+            return 0 if result.get("valid", result.get("passed", True)) else 1
+        elif args.command == "index":
             result = core.scan(root, max_bytes=args.max_bytes, progress=progress)
         elif args.command == "status":
             result = core.status(root)

@@ -339,6 +339,51 @@
       "outputs": "Export/import with redaction and verification report",
       "gate": "Missing ignored artifacts and private data explicit; no embedded credentials",
       "next_action": "Define portable manifest and artifact hydration policy before sharing"
+    },
+    {
+      "id": "dojo_exchange",
+      "title": "Robot-specific workspace exchange",
+      "layer": "integration",
+      "state": "implemented",
+      "paths": [
+        "src/sim2claw/ops/adapter.py",
+        "configs/operations/workspace_adapter.v1.schema.json",
+        "configs/operations/workspace_adapter.v1.fixtures.json",
+        "docs/operations/DOJO_ADAPTER.md"
+      ],
+      "owner": "Sim2Claw operations and MicroDuck Duck Lab adapter owners",
+      "inputs": "Native mandates, ordered action/unit/observation/time declarations and exact source hashes",
+      "outputs": "Non-executing workspace envelope, conformance and explicit ABI differences",
+      "gate": "Shared schema/fixture digests and bilateral source-bound checks; no policy portability inference",
+      "next_action": "Re-export when bound sources change; require both native validators before changing the exchange contract"
+    },
+    {
+      "id": "dojo_native",
+      "title": "MicroDuck native training dojo",
+      "layer": "integration",
+      "state": "external_native_owner",
+      "paths": [
+        "docs/operations/DOJO_ADAPTER.md"
+      ],
+      "owner": "MicroDuck workspace, training and diagnostics tasks",
+      "inputs": "Frozen fourteen-action/fifty-hertz interface, native ordered training queue and evaluator bindings",
+      "outputs": "Duck Lab metadata; native trace comparisons and independently owned behavior evidence",
+      "gate": "Native training/evaluator rules remain authoritative; records and tensors are not exported by v1",
+      "next_action": "Consume metadata through the exchange without importing the peer runtime"
+    },
+    {
+      "id": "dojo_trace",
+      "title": "Bound robot-specific diagnostic traces",
+      "layer": "integration",
+      "state": "proposed",
+      "paths": [
+        "docs/operations/DOJO_ADAPTER.md"
+      ],
+      "owner": "Both native diagnostic/evaluator owners",
+      "inputs": "Declared case/reset/model identity, per-axis units, coordinate frames, clock domain, ordered actions and exact trace bytes",
+      "outputs": "Source-linked first differences and an explicit recorded-action comparison class",
+      "gate": "Positive and negative cross-reader fixtures; no resampling, action conversion or physics-causality inference",
+      "next_action": "Bind MicroDuck trace-comparison v1 and a separately authored Sim2Claw producer before admitting shared trace records"
     }
   ],
   "edges": [
@@ -506,6 +551,41 @@
       "from": "index",
       "to": "portable",
       "relation": "exports_manifest"
+    },
+    {
+      "from": "authority",
+      "to": "dojo_exchange",
+      "relation": "retains_native_gate"
+    },
+    {
+      "from": "contracts",
+      "to": "dojo_exchange",
+      "relation": "declares_native_abi"
+    },
+    {
+      "from": "dojo_exchange",
+      "to": "dojo_native",
+      "relation": "exchanges_metadata"
+    },
+    {
+      "from": "dojo_native",
+      "to": "dojo_exchange",
+      "relation": "validates_peer_schema"
+    },
+    {
+      "from": "dojo_exchange",
+      "to": "dojo_trace",
+      "relation": "prerequisite_for_record_adapter"
+    },
+    {
+      "from": "replay",
+      "to": "dojo_trace",
+      "relation": "requires_exact_action_identity"
+    },
+    {
+      "from": "evaluation",
+      "to": "dojo_trace",
+      "relation": "retains_native_acceptance"
     }
   ],
   "milestones": [

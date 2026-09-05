@@ -1,0 +1,3620 @@
+{
+  "schema_version": "robotics.workspace_conformance_fixtures.v1",
+  "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+  "scope": "Synthetic metadata-only fixtures. All source verification is unchecked. Every policy_portable and execution_authorized output must be false.",
+  "cases": [
+    {
+      "id": "valid_refused_arm",
+      "expected_valid": true,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "valid_different_robot_same_observation_dimension",
+      "expected_valid": true,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-dojo",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_fourteen_joint_biped",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 14,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5",
+                "joint_6",
+                "joint_7",
+                "joint_8",
+                "joint_9",
+                "joint_10",
+                "joint_11",
+                "joint_12",
+                "joint_13"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "delta_from_home",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 50,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "valid_inert_untrusted_entrypoint",
+      "expected_valid": true,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "sh",
+              "-c",
+              "exit 91"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "unknown_version",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v999",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "changed_schema",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "absolute_source",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "/etc/passwd",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "traversal_source",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "../outside.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "backslash_source",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "..\\outside.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "missing_source_reference",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "missing"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "missing_mandate_reference",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "missing"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "action_length",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 14,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "units_length",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "aliased_action_names",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint",
+                "joint",
+                "joint",
+                "joint",
+                "joint",
+                "joint"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "boolean_action_dimension",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": true,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "boolean_clock_rate",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": true,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "zero_clock_rate",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 0,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "bad_timestamp",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "yesterday",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "numeric_authority",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": 0,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "exports_records",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": true
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "extra_field",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ],
+        "implicit_acceptance": true
+      }
+    },
+    {
+      "id": "duplicate_sources",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          },
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "duplicate_profiles",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          },
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "duplicate_capabilities",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          },
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "authority_inspect",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": false,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "authority_execute",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": true,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "authority_mutate_sources",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": true,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "authority_train",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": true,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "authority_hardware",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": true,
+          "promote": false,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "authority_promote",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": true,
+          "paid_compute": false
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    },
+    {
+      "id": "authority_paid_compute",
+      "expected_valid": false,
+      "payload": {
+        "schema_version": "robotics.workspace_exchange.v1",
+        "contract_sha256": "7f6115335dac03c0493940ed9f63d1aba0c741ba55defd434b5208acedf52bf0",
+        "generated_at": "2026-09-05T00:00:00Z",
+        "workspace": {
+          "id": "fixture-arm",
+          "domain": "Synthetic metadata conformance only",
+          "repository": {
+            "head": "1111111111111111111111111111111111111111",
+            "branch": "fixture",
+            "dirty": false
+          },
+          "mandate": {
+            "summary": "Synthetic fixture; no task acceptance",
+            "source_priority": [
+              "mandate"
+            ]
+          },
+          "owner_task": "fixture"
+        },
+        "sources": [
+          {
+            "id": "mandate",
+            "path": "fixture/mandate.md",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "role": "synthetic fixture reference, not a real source"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "fixture.arm",
+            "robot_family": "fixture_six_joint_arm",
+            "native_schema": "fixture.arm.v1",
+            "scope": "synthetic fixture",
+            "action": {
+              "dimension": 6,
+              "ordered_names": [
+                "joint_0",
+                "joint_1",
+                "joint_2",
+                "joint_3",
+                "joint_4",
+                "joint_5"
+              ],
+              "units": [
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian",
+                "radian"
+              ],
+              "encoding": "float32",
+              "representation": "absolute_joint_target",
+              "transform_policy": "No transform"
+            },
+            "observation": {
+              "dimension": 61,
+              "description": "Synthetic named features, not a native tensor",
+              "privileged_state_policy": "No exported state"
+            },
+            "timing": {
+              "control_hz": 20,
+              "physics_step_s": 0.005,
+              "clock": "synthetic_simulation_seconds",
+              "frame_policy": "Synthetic frame only"
+            },
+            "source_ids": [
+              "mandate"
+            ]
+          }
+        ],
+        "capabilities": [
+          {
+            "id": "inspect",
+            "kind": "workspace",
+            "native_schema": "fixture.workspace.v1",
+            "availability": "implemented",
+            "description": "Synthetic command remains inert",
+            "read_only": true,
+            "entrypoint": [
+              "fixture-cli",
+              "inspect"
+            ]
+          }
+        ],
+        "evidence": {
+          "native_classes": [
+            "fixture"
+          ],
+          "native_record_schemas": [
+            "fixture.receipt.v1"
+          ],
+          "integrity_meaning": "Synthetic hashes; source checking must remain unchecked",
+          "acceptance_meaning": "No acceptance",
+          "records_exported": false
+        },
+        "permissions": {
+          "inspect": true,
+          "execute": false,
+          "mutate_sources": false,
+          "train": false,
+          "hardware": false,
+          "promote": false,
+          "paid_compute": true
+        },
+        "native_gate": {
+          "status": "refused",
+          "detail": "Synthetic native refusal is valid metadata"
+        },
+        "limitations": [
+          "Fixture metadata only; never a native source, training result or policy portability receipt"
+        ]
+      }
+    }
+  ]
+}

@@ -64,6 +64,10 @@ uv run --locked sim2claw ops report
 The [operations atlas](./docs/operations/README.md) provides source-linked search,
 18 proposed lessons, a component/dependency map, bounded context packets and a
 durable human feedback journal. Reports and indexes stay local and ignored.
+The [training dojo adapter](./docs/operations/DOJO_ADAPTER.md) connects this
+operations layer with MicroDuck's native workspace through versioned,
+source-hashed metadata and shared conformance tests. Run
+`uv run --locked sim2claw ops adapter conformance` to check the shared contract.
 
 The verified local path is Apple Silicon macOS with
 [`uv`](https://docs.astral.sh/uv/) and network access for the first dependency

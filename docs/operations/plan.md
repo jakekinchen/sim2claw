@@ -79,3 +79,26 @@ No simulation/evaluator/campaign source or external authority was changed.
 Perfection is not a testable
 completion claim. The first release must satisfy every gate above and leave a
 ranked, dependency-mapped expansion plan with measurable acceptance criteria.
+
+## Owner-requested dojo integration — 2026-09-05
+
+The owner explicitly requested co-design with the active MicroDuck workspace
+and training agents. Sim2Claw owns only its adapter/schema/docs; peer agents own
+their active workspaces. Training, source contracts and physical authority stay
+native. See `DOJO_ADAPTER.md` for responsibility boundaries and exact mandates.
+
+| Gate | Acceptance | State |
+| --- | --- | --- |
+| A1 Shared design | Both owners review one versioned metadata/evidence envelope with native ABI and proof boundaries | complete |
+| A2 Native adapters | Each CLI exports and validates the same schema without sharing runtime environments or altering training | complete |
+| A3 Bilateral conformance | Both real exports and negative fixtures pass their intended conformance checks; source drift is explicit | complete for metadata v1 |
+| A4 Durable growth | Both roadmaps record schema ownership, compatibility tests, change/version rules and a retained acceptance receipt | complete |
+
+Software validation: 117 independent adapter tests and 140 focused/adjacent
+operations/control-plane tests pass together (257 total). Both native readers
+pass all 30 shared cases and accept both real source-bound exports. Independent
+ABI/input review and retained receipts are linked in `adapter-verification.md`.
+The architecture now has 27 components and 40 edges, with trace and scene/task
+interchange explicitly behind future native evaluator/conformance gates.
+No adapter test grants policy portability, behavior acceptance or physical
+authority. The existing OR156 campaign and its branch admission remain unchanged.

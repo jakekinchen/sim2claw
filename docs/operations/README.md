@@ -15,6 +15,7 @@ uv run --locked sim2claw ops note --kind feedback --subject leases \
   "Show the prior failing receipt before proposing another verification run."
 uv run --locked sim2claw ops events
 uv run --locked sim2claw ops report
+uv run --locked sim2claw ops adapter conformance
 ```
 
 Global flags precede the command:
@@ -34,6 +35,15 @@ SQLite/FTS5 provides transactional indexing and lexical retrieval; zlib stores
 exact source text compactly. Both are bundled standard-library components.
 
 ## Daily operating rhythm
+
+The [training dojo adapter](DOJO_ADAPTER.md) connects the Sim2Claw operations
+tools with MicroDuck's native Duck Lab. It exchanges source-hashed metadata;
+both projects retain their own robot interfaces, runtimes, queues and evaluators.
+Use `ops adapter export` for JSON, `ops adapter check FILE --source-root ROOT`
+to inspect a producer's exact declarations, and `ops adapter compare FILE
+--peer-root ROOT` for compatibility and native ABI differences. Run
+`ops adapter conformance` after either adapter changes. No capability command
+from an envelope is executed.
 
 1. Run the existing `check --profile agent` and exact role-context command.
    Read any refusal. The operations CLI does not change campaign admission.
@@ -127,7 +137,7 @@ recorded separately from interactive verification.
   measured boundaries and reuse opportunities.
 - [Implementation ledger](plan.md) and [independent review](review.md).
 - `configs/operations/lessons.v1.json`: 18 proposed lessons, 51 source anchors.
-- `configs/operations/architecture.v1.json`: 24 components, 33 typed edges,
+- `configs/operations/architecture.v1.json`: 27 components, 40 typed edges,
   owners, paths, inputs/outputs, gates, next actions and five release milestones.
 
 The next gates are schema-specific verification of cross-record relationships,
