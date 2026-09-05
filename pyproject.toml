@@ -26,6 +26,7 @@ inspect-robots = ["inspect-robots==0.22.0"]
 
 [project.scripts]
 sim2claw = "sim2claw.cli:main"
+sim2claw-ops = "sim2claw.ops.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sim2claw", "evals"]

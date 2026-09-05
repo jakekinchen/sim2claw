@@ -2,15 +2,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Sequence
 
-from .alignment import compare_alignment
-from .capture import fetch_capture
-from .doctor import doctor_json, format_doctor, run_doctor
 from .paths import DEFAULT_OUTPUT_ROOT, REPO_ROOT, STUDIO_ASSET_ROOT
-from .render import render_scene
-from .scene import scene_summary
 
 
 DEFAULT_SYSID_CONFIG = Path("configs/sysid/recorded_action_sysid_v1.json")
@@ -35,6 +31,9 @@ def _parameter_assignments(values: Sequence[str] | None) -> dict[str, float]:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="sim2claw")
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    operations = subparsers.add_parser("ops", help="inspect source-linked operations history, lessons and structure")
+    operations.add_argument("arguments", nargs=argparse.REMAINDER)
 
     doctor = subparsers.add_parser("doctor", help="fail-closed runtime preflight")
     doctor.add_argument(
@@ -1221,7 +1220,19 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    values = list(argv) if argv is not None else sys.argv[1:]
+    if values[:1] == ["ops"]:
+        from .ops.cli import main as operations_main
+
+        return operations_main(values[1:])
+
+    from .alignment import compare_alignment
+    from .capture import fetch_capture
+    from .doctor import doctor_json, format_doctor, run_doctor
+    from .render import render_scene
+    from .scene import scene_summary
+
+    args = build_parser().parse_args(values)
     if args.command == "doctor":
         report = run_doctor(args.target, args.render_probe)
         print(doctor_json(report) if args.as_json else format_doctor(report))

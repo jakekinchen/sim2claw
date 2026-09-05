@@ -1,0 +1,509 @@
+{
+  "schema_version": "sim2claw.ops.lessons.v1",
+  "lessons": [
+    {
+      "id": "OPS-L001",
+      "title": "Compile current authority separately from historical evidence",
+      "domain": "context",
+      "lesson": "Observed: a factory audit retains a superseded scaffold critique beneath an accepted buildout, and checkpoint review found contradictory current-milestone prose. Historical headings and filenames are not live authority.",
+      "action": "Proposed: compile bounded operational context from the verified current agent state, then attach versioned historical evidence with explicit supersession and source owners. Never discover the active task by filename ordering.",
+      "validation": "A fixture containing historical active/PASS prose and two shadow milestones must leave current admission unchanged and flag ambiguity; the current OR156 packet must still report no active simulation card.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/briefs/008-learning-factory-buildout-gap-audit.md",
+          "line": 13,
+          "end_line": 20,
+          "sha256": "9f7bf22dc44e1b9a5155804c7864213412b9a2c1d685ad91df7074a435f0caea"
+        },
+        {
+          "path": "docs/briefs/008-learning-factory-buildout-gap-audit.md",
+          "line": 45,
+          "end_line": 65,
+          "sha256": "9f7bf22dc44e1b9a5155804c7864213412b9a2c1d685ad91df7074a435f0caea"
+        },
+        {
+          "path": "docs/reviewer-messages/031-autonomous-dev-loop-d1-d3-second-stop.md",
+          "line": 12,
+          "end_line": 18,
+          "sha256": "a3d2a03c62027d3f3b7808ab3c2ddf6d2e1324b47ed52b24caabc24dd9122412"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L002",
+      "title": "Validate semantics in addition to hashes",
+      "domain": "evidence",
+      "lesson": "Observed: checkpoint reviews reproduced merge-ready packets with stale/STOP reviews and later with canonically re-digested fabricated checks, a bogus milestone, and an invalid expected remote.",
+      "action": "Proposed: keep integrity verification separate from semantic eligibility; require the explicit schema/check set, status consistency, permitted milestone/remote, proof owner, and current evidence linkage.",
+      "validation": "Re-digest adversarial packets after changing the check names, disposition, milestone, or remote. Each must fail eligibility while a valid exact-snapshot packet passes its bounded contract.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/reviewer-messages/030-autonomous-dev-loop-d1-d3-checkpoint-stop.md",
+          "line": 11,
+          "end_line": 24,
+          "sha256": "cd62d2696a863d18d198dcc6e8d4b026617b919e906bf128d876c4bda4ab9ad2"
+        },
+        {
+          "path": "docs/reviewer-messages/031-autonomous-dev-loop-d1-d3-second-stop.md",
+          "line": 7,
+          "end_line": 18,
+          "sha256": "a3d2a03c62027d3f3b7808ab3c2ddf6d2e1324b47ed52b24caabc24dd9122412"
+        },
+        {
+          "path": "docs/reviewer-messages/032-autonomous-dev-loop-d1-d3-checkpoint-pass.md",
+          "line": 19,
+          "end_line": 26,
+          "sha256": "2b4a1b7b8f084c4fcdc4cdb0921ab337100790f61960cbb5e6d3ed48b6e65fc7"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L003",
+      "title": "Attach review decisions to the exact candidate and tests",
+      "domain": "review",
+      "lesson": "Observed: independent review required multiple repairs, and a post-review schema repair increased the test set from 46 to 47; final review was explicitly required to cover the newer identity.",
+      "action": "Proposed: represent candidate, finding, repair, test receipt, and independent disposition as linked records. Invalidate review coverage when the reviewed candidate or required verification changes.",
+      "validation": "A candidate edit after PASS must show review coverage as stale; a STOP may close a diagnostic objective but must never satisfy a gate explicitly requiring PASS at the candidate snapshot.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/reviewer-messages/030-autonomous-dev-loop-d1-d3-checkpoint-stop.md",
+          "line": 22,
+          "end_line": 24,
+          "sha256": "cd62d2696a863d18d198dcc6e8d4b026617b919e906bf128d876c4bda4ab9ad2"
+        },
+        {
+          "path": "docs/reviewer-messages/033-autonomous-dev-loop-d4-d5-pass.md",
+          "line": 12,
+          "end_line": 24,
+          "sha256": "d5acc2a847404ee16029952def3f02f54af28613d816f809e434532ab1280bc8"
+        },
+        {
+          "path": "docs/reviewer-messages/033-autonomous-dev-loop-d4-d5-pass.md",
+          "line": 26,
+          "end_line": 38,
+          "sha256": "d5acc2a847404ee16029952def3f02f54af28613d816f809e434532ab1280bc8"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L004",
+      "title": "Reuse verification only at exact dependency identity",
+      "domain": "verification",
+      "lesson": "Observed: the accepted checkpoint reused a recorded 30-test receipt without launching tests again. The earlier factory audit found reuse keys that omitted component code, dependencies, and external binaries; that audit is explicitly superseded as implementation status.",
+      "action": "Proposed: expose and reuse existing verified receipts only when tree, runtime, dependencies, command, relevant inputs, and log/artifact identities match. Surface why a prior proof was reused or invalidated.",
+      "validation": "An unchanged invocation must launch zero new test processes; changing each identity dimension or tampering with its retained log must force invalidation rather than return reused.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/reviewer-messages/032-autonomous-dev-loop-d1-d3-checkpoint-pass.md",
+          "line": 12,
+          "end_line": 18,
+          "sha256": "2b4a1b7b8f084c4fcdc4cdb0921ab337100790f61960cbb5e6d3ed48b6e65fc7"
+        },
+        {
+          "path": "docs/briefs/037-autonomous-dev-loop-control-plane.md",
+          "line": 28,
+          "end_line": 37,
+          "sha256": "df6438f897ad952be4ded464da54f2da9f5b6b00e1d5314340478ae3cced7c56"
+        },
+        {
+          "path": "docs/briefs/008-learning-factory-buildout-gap-audit.md",
+          "line": 118,
+          "end_line": 124,
+          "sha256": "9f7bf22dc44e1b9a5155804c7864213412b9a2c1d685ad91df7074a435f0caea"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L005",
+      "title": "Lease the actual worker and verify process ownership",
+      "domain": "process",
+      "lesson": "Observed: leasing a test parent instead of its child and omitting repository cwd allowed duplicate unleased work after a parent crash. The repair added a pre-execution handshake and child PID/start-token/command/cwd binding.",
+      "action": "Proposed: reuse the repository-owned process lease mechanism for task execution, expose its state to humans, and refuse cleanup or duplicate launch when process ownership cannot be verified.",
+      "validation": "Exercise parent crash with a surviving child, PID reuse, command mismatch, wrong cwd, and expired-but-live writer. Duplicate work and unsafe signaling must be refused; verified completed work must release its lease.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/reviewer-messages/030-autonomous-dev-loop-d1-d3-checkpoint-stop.md",
+          "line": 16,
+          "end_line": 18,
+          "sha256": "cd62d2696a863d18d198dcc6e8d4b026617b919e906bf128d876c4bda4ab9ad2"
+        },
+        {
+          "path": "docs/session-logs/027-executor-dev-loop-control-plane-repair.md",
+          "line": 15,
+          "end_line": 25,
+          "sha256": "60f55ad3e66838258d7fd9623fb2212f489095927c6b670c3298ddfdfaaed651"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L006",
+      "title": "Check source dependency drift before expensive verification",
+      "domain": "verification",
+      "lesson": "Observed: broad suites rediscovered stale project-state bindings and a correction-mixture receipt without the updated lineage spine. Recorded final full suites took 1266.71 and 1280.60 seconds; these are historical run durations, not a current performance baseline.",
+      "action": "Proposed: map source/config/receipt dependencies and run their cheap identity and lineage checks before expensive suites. Re-run required broad gates after repairs, with each scope and result reported separately.",
+      "validation": "Mutate a bound project state or lineage source in a fixture: preflight must identify the exact affected dependency before expensive test launch. Required final broad checks must remain required.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/022-executor-sail-policy-flywheel.md",
+          "line": 17,
+          "end_line": 25,
+          "sha256": "6f84c6810e8400f50d2c4391708521e62c084405e247376440d1e5c775a21e46"
+        },
+        {
+          "path": "docs/session-logs/024-executor-sail-publication-freeze.md",
+          "line": 23,
+          "end_line": 30,
+          "sha256": "9599130cd67b3c78585b1d9695e2afa541b9cb8ce57582453f78caf7073edc62"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L007",
+      "title": "Prove access before paid work and close every resource lease",
+      "domain": "resources",
+      "lesson": "Observed: GR00T stopped before optimizer step zero on gated Cosmos access after worker setup; the record required a passing local access check before reprovisioning and confirmed an empty Brev inventory. The manager froze one worker, wall-clock and spend caps, and immediate teardown.",
+      "action": "Proposed: put dependency/access preflight before provisioning, and bind every future paid resource to a current task, budget, cutoff, artifact recovery, and verified inventory closeout.",
+      "validation": "With a simulated access denial, zero provisioning calls may occur. With completed or failed work, a simulated lease must terminate and retain teardown evidence; an unavailable inventory surface must be reported as unresolved, not empty.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/002-executor-groot-n17-brev-auth-gate.md",
+          "line": 17,
+          "end_line": 26,
+          "sha256": "6904af4dd572f9b87e7c59ac7360a47cbceb47504bef7ad9427cb33e1d157b3f"
+        },
+        {
+          "path": "docs/session-logs/002-executor-groot-n17-brev-auth-gate.md",
+          "line": 30,
+          "end_line": 46,
+          "sha256": "6904af4dd572f9b87e7c59ac7360a47cbceb47504bef7ad9427cb33e1d157b3f"
+        },
+        {
+          "path": "docs/manager-log/001-groot-n17-brev-budget.md",
+          "line": 20,
+          "end_line": 34,
+          "sha256": "840f6e4d2ac81b9c9eaf75de4de0caf634286f40bdc501cec5614a59c5c7c42c"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L008",
+      "title": "Distinguish native crashes from test assertions and capability proof",
+      "domain": "verification",
+      "lesson": "Observed: ObservableEpisode focused checks passed while broad runs had unrelated failures/errors and a known native segmentation fault. GUI service, Chrome SIGABRT, and cached WebKit abort were separately recorded without claiming renderer capability.",
+      "action": "Proposed: classify verification outcomes by assertion failure, identity drift, unavailable capability, native crash, interrupted/incomplete run, skip, and passed scope. Run native capability probes in bounded subprocesses with explicit environment identity.",
+      "validation": "Fixture subprocesses that exit normally, assert, signal-abort, time out, or cannot launch must yield different terminal records. A passing focused subset must not turn an incomplete broad run green.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/060-executor-observable-episode-v2-min.md",
+          "line": 13,
+          "end_line": 29,
+          "sha256": "9c8525085d3ded0ff208a6e4361fe6b11fc946bfbbd1ea07afaaaf74fc407d78"
+        },
+        {
+          "path": "docs/session-logs/132-executor-observable-registration-or60.md",
+          "line": 5,
+          "end_line": 14,
+          "sha256": "248f6613a39b0faae472199cc4554f5c6d9b448e372eb5595b5684f59399286c"
+        },
+        {
+          "path": "docs/session-logs/133-executor-observable-registration-or61.md",
+          "line": 11,
+          "end_line": 20,
+          "sha256": "906c139e3460eab6f00ca949c1aebcbeb1bbbb3a6de872251c0c8ac268d2e9db"
+        },
+        {
+          "path": "docs/session-logs/134-executor-observable-registration-or62.md",
+          "line": 5,
+          "end_line": 18,
+          "sha256": "5d9d312ff7afaaaf3ca6e16708d484589fd1053b247cf034951f814a2b88c2c3"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L009",
+      "title": "Derive contract feasibility and resource counts before freezing",
+      "domain": "preflight",
+      "lesson": "Observed: a route family could never meet 88.9 mm clearance because its frozen layout upper bound was 62.861793 mm. OR76 also expected 19 unique assets despite 18 unique filenames and performed 36 reads. These were contract/resource negatives, not mechanical or visual-fidelity results.",
+      "action": "Proposed: perform cheap feasibility proofs and manifest-derived resource accounting before an official experiment is frozen; bind the feasibility result to its exact source identities.",
+      "validation": "The infeasible clearance fixture must reject before any capture/action/replay. A manifest with 36 definitions referencing 18 files must report 18 unique assets and enforce the declared read budget.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/051-executor-q05-preregistered-feasibility-audit.md",
+          "line": 8,
+          "end_line": 23,
+          "sha256": "943b329c584e46cd1baa5502d0eb0085dbdd02d425fc817778c2855219d250a0"
+        },
+        {
+          "path": "docs/session-logs/052-executor-q06-proof-class-correction.md",
+          "line": 8,
+          "end_line": 21,
+          "sha256": "cf19baf023e0970e1b69c590d90a637aa0b33e5a181846ecec08ae80116acfd1"
+        },
+        {
+          "path": "docs/session-logs/148-executor-observable-registration-or76.md",
+          "line": 11,
+          "end_line": 21,
+          "sha256": "4acdf59c2ef9fc63c8c0efd9880721c491d2e561be7e7619bf715daab7eec0b9"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L010",
+      "title": "Gate instrumentation and receipt transactions before official work",
+      "domain": "instrumentation",
+      "lesson": "Observed: a missing serializer produced unreceipted quarantined output. OR133B then consumed 222 baseline frames before discovering that separate robot-mask distances did not reproduce the predecessor union-mask statistic; OR133C repaired this under a new identity.",
+      "action": "Proposed: validate serialization, predecessor reproduction, resource counters, and discriminating instrumentation cases on allowed fixtures before official evidence work. Emit terminal attempt records on failure without admitting unverified outputs; repairs retain predecessor lineage.",
+      "validation": "A fixture with touching/overlapping masks must detect the union-vs-separate statistic change before full processing. Serializer failure must preserve an unadmitted terminal attempt, and rerun under an exhausted identity must be refused.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/reviewer-messages/058-proxy-collision-v2-quarantine-v3-freeze.md",
+          "line": 3,
+          "end_line": 8,
+          "sha256": "a6b0126b9bbe0dc7bc4e6c4c4222303d675045f0910a5c8d008a95414a86ea84"
+        },
+        {
+          "path": "docs/session-logs/211-executor-observable-registration-or133b.md",
+          "line": 3,
+          "end_line": 23,
+          "sha256": "1a7190d4c0c8b7c483a5b43ba4ed89f4dac48047d948f0e879b89f160642281c"
+        },
+        {
+          "path": "docs/session-logs/212-executor-observable-registration-or133c.md",
+          "line": 3,
+          "end_line": 16,
+          "sha256": "60e5cac9ae9172eda20e606abded537d75e9cfefd74342d093573e824f5fdce6"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L011",
+      "title": "Preserve row-level actions, clocks, and source association",
+      "domain": "simulation",
+      "lesson": "Observed: ObservableEpisode stores requested/mapped/sent/applied action rows and missing channels explicitly. Pi recordings from other runs could not be treated as a third view of the successful source. OR156 narrowed one host-clock explanation while leaving application/exposure timing unidentified.",
+      "action": "Proposed: keep action bytes unchanged when isolating simulator gaps and expose row ownership, units, timing source, camera association uncertainty, same-run lineage, and absent clocks together.",
+      "validation": "Changing one action byte or attaching a different run must fail identity checks. Missing application timestamps must remain null/unavailable. A host-frame association result must not be relabeled exposure synchronization.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/060-executor-observable-episode-v2-min.md",
+          "line": 6,
+          "end_line": 11,
+          "sha256": "9c8525085d3ded0ff208a6e4361fe6b11fc946bfbbd1ea07afaaaf74fc407d78"
+        },
+        {
+          "path": "docs/manager-log/007-pi-stream-intake-contact-causality-transition.md",
+          "line": 14,
+          "end_line": 23,
+          "sha256": "ccfa73dbded52c0751e544dde1e8247275be0f9d64dc27b116378935eda2b074"
+        },
+        {
+          "path": "docs/manager-log/007-pi-stream-intake-contact-causality-transition.md",
+          "line": 31,
+          "end_line": 47,
+          "sha256": "ccfa73dbded52c0751e544dde1e8247275be0f9d64dc27b116378935eda2b074"
+        },
+        {
+          "path": "docs/reviewer-messages/228-observable-registration-or156-source-clock-provenance-audit.md",
+          "line": 17,
+          "end_line": 31,
+          "sha256": "e457b4223e8b12df70bc3482ce258b1021f124df51eb45bae49635d1580470d6"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L012",
+      "title": "Explain endpoint scores with event and robustness evidence",
+      "domain": "analysis",
+      "lesson": "Observed: OR50 endpoint success was isolated to one candidate, failed the required neighborhood width, and lacked bilateral named contact. A retained 53-candidate audit found no candidate satisfying four or all five preterminal gates without rerunning simulation.",
+      "action": "Proposed: expose event timing, first divergence, named contact identity, gate-vector intersections, and local neighborhoods beside endpoint scores. Keep numerical task success, event compatibility, and generalization as separate fields.",
+      "validation": "A fixture containing one terminal success with absent bilateral contact and failed neighbors must retain its endpoint score while denying the broader robustness/event-match claim. The audit must use retained records without hidden replay.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/123-executor-observable-registration-or51.md",
+          "line": 5,
+          "end_line": 25,
+          "sha256": "6f88e99bfc6f39f0f7fcef13223977cdc295cabb33ac2ec0bf64778d67262133"
+        },
+        {
+          "path": "docs/session-logs/125-executor-observable-registration-or53.md",
+          "line": 5,
+          "end_line": 28,
+          "sha256": "2851e2e5331f402f10befbaf1405c51551cd1305cba59ea6adfa75fc91fa384f"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L013",
+      "title": "Represent missing discriminating evidence as a precise blocker",
+      "domain": "analysis",
+      "lesson": "Observed: the integrated SAIL decision plane selected unavailable force/deformation measurements after a manual 514-replay/0-pass baseline. OR23 could not distinguish four mechanisms from retained observations; OR156 successfully closed only one timing explanation and admitted no successor.",
+      "action": "Proposed: store blockers with observed evidence, missing observable, owner, acceptable independent input, and closed descendants. Missing data is not a zero, and an unavailable high-value measurement must not silently turn into another uninformative simulator search.",
+      "validation": "When all branches lack their required independent channels, the planner must explain each missing observation and return no admitted experiment. Adding unrelated data must not clear the blocker.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/manager-log/002-sail-live-operator.md",
+          "line": 7,
+          "end_line": 38,
+          "sha256": "a4b5a1a8b9c87782437c2b9cb9317d1adc9d5dc5763ea408d25cabc19a5b6d49"
+        },
+        {
+          "path": "docs/session-logs/095-executor-observable-registration-or23.md",
+          "line": 9,
+          "end_line": 40,
+          "sha256": "92839b12989decf1df23d2ce3301dd7e1ede3b8d7d23b07a4ab56bdaa2eba56f"
+        },
+        {
+          "path": "docs/reviewer-messages/228-observable-registration-or156-source-clock-provenance-audit.md",
+          "line": 26,
+          "end_line": 37,
+          "sha256": "e457b4223e8b12df70bc3482ce258b1021f124df51eb45bae49635d1580470d6"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L014",
+      "title": "Deduplicate closed mechanism families by evidence identity",
+      "domain": "planning",
+      "lesson": "Observed: OR53 closed exactly the existing 53 sampled fixed-pad candidates, explicitly not the unsampled continuum. Renderer probes also closed distinct unchanged local routes. These boundaries carry both reusable negative knowledge and limits on what was exhausted.",
+      "action": "Proposed: retrieve previous attempts by mechanism, changed variable, source/runtime identity, sampled domain, and evidence needed to reopen. A successor proposal must name its independent information gain or a separately authorized new scope.",
+      "validation": "A repeat proposal with unchanged family/input/environment and no new evidence must surface the prior terminal result. A proposal outside the sampled domain must not be incorrectly labeled experimentally exhausted or automatically admitted.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/125-executor-observable-registration-or53.md",
+          "line": 11,
+          "end_line": 28,
+          "sha256": "2851e2e5331f402f10befbaf1405c51551cd1305cba59ea6adfa75fc91fa384f"
+        },
+        {
+          "path": "docs/session-logs/134-executor-observable-registration-or62.md",
+          "line": 14,
+          "end_line": 18,
+          "sha256": "5d9d312ff7afaaaf3ca6e16708d484589fd1053b247cf034951f814a2b88c2c3"
+        },
+        {
+          "path": "docs/reviewer-messages/228-observable-registration-or156-source-clock-provenance-audit.md",
+          "line": 33,
+          "end_line": 37,
+          "sha256": "e457b4223e8b12df70bc3482ce258b1021f124df51eb45bae49635d1580470d6"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L015",
+      "title": "Show proof scope and human semantic review together",
+      "domain": "observability",
+      "lesson": "Observed: OR91 passed frozen numeric visual gates yet frame inspection showed missing/misaligned robot structure, so the broad same-video claim was rejected. Studio already synchronized source rows, video, and pawn displacement while retaining task 0/1 and missing channels.",
+      "action": "Proposed: make terminal and UI views projections of the same evidence/event model, with component metrics, semantic findings, proof scope, missing channels, and immutable source drilldown visible together.",
+      "validation": "The OR91 fixture must display its numeric pass and rejected broader claim simultaneously. Scrubbing an event fixture must select the same source row across action, video, and outcome views; absent channels must not plot as zero.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/163-executor-observable-registration-or91.md",
+          "line": 3,
+          "end_line": 9,
+          "sha256": "d0d189f6519b328908a389ac1177c31855794757d4d2e2b663a0c75bb59a8cda"
+        },
+        {
+          "path": "docs/session-logs/086-executor-realized-action-c8-studio-proof.md",
+          "line": 9,
+          "end_line": 22,
+          "sha256": "029012172e7ba777316818316adbeabdb970c29b27b1fa43efeb6c6510939972"
+        },
+        {
+          "path": "docs/session-logs/086-executor-realized-action-c8-studio-proof.md",
+          "line": 38,
+          "end_line": 51,
+          "sha256": "029012172e7ba777316818316adbeabdb970c29b27b1fa43efeb6c6510939972"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L016",
+      "title": "Optimize measured seams under result-equivalence gates",
+      "domain": "performance",
+      "lesson": "Observed: OR79 replaced one Python raster seam with dependency-free C11, retaining zero pixel mismatches, identical encoded image SHA, and matching depth/occlusion counts. The record reports 22.0645 s versus 0.0356 s, a 620.1x raster-stage improvement for that bounded case.",
+      "action": "Proposed: prioritize measured cost centers, preserve an exact reference implementation/input identity, and require output equivalence plus representative performance evidence before widening an optimization claim.",
+      "validation": "Compare reference and candidate outputs byte-for-byte for the frozen seam; time the stage separately from end-to-end work and evaluate representative additional cases. A faster but visually changed candidate must fail equivalence.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/151-executor-observable-registration-or79.md",
+          "line": 4,
+          "end_line": 10,
+          "sha256": "ef61ff1a804ba5c9e44b6c333ad554bd55dad13fdb0cc9ed2ed986f08a57b2db"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L017",
+      "title": "Use content identity rather than filenames as record keys",
+      "domain": "provenance",
+      "lesson": "Observed: two OR125 logs record different lifecycle events, a prerequisite-identity non-run and a later executed result. Another source directory label conflicts with its receipt-owned task identity. The scanned session corpus also contains reused numeric prefixes.",
+      "action": "Proposed: preserve path/content identity, explicit card/attempt/run links, raw title, and receipt-owned semantic labels independently. Do not merge, supersede, or count attempts using a filename number or title alone.",
+      "validation": "Index both OR125 records and both reused-prefix records without collision. A conflicting directory label must remain visible as context while semantic task identity follows the verified source owner; unresolved conflicts remain unresolved.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/200-executor-observable-registration-or125.md",
+          "line": 3,
+          "end_line": 7,
+          "sha256": "21f467b35a593e8416dcc06fc30a7194b1e1e143eee887486c3bd17edf310cc2"
+        },
+        {
+          "path": "docs/session-logs/202-executor-observable-registration-or125.md",
+          "line": 3,
+          "end_line": 10,
+          "sha256": "dbf8053753afd29babb497ff0188abb32b759bb0ce39a58edea4654da9745992"
+        },
+        {
+          "path": "docs/session-logs/126-executor-observable-registration-or54.md",
+          "line": 5,
+          "end_line": 21,
+          "sha256": "3edc1c7cbf4929c05f1c9d225b5586a1f9f5dc65808c9eaa5c62f4566c015cf1"
+        }
+      ]
+    },
+    {
+      "id": "OPS-L018",
+      "title": "Evaluate whether collective lessons improve real work",
+      "domain": "learning",
+      "lesson": "Observed: DevLoopBench explicitly measured configured seeded-control coverage, not general coding/research ability. The publication record reports a deterministic-plus-agent fixture adding no recovery while doubling evaluations. Infrastructure correctness does not establish improved agent effectiveness.",
+      "action": "Proposed: retain source-bound lessons as proposed until independent review, and assess their usefulness on a separately frozen task cohort using correct authority retrieval, repeated-defect avoidance, review rounds, verified outcomes, elapsed work, and cost.",
+      "validation": "Compare a baseline and lesson-assisted workflow on the same frozen cases with complete attempt retention and explicit scope. Record no-change and regressions; document counts, seeded labels, or favorable summaries alone must not satisfy an effectiveness claim.",
+      "status": "proposed",
+      "sources": [
+        {
+          "path": "docs/session-logs/027-executor-dev-loop-control-plane-repair.md",
+          "line": 51,
+          "end_line": 56,
+          "sha256": "60f55ad3e66838258d7fd9623fb2212f489095927c6b670c3298ddfdfaaed651"
+        },
+        {
+          "path": "docs/session-logs/024-executor-sail-publication-freeze.md",
+          "line": 13,
+          "end_line": 21,
+          "sha256": "9599130cd67b3c78585b1d9695e2afa541b9cb8ce57582453f78caf7073edc62"
+        },
+        {
+          "path": "docs/reviewer-messages/004-corrective-loop-closeout.md",
+          "line": 17,
+          "end_line": 31,
+          "sha256": "325a469f00c65e7352cc49f3082425e71f4981b8842bdaeed2bbacc5b166472b"
+        }
+      ]
+    }
+  ]
+}

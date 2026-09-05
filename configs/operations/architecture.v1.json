@@ -1,0 +1,559 @@
+{
+  "schema_version": "sim2claw.ops.architecture.v1",
+  "description": "Current components, implemented operations layer and explicitly proposed expansions. Existence is not operational admission or proof of benefit.",
+  "nodes": [
+    {
+      "id": "sources",
+      "title": "Repository evidence",
+      "layer": "evidence",
+      "state": "existing",
+      "paths": [
+        "docs/session-logs",
+        "docs/reviewer-messages",
+        "docs/run-logs",
+        "configs/decisions"
+      ],
+      "owner": "Executor and independent Reviewer",
+      "inputs": "Briefs, logs, decisions, local receipts",
+      "outputs": "Original path, bytes, declared proof class",
+      "gate": "Original records retained; no success inferred from words",
+      "next_action": "Use source path and SHA-256 rather than repeated numeric prefixes"
+    },
+    {
+      "id": "authority",
+      "title": "Current campaign authority",
+      "layer": "control",
+      "state": "existing",
+      "paths": [
+        "src/sim2claw/agent_context.py",
+        "configs/agent/current_state_v1.json",
+        "GOAL.md"
+      ],
+      "owner": "Campaign owner",
+      "inputs": "Current manifest, graph, queue, repository identity",
+      "outputs": "Bounded role context or explicit refusal",
+      "gate": "Hash, semantic and repository identity checks pass",
+      "next_action": "Resolve admission through existing owner transition; a history query grants none"
+    },
+    {
+      "id": "index",
+      "title": "Operations corpus index",
+      "layer": "operations",
+      "state": "implemented",
+      "paths": [
+        "src/sim2claw/ops/core.py"
+      ],
+      "owner": "Operations CLI",
+      "inputs": "Scoped local UTF-8 sources",
+      "outputs": "Rebuildable SQLite, coverage, content hashes, skipped/missing rows",
+      "gate": "All discovered text has an explicit disposition; deletion and drift are tested",
+      "next_action": "Refresh before retrieval; disclose oversized and excluded inputs"
+    },
+    {
+      "id": "retrieval",
+      "title": "Source-span retrieval",
+      "layer": "operations",
+      "state": "implemented",
+      "paths": [
+        "src/sim2claw/ops/core.py"
+      ],
+      "owner": "Agent or human reader",
+      "inputs": "Literal query and optional source kind",
+      "outputs": "Ranked source lines, hash, current/stale indication",
+      "gate": "Quoted spans resolve to exact indexed source lines; no command execution",
+      "next_action": "Inspect citations before applying a historical technique"
+    },
+    {
+      "id": "lessons",
+      "title": "Collective operational lessons",
+      "layer": "learning",
+      "state": "implemented",
+      "paths": [
+        "configs/operations/lessons.v1.json"
+      ],
+      "owner": "Independent Reviewer",
+      "inputs": "Observed failures, successful techniques, exact source citations",
+      "outputs": "Proposed lesson, recommended action, falsifiable validation",
+      "gate": "Every source hash and span verifies; proposed status stays explicit",
+      "next_action": "Review lesson applicability and test its claimed benefit before promotion"
+    },
+    {
+      "id": "brief",
+      "title": "Bounded task context",
+      "layer": "operations",
+      "state": "implemented",
+      "paths": [
+        "src/sim2claw/ops/core.py"
+      ],
+      "owner": "Task planner",
+      "inputs": "Task query, verified citations, current authority",
+      "outputs": "Size-bounded context packet with relevant lessons and omitted counts",
+      "gate": "Packet stays inside declared byte budget; stale evidence is marked",
+      "next_action": "Prepare context before a new task and keep the source retrieval reproducible"
+    },
+    {
+      "id": "view",
+      "title": "Human evidence browser",
+      "layer": "visibility",
+      "state": "implemented",
+      "paths": [
+        "src/sim2claw/ops/view.py",
+        "src/sim2claw/ops/cli.py"
+      ],
+      "owner": "Human operator",
+      "inputs": "Shared operations snapshot",
+      "outputs": "Terminal watch, filterable source browser, lesson and structure details",
+      "gate": "Snapshot timestamp and refresh command visible; text is escaped",
+      "next_action": "Inspect source metadata and dependency gates, then record feedback"
+    },
+    {
+      "id": "journal",
+      "title": "Human feedback journal",
+      "layer": "visibility",
+      "state": "implemented",
+      "paths": [
+        "src/sim2claw/ops/core.py"
+      ],
+      "owner": "Human operator",
+      "inputs": "Note, hypothesis, decision, feedback or milestone annotation",
+      "outputs": "Append-only ordered local events",
+      "gate": "Annotations cannot change campaign or lesson authority",
+      "next_action": "Record an observation with the source or lesson ID as subject"
+    },
+    {
+      "id": "studio",
+      "title": "Studio simulation inspection",
+      "layer": "visibility",
+      "state": "existing",
+      "paths": [
+        "src/sim2claw/studio_project_map.py",
+        "src/sim2claw/studio_events.py"
+      ],
+      "owner": "Studio client",
+      "inputs": "Catalog, SAIL observatory, factory project, process snapshot",
+      "outputs": "Eight-stage simulation view and current activity",
+      "gate": "Existing receipt and current-state validators remain authoritative",
+      "next_action": "Later consume the same operations read model; avoid a second history database"
+    },
+    {
+      "id": "contracts",
+      "title": "Task and artifact contracts",
+      "layer": "control",
+      "state": "existing",
+      "paths": [
+        "src/sim2claw/dev_loop/lifecycle.py",
+        "src/sim2claw/learning_factory_contracts.py"
+      ],
+      "owner": "Planner and evaluator owner",
+      "inputs": "Scope, inputs, authority, cost/time budgets",
+      "outputs": "Hash-bound task, artifact and review envelopes",
+      "gate": "Semantic authorization is validated in addition to file hashes",
+      "next_action": "Generate suggestions for contracts, leaving admission with existing validators"
+    },
+    {
+      "id": "runner",
+      "title": "Leased software test runner",
+      "layer": "execution",
+      "state": "existing",
+      "paths": [
+        "src/sim2claw/dev_loop/runner.py",
+        "src/sim2claw/dev_loop/worker.py"
+      ],
+      "owner": "Executor",
+      "inputs": "Authorized test command and task contract",
+      "outputs": "Owned child process, timeout, logs and receipt",
+      "gate": "Lease actual child before exec; concurrent duplicate run refused",
+      "next_action": "Reuse for future bounded software jobs after separate scope admission"
+    },
+    {
+      "id": "cache",
+      "title": "Exact-identity verification reuse",
+      "layer": "execution",
+      "state": "existing",
+      "paths": [
+        "src/sim2claw/dev_loop/lifecycle.py"
+      ],
+      "owner": "Verifier",
+      "inputs": "HEAD/tree, command, relevant paths, dependencies, runtime",
+      "outputs": "Reusable passing receipt or required rerun",
+      "gate": "Any declared relevant input drift invalidates reuse",
+      "next_action": "Measure cache-hit rate and input completeness before broadening reuse"
+    },
+    {
+      "id": "review",
+      "title": "Independent review and closeout",
+      "layer": "control",
+      "state": "existing",
+      "paths": [
+        "src/sim2claw/dev_loop/lifecycle.py",
+        "docs/reviewer-messages"
+      ],
+      "owner": "Reviewer",
+      "inputs": "Scoped diff, test receipt, source identity, claim boundary",
+      "outputs": "CONTINUE/NUDGE/REDIRECT/STOP/ESCALATE with evidence",
+      "gate": "STOP, stale HEAD or self-asserted evaluator identity cannot authorize merge",
+      "next_action": "Review terminal negative as a valid result when the scientific gate warrants it"
+    },
+    {
+      "id": "scene",
+      "title": "Simulation scene construction",
+      "layer": "simulation",
+      "state": "existing",
+      "paths": [
+        "src/sim2claw/scene.py",
+        "src/sim2claw/render.py"
+      ],
+      "owner": "Simulation author",
+      "inputs": "Reviewed scene geometry, camera, material and dynamics inputs",
+      "outputs": "Versioned MuJoCo scene and rendered diagnostic",
+      "gate": "Frozen scene identity and scoped evidence class retained",
+      "next_action": "Optimize measured bottlenecks with byte/semantic equivalence controls"
+    },
+    {
+      "id": "replay",
+      "title": "Exact-action replay",
+      "layer": "simulation",
+      "state": "existing",
+      "paths": [
+        "src/sim2claw/replay_eligibility.py"
+      ],
+      "owner": "Replay evaluator",
+      "inputs": "Hash-bound measured initial state and unchanged action tensor",
+      "outputs": "Eligibility audit and exact replay trace",
+      "gate": "No IK, clipping, offset, suffix or hidden assistance in exact-action proof",
+      "next_action": "Check prerequisite eligibility before spending on replay or fitting"
+    },
+    {
+      "id": "diagnosis",
+      "title": "Causal simulation analysis",
+      "layer": "analysis",
+      "state": "existing",
+      "paths": [
+        "configs/sail/observable_registration_current_graph_v1.json",
+        "configs/decisions"
+      ],
+      "owner": "Scientific Reviewer",
+      "inputs": "Paired trace, event windows, contact/timing residuals, independent measurement",
+      "outputs": "Identified residual, falsified hypothesis or explicit unknown",
+      "gate": "Event and contact parity cannot be replaced by endpoint appearance",
+      "next_action": "Use cheapest discriminating test; stop exhausted explanations pending new evidence"
+    },
+    {
+      "id": "evaluation",
+      "title": "Independent capability evaluation",
+      "layer": "analysis",
+      "state": "existing",
+      "paths": [
+        "evals/inspect_gapbench",
+        "src/sim2claw/learning_factory_promotion.py"
+      ],
+      "owner": "Evaluator owner",
+      "inputs": "Frozen scenarios/seeds, candidate artifacts, controls",
+      "outputs": "Separated fixture/simulation/replay/learned/physical verdicts",
+      "gate": "Training never grades or promotes itself; held-out isolation is maintained",
+      "next_action": "Report per-proof-class gates and whole-episode reliability"
+    },
+    {
+      "id": "gateway",
+      "title": "Physical acquisition and robot gateway",
+      "layer": "physical",
+      "state": "existing",
+      "paths": [
+        "src/sim2claw/task_orchestrator.py",
+        "configs/hardware"
+      ],
+      "owner": "Human authority and reviewed gateway",
+      "inputs": "Action-time camera/serial/motion authority and hardware readiness",
+      "outputs": "Physical receipt and measured observations",
+      "gate": "Only reviewed gateway can operate hardware; software history grants no access",
+      "next_action": "Remain at current external-input boundary until independently authorized"
+    },
+    {
+      "id": "recipes",
+      "title": "Reviewed reusable technique registry",
+      "layer": "learning",
+      "state": "proposed",
+      "paths": [],
+      "owner": "Reviewer",
+      "inputs": "Lesson plus reproducible command/input/output contract",
+      "outputs": "Versioned coding, rendering and analysis recipe",
+      "gate": "Frozen positive/negative controls; measured quality and time advantage",
+      "next_action": "Start with OR79 equivalence optimization, context preparation and exact receipt reuse"
+    },
+    {
+      "id": "lesson_eval",
+      "title": "Learning effectiveness benchmark",
+      "layer": "learning",
+      "state": "proposed",
+      "paths": [],
+      "owner": "Independent evaluator",
+      "inputs": "Frozen retrieval tasks and baseline/candidate agent contexts",
+      "outputs": "Time-to-evidence, citation accuracy, repeated-work and token-cost comparison",
+      "gate": "Paired trials and independent scoring; no configured-label score substituted",
+      "next_action": "Freeze 20 representative historical questions before changing retrieval or prompts"
+    },
+    {
+      "id": "scheduler",
+      "title": "Resource-aware software scheduling",
+      "layer": "execution",
+      "state": "proposed",
+      "paths": [],
+      "owner": "Manager",
+      "inputs": "Admitted software task, dependency graph, resource and cost budget",
+      "outputs": "Queue/wait/run/cancel state using existing leases",
+      "gate": "Single owner, bounded work, no stale PID cleanup, external cost closeout",
+      "next_action": "Measure queue wait before adding per-identity concurrency"
+    },
+    {
+      "id": "live_events",
+      "title": "Live event adapters",
+      "layer": "visibility",
+      "state": "proposed",
+      "paths": [],
+      "owner": "Operations adapter",
+      "inputs": "Existing runner events and Studio heartbeat snapshots",
+      "outputs": "Cursor-based phase history, job status, human-visible progress",
+      "gate": "Snapshot vs complete history labeled; dropped sequence and reconnect tested",
+      "next_action": "Add event envelopes at existing phase boundaries instead of scraping terminal text"
+    },
+    {
+      "id": "evidence_edges",
+      "title": "Verified cross-record relationships",
+      "layer": "evidence",
+      "state": "proposed",
+      "paths": [],
+      "owner": "Evidence verifier",
+      "inputs": "Source->contract->attempt->receipt->review references and hashes",
+      "outputs": "Typed edges with existence/hash/semantic verification state",
+      "gate": "Missing, contradictory, stale and historical relations remain visible",
+      "next_action": "Add schema-specific adapters for dev-loop, SAIL and task-orchestrator receipts"
+    },
+    {
+      "id": "portable",
+      "title": "Portable reproducible operations bundle",
+      "layer": "operations",
+      "state": "proposed",
+      "paths": [],
+      "owner": "Release owner",
+      "inputs": "Reviewed lessons, source manifests, configuration and scoped outputs",
+      "outputs": "Export/import with redaction and verification report",
+      "gate": "Missing ignored artifacts and private data explicit; no embedded credentials",
+      "next_action": "Define portable manifest and artifact hydration policy before sharing"
+    }
+  ],
+  "edges": [
+    {
+      "from": "sources",
+      "to": "index",
+      "relation": "indexed_by"
+    },
+    {
+      "from": "index",
+      "to": "retrieval",
+      "relation": "queried_by"
+    },
+    {
+      "from": "sources",
+      "to": "lessons",
+      "relation": "supports"
+    },
+    {
+      "from": "retrieval",
+      "to": "brief",
+      "relation": "provides_citations"
+    },
+    {
+      "from": "lessons",
+      "to": "brief",
+      "relation": "provides_advice"
+    },
+    {
+      "from": "authority",
+      "to": "brief",
+      "relation": "bounds_current_work"
+    },
+    {
+      "from": "index",
+      "to": "view",
+      "relation": "projects"
+    },
+    {
+      "from": "lessons",
+      "to": "view",
+      "relation": "explains"
+    },
+    {
+      "from": "journal",
+      "to": "view",
+      "relation": "shows_feedback"
+    },
+    {
+      "from": "view",
+      "to": "journal",
+      "relation": "invites_feedback"
+    },
+    {
+      "from": "brief",
+      "to": "contracts",
+      "relation": "informs"
+    },
+    {
+      "from": "authority",
+      "to": "contracts",
+      "relation": "governs"
+    },
+    {
+      "from": "contracts",
+      "to": "runner",
+      "relation": "admits"
+    },
+    {
+      "from": "runner",
+      "to": "cache",
+      "relation": "emits_receipts"
+    },
+    {
+      "from": "cache",
+      "to": "review",
+      "relation": "supplies_validation"
+    },
+    {
+      "from": "review",
+      "to": "lessons",
+      "relation": "proposes_learning"
+    },
+    {
+      "from": "scene",
+      "to": "replay",
+      "relation": "supplies_model"
+    },
+    {
+      "from": "gateway",
+      "to": "replay",
+      "relation": "supplies_recorded_inputs"
+    },
+    {
+      "from": "replay",
+      "to": "diagnosis",
+      "relation": "supplies_trace"
+    },
+    {
+      "from": "diagnosis",
+      "to": "evaluation",
+      "relation": "proposes_testable_hypothesis"
+    },
+    {
+      "from": "evaluation",
+      "to": "review",
+      "relation": "supplies_verdict"
+    },
+    {
+      "from": "evaluation",
+      "to": "studio",
+      "relation": "projects_evidence"
+    },
+    {
+      "from": "lessons",
+      "to": "recipes",
+      "relation": "candidates_for"
+    },
+    {
+      "from": "recipes",
+      "to": "lesson_eval",
+      "relation": "tested_by"
+    },
+    {
+      "from": "lesson_eval",
+      "to": "lessons",
+      "relation": "supports_reviewed_revision"
+    },
+    {
+      "from": "contracts",
+      "to": "scheduler",
+      "relation": "required_by"
+    },
+    {
+      "from": "scheduler",
+      "to": "runner",
+      "relation": "delegates"
+    },
+    {
+      "from": "runner",
+      "to": "live_events",
+      "relation": "emits"
+    },
+    {
+      "from": "studio",
+      "to": "live_events",
+      "relation": "snapshots"
+    },
+    {
+      "from": "live_events",
+      "to": "view",
+      "relation": "streams"
+    },
+    {
+      "from": "sources",
+      "to": "evidence_edges",
+      "relation": "references"
+    },
+    {
+      "from": "evidence_edges",
+      "to": "retrieval",
+      "relation": "explains_relationships"
+    },
+    {
+      "from": "index",
+      "to": "portable",
+      "relation": "exports_manifest"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "R1",
+      "title": "Evidence index and visible operations",
+      "state": "implemented_pending_review",
+      "depends_on": [],
+      "gate": "Complete explicit corpus coverage, source retrieval, cited lessons, bounded context, feedback and interactive report pass independent review"
+    },
+    {
+      "id": "R2",
+      "title": "Verify cross-record meaning",
+      "state": "proposed",
+      "depends_on": [
+        "R1"
+      ],
+      "gate": "Schema adapters validate dev-loop, SAIL and task receipts; tampered hashes, STOP and mixed outcomes remain distinct"
+    },
+    {
+      "id": "R3",
+      "title": "Demonstrate learning benefit",
+      "state": "proposed",
+      "depends_on": [
+        "R1",
+        "R2"
+      ],
+      "gate": "Frozen 20-question evidence set, paired baseline/candidate timing and citation scoring, no regression in proof boundaries"
+    },
+    {
+      "id": "R4",
+      "title": "Connect visible bounded execution",
+      "state": "proposed",
+      "depends_on": [
+        "R2",
+        "R3"
+      ],
+      "gate": "Existing runner and leases reused; live phase history, human cancellation and crash recovery demonstrated on software fixtures"
+    },
+    {
+      "id": "R5",
+      "title": "Promote reusable simulation recipes",
+      "state": "proposed",
+      "depends_on": [
+        "R3",
+        "R4"
+      ],
+      "gate": "Each recipe has independent quality and cost controls; no physical/heldout/promotion authority follows automatically"
+    }
+  ]
+}

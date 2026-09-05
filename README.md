@@ -52,6 +52,19 @@ python3 scripts/download_workspace_data.py \
 
 ## Quick start
 
+Inspect agent history and the operations structure from the terminal:
+
+```bash
+uv run --locked sim2claw ops index
+uv run --locked sim2claw ops brief "verification lease"
+uv run --locked sim2claw ops watch
+uv run --locked sim2claw ops report
+```
+
+The [operations atlas](./docs/operations/README.md) provides source-linked search,
+18 proposed lessons, a component/dependency map, bounded context packets and a
+durable human feedback journal. Reports and indexes stay local and ignored.
+
 The verified local path is Apple Silicon macOS with
 [`uv`](https://docs.astral.sh/uv/) and network access for the first dependency
 sync. Python is pinned to 3.12 by the project.
