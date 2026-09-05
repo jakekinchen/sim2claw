@@ -417,17 +417,25 @@ def search(root: Path, query: str, *, kind: str | None = None, limit: int = 20) 
     result = []
     patterns = [re.compile(r"(?<!\w)" + re.escape(term) + r"(?!\w)", re.I) for term in terms[:32]]
     with _db(root) as db:
-        rows = db.execute("""SELECT spans.path, sources.content, sources.sha256, sources.kind,
-                              sources.metadata FROM spans JOIN sources ON sources.path=spans.path
+        # Keep path ranking and lazy source reads on one snapshot even after the
+        # candidate cursor reaches its final row. _db closes this read transaction.
+        db.execute("BEGIN")
+        # Rank paths before fetching compressed documents: carrying blobs through
+        # the temporary sort reads every candidate even when a few lines suffice.
+        rows = db.execute("""SELECT spans.path FROM spans JOIN sources ON sources.path=spans.path
                               WHERE spans MATCH ? AND (? IS NULL OR sources.kind=?)
                               ORDER BY rank, spans.path""", (match, kind, kind))
         for row in rows:
-            item = dict(row)
+            item = dict(db.execute("""SELECT path, content, sha256, kind, metadata
+                                      FROM sources WHERE path=?""", (row["path"],)).fetchone())
             content = _content(item.pop("content"))
-            item["metadata"] = json.loads(item["metadata"])
-            item["freshness"] = _freshness(root, item["path"], item["sha256"])
             for number, line in enumerate(content.splitlines(), 1):
                 if all(pattern.search(line) for pattern in patterns):
+                    # Document-level FTS can match terms on different lines. Hash
+                    # each source only when it contributes an exact cited span.
+                    if "freshness" not in item:
+                        item["metadata"] = json.loads(item["metadata"])
+                        item["freshness"] = _freshness(root, item["path"], item["sha256"])
                     result.append({**item, "line": number, "text": line[:2000]})
                     if len(result) == limit:
                         return result

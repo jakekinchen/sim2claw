@@ -75,8 +75,26 @@
       "reason": "Re-running an audit creates new evidence and does not reproduce the original review receipt"
     },
     {
+      "id": "built_distributions",
+      "paths": ["dist/"],
+      "class": "generated_distribution_snapshot",
+      "owner": "Native package build and release author",
+      "disposition": "preserve_until_release_references_and_activity_are_resolved",
+      "regeneration": "A new package build reflects current source and runtime, not necessarily these historical distribution bytes",
+      "reason": "Root ignore rules prevent accidental new tracking; generated does not mean unreferenced"
+    },
+    {
+      "id": "browser_qa_output",
+      "paths": ["test-results/"],
+      "class": "generated_qa_evidence",
+      "owner": "Native browser QA author",
+      "disposition": "preserve_referenced_evidence_and_active_or_unknown_work",
+      "regeneration": "A new QA run creates new evidence rather than reproducing a historical observation",
+      "reason": "Root ignore rules keep local QA artifacts outside Git; an empty directory needs no cleanup"
+    },
+    {
       "id": "research_and_experiment_artifacts",
-      "paths": ["runs/", "outputs/", "output/", "artifacts/", "datasets/", "checkpoints/", "tmp/", "dist/"],
+      "paths": ["runs/", "outputs/", "output/", "artifacts/", "datasets/", "checkpoints/", "tmp/"],
       "class": "unclassified_artifact",
       "owner": "Native experiment, data, release or tool owner; unknown until classified",
       "disposition": "preserve_pending_owner_classification",

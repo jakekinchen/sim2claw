@@ -11,6 +11,10 @@
   links preserve evidence and do not reopen a closed campaign.
 - [`operations/README.md`](operations/README.md) — operations CLI, source-linked
   history retrieval, human feedback, map and interactive report.
+- [`DEVELOPMENT.md`](DEVELOPMENT.md) — lightweight setup, exact local/CI test
+  groups, dependency diagnostics, and checkout/worktree behavior.
+- [`refactor-opportunities.md`](refactor-opportunities.md) — ranked development,
+  reliability, and performance findings with verification and deferred limits.
 - [`operations/DOJO_ADAPTER.md`](operations/DOJO_ADAPTER.md) — Sim2Claw/MicroDuck
   responsibilities, native metadata adapters and compatibility checks.
 - [`operations/organization-plan.md`](operations/organization-plan.md) — the
@@ -96,9 +100,6 @@ operations CLI to find exact evidence spans.
 - [`run-logs/2026-07-19-pawn-bidirectional-composability-eval.md`](./run-logs/2026-07-19-pawn-bidirectional-composability-eval.md)
   — implementation proof, current no-pose-evidence result, and system-ID
   handoff boundary.
-- [`run-logs/2026-07-19-recorded-action-replay-sysid.md`](./run-logs/2026-07-19-recorded-action-replay-sysid.md)
-  — exact-action replay/system-ID contracts, synthetic capability proof, and
-  the canonical 0/18 physical readiness boundary; no fit or calibration claim.
 - [`run-logs/2026-07-19-pawn-b-g-language-semantics.md`](./run-logs/2026-07-19-pawn-b-g-language-semantics.md)
   — exact 12-semantic prompt contract, group-aware leakage controls, and the
   zero-source-group/no-paid-training result.

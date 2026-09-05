@@ -40,7 +40,6 @@ GATE_DEPENDENCIES = {
     "service_task": ["battery_mechanics"], "local_training": ["service_task"],
     "independent_validation": ["local_training"],
 }
-GATE_IDS = set(GATE_DEPENDENCIES)
 REMOTE_REQUEST_FIELDS = ["unresolved_local_gate", "exact_checkpoint_and_source_hashes", "fixed_cases_and_seeds",
                          "instance_identity", "maximum_duration", "maximum_cost", "retained_receipt_paths", "stop_or_delete_condition"]
 
@@ -175,18 +174,17 @@ def _validate_plan(plan: Any) -> None:
     _require(isinstance(plan["contact_requirements"], list) and len(plan["contact_requirements"]) >= 3, "explicit contact requirements are required")
     for requirement in plan["contact_requirements"]:
         _text(requirement, "contact requirement")
-    _require(isinstance(plan["unmet_gates"], list) and len(plan["unmet_gates"]) == len(GATE_IDS), "expected the seven unmet development gates")
-    gates = {}
+    _require(isinstance(plan["unmet_gates"], list) and len(plan["unmet_gates"]) == len(GATE_DEPENDENCIES), "expected the seven unmet development gates")
+    seen_gates = set()
     for gate in plan["unmet_gates"]:
         _keys(gate, "id requires acceptance", "gate")
         name = gate["id"]
-        _require(isinstance(name, str) and name in GATE_IDS and name not in gates, "invalid or duplicate gate ID")
+        _require(isinstance(name, str) and name in GATE_DEPENDENCIES and name not in seen_gates, "invalid or duplicate gate ID")
         refs = gate["requires"]
         _require(isinstance(refs, list) and refs and all(isinstance(ref, str) for ref in refs) and len(refs) == len(set(refs)), "gate dependencies must be distinct IDs")
         _equal(refs, GATE_DEPENDENCIES[name], f"gate {name}.requires")
         _text(gate["acceptance"], "gate acceptance")
-        gates[name] = refs
-    _acyclic(gates, "declaration_check", "gates")
+        seen_gates.add(name)
     compute = plan["compute_policy"]
     _keys(compute, "default physics_candidate learner_candidate reference_evaluator use_active_training_environment_directly benchmark_required_before_backend_selection remote_role remote_provider remote_training_default remote_launch_authorized_by_plan remote_request_fields shutdown_after_bounded_job", "compute_policy")
     for field, expected in {"default": "local_mac", "use_active_training_environment_directly": False,

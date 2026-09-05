@@ -153,6 +153,11 @@ def test_peer_root_is_never_guessed(workspace: tuple, monkeypatch: pytest.Monkey
     lambda plan: plan["world"]["frames"][1].update(parent="service_fixture"),
     lambda plan: plan["world"]["frames"][4].update(parent="arm_base"),
     lambda plan: plan["unmet_gates"][0].update(requires=["controller_routing"]),
+    lambda plan: plan["unmet_gates"].pop(),
+    lambda plan: plan["unmet_gates"][-1].update(id="static_scene"),
+    lambda plan: plan["unmet_gates"][-1].update(id="unknown_gate"),
+    lambda plan: plan["unmet_gates"][3].update(requires=["hardware_measurements"] * 2),
+    lambda plan: plan["unmet_gates"][3]["requires"].reverse(),
     lambda plan: plan["compute_policy"].update(remote_launch_authorized_by_plan=True),
     lambda plan: plan["compute_policy"].update(remote_role="default_training"),
     lambda plan: plan["compute_policy"].update(remote_provider="any_cloud"),
@@ -182,6 +187,16 @@ def test_acyclic_gate_shortcuts_cannot_bypass_existing_hardware_measurement(work
     result = workcell.inspect_workcell(root, peer)
     assert not result["plan_valid"]
     assert any(f"gate {gate_id}.requires" in error for error in result["errors"])
+
+
+def test_gate_presentation_order_does_not_change_declared_dependencies(workspace: tuple) -> None:
+    root, peer, plan = workspace
+    plan["unmet_gates"].reverse()
+    _write_plan(root, plan)
+    result = workcell.inspect_workcell(root, peer)
+    assert result["plan_valid"] and result["source_verification"] == "hash_verified"
+    assert result["gates"][0]["status"] == "passed"
+    assert result["gates"][1:] == [{**gate, "status": "unmet"} for gate in plan["unmet_gates"]]
 
 
 @pytest.mark.parametrize("identifier,field,value", [

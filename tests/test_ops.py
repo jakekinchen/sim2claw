@@ -9,6 +9,7 @@ import shutil
 import sqlite3
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -226,6 +227,107 @@ def test_retrieval_marks_source_drift_and_retains_exact_indexed_citation(ops_rep
     shown = core.show(ops_repo, "docs/session-logs/a.md", start=3, end=3)
     assert shown["freshness"] == "stale"
     assert shown["spans"] == [{"line": 3, "text": "needle alpha"}]
+
+
+@pytest.mark.parametrize("limit", [1, 2, 3])
+def test_search_passes_document_only_matches_and_hashes_each_cited_source_once(
+    ops_repo: Path, monkeypatch: pytest.MonkeyPatch, limit: int,
+) -> None:
+    # Equal term counts give all three documents the same FTS rank. The first
+    # candidate contains both terms but has no line eligible for a citation.
+    _write(ops_repo, "docs/a.md", "matrixboundary\nclockneedle\nmatrixboundary\nclockneedle\n")
+    content = "matrixboundary clockneedle\nmatrixboundary clockneedle\n"
+    _write(ops_repo, "docs/b.md", content)
+    _write(ops_repo, "docs/c.md", content)
+    core.scan(ops_repo)
+    checked = []
+    freshness = core._freshness
+
+    def observe(root: Path, path: str, sha256: str) -> str:
+        checked.append(path)
+        return freshness(root, path, sha256)
+
+    monkeypatch.setattr(core, "_freshness", observe)
+    results = core.search(ops_repo, "matrixboundary clockneedle", kind="document", limit=limit)
+    expected = [("docs/b.md", 1), ("docs/b.md", 2), ("docs/c.md", 1)][:limit]
+    assert [(item["path"], item["line"]) for item in results] == expected
+    assert checked == (["docs/b.md"] if limit <= 2 else ["docs/b.md", "docs/c.md"])
+    assert all(item["text"] == "matrixboundary clockneedle" for item in results)
+    assert all(item["sha256"] == hashlib.sha256(content.encode()).hexdigest() for item in results)
+    assert all(item["freshness"] == "current" for item in results)
+    assert all(item["kind"] == "document" and item["metadata"] == {
+        "claim_state": "source_reported_unverified",
+    } for item in results)
+
+
+def test_search_keeps_rank_before_path_and_filters_kind_before_limit(ops_repo: Path) -> None:
+    _write(ops_repo, "docs/a.md", "ranksentinel " + "filler " * 100)
+    _write(ops_repo, "docs/z.md", "ranksentinel")
+    _write(ops_repo, "docs/session-logs/rank.md", "ranksentinel")
+    core.scan(ops_repo)
+    results = core.search(ops_repo, "ranksentinel", kind="document", limit=2)
+    assert [item["path"] for item in results] == ["docs/z.md", "docs/a.md"]
+    assert core.search(ops_repo, "ranksentinel", kind="document", limit=1) == results[:1]
+    session = core.search(ops_repo, "ranksentinel", kind="session", limit=1)
+    assert [item["path"] for item in session] == ["docs/session-logs/rank.md"]
+
+
+def test_search_uses_one_index_snapshot_during_concurrent_refresh(
+    ops_repo: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    core.scan(ops_repo)
+    relative = "docs/session-logs/a.md"
+    original = (ops_repo / relative).read_bytes()
+    opened = core._db
+    refreshed = []
+
+    class InterleavedConnection:
+        def __init__(self, db: sqlite3.Connection) -> None:
+            self.db = db
+
+        def execute(self, sql: str, parameters: tuple = ()):
+            # Refresh after ranking its only candidate but before retrieving its
+            # content. SQLite's implicit read transaction can end at this point.
+            if sql.lstrip().startswith("SELECT path, content") and not refreshed:
+                _write(ops_repo, relative, "rewritten after ranking")
+                core.scan(ops_repo)
+                refreshed.append(True)
+            return self.db.execute(sql, parameters)
+
+    @contextmanager
+    def interleave(root: Path):
+        with opened(root) as db:
+            yield InterleavedConnection(db)
+
+    # The concurrent scan uses the original database opener, not this wrapper.
+    scan = core.scan
+
+    def refresh(root: Path) -> dict:
+        with monkeypatch.context() as scoped:
+            scoped.setattr(core, "_db", opened)
+            return scan(root)
+
+    monkeypatch.setattr(core, "_db", interleave)
+    monkeypatch.setattr(core, "scan", refresh)
+    results = core.search(ops_repo, "alpha", kind="session")
+    assert refreshed == [True]
+    assert len(results) == 1
+    assert (results[0]["line"], results[0]["text"]) == (3, "needle alpha")
+    assert results[0]["sha256"] == hashlib.sha256(original).hexdigest()
+    assert results[0]["freshness"] == "stale"
+
+
+@pytest.mark.parametrize("separator", ["\n", "\r\n", "\u2028"])
+def test_search_retains_word_boundaries_line_numbers_and_text_limit(ops_repo: Path, separator: str) -> None:
+    long_line = "exactmarker λογος " + "x" * 2100
+    _write(ops_repo, "docs/boundaries.md", separator.join([
+        "exactmarker_suffix λογος", "EXACTMARKER ΛΟΓΟΣ", long_line,
+    ]))
+    core.scan(ops_repo)
+    results = core.search(ops_repo, "exactmarker λογος", kind="document")
+    assert [(item["line"], item["text"]) for item in results] == [
+        (2, "EXACTMARKER ΛΟΓΟΣ"), (3, long_line[:2000]),
+    ]
 
 
 def test_reported_pass_is_not_promoted_to_task_or_physical_success(ops_repo: Path) -> None:

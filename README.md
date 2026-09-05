@@ -52,6 +52,18 @@ python3 scripts/download_workspace_data.py \
 
 ## Quick start
 
+For operations, metadata adapters, and repository tooling, start with the
+[development guide](./docs/DEVELOPMENT.md). Its isolated Python 3.12 environment
+installs only inspection dependencies from `uv.lock`; it does not need a robot,
+simulator, renderer, or the full training runtime. Local checks and CI share
+`scripts/check_operations.py`:
+
+```bash
+python3.12 scripts/check_operations.py list
+# After the development guide's environment setup:
+outputs/operations-dev/venv/bin/python scripts/check_operations.py check
+```
+
 Inspect agent history and the operations structure from the terminal:
 
 ```bash
@@ -81,14 +93,19 @@ sync. Python is pinned to 3.12 by the project.
 git clone https://github.com/jakekinchen/sim2claw.git
 cd sim2claw
 ./scripts/bootstrap_runtime.sh
-uv run pytest -q
+uv run --locked python scripts/check_operations.py check
 ```
+
+The bootstrap installs the full project and probes simulator/render readiness.
+Use it for scene or policy work. The development guide explains how to select
+additional tests for the component you change; the operations check does not
+claim that the entire simulation test suite passed.
 
 Inspect and render the current scene:
 
 ```bash
-uv run sim2claw scene-info
-uv run sim2claw render \
+uv run --locked sim2claw scene-info
+uv run --locked sim2claw render \
   --camera studio_overview \
   --output outputs/studio-overview.png
 ```
@@ -96,7 +113,7 @@ uv run sim2claw render \
 Open Studio:
 
 ```bash
-uv run sim2claw studio
+uv run --locked sim2claw studio
 ```
 
 Then visit [http://127.0.0.1:4173](http://127.0.0.1:4173). The base simulator

@@ -23,6 +23,8 @@ runs/
 /evals/sail/fixtures/sealed/
 checkpoints/
 tmp/
+/dist/
+/test-results/
 *.mp4
 *.safetensors
 *.pt

@@ -4,6 +4,13 @@ Use the terminal to retrieve prior work, prepare bounded agent context, inspect
 the system structure, and leave feedback that subsequent briefs can include.
 The offline report provides a second view over the same evidence model.
 
+For local development and CI, use the [development guide](../DEVELOPMENT.md).
+`python scripts/check_operations.py list` shows the exact named test groups;
+`python scripts/check_operations.py check` runs them using that interpreter and
+reports dependency drift, skips, failures, and zero-test runs explicitly. Its
+inspection dependencies come from the existing `uv.lock`. A software-check pass
+does not change native campaign admission.
+
 ```bash
 uv run --locked sim2claw ops index
 uv run --locked sim2claw ops search "authority" --kind review
