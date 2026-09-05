@@ -16,6 +16,8 @@ uv run --locked sim2claw ops note --kind feedback --subject leases \
 uv run --locked sim2claw ops events
 uv run --locked sim2claw ops report
 uv run --locked sim2claw ops adapter conformance
+uv run --locked sim2claw ops workcell
+uv run --locked sim2claw ops git-health
 ```
 
 Global flags precede the command:
@@ -35,6 +37,19 @@ SQLite/FTS5 provides transactional indexing and lexical retrieval; zlib stores
 exact source text compactly. Both are bundled standard-library components.
 
 ## Daily operating rhythm
+
+For repository organization and the future arm/duck environment, consult the
+[shared workcell plan](SHARED_WORKCELL.md), [artifact policy](artifact-policy.md)
+and [organization verification](organization-verification.md). `ops git-health`
+reports Git tracking and new staged blob growth; add `--check` to make a review
+signal return exit 1. Its defaults are 32 MiB total new staged blobs or 10 MiB
+for one new blob. Existing evidence is retained. Run the same tool with global
+`--root /path/to/microduck-rl-genesis` to inspect that repository separately.
+
+`ops workcell --peer-root /path/to/microduck-rl-genesis` verifies the proposed
+scene's direct native sources and displays the action schedule and unmet gates.
+It constructs no scene and dispatches no commands. Without a peer root, those
+source checks remain partial. Both commands run without simulator imports.
 
 The [training dojo adapter](DOJO_ADAPTER.md) connects the Sim2Claw operations
 tools with MicroDuck's native Duck Lab. It exchanges source-hashed metadata;
@@ -137,7 +152,7 @@ recorded separately from interactive verification.
   measured boundaries and reuse opportunities.
 - [Implementation ledger](plan.md) and [independent review](review.md).
 - `configs/operations/lessons.v1.json`: 18 proposed lessons, 51 source anchors.
-- `configs/operations/architecture.v1.json`: 27 components, 40 typed edges,
+- `configs/operations/architecture.v1.json`: 30 components, 48 typed edges,
   owners, paths, inputs/outputs, gates, next actions and five release milestones.
 
 The next gates are schema-specific verification of cross-record relationships,

@@ -1,0 +1,94 @@
+{
+  "schema_version": "sim2claw.ops.artifact_policy.v1",
+  "status": "descriptive_policy_only",
+  "scope": "Sim2Claw repository organization; existing evidence paths remain unchanged",
+  "execution_authorized": false,
+  "filesystem_mutation_authorized": false,
+  "classification_authority": "Advisory path metadata; native owners, active work and evidence bindings take precedence",
+  "entry_matching": "Apply overrides first, then the most specific applicable path entry; no executable classifier is provided",
+  "default_disposition": "preserve_pending_owner_classification",
+  "precedence": [
+    "protected_boundary",
+    "tracked_or_staged_evidence",
+    "active_or_unknown_activity",
+    "durable_user_data",
+    "explicitly_derived_cache",
+    "unclassified_artifact"
+  ],
+  "overrides": [
+    {
+      "id": "protected_boundary",
+      "condition": "A path is sealed, reserved, held-out, evaluator-owned, a symlink or inside a nested repository",
+      "disposition": "preserve_without_content_inspection",
+      "reason": "A directory inventory does not grant access to protected evidence or another repository"
+    },
+    {
+      "id": "tracked_or_staged_evidence",
+      "condition": "A path is tracked, staged or bound by a retained receipt, regardless of ignore rules or directory name",
+      "disposition": "preserve_exact_path_and_bytes",
+      "reason": "Existing Git tracking and proof bindings win over generated-root assumptions"
+    },
+    {
+      "id": "active_or_unknown_activity",
+      "condition": "A process owns the artifact, another task is modifying it, or activity and ownership are unknown",
+      "disposition": "preserve_pending_owner_classification",
+      "reason": "A process snapshot or absent lock does not prove that deletion or relocation is safe"
+    }
+  ],
+  "entries": [
+    {
+      "id": "human_journal",
+      "paths": ["outputs/operations/journal.sqlite"],
+      "related_files": "Any SQLite journal, WAL or SHM sidecars for this database belong to the same live database",
+      "class": "durable_user_data",
+      "owner": "User and operations journal writer",
+      "disposition": "preserve",
+      "regeneration": null,
+      "reason": "Human annotations are not reconstructible from the search index or original receipts"
+    },
+    {
+      "id": "search_index",
+      "paths": ["outputs/operations/index.sqlite"],
+      "related_files": "SQLite sidecars belong to the live index; this policy does not authorize their removal",
+      "class": "explicitly_derived_cache",
+      "owner": "Operations indexer",
+      "disposition": "rebuildable_after_owner_confirms_idle_and_sources_available",
+      "regeneration": "The existing ops index command rebuilds the index from admitted local source bytes",
+      "reason": "The index is a repository-root-bound search projection; the adjacent journal is separate user data"
+    },
+    {
+      "id": "offline_report",
+      "paths": ["outputs/operations/report.html"],
+      "class": "derived_snapshot",
+      "owner": "Operations report author",
+      "disposition": "preserve_until_owner_confirms_no_unique_handoff_or_review_value",
+      "regeneration": "The existing ops report command produces a new current snapshot, not necessarily the original historical view",
+      "reason": "A derived report can still be a useful record of what a reviewer saw"
+    },
+    {
+      "id": "operations_audit_receipts",
+      "paths": ["outputs/operations-audit/"],
+      "class": "retained_software_evidence",
+      "owner": "Author of the referenced review or verification receipt",
+      "disposition": "preserve_exact_path_and_bytes",
+      "regeneration": null,
+      "reason": "Re-running an audit creates new evidence and does not reproduce the original review receipt"
+    },
+    {
+      "id": "research_and_experiment_artifacts",
+      "paths": ["runs/", "outputs/", "output/", "artifacts/", "datasets/", "checkpoints/", "tmp/", "dist/"],
+      "class": "unclassified_artifact",
+      "owner": "Native experiment, data, release or tool owner; unknown until classified",
+      "disposition": "preserve_pending_owner_classification",
+      "regeneration": null,
+      "reason": "These broad roots mix inputs, media, receipts, releases and temporary files; ignored does not mean disposable"
+    }
+  ],
+  "receipt_principles": [
+    "Retain standalone receipt source snapshots and manifests at their existing paths",
+    "Git already deduplicates identical content blobs; repeated snapshot paths do not imply repeated Git object storage",
+    "A matching checksum identifies bytes; it does not establish semantic validity or task success",
+    "No artifact is deleted, moved, reset, untracked or staged by this metadata policy"
+  ],
+  "future_gate": "Any executable cleanup or archival tool needs a separate reviewed plan with exact targets, owner and activity checks, proof-binding checks, a preservation or rollback path and measured verification"
+}

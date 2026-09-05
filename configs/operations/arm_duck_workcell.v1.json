@@ -1,0 +1,269 @@
+{
+  "schema_version": "robotics.arm_duck_workcell_plan.v1",
+  "id": "arm-duck-existing-battery",
+  "status": "declaration_only",
+  "mechanical_target": {
+    "hardware": "existing_duck_battery_and_mount",
+    "redesign_allowed": false,
+    "battery_source_id": "battery_mesh",
+    "mount_source_id": "mount_mesh",
+    "measurements_verified": false
+  },
+  "sources": [
+    {
+      "id": "arm_model",
+      "workspace_id": "sim2claw",
+      "path": "third_party/mujoco_menagerie/robotstudio_so101/so101.xml",
+      "sha256": "5ad49f2b45c083baac9ffe5d4d3213a5da7eac8039095bb2df177a697aae8308"
+    },
+    {
+      "id": "arm_action",
+      "workspace_id": "sim2claw",
+      "path": "configs/tasks/chess_pick_place_source_episode_v4.json",
+      "sha256": "d2e11406c2bd8609a158692a00c9e7edc45245c1219e799ddd6d7ae03051564d"
+    },
+    {
+      "id": "arm_joints",
+      "workspace_id": "sim2claw",
+      "path": "src/sim2claw/scene.py",
+      "sha256": "4b7dd7b251c87580505a40164117cc0999f36960244a5c66c2065165afcf3e46"
+    },
+    {
+      "id": "duck_model",
+      "workspace_id": "microduck-rl-genesis",
+      "path": "microduck/assets/microduck/robot_allcollisions.xml",
+      "sha256": "7a6fdf437f5a80c7348ad801f43f906b997a834389cb70cca5e1e8517ba38044"
+    },
+    {
+      "id": "duck_action",
+      "workspace_id": "microduck-rl-genesis",
+      "path": "microduck_contract/interface/action-v1.json",
+      "sha256": "d315d3f985483779880d473d95c81b9109f945ebf0de3dba8a01930c274da896"
+    },
+    {
+      "id": "duck_observation",
+      "workspace_id": "microduck-rl-genesis",
+      "path": "microduck_contract/interface/observation-v1.json",
+      "sha256": "bb3339cbadf3b771013779824cef428d008089ef4541fd3098db24b39060a0ce"
+    },
+    {
+      "id": "duck_control",
+      "workspace_id": "microduck-rl-genesis",
+      "path": "microduck_contract/interface/control-v1.json",
+      "sha256": "a26e9a2dcfe807d5ffd1f86968ff99a8491b2f9c7612ff564a01d4460dad40b1"
+    },
+    {
+      "id": "battery_mesh",
+      "workspace_id": "microduck-rl-genesis",
+      "path": "microduck/assets/microduck/assets/np_f970.stl",
+      "sha256": "979ca81251d4ec5862b6c987b46095aa07d0534ca1ec15f3cf438bbf7189deda"
+    },
+    {
+      "id": "mount_mesh",
+      "workspace_id": "microduck-rl-genesis",
+      "path": "microduck/assets/microduck/assets/power_support.stl",
+      "sha256": "cb43ba9351f51559f49ffc89679478288cfe6e9682b31898397406165b520cbe"
+    },
+    {
+      "id": "apple_runtime",
+      "workspace_id": "microduck-rl-genesis",
+      "path": "environments/apple/requirements.lock",
+      "sha256": "4425348d7092188c4f81a63e5e227642c666d34d498cb3e6557e9371d8ad8ff0"
+    }
+  ],
+  "actors": [
+    {
+      "id": "arm",
+      "namespace": "arm_",
+      "workspace_id": "sim2claw",
+      "model_source_id": "arm_model",
+      "floating_base": false,
+      "action": {
+        "dimension": 6,
+        "ordered_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "representation": "absolute_joint_position_target",
+        "unit": "rad",
+        "dtype": "float32",
+        "control_hz": 20,
+        "ticks_per_action": 10,
+        "source_ids": [
+          "arm_action",
+          "arm_joints"
+        ]
+      }
+    },
+    {
+      "id": "duck",
+      "namespace": "duck_",
+      "workspace_id": "microduck-rl-genesis",
+      "model_source_id": "duck_model",
+      "floating_base": true,
+      "action": {
+        "dimension": 14,
+        "ordered_names": [
+          "left_hip_yaw",
+          "left_hip_roll",
+          "left_hip_pitch",
+          "left_knee",
+          "left_ankle",
+          "neck_pitch",
+          "head_pitch",
+          "head_yaw",
+          "head_roll",
+          "right_hip_yaw",
+          "right_hip_roll",
+          "right_hip_pitch",
+          "right_knee",
+          "right_ankle"
+        ],
+        "representation": "unfiltered_delta_from_home_rad",
+        "unit": "rad",
+        "dtype": "float32",
+        "control_hz": 50,
+        "ticks_per_action": 4,
+        "source_ids": [
+          "duck_action",
+          "duck_observation",
+          "duck_control"
+        ]
+      }
+    }
+  ],
+  "clock": {
+    "physics_dt_s": 0.005,
+    "tick_hz": 200,
+    "timebase": "integer_simulation_tick",
+    "action_hold": "zero_order_hold_per_actor",
+    "implicit_resampling_allowed": false,
+    "phase_period_ticks": 20
+  },
+  "world": {
+    "length_unit": "metre",
+    "up_axis": "+Z",
+    "quaternion_order": "wxyz",
+    "frames": [
+      {
+        "id": "world",
+        "parent": null,
+        "pose_measured": false
+      },
+      {
+        "id": "service_fixture",
+        "parent": "world",
+        "pose_measured": false
+      },
+      {
+        "id": "arm_base",
+        "parent": "world",
+        "pose_measured": false
+      },
+      {
+        "id": "duck_base",
+        "parent": "world",
+        "pose_measured": false
+      },
+      {
+        "id": "battery_mount",
+        "parent": "duck_base",
+        "pose_measured": false
+      }
+    ],
+    "physical_poses_bound": false
+  },
+  "contact_requirements": [
+    "Explicit arm/duck/mount/fixture collision pair matrix; never inherit locomotion masks silently.",
+    "Keep original baseline assets immutable; author an isolated manipulation variant only after source review.",
+    "Characterize collision surfaces, friction and compliance against independent measurements."
+  ],
+  "unmet_gates": [
+    {
+      "id": "static_scene",
+      "requires": [
+        "declaration_check"
+      ],
+      "acceptance": "One direct SO-101 model, one declared MicroDuck model and fixture compile/render with unique names and explicit solver settings; no training."
+    },
+    {
+      "id": "controller_routing",
+      "requires": [
+        "static_scene"
+      ],
+      "acceptance": "Bounded separate action buffers preserve native names, units, rates, home offsets and free-base state; no clipping or cross-actor writes."
+    },
+    {
+      "id": "hardware_measurements",
+      "requires": [
+        "declaration_check"
+      ],
+      "acceptance": "Measure existing battery mass/COM/inertia, latch, connector, tolerances, mounting pose and extraction path; no assumed redesign."
+    },
+    {
+      "id": "battery_mechanics",
+      "requires": [
+        "hardware_measurements",
+        "controller_routing"
+      ],
+      "acceptance": "Separate removable body and reconcile trunk inertia; validate release/retention, grasp, contact and insertion orientation."
+    },
+    {
+      "id": "service_task",
+      "requires": [
+        "battery_mechanics"
+      ],
+      "acceptance": "Frozen phase evaluator for stabilization, release, extraction, parking, insertion and latch/connection checks, with negative cases and power continuity state."
+    },
+    {
+      "id": "local_training",
+      "requires": [
+        "service_task"
+      ],
+      "acceptance": "Scripted baseline then bounded local Metal/MPS skill training; held-out scenes/seeds and evaluator frozen first."
+    },
+    {
+      "id": "independent_validation",
+      "requires": [
+        "local_training"
+      ],
+      "acceptance": "Pinned CPU MuJoCo/float32 evaluator; document residuals and failures. Bounded NVIDIA/Brev only for named local capability gaps."
+    }
+  ],
+  "compute_policy": {
+    "default": "local_mac",
+    "physics_candidate": "isolated Genesis 1.3.3 Metal shared-scene adapter in existing Apple lane",
+    "learner_candidate": "PyTorch MPS",
+    "reference_evaluator": "pinned CPU MuJoCo with independently owned float32 policy evaluation",
+    "use_active_training_environment_directly": false,
+    "benchmark_required_before_backend_selection": true,
+    "remote_role": "last_resort_inference_or_validation",
+    "remote_provider": "NVIDIA/Brev",
+    "remote_training_default": false,
+    "remote_launch_authorized_by_plan": false,
+    "remote_request_fields": [
+      "unresolved_local_gate",
+      "exact_checkpoint_and_source_hashes",
+      "fixed_cases_and_seeds",
+      "instance_identity",
+      "maximum_duration",
+      "maximum_cost",
+      "retained_receipt_paths",
+      "stop_or_delete_condition"
+    ],
+    "shutdown_after_bounded_job": true
+  },
+  "permissions": {
+    "inspect": true,
+    "simulate": false,
+    "train": false,
+    "hardware": false,
+    "paid_compute": false,
+    "promote": false
+  },
+  "claim": "A planning and source-binding contract only. No shared scene, battery removability, action execution, physics fidelity, electrical connection or task success is established."
+}

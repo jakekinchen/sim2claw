@@ -1,0 +1,57 @@
+name: operations-tools
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  software-inspection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: src
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install only locked inspection-test dependencies
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+          import tomllib
+
+          packages = tomllib.loads(Path("uv.lock").read_text())["package"]
+          by_name = {}
+          for package in packages:
+              by_name.setdefault(package["name"], []).append(package)
+          pending = ["pytest", "jsonschema"]
+          selected = {}
+          while pending:
+              name = pending.pop()
+              if name in selected:
+                  continue
+              matches = by_name[name]
+              if len(matches) != 1:
+                  raise ValueError(f"Inspection dependency needs explicit lock disambiguation: {name}")
+              package = matches[0]
+              selected[name] = package["version"]
+              pending.extend(dependency["name"] for dependency in package.get("dependencies", []))
+          requirements = [f"{name}=={version}" for name, version in sorted(selected.items())]
+          subprocess.run([sys.executable, "-m", "pip", "install", "--no-deps", *requirements], check=True)
+          PY
+      - name: Verify operations, metadata contracts and repository inspection
+        run: |
+          python -m pytest -q \
+            tests/test_ops.py \
+            tests/test_ops_cli.py \
+            tests/test_workspace_adapter.py \
+            tests/test_workcell.py \
+            tests/test_git_health.py \
+            tests/test_operations_contract_freeze.py

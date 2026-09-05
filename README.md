@@ -68,6 +68,10 @@ The [training dojo adapter](./docs/operations/DOJO_ADAPTER.md) connects this
 operations layer with MicroDuck's native workspace through versioned,
 source-hashed metadata and shared conformance tests. Run
 `uv run --locked sim2claw ops adapter conformance` to check the shared contract.
+The [shared workcell plan](./docs/operations/SHARED_WORKCELL.md) grows toward an
+arm servicing the duck's existing battery hardware. `ops workcell` inspects
+its declarations and unmet gates; `ops git-health` reports Git tracking and
+prospective staged artifact growth in either repository.
 
 The verified local path is Apple Silicon macOS with
 [`uv`](https://docs.astral.sh/uv/) and network access for the first dependency

@@ -23,6 +23,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--root", type=Path, default=Path.cwd(), help="repository root (default: current directory)")
     parser.add_argument("--json", action="store_true", dest="as_json", help="emit JSON; watch emits one JSON object per refresh")
     commands = parser.add_subparsers(dest="command", required=True)
+    health = commands.add_parser("git-health", help="inspect Git history, staging and prospective artifact growth")
+    health.add_argument("--max-added-mib", type=float, default=32.0, help="review threshold for new unique staged blob bytes")
+    health.add_argument("--max-blob-mib", type=float, default=10.0, help="review threshold for one newly introduced blob")
+    health.add_argument("--check", action="store_true", help="exit 1 when staged growth needs review; never alter Git state")
+    workcell = commands.add_parser("workcell", help="inspect the existing-hardware arm/duck scene plan without simulation")
+    workcell.add_argument("--peer-root", type=Path, help="explicit MicroDuck checkout for native source verification")
     index = commands.add_parser("index", help="refresh the source-hashed local index")
     index.add_argument("--max-bytes", type=int, default=4 * 1024 * 1024, help="maximum bytes read per source")
     commands.add_parser("status", help="show current authority and index coverage")
@@ -89,6 +95,32 @@ def _terminal(value: str) -> str:
 
 
 def _human(command: str, result: Any) -> str:
+    if command == "workcell" and isinstance(result, dict):
+        lines = [f"Workcell: {result.get('plan_id')}",
+                 f"Declaration: {'valid' if result.get('plan_valid') else 'rejected'}; direct sources: {result.get('source_verification')}",
+                 "Mechanical target: existing duck battery and mount; measurements still required."]
+        schedule = result.get("schedule") or {}
+        if schedule:
+            lines.append(f"Proposed physics clock: {schedule['tick_hz']} Hz; phase repeats every {schedule['phase_period_ticks']} ticks")
+            lines.extend(f"  {buffer['id']}: {buffer['dimension']} {buffer['representation']} values; update every {buffer['ticks_per_action']} ticks"
+                         for buffer in schedule.get("buffers", []))
+        lines.extend(f"{gate['id']}: {gate['status']}" for gate in result.get("gates", []))
+        lines.extend(result.get("errors", []))
+        lines.append(result.get("claim", "Planning only; no actions or simulation."))
+        return "\n".join(lines)
+    if command == "git-health" and isinstance(result, dict):
+        mib = lambda value: f"{value / (1024 * 1024):.2f} MiB"
+        lines = [f"Git: {result['root']}", f"Branch: {result.get('branch')}; HEAD: {result.get('head_commit')}",
+                 f"Upstream: {result.get('upstream')}; ahead {result.get('ahead')}, behind {result.get('behind')}",
+                 f"Changes: {_text(result.get('dirty_counts', {}))}",
+                 f"HEAD unique blobs: {mib(result['head']['unique_blob_bytes'])}; index: {mib(result['index']['unique_blob_bytes'])}",
+                 f"New staged blobs: {mib(result['added_unique_blob_bytes'])}; net change: {mib(result['staged_unique_byte_delta'])}",
+                 f"Artifact review required: {result['review_required']}"]
+        lines.extend(result.get("reasons", []))
+        for blob in result.get("largest_new_blobs", [])[:8]:
+            lines.append(f"  {mib(blob['bytes'])}: {', '.join(repr(path) for path in blob['paths'])}")
+        lines.append("Metadata inspection only. Existing evidence and Git state remain unchanged.")
+        return "\n".join(lines)
     if command == "adapter" and isinstance(result, dict):
         schema = result.get("schema_version")
         if schema == "robotics.workspace_conformance.v1":
@@ -207,6 +239,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             parser.error("--interval must be finite and at least 1 second")
         if args.count is not None and args.count < 1:
             parser.error("--count must be positive")
+    if args.command == "git-health":
+        for value in (args.max_added_mib, args.max_blob_mib):
+            if not math.isfinite(value) or value < 0 or value > 1_000_000_000:
+                parser.error("Git review thresholds must be finite and between 0 and 1000000000 MiB")
     from . import core
 
     root = args.root.expanduser().resolve()
@@ -220,7 +256,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             last_progress = now
 
     try:
-        if args.command == "adapter":
+        if args.command == "git-health":
+            from .git_health import inspect_git
+
+            result = inspect_git(root, max_added_bytes=int(args.max_added_mib * 1024 * 1024),
+                                 max_blob_bytes=int(args.max_blob_mib * 1024 * 1024))
+            _emit("git-health", result, as_json=args.as_json)
+            return 1 if args.check and result["review_required"] else 0
+        elif args.command == "workcell":
+            from .workcell import inspect_workcell
+
+            result = inspect_workcell(root, peer_root=args.peer_root.expanduser().resolve() if args.peer_root else None)
+            _emit("workcell", result, as_json=args.as_json)
+            return 0 if result["plan_valid"] else 1
+        elif args.command == "adapter":
             from .adapter import check_conformance, compare_workspaces, export_workspace, load_exchange, validate_workspace
 
             if args.adapter_command == "export":

@@ -1,6 +1,16 @@
 # Executor / Reviewer / Manager Pair Programming Session
 
-`sim2claw` uses a supervised Codex pair as the base workflow:
+This is a historical workflow guide, retained for interpreting prior work.
+It is not a current task selector or permission to start its helpers. Resolve
+live authority through `AGENTS.md`, `configs/agent/current_state_v1.json` and
+`sim2claw agent-context --role <role>`. The current campaign is closed with no
+active card. The separate owner-requested operations lane is documented in
+[`docs/operations/README.md`](./docs/operations/README.md).
+
+Do not copy this role cycle into MicroDuck: that repository's current work mode
+and ordered queue govern its training. The historical procedure follows.
+
+`sim2claw` used a supervised Codex pair as its base workflow:
 
 - **Executor** implements one smallest useful, reviewable slice from the active brief.
 - **Reviewer / Planner** audits the Executor's latest slice, keeps the plan coherent, and decides whether to continue, nudge, redirect, stop, or escalate.
@@ -54,7 +64,7 @@ When autonomous execution should stop, put this near the top of `GOAL.md`:
 
 The Executor must not start a new product slice while the sentinel is present. Reviewer and Manager may still run to close out, redirect, or ask the user for a decision.
 
-## Current Workflow Helpers
+## Historical Workflow Helpers
 
 ```bash
 scripts/audit_autonomous_workflow.sh

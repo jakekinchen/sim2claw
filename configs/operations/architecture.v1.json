@@ -384,6 +384,52 @@
       "outputs": "Source-linked first differences and an explicit recorded-action comparison class",
       "gate": "Positive and negative cross-reader fixtures; no resampling, action conversion or physics-causality inference",
       "next_action": "Bind MicroDuck trace-comparison v1 and a separately authored Sim2Claw producer before admitting shared trace records"
+    },
+    {
+      "id": "git_health",
+      "title": "Git history and staged artifact footprint",
+      "layer": "operations",
+      "state": "implemented",
+      "paths": [
+        "src/sim2claw/ops/git_health.py",
+        "tests/test_git_health.py"
+      ],
+      "owner": "Native commit author",
+      "inputs": "Bounded HEAD/index object metadata and native Git status",
+      "outputs": "History tracking, staged unique-byte growth, largest new blobs and explicit review reasons",
+      "gate": "No index/history mutation or configured filter execution; retained evidence is never discarded by a size threshold",
+      "next_action": "Run git-health before scoped commits; review growth and preserve native receipt paths"
+    },
+    {
+      "id": "artifact_policy",
+      "title": "Artifact ownership and retention",
+      "layer": "evidence",
+      "state": "documented",
+      "paths": [
+        "configs/operations/artifact_policy.v1.json",
+        "docs/operations/artifact-policy.md"
+      ],
+      "owner": "Native artifact owner",
+      "inputs": "Tracked/staged/bound status, protected boundaries, process ownership and path metadata",
+      "outputs": "Human journal, derived cache and retained evidence classifications",
+      "gate": "Existing bindings and active/unknown work take precedence; no broad-root deletion from size or ignore status",
+      "next_action": "Apply measured classification to authorized reversible cleanup; preserve standalone receipt snapshots"
+    },
+    {
+      "id": "shared_workcell_plan",
+      "title": "Existing-hardware arm and duck workcell",
+      "layer": "integration",
+      "state": "implemented_declaration_inspection",
+      "paths": [
+        "configs/operations/arm_duck_workcell.v1.json",
+        "src/sim2claw/ops/workcell.py",
+        "docs/operations/SHARED_WORKCELL.md"
+      ],
+      "owner": "Sim2Claw integration and MicroDuck native model/training owners",
+      "inputs": "Ten direct model/interface/runtime source hashes; existing battery target; separate actor ABI and proposed integer clock",
+      "outputs": "Verified declaration or drift; deterministic tick preview; explicit unmeasured mechanics and future assembly/learning gates",
+      "gate": "No physics world, action values, hardware operation or training; direct-source verification is not transitive asset closure",
+      "next_action": "Close full asset/frame/contact static assembly before action routing; measure current battery/mount before removable-body modeling"
     }
   ],
   "edges": [
@@ -586,6 +632,46 @@
       "from": "evaluation",
       "to": "dojo_trace",
       "relation": "retains_native_acceptance"
+    },
+    {
+      "from": "git_health",
+      "to": "review",
+      "relation": "discloses_staged_artifact_growth"
+    },
+    {
+      "from": "journal",
+      "to": "artifact_policy",
+      "relation": "requires_userdata_preservation"
+    },
+    {
+      "from": "sources",
+      "to": "artifact_policy",
+      "relation": "retains_exact_evidence_paths"
+    },
+    {
+      "from": "index",
+      "to": "artifact_policy",
+      "relation": "declares_derived_cache"
+    },
+    {
+      "from": "dojo_exchange",
+      "to": "shared_workcell_plan",
+      "relation": "provides_native_workspace_boundary"
+    },
+    {
+      "from": "contracts",
+      "to": "shared_workcell_plan",
+      "relation": "binds_separate_action_interfaces"
+    },
+    {
+      "from": "dojo_native",
+      "to": "shared_workcell_plan",
+      "relation": "supplies_native_model_and_home_pose"
+    },
+    {
+      "from": "shared_workcell_plan",
+      "to": "dojo_trace",
+      "relation": "requires_explicit_frames_and_ticks"
     }
   ],
   "milestones": [

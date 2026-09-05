@@ -1,6 +1,38 @@
 # Documentation Index
 
-## Active documents
+## Start with current state
+
+- [`../AGENTS.md`](../AGENTS.md) — current repository operating rules.
+- [`../configs/agent/current_state_v1.json`](../configs/agent/current_state_v1.json)
+  — selects the live project state, campaign graph, queue and generated goal.
+  Use `sim2claw check --profile agent` and `sim2claw agent-context --role <role>`
+  to resolve that authority; historical filenames do not select active work.
+- [`../GOAL.md`](../GOAL.md) — generated current-state projection. Its history
+  links preserve evidence and do not reopen a closed campaign.
+- [`operations/README.md`](operations/README.md) — operations CLI, source-linked
+  history retrieval, human feedback, map and interactive report.
+- [`operations/DOJO_ADAPTER.md`](operations/DOJO_ADAPTER.md) — Sim2Claw/MicroDuck
+  responsibilities, native metadata adapters and compatibility checks.
+- [`operations/organization-plan.md`](operations/organization-plan.md) — the
+  owner's separate repository-organization and shared-workcell software lane.
+- [`operations/SHARED_WORKCELL.md`](operations/SHARED_WORKCELL.md) — staged
+  arm/duck interoperability, existing battery mechanics and local compute plan.
+- [`operations/artifact-policy.md`](operations/artifact-policy.md) — retained
+  evidence, human annotations and derived-cache ownership.
+
+New operations and interoperability documents live in `docs/operations/`;
+their structured catalogs live in `configs/operations/`. Generated reports,
+indexes and local inspection receipts live under ignored `outputs/operations/`;
+independent audit receipts also live under `outputs/operations-audit/`.
+Preserve the feedback journal there. Existing evidence and frozen source paths
+remain in place so citations and hashes retain their meaning.
+
+## Historical implementation and reference index
+
+The links below preserve the July 2026 implementation index. Descriptions such
+as "current" describe that record's source context, not present execution
+authority. Consult the live manifest above for current admission and use the
+operations CLI to find exact evidence spans.
 
 - [`decisions/0010-recorded-action-replay-and-staged-sysid.md`](./decisions/0010-recorded-action-replay-and-staged-sysid.md)
   — strict recorded-action replay, staged bounded system identification,
@@ -12,7 +44,7 @@
   — fail-closed input inventory for this isolated checkout only.
 - [`reference/MUJOCO_SYSID_CAPABILITY_20260719.json`](./reference/MUJOCO_SYSID_CAPABILITY_20260719.json)
   — pinned official toolbox exports and exercised bounded-fit receipt.
-- [`../GOAL.md`](../GOAL.md) — current clean-room objective and first gate.
+- [`../GOAL.md`](../GOAL.md) — generated current status and authority projection.
 - [`BUILD_PLAN.md`](./BUILD_PLAN.md) — dependency-ordered manual construction
   plan.
 - [`goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md`](./goals/GOAL_CONDITIONED_ACT_PICK_PLACE.md)
@@ -110,5 +142,5 @@ here.
 
 If a prior reference says a simulator, model, gateway, host, or robot path
 passed, that statement applies only to its archived source context. Fresh
-capabilities in this repository are limited to the active documents and
-repo-native evidence listed above.
+capability claims require current repo-native evidence and native evaluator
+and authority checks, not membership in this index.
