@@ -4,6 +4,12 @@ Use the terminal to retrieve prior work, prepare bounded agent context, inspect
 the system structure, and leave feedback that subsequent briefs can include.
 The offline report provides a second view over the same evidence model.
 
+The [2026-09-06 reconciliation ledger](simulation-reconciliation-20260906.md)
+records branch integration and current simulation work. The
+[jaw calibration acquisition guide](JAW_CALIBRATION_ACQUISITION.md) describes
+the prepared native RGBD recorder, offline integrity checks and remaining
+independent measurements.
+
 For local development and CI, use the [development guide](../DEVELOPMENT.md).
 `python scripts/check_operations.py list` shows the exact named test groups;
 `python scripts/check_operations.py check` runs them using that interpreter and

@@ -34,6 +34,7 @@ SUITES = {
     "git": ("tests/test_git_health.py",),
     "contracts": ("tests/test_operations_contract_freeze.py",),
     "runner": ("tests/test_check_operations.py",),
+    "capture-integrity": ("tests/test_d405_rgbd_integrity.py",),
 }
 
 

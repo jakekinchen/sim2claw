@@ -71,6 +71,7 @@ outputs/operations-dev/venv/bin/python scripts/check_operations.py check --suite
 outputs/operations-dev/venv/bin/python scripts/check_operations.py check --suite git
 outputs/operations-dev/venv/bin/python scripts/check_operations.py check --suite contracts
 outputs/operations-dev/venv/bin/python scripts/check_operations.py check --suite runner
+outputs/operations-dev/venv/bin/python scripts/check_operations.py check --suite capture-integrity
 ```
 
 Omit `--suite` to run every named group. `list` prints the exact files and locked
