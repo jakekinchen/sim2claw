@@ -17,7 +17,7 @@ training, held-out access, paid compute, or simulator promotion authority.
    current observation/import path against the OR48 missing measurements and
    OR155/OR156 findings. Complete useful offline software and acquisition
    preparation without inventing measurements or repeating exhausted fits.
-3. **Active: close out reviewed work.** Run scoped verification, record merge
+3. **Complete: close out reviewed work.** Run scoped verification, record merge
    dispositions and exact remaining physical inputs, commit/push scoped work,
    and leave a clean canonical checkout.
 
@@ -113,3 +113,16 @@ The prepared software has no measured physics-fidelity result. Two independently
 measured rigid jaw landmarks, current synchronized RGBD, gateway clock association,
 new experiment authority and fresh independent validation are still required.
 No robot, camera, fitting sweep, held-out source or paid compute was used.
+
+## Closeout
+
+- Capture preparation committed/pushed at `deb3bd4`.
+- Final required suite: **380 passed**; adjacent science/scene suite:
+  **21 passed**; native build/pre-camera smoke: **six passed**.
+- Native `check --profile agent` and generated `agent-goal --check` pass on main.
+- Maintenance review: `docs/reviewer-messages/maintenance-20260906-rgbd-reconciliation.md`.
+- Executor evidence: `docs/session-logs/maintenance-20260906-rgbd-reconciliation.md`.
+- Exact final Git/remote/authority state is retained after the closeout commit
+  in `outputs/reconciliation-20260906/final-state.json`.
+- The next active work requires the independently measured physical inputs
+  listed in the acquisition guide. There is no admitted physics-fit successor.
