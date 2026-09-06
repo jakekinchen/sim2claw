@@ -1,0 +1,74 @@
+{
+  "schema_version": "sim2claw.home_workspace_visual.v1",
+  "scene_id": "home_corner_rank1_near_visual_v1",
+  "status": "current_post_hackathon_visual_environment",
+  "proof_class": "physical_image_referenced_visual_approximation_only",
+  "base_workcell_id": "canonical_rank1_near_v1",
+  "references": [
+    {
+      "path": "runs/physical-measurement-preflight-20260723/current-workspace.jpg",
+      "sha256": "0a35bc67c204c37ef21098171c9fb454bb360aceb0dc604b5b76678636109bc0",
+      "role": "current workspace appearance reference"
+    },
+    {
+      "path": "configs/acquisition/img5431_multitag_observation_v1.json",
+      "source_video_sha256": "9baa9f37edbd9bb695588976808f5067b827c64a3ed580c5242b4df904699fa9",
+      "role": "current corner, backsplash, and fiducial layout reference"
+    }
+  ],
+  "removed_hackathon_visual_bodies": [
+    "photo_background",
+    "fiducial_sheet"
+  ],
+  "home_visuals": {
+    "rear_surface": {
+      "board_far_edge_clearance_m": 0.005,
+      "thickness_m": 0.025,
+      "half_span_x_m": 0.65,
+      "backsplash_height_m": 0.24,
+      "upper_wall_height_m": 0.70
+    },
+    "side_surface": {
+      "board_side_edge_clearance_m": 0.005,
+      "thickness_m": 0.025,
+      "half_span_y_m": 0.42,
+      "backsplash_height_m": 0.24,
+      "upper_wall_height_m": 0.70
+    },
+    "large_fiducial_sheet": {
+      "placement": "adjacent_to_negative_table_x_board_edge",
+      "gap_from_board_m": 0.018,
+      "size_xy_m": [
+        0.21,
+        0.297
+      ],
+      "tag_black_boundary_side_m": 0.11,
+      "placement_confidence": "image_approximate_not_metric_registered"
+    },
+    "small_board_frame_tag": {
+      "full_side_m": 0.02,
+      "inset_from_near_negative_x_corner_m": 0.018,
+      "placement_confidence": "image_approximate_not_metric_registered"
+    }
+  },
+  "invariants": {
+    "board_pose_changed": false,
+    "robot_mounts_changed": false,
+    "piece_layout_changed": false,
+    "joint_model_changed": false,
+    "actuator_model_changed": false,
+    "collision_or_contact_geometry_changed": false,
+    "evaluator_geometry_changed": false
+  },
+  "authority": {
+    "visual_comparison": true,
+    "metric_wall_registration": false,
+    "metric_fiducial_registration": false,
+    "camera_extrinsics": false,
+    "collision_geometry": false,
+    "physics": false,
+    "task_success": false,
+    "physical_authority": false
+  },
+  "claim_boundary": "This version updates post-hackathon appearance for honest side-by-side media. It does not calibrate walls, fiducials, cameras, robot geometry, contact, or physics."
+}

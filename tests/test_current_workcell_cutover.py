@@ -103,5 +103,24 @@ def test_migration_manifest_classifies_every_production_scene_caller() -> None:
         entry["path"]
         for entry in manifest["production_scene_caller_classification"]
     }
+    # The original cutover manifest is frozen evidence. Later completed
+    # diagnostics are classified separately and bound to their reviewed bytes.
+    supplement = json.loads(
+        (REPO_ROOT / "configs/migrations/current_workcell_scene_callers_supplement_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    binding = supplement["base_manifest"]
+    assert hashlib.sha256((REPO_ROOT / binding["path"]).read_bytes()).hexdigest() == binding["sha256"]
+    assert supplement["physical_authority"] is False
+    assert supplement["new_execution_authorized"] is False
+    additions = supplement["additional_historical_callers"]
+    paths = [entry["path"] for entry in additions]
+    assert len(paths) == len(set(paths))
+    assert classified.isdisjoint(paths)
+    for entry in additions:
+        assert entry["class"] == "HISTORICAL_READ_ONLY"
+        assert entry["reason"]
+        assert hashlib.sha256((REPO_ROOT / entry["path"]).read_bytes()).hexdigest() == entry["sha256"]
+    classified.update(paths)
     assert actual == classified
     assert manifest["authority"]["physical_authority"] is False

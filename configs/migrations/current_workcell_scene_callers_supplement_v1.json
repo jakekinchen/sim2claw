@@ -1,0 +1,24 @@
+{
+  "schema_version": "sim2claw.current_workcell_scene_caller_supplement.v1",
+  "date": "2026-09-06",
+  "base_manifest": {
+    "path": "configs/migrations/current_workcell_hard_cutover_v1.json",
+    "sha256": "37fb5b02a6f42376cd0dcadf19401f7442cc28f37b71cf297090ae27cf0b9701"
+  },
+  "additional_historical_callers": [
+    {
+      "path": "src/sim2claw/post_hackathon_home_workspace_metrology.py",
+      "sha256": "e7238b7b27783621c7cb76df0bd6fd6b28c14100ed8758b970974059bdaeeafd",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "Retained post-cutover observation-conditioned diagnostic; existing closeouts own its evidence. Not an active scene entrypoint."
+    },
+    {
+      "path": "src/sim2claw/post_hackathon_home_workspace_geometry_camera.py",
+      "sha256": "3c63daa22aa9b532b7867d54cb53cf850b90f92e959f88df53bd7300aa4513c7",
+      "class": "HISTORICAL_READ_ONLY",
+      "reason": "Retained post-cutover observation-conditioned diagnostic; existing closeouts own its evidence. Not an active scene entrypoint."
+    }
+  ],
+  "physical_authority": false,
+  "new_execution_authorized": false
+}
