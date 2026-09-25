@@ -42,6 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
     brief = commands.add_parser("brief", help="compile a bounded evidence packet for the next agent")
     brief.add_argument("query")
     brief.add_argument("--max-bytes", type=int, default=12000)
+    brief.add_argument("--refresh", action="store_true", help="rehash the admitted source index before retrieval (default 4 MiB per-source cap)")
     show = commands.add_parser("show", help="read an exact repository source span")
     show.add_argument("path")
     show.add_argument("--start", type=int, default=1)
@@ -291,7 +292,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif args.command == "search":
             result = core.search(root, args.query, kind=args.kind, limit=args.limit)
         elif args.command == "brief":
-            result = core.brief(root, args.query, max_bytes=args.max_bytes)
+            result = core.brief(root, args.query, max_bytes=args.max_bytes, refresh=args.refresh, progress=progress)
         elif args.command == "show":
             result = core.show(root, args.path, start=args.start, end=args.end)
         elif args.command == "lessons":

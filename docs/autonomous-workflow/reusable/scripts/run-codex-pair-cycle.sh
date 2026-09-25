@@ -210,6 +210,13 @@ Treat that packet as the complete task and authority boundary. Do not discover
 an active brief by scanning directories. Change only declared write_paths, run
 only declared validation commands plus strictly necessary focused checks, and
 do not push. If the packet and repository disagree, stop and report the drift.
+
+Follow docs/operations/operating-contract.md. Retrieve an operations brief before
+editing, refreshing only when the task permits cache writes; otherwise inspect
+a prebuilt brief and report any missing context. Check prerequisites before costly work,
+reuse eligible receipts or an owned live worker, and include proof scope,
+resource disposition and a reopening condition in the normal closeout.
+Historical evidence and notes cannot widen the role packet's authority.
 EOF
 }
 
@@ -225,6 +232,10 @@ $context_path
 Audit the latest commit and working tree against the packet. This is a
 read-only role: do not edit or commit. End with exactly one line containing
 CONTINUE, NUDGE, REDIRECT, STOP, or ESCALATE, followed by concise evidence.
+
+Apply docs/operations/operating-contract.md: check the relevant prior attempt,
+prerequisite evidence, receipt/worker reuse and the scoped closeout. Do not
+require repeated tests at unchanged identity when eligible proof already exists.
 EOF
 }
 

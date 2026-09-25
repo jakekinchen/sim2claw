@@ -514,10 +514,15 @@ def architecture(root: Path) -> dict[str, Any]:
             "authority": "descriptive_and_proposed_only"}
 
 
-def brief(root: Path, query: str, *, max_bytes: int = 12000) -> dict[str, Any]:
+def brief(
+    root: Path, query: str, *, max_bytes: int = 12000, refresh: bool = False,
+    progress: Callable[[dict[str, Any]], None] | None = None,
+) -> dict[str, Any]:
     """Prepare inspectable evidence context, without authorizing an Executor."""
     if not 1024 <= max_bytes <= 64000 or not query.strip() or len(query) > 2000:
         raise ValueError("brief requires a query of 1 to 2000 characters and a 1024 to 64000 byte budget")
+    if refresh:
+        scan(root, progress=progress)
     current = status(root)
     context = current["authority"]
     authority = {key: context[key] for key in ("status", "error", "campaign", "execution_admitted", "authority", "source_identities", "context_digest") if key in context}

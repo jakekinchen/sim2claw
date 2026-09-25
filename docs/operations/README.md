@@ -4,6 +4,10 @@ Use the terminal to retrieve prior work, prepare bounded agent context, inspect
 the system structure, and leave feedback that subsequent briefs can include.
 The offline report provides a second view over the same evidence model.
 
+The [operating contract](operating-contract.md) is the task entry and closeout
+procedure: retrieve, check prerequisites, reuse or run once, and close with
+scoped evidence. It connects existing tools without adding a campaign owner.
+
 The [2026-09-06 reconciliation ledger](simulation-reconciliation-20260906.md)
 records branch integration and current simulation work. The
 [jaw calibration acquisition guide](JAW_CALIBRATION_ACQUISITION.md) describes
@@ -20,7 +24,7 @@ does not change native campaign admission.
 ```bash
 uv run --locked sim2claw ops index
 uv run --locked sim2claw ops search "authority" --kind review
-uv run --locked sim2claw ops brief "verification lease" --max-bytes 12000
+uv run --locked sim2claw ops brief --refresh "verification lease" --max-bytes 12000
 uv run --locked sim2claw ops lessons
 uv run --locked sim2claw ops map
 uv run --locked sim2claw ops watch --interval 5
@@ -75,9 +79,11 @@ from an envelope is executed.
 
 1. Run the existing `check --profile agent` and exact role-context command.
    Read any refusal. The operations CLI does not change campaign admission.
-2. Run `ops index`, then `ops brief "specific task terms"`. Inspect source
+2. Run `ops brief --refresh "specific task terms"`. Inspect source
    freshness, relevant proposed lessons, matching human annotations and omitted
-   counts. Use JSON output directly as a bounded agent input.
+   counts. This uses the default 4 MiB source cap; use `ops index --max-bytes N`
+   then a brief without refresh when intentionally indexing larger sources.
+   Use JSON output directly as a bounded agent input.
 3. Choose an existing scoped contract, evaluator and test runner. Consult
    `ops map` for their locations, inputs, outputs and acceptance gates. The CLI
    does not run historical commands or promote the retrieved advice.
@@ -88,8 +94,9 @@ from an envelope is executed.
 5. Record feedback with `ops note --subject <topic>`. Matching annotations appear
    in later briefs and all recent notes appear in `ops events`. Notes remain
    advisory even when labeled `decision` or `milestone`.
-6. Write the normal session/reviewer records, refresh the index, and regenerate
-   `ops report` for the human-readable snapshot.
+6. Write the normal session/reviewer records with the contract's result, proof
+   scope, resource disposition and reopening condition. Refresh the index;
+   regenerate `ops report` when a human-readable snapshot is useful.
 
 ## What each record means
 

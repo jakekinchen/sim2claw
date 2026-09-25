@@ -74,6 +74,41 @@ print(json.dumps({'imports': 'lightweight'}))
     assert json.loads(result.stdout.splitlines()[-1]) == {"imports": "lightweight"}
 
 
+def test_refreshed_brief_finds_new_evidence_and_removes_deleted_sources(
+    cli_repo: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    (cli_repo / "docs/session-logs/attempt.md").unlink()
+    (cli_repo / "docs/session-logs/new.md").write_text("duplicate prerequisite repaired\n", encoding="utf-8")
+    scans: list[Path] = []
+    original_scan = core.scan
+
+    def scan(root: Path, **kwargs: object) -> dict:
+        scans.append(root)
+        return original_scan(root, **kwargs)
+
+    monkeypatch.setattr(core, "scan", scan)
+    assert cli.main(["--root", str(cli_repo), "--json", "brief", "--refresh", "duplicate"]) == 0
+    captured = capsys.readouterr()
+    packet = json.loads(captured.out)
+    assert captured.err == ""
+    assert scans == [cli_repo]
+    assert {row["path"] for row in packet["sources"]} == {"docs/session-logs/new.md"}
+    assert all(row["freshness"] == "current" for row in packet["sources"])
+    assert packet["authority"]["execution_admitted"] is False
+    assert packet["bytes"] <= packet["max_bytes"]
+
+
+def test_invalid_brief_is_rejected_before_refresh(
+    cli_repo: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def unexpected_scan(*args: object, **kwargs: object) -> None:
+        pytest.fail("invalid brief must fail before source scanning")
+
+    monkeypatch.setattr(core, "scan", unexpected_scan)
+    assert cli.main(["--root", str(cli_repo), "--json", "brief", "--refresh", "duplicate", "--max-bytes", "100"]) == 1
+    assert json.loads(capsys.readouterr().out)["status"] == "error"
+
+
 @pytest.mark.parametrize("destination", ["docs/overwrite.html", "outputs/operations/../outside.html", "outputs/operations/report.json", "/tmp/unscoped-operations-report.html"])
 def test_report_output_is_confined_to_ignored_operations_html(cli_repo: Path, capsys: pytest.CaptureFixture[str], destination: str) -> None:
     source = cli_repo / "docs/session-logs/attempt.md"
