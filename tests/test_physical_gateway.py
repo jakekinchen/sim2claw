@@ -151,6 +151,26 @@ class PhysicalGatewayTest(unittest.TestCase):
     def factory(self, _identity: GatewayIdentity) -> tuple[Any, Any]:
         return self.leader, self.follower
 
+    def test_stale_hold_goal_prevents_torque_activation(self) -> None:
+        original_read = self.follower.bus.sync_read
+
+        def read(register: str, **kwargs: Any) -> dict[str, float]:
+            if register == "Goal_Position":
+                return {joint: 0.0 for joint in ROBOT_JOINTS}
+            return original_read(register, **kwargs)
+
+        self.follower.bus.sync_read = read
+        gateway = SO101PhysicalGateway(
+            self.identity, device_factory=self.factory, configure_devices=False,
+            verify_arm_goal_readback=True,
+        )
+        try:
+            with self.assertRaisesRegex(PhysicalGatewayError, "Hold goal did not match"):
+                gateway.open(enable_motion=True, paired_pose_confirmed=True)
+            self.assertEqual(self.follower.bus.enable_num_retries, [])
+        finally:
+            gateway.close()
+
     def test_relative_target_preserves_follower_start_and_bounds_motion(self) -> None:
         leader = np.asarray([40, -20, 4, 3, 179, 40], dtype=np.float64)
         leader_start = np.asarray([0, 0, 0, 0, -179, 10], dtype=np.float64)
