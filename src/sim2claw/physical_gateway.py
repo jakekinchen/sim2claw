@@ -2085,6 +2085,7 @@ def probe_reduced_arm_elbow(
     camera_guard: Callable[[], None],
     goal_offset_raw: int = 0,
     observation_seconds: int = 1,
+    upstream_witness: bool = False,
     sleep: SleepFunction = time.sleep,
     clock: Callable[[], float] = time.monotonic,
 ) -> dict[str, Any]:
@@ -2093,6 +2094,14 @@ def probe_reduced_arm_elbow(
     Only elbow 3 may receive writes. Peers must remain torque off, stationary,
     and healthy. The caller confirms reduced mechanical load and clearance
     using the recorded camera view. This does not assert a fully unloaded motor.
+
+    upstream_witness (one-second stationary hold only) additionally reads one
+    passive peer's telemetry after every elbow feedback sample, nearest
+    upstream neighbour first, and once more per peer right after the first
+    torque-off attempt. The peers' own voltage readings then show whether an
+    elbow voltage fault is shared by the bus or local to the elbow. Witness
+    reads are read-only, never delay the first torque-off, and are servo
+    telemetry, not a calibrated external voltage measurement.
     """
     if not isinstance(peer_calibrations, dict) or set(peer_calibrations) != {1, 2}:
         raise PhysicalGatewayError("Reduced arm requires explicit calibration for peers 1 and 2.")
@@ -2108,7 +2117,8 @@ def probe_reduced_arm_elbow(
         expected_homing_offset=expected_homing_offset, camera_guard=camera_guard,
         output_limit=50, servo_id=3, goal_offset_raw=goal_offset_raw,
         passive_peer_calibrations=dict(peer_calibrations),
-        observation_seconds=observation_seconds, sleep=sleep, clock=clock,
+        observation_seconds=observation_seconds, upstream_witness=upstream_witness,
+        sleep=sleep, clock=clock,
     )
 
 
@@ -2125,6 +2135,7 @@ def _probe_bounded_servo_position(
     unloaded_sweep: bool = False,
     passive_peer_calibrations: dict[int, tuple[tuple[int, int], int]] | None = None,
     observation_seconds: int = 1,
+    upstream_witness: bool = False,
     sleep: SleepFunction = time.sleep,
     clock: Callable[[], float] = time.monotonic,
 ) -> dict[str, Any]:
@@ -2161,6 +2172,8 @@ def _probe_bounded_servo_position(
         or not 0 <= raw_limits[0] < raw_limits[1] <= 4095
         or type(expected_homing_offset) is not int or not -2047 <= expected_homing_offset <= 2047
         or not callable(camera_guard)
+        or type(upstream_witness) is not bool
+        or (upstream_witness and (not peers or goal_offset_raw != 0 or observation_seconds != 1))
     ):
         raise PhysicalGatewayError("Invalid isolated hold identity, limits, or camera guard.")
     matches = [p for p in list_ports.comports() if p.device == port
@@ -2185,7 +2198,8 @@ def _probe_bounded_servo_position(
         report.update(schema_version="sim2claw.reduced_arm_elbow_probe.v1",
                       proof_class="physical_reduced_load_elbow_diagnostic",
                       expected_connected_ids=[1, 2, 3], passive_peer_samples=[],
-                      passive_peers_before={}, passive_peers_after={})
+                      passive_peers_before={}, passive_peers_after={},
+                      upstream_witness=upstream_witness, upstream_witness_samples=[])
     report["requested_offset_raw"] = goal_offset_raw
     report["unloaded_sweep"] = unloaded_sweep
     report["observation_seconds"] = observation_seconds
@@ -2307,6 +2321,31 @@ def _probe_bounded_servo_position(
             row["persistent"] = configuration
         return row
 
+    def witness(peer: int, label: str, *, enforce: bool = True) -> dict[str, Any] | None:
+        """One read-only peer telemetry sample; every outcome is retained raw."""
+        row: dict[str, Any] = {"servo_id": peer, "stage": label, "started_monotonic": clock()}
+        report["upstream_witness_samples"].append(row)
+        try:
+            data = read_bytes(56, 15, peer)
+        except PhysicalGatewayError as exc:
+            row.update(completed_monotonic=clock(), error=str(exc), details=exc.details)
+            if enforce:
+                raise
+            return None
+        row.update(completed_monotonic=clock(), data=data, position_raw=signed(word(data), 15),
+                   voltage_volts=data[6] / 10, current_raw=signed(word(data, 13), 15),
+                   status=data[9], moving=data[10])
+        if enforce and (
+            row["status"] or row["moving"] or abs(row["current_raw"]) > 50
+            or not 10.5 <= row["voltage_volts"] <= 12.6
+            or abs(row["position_raw"] - peer_anchors[peer]) > 3
+            or row["voltage_volts"] <= peer_baselines[peer] - 0.5
+        ):
+            raise PhysicalGatewayError("Upstream witness guard tripped.", details=row)
+        return row
+
+    witness_order = sorted(peers, reverse=True)  # Nearest upstream neighbour first.
+
     try:
         camera_guard()
         if not handler.setBaudRate(1_000_000):
@@ -2382,6 +2421,8 @@ def _probe_bounded_servo_position(
         while clock() - report["goal_ack_monotonic"] < observation_seconds:
             row = feedback("hold", baseline_voltage)
             hold_samples += 1
+            if upstream_witness:
+                witness(witness_order[(hold_samples - 1) % len(witness_order)], "hold")
             if hold_samples % 10 == 0:
                 camera_guard()
                 control = read_bytes(40, 10)
@@ -2390,6 +2431,8 @@ def _probe_bounded_servo_position(
                     raise PhysicalGatewayError("Isolated hold torque/goal/limit readback changed.")
                 for peer in peers:
                     check_peer(peer, "hold")
+            if upstream_witness and hold_samples <= 25:
+                continue  # Back-to-back sampling brackets the first milliseconds.
             sleep(max(0.0, row["started_monotonic"] + 0.002 - clock()))
         if hold_samples < 100:
             raise PhysicalGatewayError("Insufficient hold feedback.")
@@ -2405,8 +2448,11 @@ def _probe_bounded_servo_position(
         stage = "shutdown"
         report["shutdown_started_monotonic"] = clock()
         if handler.is_open and touched:
-            for delay in (0.0, 0.05, 0.2):
-                sleep(delay)
+            witness_seconds = 0.0
+            for attempt_index, delay in enumerate((0.0, 0.05, 0.2)):
+                # Witness reads spend the existing retry delay; they never add to it.
+                sleep(max(0.0, delay - witness_seconds))
+                witness_seconds = 0.0
                 attempt: dict[str, Any] = {"t": clock()}
                 report["shutdown_attempts"].append(attempt)
                 try:
@@ -2414,9 +2460,17 @@ def _probe_bounded_servo_position(
                     if read_bytes(40, 1) != [0]:
                         raise PhysicalGatewayError("Isolated shutdown did not verify torque off.")
                     attempt["torque_off_verified"] = True
-                    break
                 except Exception as exc:
                     attempt["error"] = str(exc)
+                if upstream_witness and attempt_index == 0:
+                    witness_started = clock()
+                    for peer in witness_order:
+                        witness(peer, "after_first_stop", enforce=False)
+                        if clock() - witness_started > 0.005:
+                            break  # A slow or silent peer ends witnessing.
+                    witness_seconds = clock() - witness_started
+                if attempt.get("torque_off_verified"):
+                    break
             stage = "restoration"
             sleep(0.5)
             try:
