@@ -344,6 +344,10 @@ class SO101PhysicalGateway:
         configure_devices: bool = True,
         current_telemetry_hz: float = CURRENT_TELEMETRY_HZ,
         require_initial_follower_torque_off: bool = False,
+        torque_enable_spacing_seconds: float = 0.0,
+        torque_enable_order: tuple[str, ...] | None = None,
+        verify_arm_goal_readback: bool = False,
+        position_write_mode: str = "sync",
     ):
         if identity.leader_port == identity.follower_port:
             raise PhysicalGatewayError("Leader and follower must use distinct buses.")
@@ -355,6 +359,27 @@ class SO101PhysicalGateway:
         self.require_initial_follower_torque_off = (
             require_initial_follower_torque_off
         )
+        if (
+            not np.isfinite(torque_enable_spacing_seconds)
+            or not 0.0 <= torque_enable_spacing_seconds <= 0.5
+        ):
+            raise PhysicalGatewayError("Torque-enable spacing must be between zero and 0.5 seconds.")
+        self.torque_enable_spacing_seconds = float(torque_enable_spacing_seconds)
+        self.verify_arm_goal_readback = bool(verify_arm_goal_readback)
+        self.arm_goal_readback: dict[str, Any] | None = None
+        if position_write_mode not in {"sync", "acknowledged_unicast"}:
+            raise PhysicalGatewayError("Unknown follower position-write mode.")
+        self.position_write_mode = position_write_mode
+        self.torque_enable_order = (
+            tuple(ROBOT_JOINTS) if torque_enable_order is None else tuple(torque_enable_order)
+        )
+        if (
+            len(self.torque_enable_order) != len(ROBOT_JOINTS)
+            or set(self.torque_enable_order) != set(ROBOT_JOINTS)
+        ):
+            raise PhysicalGatewayError("Torque-enable order must contain each follower joint exactly once.")
+        if torque_enable_order is not None and self.torque_enable_spacing_seconds == 0.0:
+            raise PhysicalGatewayError("A custom activation order requires staggered activation.")
         if current_telemetry_hz < 0.0:
             raise PhysicalGatewayError("Current telemetry rate cannot be negative.")
         self.current_telemetry_hz = float(current_telemetry_hz)
@@ -379,6 +404,9 @@ class SO101PhysicalGateway:
         self.current_telemetry_stale = False
         self.bus_read_retries_total = 0
         self.torque_enabled = False
+        # Observed STS3215 firmware may enable torque on a Goal_Position write.
+        # Keep uncertain/partial activation separate from a fully armed chain.
+        self.goal_write_may_have_armed = False
         self.connected = False
         self.zero_displacement_arm_target: np.ndarray | None = None
         self.live_anchored_setup_only = False
@@ -406,6 +434,47 @@ class SO101PhysicalGateway:
             upper.append((range_max - midpoint) * 360.0 / 4095.0)
         return np.asarray(lower), np.asarray(upper)
 
+    def _enable_follower_torque(self) -> None:
+        """Optionally stagger activation, retaining acknowledgements and readback."""
+        if self.torque_enable_spacing_seconds == 0.0:
+            self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
+            return
+        try:
+            for joint in self.torque_enable_order:
+                self.follower.bus.enable_torque(motors=joint, num_retry=BUS_READ_RETRIES)
+                self.sleep(self.torque_enable_spacing_seconds)
+                torque = self.follower.bus.read(
+                    "Torque_Enable", joint, normalize=False, num_retry=BUS_READ_RETRIES
+                )
+                status = self.follower.bus.read(
+                    "Status", joint, normalize=False, num_retry=BUS_READ_RETRIES
+                )
+                if int(torque) != 1 or int(status) != 0:
+                    raise PhysicalGatewayError(
+                        f"Staggered activation failed readback for {joint}: "
+                        f"torque={torque}, status={status}."
+                    )
+        except Exception:
+            # A partially armed chain must be released before propagating failure.
+            try:
+                self.close()
+            except Exception:
+                pass  # caller still performs and records its final shutdown attempt
+            raise
+
+    def _send_follower_action(self, action: dict[str, float]) -> dict[str, float]:
+        self.goal_write_may_have_armed = True
+        if self.position_write_mode == "sync":
+            return self.follower.send_action(action)
+        # Diagnostic transport: same absolute targets, acknowledged separately.
+        # A failed write aborts the sequence; subsequent joints are not sent.
+        for joint in ROBOT_JOINTS:
+            self.follower.bus.write(
+                "Goal_Position", joint, action[f"{joint}.pos"],
+                normalize=True, num_retry=0,
+            )
+        return dict(action)
+
     def _connect_torque_off(self) -> None:
         try:
             self.leader.bus.connect()
@@ -422,6 +491,7 @@ class SO101PhysicalGateway:
                         "Follower torque must already be off before excitation preflight."
                     )
             self.follower.bus.disable_torque(num_retry=BUS_READ_RETRIES)
+            self.goal_write_may_have_armed = False
             self.connected = True
             if not self.leader.is_calibrated:
                 raise PhysicalGatewayError(
@@ -510,15 +580,32 @@ class SO101PhysicalGateway:
                     raise PhysicalGatewayError(
                         "Reviewed setup command anchor is invalid or out of range."
                     )
-            # Normal execution holds the observed follower pose. Explicit
+            # A goal write itself may activate STS3215 torque. Normal execution
+            # therefore starts with the observed follower pose. Explicit
             # setup-recovery execution instead uses its separately reviewed,
             # in-range clipped anchor before torque enable.
             self.zero_displacement_arm_target = hold_target.copy()
-            self.follower.send_action(_position_dict(hold_target))
-            self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
+            self._send_follower_action(_position_dict(hold_target))
+            if self.verify_arm_goal_readback:
+                goals = self.follower.bus.sync_read(
+                    "Goal_Position", normalize=True, num_retry=BUS_READ_RETRIES
+                )
+                goal_vector = np.asarray([float(goals[joint]) for joint in ROBOT_JOINTS])
+                delta = goal_vector - hold_target
+                delta[4] = shortest_delta_degrees(float(goal_vector[4]), float(hold_target[4]))
+                self.arm_goal_readback = {
+                    "requested": hold_target.tolist(), "readback": goal_vector.tolist(),
+                    "residual": delta.tolist(),
+                }
+                if not np.all(np.isfinite(goal_vector)) or np.any(np.abs(delta) > 0.2):
+                    raise PhysicalGatewayError(
+                        "Hold goal did not match motor readback before activation.",
+                        details=self.arm_goal_readback,
+                    )
+            self._enable_follower_torque()
             self.torque_enabled = True
             if setup_command_anchor_degrees is not None:
-                self.follower.send_action(_position_dict(hold_target))
+                self._send_follower_action(_position_dict(hold_target))
             self.sleep(
                 0.35
                 if setup_command_anchor_degrees is not None
@@ -622,6 +709,10 @@ class SO101PhysicalGateway:
             "follower_calibrated_maximum": self.upper_limits.tolist(),
             "physical_follower_torque_enabled": self.torque_enabled,
             "device_configuration_rewritten": self.configure_devices,
+            "torque_enable_spacing_seconds": self.torque_enable_spacing_seconds,
+            "torque_enable_order": list(self.torque_enable_order),
+            "arm_goal_readback": self.arm_goal_readback,
+            "position_write_mode": self.position_write_mode,
             **registration,
             **registration_state,
         }
@@ -652,8 +743,8 @@ class SO101PhysicalGateway:
                 "Follower torque was not off before live-anchor setup."
             )
 
-        self.follower.send_action(_position_dict(initial_command_anchor))
-        self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
+        self._send_follower_action(_position_dict(initial_command_anchor))
+        self._enable_follower_torque()
         self.torque_enabled = True
         settled_samples: list[np.ndarray] = []
         current_samples: list[dict[str, float] | None] = []
@@ -683,7 +774,7 @@ class SO101PhysicalGateway:
                     ),
                 )
             # Follow only the observed settle. No route target exists yet.
-            self.follower.send_action(_position_dict(actual))
+            self._send_follower_action(_position_dict(actual))
             settled_samples.append(actual)
             current_samples.append(self._read_optional("Present_Current"))
 
@@ -791,10 +882,206 @@ class SO101PhysicalGateway:
         except (KeyError, NotImplementedError):
             return None
 
+    def read_motor_diagnostic_block(self, joint: str) -> dict[str, Any]:
+        """Read STS3215 feedback in one transaction, with no retries or writes.
+
+        This is also allowed after a possibly activating goal write. It makes
+        no torque-off claim. Host timestamps bound the transaction, not the
+        servo's undocumented ADC sampling time. The caller must close on error.
+        Register offsets and sign bits follow Feetech's SMS_STS feedback API.
+        """
+        if not self.connected or joint not in ROBOT_JOINTS:
+            raise PhysicalGatewayError("Motor diagnostics require a connected gateway and known joint.")
+        bus = self.follower.bus
+        row = {"joint": joint, "servo_id": bus.motors[joint].id,
+               "started_monotonic": self.clock()}
+        try:
+            data, result, error = bus.packet_handler.readTxRx(
+                bus.port_handler, row["servo_id"], 56, 15,
+            )
+        except Exception as exc:
+            row.update(completed_monotonic=self.clock(), error=str(exc))
+            raise PhysicalGatewayError("Motor diagnostic transaction failed.", details=row) from exc
+        row.update(completed_monotonic=self.clock(), data=list(data),
+                   communication_result=result, packet_error=error)
+        if result != 0 or error != 0 or len(data) != 15 or any(
+            type(value) is not int or not 0 <= value <= 255 for value in data
+        ):
+            raise PhysicalGatewayError("Motor diagnostic reply is missing or invalid.", details=row)
+
+        def signed_word(offset: int, sign_bit: int) -> int:
+            value = data[offset] | (data[offset + 1] << 8)
+            return -(value & ~(1 << sign_bit)) if value & (1 << sign_bit) else value
+
+        row.update(position_raw=signed_word(0, 15), velocity_raw=signed_word(2, 15),
+                   load_raw=signed_word(4, 10), voltage_raw=data[6],
+                   voltage_volts=data[6] / 10.0, temperature_c=data[7],
+                   status=data[9], moving=data[10], current_raw=signed_word(13, 15))
+        return row
+
+    def set_stopped_acceleration(self, joint: str, value: int) -> dict[str, Any]:
+        """Change only a volatile acceleration byte on a verified stopped arm.
+
+        The caller can use the returned previous value for restoration. A failed
+        acknowledgement or readback aborts and closes this gateway, without
+        retrying the setting write or sending a position target.
+        """
+        if (
+            joint not in ROBOT_JOINTS or not self.connected
+            or self.torque_enabled or self.goal_write_may_have_armed
+            or type(value) is not int or not 0 <= value <= 254
+        ):
+            raise PhysicalGatewayError("Acceleration change requires a stopped session and byte 0..254.")
+        bus = self.follower.bus
+        try:
+            for register in ("Torque_Enable", "Status", "Moving", "Operating_Mode"):
+                values = bus.sync_read(register, normalize=False, num_retry=0)
+                if set(values) != set(ROBOT_JOINTS) or any(v != 0 for v in values.values()):
+                    raise PhysicalGatewayError(f"Acceleration change rejected {register} readback.")
+            previous = bus.read("Acceleration", joint, normalize=False, num_retry=0)
+            if not np.isfinite(previous) or previous != int(previous) or not 0 <= previous <= 254:
+                raise PhysicalGatewayError("Invalid previous acceleration value.")
+            if previous != value:
+                bus.write("Acceleration", joint, value, normalize=False, num_retry=0)
+            actual = bus.read("Acceleration", joint, normalize=False, num_retry=0)
+            for register in ("Torque_Enable", "Status", "Moving"):
+                values = bus.sync_read(register, normalize=False, num_retry=0)
+                if set(values) != set(ROBOT_JOINTS) or any(v != 0 for v in values.values()):
+                    raise PhysicalGatewayError(f"Acceleration change altered {register}.")
+            if actual != value:
+                raise PhysicalGatewayError("Acceleration write did not match readback.")
+            return {"joint": joint, "previous": int(previous), "requested": value,
+                    "readback": int(actual), "setting_writes": int(previous != value),
+                    "position_writes": 0, "explicit_torque_enable_writes": 0}
+        except Exception:
+            self.close()
+            raise
+
+    def set_stopped_torque_limit(
+        self, joint: str, value: int, *, diagnostic_low_output: bool = False,
+    ) -> dict[str, Any]:
+        """Set the volatile output limit only while all joints are stopped.
+
+        Values 50..1000 follow Waveshare's ST_TORQUE_MIN/MAX control range.
+        A diagnostic-only opt-in additionally permits 0 and 10, within the
+        manufacturer's register48 range0..1000, for bounded stationary
+        activation comparisons. This does not itself authorize a goal.
+        This is an output limit, not a calibrated electrical current limit.
+        The caller records the previous value and restores it after shutdown.
+        """
+        if (
+            joint not in ROBOT_JOINTS or not self.connected
+            or self.torque_enabled or self.goal_write_may_have_armed
+            or type(diagnostic_low_output) is not bool
+            or type(value) is not int
+            or not (50 <= value <= 1000 or (diagnostic_low_output and value in (0, 10)))
+        ):
+            raise PhysicalGatewayError("Torque limit change requires a stopped session and value 50..1000.")
+        bus = self.follower.bus
+        try:
+            for register in ("Torque_Enable", "Status", "Moving", "Operating_Mode"):
+                values = bus.sync_read(register, normalize=False, num_retry=0)
+                if set(values) != set(ROBOT_JOINTS) or any(v != 0 for v in values.values()):
+                    raise PhysicalGatewayError(f"Torque limit change rejected {register} readback.")
+            previous = bus.read("Torque_Limit", joint, normalize=False, num_retry=0)
+            maximum = bus.read("Max_Torque_Limit", joint, normalize=False, num_retry=0)
+            if (not np.isfinite(maximum) or maximum != int(maximum) or not 50 <= maximum <= 1000
+                or not np.isfinite(previous) or previous != int(previous)
+                or not (50 <= previous <= 1000 or (diagnostic_low_output and previous in (0, 10)))):
+                raise PhysicalGatewayError("Invalid existing torque limit.")
+            if value > maximum:
+                raise PhysicalGatewayError("Requested output limit exceeds the persistent maximum.")
+            if previous != value:
+                bus.write("Torque_Limit", joint, value, normalize=False, num_retry=0)
+            actual = bus.read("Torque_Limit", joint, normalize=False, num_retry=0)
+            for register in ("Torque_Enable", "Status", "Moving"):
+                values = bus.sync_read(register, normalize=False, num_retry=0)
+                if set(values) != set(ROBOT_JOINTS) or any(v != 0 for v in values.values()):
+                    raise PhysicalGatewayError(f"Torque limit change altered {register}.")
+            if actual != value:
+                raise PhysicalGatewayError("Torque limit write did not match readback.")
+            return {"joint": joint, "previous": int(previous), "persistent_maximum": int(maximum),
+                    "requested": value, "readback": int(actual), "setting_writes": int(previous != value),
+                    "position_writes": 0, "explicit_torque_enable_writes": 0}
+        except Exception:
+            self.close()
+            raise
+
+    def probe_stationary_joint_goal(
+        self, joint: str, *, goal_offset_raw: int = 0, slow_start: bool = False,
+    ) -> dict[str, Any]:
+        """Write one raw target after verifying the whole follower torque-off.
+
+        The target write may itself activate the selected servo. This diagnostic
+        isolates that transaction from explicit torque-enable and other goal
+        writes. The caller records feedback and closes the gateway on failure.
+        An uncertain write is never retried here.
+        The optional six-count offset is confined to output limit50. It permits
+        a small position diagnostic without weakening the stationary default.
+        Slow start uses the vendor WritePosEx layout: acceleration1, goal,
+        time0, speed1 in a single transaction. Its temporary profile is reported
+        and not automatically rewritten after stopping.
+        """
+        if (
+            joint not in ROBOT_JOINTS or not self.connected
+            or self.torque_enabled or self.goal_write_may_have_armed
+            or type(goal_offset_raw) is not int or goal_offset_raw not in (-6, 0, 6)
+            or type(slow_start) is not bool or (slow_start and goal_offset_raw == 0)
+        ):
+            raise PhysicalGatewayError("Stationary goal probe requires a known joint and torque-off session.")
+        bus = self.follower.bus
+        for register in ("Torque_Enable", "Status", "Moving", "Operating_Mode"):
+            values = bus.sync_read(register, normalize=False, num_retry=0)
+            if set(values) != set(ROBOT_JOINTS) or any(value != 0 for value in values.values()):
+                raise PhysicalGatewayError(f"Stationary goal probe rejected {register} readback.")
+        calibration = getattr(self.follower, "calibration", None)
+        if not calibration or joint not in calibration:
+            raise PhysicalGatewayError("Stationary goal probe requires calibrated raw limits.")
+        entry = calibration[joint]
+        minimum = entry["range_min"] if isinstance(entry, dict) else entry.range_min
+        maximum = entry["range_max"] if isinstance(entry, dict) else entry.range_max
+        first = bus.read("Present_Position", joint, normalize=False, num_retry=0)
+        self.sleep(0.05)
+        anchor = bus.read("Present_Position", joint, normalize=False, num_retry=0)
+        if (
+            not np.all(np.isfinite([first, anchor, minimum, maximum]))
+            or anchor != int(anchor)
+            or abs(anchor - first) > 1
+            or not 0 <= minimum <= anchor <= maximum <= 4095
+        ):
+            raise PhysicalGatewayError("Stationary goal probe position is moving, invalid, or out of range.")
+        target = int(anchor) + goal_offset_raw
+        if not minimum <= target <= maximum:
+            raise PhysicalGatewayError("Small goal offset exceeds calibrated limits.")
+        if goal_offset_raw and bus.read("Torque_Limit", joint, normalize=False, num_retry=0) != 50:
+            raise PhysicalGatewayError("Small goal offset requires verified output limit50.")
+        # Recheck the selected joint immediately before the only goal write.
+        if bus.read("Torque_Enable", joint, normalize=False, num_retry=0) != 0:
+            raise PhysicalGatewayError("Torque changed before stationary goal probe.")
+        self.goal_write_may_have_armed = True
+        profile = None
+        if slow_start:
+            payload = [1, target & 255, target >> 8, 0, 0, 1, 0]
+            result, error = bus.packet_handler.writeTxRx(
+                bus.port_handler, bus.motors[joint].id, 41, len(payload), payload,
+            )
+            if result != 0 or error != 0:
+                raise PhysicalGatewayError("Slow-start goal acknowledgement failed.", details={
+                    "communication_result": result, "packet_error": error, "payload": payload})
+            profile = {"acceleration_raw": 1, "goal_time_raw": 0, "goal_velocity_raw": 1,
+                       "address": 41, "payload": payload}
+        else:
+            bus.write("Goal_Position", joint, int(target), normalize=False, num_retry=0)
+        return {"joint": joint, "anchor_raw": int(anchor), "target_raw": int(target),
+                "requested_offset_raw": goal_offset_raw, "goal_writes": 1,
+                "slow_start_profile": profile,
+                "explicit_torque_enable_writes": 0, "gain_writes": 0,
+                "goal_write_may_have_armed": True}
+
     def sample_read_only(self) -> dict[str, Any]:
         """Read both calibrated poses while preserving the torque-off contract."""
 
-        if not self.connected or self.torque_enabled:
+        if not self.connected or self.torque_enabled or self.goal_write_may_have_armed:
             raise PhysicalGatewayError(
                 "Read-only telemetry requires one connected, torque-off gateway session."
             )
@@ -1105,7 +1392,7 @@ class SO101PhysicalGateway:
                 "the current sample was not sent."
             )
         command_call_started_monotonic = self.clock()
-        sent = action_vector(self.follower.send_action(_position_dict(command)))
+        sent = action_vector(self._send_follower_action(_position_dict(command)))
         command_call_completed_monotonic = self.clock()
         if (zero_displacement_hold or exact_precompiled) and not _same_float64_bytes(
             sent, requested
@@ -1369,8 +1656,8 @@ class SO101PhysicalGateway:
         torque = self._read_optional("Torque_Enable")
         if torque is not None and any(float(value) != 0.0 for value in torque.values()):
             raise PhysicalGatewayError("Follower torque was not off before sync.")
-        self.follower.send_action(_position_dict(follower))
-        self.follower.bus.enable_torque(num_retry=BUS_READ_RETRIES)
+        self._send_follower_action(_position_dict(follower))
+        self._enable_follower_torque()
         self.torque_enabled = True
         self.sleep(HOLD_SETTLE_SECONDS)
         held = action_vector(self.follower.get_observation())
@@ -1399,9 +1686,9 @@ class SO101PhysicalGateway:
             fraction = index / steps
             smooth = fraction * fraction * (3.0 - 2.0 * fraction)
             command = follower + smooth * delta
-            self.follower.send_action(_position_dict(command))
+            self._send_follower_action(_position_dict(command))
             self.sleep(1.0 / SYNC_COMMAND_HZ)
-        self.follower.send_action(_position_dict(target))
+        self._send_follower_action(_position_dict(target))
         self.sleep(0.3)
 
         actual = action_vector(self.follower.get_observation())
@@ -1536,7 +1823,7 @@ class SO101PhysicalGateway:
                         countdown_checks=countdown_checks,
                     ),
                 )
-            self.follower.send_action(_position_dict(hold_target))
+            self._send_follower_action(_position_dict(hold_target))
 
         registered_leader = self._motion_read(
             "pre-record leader position", self.leader.get_action
@@ -1598,9 +1885,18 @@ class SO101PhysicalGateway:
                     bus.disable_torque(num_retry=BUS_READ_RETRIES)
             except Exception as error:  # retain all shutdown attempts
                 errors.append(error)
+                # A per-motor failure in LeRobot's bulk helper stops its loop.
+                # Still attempt release on every known motor before closing serial.
+                motors = getattr(bus, "motors", {})
+                if isinstance(motors, dict):
+                    for joint in motors:
+                        try:
+                            bus.disable_torque(motors=joint, num_retry=BUS_READ_RETRIES)
+                        except Exception as motor_error:
+                            errors.append(motor_error)
             try:
                 if bus.is_connected:
-                    bus.disconnect(True)
+                    bus.disconnect(False)
             except TypeError:
                 try:
                     if bus.is_connected:
@@ -1610,6 +1906,7 @@ class SO101PhysicalGateway:
             except Exception as error:
                 errors.append(error)
         self.torque_enabled = False
+        self.goal_write_may_have_armed = False
         self.connected = False
         self.zero_displacement_arm_target = None
         self.live_anchored_setup_only = False
@@ -1636,6 +1933,679 @@ def inspect_physical_gateway(
         return report
     finally:
         gateway.close()
+
+
+def inspect_isolated_servo_read_only(
+    port: str,
+    expected_serial_number: str,
+    *,
+    candidate_ids: tuple[int, ...] = (1, 3),
+    include_configuration: bool = False,
+) -> dict[str, Any]:
+    """Identify an operator-isolated replacement without any register writes.
+
+    Requires current operator authority for serial inspection. Uses the existing
+    LeRobot dependency's public Feetech SDK only for PING/READ framing. Unlike
+    whole-arm preflight, this does not connect either robot, configure devices,
+    or change torque, including during cleanup. A transport allowlist rejects
+    writes, broadcasts, and reads outside the identity/health register ranges.
+    Model 777 identifies the STS3215 family, not its physical voltage variant.
+    """
+    import scservo_sdk as scs
+    from serial.tools import list_ports
+
+    if type(include_configuration) is not bool:
+        raise PhysicalGatewayError("Configuration inspection flag must be boolean.")
+
+    if (
+        not candidate_ids
+        or len(candidate_ids) > 254
+        or len(set(candidate_ids)) != len(candidate_ids)
+        or any(type(item) is not int or not 0 <= item <= 253 for item in candidate_ids)
+    ):
+        raise PhysicalGatewayError("Require distinct unicast servo IDs from 0 to 253.")
+    matches = [
+        item for item in list_ports.comports()
+        if item.device == port
+        and item.serial_number == expected_serial_number
+        and item.vid == 0x1A86 and item.pid == 0x55D3
+    ]
+    if not expected_serial_number or len(matches) != 1:
+        raise PhysicalGatewayError("Servo adapter USB identity does not match.")
+
+    handler = scs.PortHandler(port)
+    protocol = scs.PacketHandler(0)
+    sent: list[list[int]] = []
+    write_port = handler.writePort
+    allowed_reads = {(3, 2), (0, 16), (40, 1), (56, 15)}
+    if include_configuration:
+        allowed_reads.update({(0, 40), (40, 10)})
+
+    def guarded_transmit(packet: Any) -> int:
+        frame = list(packet)
+        valid_frame = (
+            len(frame) >= 6
+            and frame[:2] == [255, 255]
+            and frame[2] in candidate_ids
+            and len(frame) == frame[3] + 4
+            and (sum(frame[2:]) & 255) == 255
+        )
+        allowed_ping = len(frame) == 6 and frame[4] == 1 and frame[3] == 2
+        allowed_read = (
+            len(frame) == 8 and frame[4] == 2 and frame[3] == 4
+            and tuple(frame[5:7]) in allowed_reads
+        )
+        if not valid_frame or not (allowed_ping or allowed_read):
+            raise PhysicalGatewayError("Read-only servo gateway rejected a packet.")
+        sent.append(frame)
+        return write_port(packet)
+
+    handler.writePort = guarded_transmit
+    report: dict[str, Any] = {
+        "schema_version": "sim2claw.isolated_servo_read_only.v1",
+        "proof_class": "physical_read_only_servo_identity_and_health",
+        "port": port,
+        "adapter_serial_number": expected_serial_number,
+        "baudrate": 1_000_000,
+        "candidate_ids": list(candidate_ids),
+        "probes": [],
+        "register_writes_sent": 0,
+        "motion_commands_sent": 0,
+    }
+    try:
+        if not handler.setBaudRate(1_000_000):
+            raise PhysicalGatewayError("Could not open servo adapter at 1 Mbps.")
+        for servo_id in candidate_ids:
+            model, result, error = protocol.ping(handler, servo_id)
+            probe: dict[str, Any] = {
+                "id": servo_id, "model_number": model,
+                "communication_result": result, "device_error": error,
+                "communication_message": protocol.getTxRxResult(result),
+                "device_error_message": protocol.getRxPacketError(error),
+            }
+            report["probes"].append(probe)
+            if result != scs.COMM_SUCCESS or model != 777:
+                continue
+            registers = {}
+            read_ranges = (
+                ("identity_and_limits", 0, 16),
+                ("torque_enable", 40, 1),
+                ("present_telemetry", 56, 15),
+            )
+            if include_configuration:
+                read_ranges += (("persistent_configuration", 0, 40), ("runtime_configuration", 40, 10))
+            for name, address, length in read_ranges:
+                data, result, error = protocol.readTxRx(handler, servo_id, address, length)
+                registers[name] = {
+                    "address": address, "data": list(data),
+                    "communication_result": result, "device_error": error,
+                    "complete": result == scs.COMM_SUCCESS and len(data) == length,
+                }
+            probe["registers"] = registers
+    finally:
+        if handler.is_open:
+            handler.closePort()
+    report["transmitted_packets"] = sent
+    report["port_closed"] = not handler.is_open
+    return report
+
+
+def probe_isolated_servo_hold(
+    port: str,
+    expected_serial_number: str,
+    *,
+    raw_limits: tuple[int, int],
+    expected_homing_offset: int,
+    camera_guard: Callable[[], None],
+    output_limit: int = 50,
+    servo_id: int = 3,
+    goal_offset_raw: int = 0,
+    unloaded_sweep: bool = False,
+    observation_seconds: int = 1,
+    sleep: SleepFunction = time.sleep,
+    clock: Callable[[], float] = time.monotonic,
+) -> dict[str, Any]:
+    """Probe exactly one connected servo; other arm IDs must be absent."""
+    return _probe_bounded_servo_position(
+        port, expected_serial_number, raw_limits=raw_limits,
+        expected_homing_offset=expected_homing_offset, camera_guard=camera_guard,
+        output_limit=output_limit, servo_id=servo_id, goal_offset_raw=goal_offset_raw,
+        unloaded_sweep=unloaded_sweep, observation_seconds=observation_seconds,
+        sleep=sleep, clock=clock,
+    )
+
+
+def probe_reduced_arm_elbow(
+    port: str,
+    expected_serial_number: str,
+    *,
+    raw_limits: tuple[int, int],
+    expected_homing_offset: int,
+    peer_calibrations: dict[int, tuple[tuple[int, int], int]],
+    camera_guard: Callable[[], None],
+    goal_offset_raw: int = 0,
+    observation_seconds: int = 1,
+    sleep: SleepFunction = time.sleep,
+    clock: Callable[[], float] = time.monotonic,
+) -> dict[str, Any]:
+    """Probe elbow 3 with passive peers 1/2 and distal assembly 4–6 removed.
+
+    Only elbow 3 may receive writes. Peers must remain torque off, stationary,
+    and healthy. The caller confirms reduced mechanical load and clearance
+    using the recorded camera view. This does not assert a fully unloaded motor.
+    """
+    if not isinstance(peer_calibrations, dict) or set(peer_calibrations) != {1, 2}:
+        raise PhysicalGatewayError("Reduced arm requires explicit calibration for peers 1 and 2.")
+    for peer, calibration in peer_calibrations.items():
+        if (type(peer) is not int or not isinstance(calibration, tuple) or len(calibration) != 2
+            or not isinstance(calibration[0], tuple) or len(calibration[0]) != 2
+            or any(type(v) is not int for v in (*calibration[0], calibration[1]))
+            or not 0 <= calibration[0][0] < calibration[0][1] <= 4095
+            or not -2047 <= calibration[1] <= 2047):
+            raise PhysicalGatewayError("Invalid reduced-arm peer calibration.")
+    return _probe_bounded_servo_position(
+        port, expected_serial_number, raw_limits=raw_limits,
+        expected_homing_offset=expected_homing_offset, camera_guard=camera_guard,
+        output_limit=50, servo_id=3, goal_offset_raw=goal_offset_raw,
+        passive_peer_calibrations=dict(peer_calibrations),
+        observation_seconds=observation_seconds, sleep=sleep, clock=clock,
+    )
+
+
+def _probe_bounded_servo_position(
+    port: str,
+    expected_serial_number: str,
+    *,
+    raw_limits: tuple[int, int],
+    expected_homing_offset: int,
+    camera_guard: Callable[[], None],
+    output_limit: int = 50,
+    servo_id: int = 3,
+    goal_offset_raw: int = 0,
+    unloaded_sweep: bool = False,
+    passive_peer_calibrations: dict[int, tuple[tuple[int, int], int]] | None = None,
+    observation_seconds: int = 1,
+    sleep: SleepFunction = time.sleep,
+    clock: Callable[[], float] = time.monotonic,
+) -> dict[str, Any]:
+    """One bounded position goal with explicit topology and transport scope.
+
+    This diagnostic owns its port and every write. Only the selected ID and
+    explicitly declared passive peers may respond among the six known arm IDs.
+    It never emulates missing joints, rewrites calibration, or retries an activation. The caller records
+    video and supplies a live camera guard. A torque output cap is not a
+    calibrated electrical current limiter. Returns failures and raw evidence.
+    A nonzero offset normally permits only a six-count diagnostic at output limit 50.
+    Explicit unloaded_sweep or the reduced-arm wrapper permits up to 114 counts
+    (about 10 degrees), with the same output cap and bounded feedback envelope;
+    zero preserves the existing stationary-hold behavior. Completion means
+    healthy observation, not that the motor reached the requested position.
+    """
+    import scservo_sdk as scs
+    from serial.tools import list_ports
+    from lerobot.motors.feetech.feetech import patch_setPacketTimeout
+
+    peers = passive_peer_calibrations or {}
+    bounded_sweep = unloaded_sweep or bool(peers)
+    if (
+        type(servo_id) is not int or servo_id not in range(1, 7)
+        or type(output_limit) is not int or output_limit not in (50, 1000)
+        or type(observation_seconds) is not int
+        or observation_seconds not in ((1, 3) if bounded_sweep else (1,))
+        or type(unloaded_sweep) is not bool
+        or type(goal_offset_raw) is not int
+        or (abs(goal_offset_raw) > 114 if bounded_sweep else goal_offset_raw not in (-6, 0, 6))
+        or (bounded_sweep and output_limit != 50)
+        or (goal_offset_raw != 0 and output_limit != 50)
+        or len(raw_limits) != 2 or any(type(v) is not int for v in raw_limits)
+        or not 0 <= raw_limits[0] < raw_limits[1] <= 4095
+        or type(expected_homing_offset) is not int or not -2047 <= expected_homing_offset <= 2047
+        or not callable(camera_guard)
+    ):
+        raise PhysicalGatewayError("Invalid isolated hold identity, limits, or camera guard.")
+    matches = [p for p in list_ports.comports() if p.device == port
+               and p.serial_number == expected_serial_number and p.vid == 0x1A86 and p.pid == 0x55D3]
+    if not expected_serial_number or len(matches) != 1:
+        raise PhysicalGatewayError("Isolated hold USB identity does not match.")
+    handler = scs.PortHandler(port)
+    handler.setPacketTimeout = patch_setPacketTimeout.__get__(handler, type(handler))
+    protocol = scs.PacketHandler(0)
+    original_write, original_read = handler.writePort, handler.readPort
+    pending_write: tuple[int, tuple[int, ...]] | None = None
+    stage = "admission"
+    report: dict[str, Any] = {"schema_version": "sim2claw.isolated_stationary_hold.v1",
+        "proof_class": "physical_single_servo_stationary_hold_diagnostic", "servo_id": servo_id,
+        "output_limit_requested": output_limit, "status": "aborted", "samples": [],
+        "serial_trace": [], "goal_writes": 0, "setting_writes": [], "shutdown_attempts": []}
+    if goal_offset_raw:
+        report.update(schema_version="sim2claw.isolated_position_probe.v1",
+                      proof_class=("physical_single_servo_unloaded_position_diagnostic" if unloaded_sweep
+                                   else "physical_single_servo_six_count_position_diagnostic"))
+    if peers:
+        report.update(schema_version="sim2claw.reduced_arm_elbow_probe.v1",
+                      proof_class="physical_reduced_load_elbow_diagnostic",
+                      expected_connected_ids=[1, 2, 3], passive_peer_samples=[],
+                      passive_peers_before={}, passive_peers_after={})
+    report["requested_offset_raw"] = goal_offset_raw
+    report["unloaded_sweep"] = unloaded_sweep
+    report["observation_seconds"] = observation_seconds
+    allowed_reads = {(3, 2), (0, 40), (40, 10), (40, 1), (48, 2), (56, 15)}
+    touched = False
+    original_limit = None
+    target = None
+    anchor = None
+    peer_anchors: dict[int, int] = {}
+    peer_baselines: dict[int, float] = {}
+
+    def transmit(packet: Any) -> int:
+        nonlocal pending_write
+        frame = list(packet)
+        valid = (len(frame) >= 6 and frame[:2] == [255, 255]
+                 and len(frame) == frame[3] + 4 and (sum(frame[2:]) & 255) == 255)
+        ping = len(frame) == 6 and frame[2] in range(1, 7) and frame[4] == 1
+        read = (len(frame) == 8 and frame[2] in range(1, 7) and frame[4] == 2
+                and tuple(frame[5:7]) in allowed_reads
+                and (frame[2] == servo_id or frame[2] in peers or tuple(frame[5:7]) == (3, 2)))
+        write = (len(frame) in (8, 9) and frame[2] == servo_id and frame[4] == 3
+                 and pending_write is not None and (frame[5], tuple(frame[6:-1])) == pending_write)
+        if not valid or not (ping or read or write):
+            raise PhysicalGatewayError("Isolated hold rejected an unapproved packet.")
+        if write:
+            pending_write = None
+        report["serial_trace"].append({"t": clock(), "stage": stage, "tx": frame})
+        return original_write(packet)
+
+    def receive(count: int) -> Any:
+        data = original_read(count)
+        if data:
+            report["serial_trace"].append({"t": clock(), "stage": stage, "rx": list(data)})
+        return data
+
+    handler.writePort, handler.readPort = transmit, receive
+
+    def read_bytes(address: int, length: int, selected_id: int = servo_id) -> list[int]:
+        started = clock()
+        data, result, error = protocol.readTxRx(handler, selected_id, address, length)
+        details = {"servo_id": selected_id, "address": address, "data": list(data), "communication_result": result,
+                   "packet_error": error, "started_monotonic": started, "completed_monotonic": clock()}
+        if result != scs.COMM_SUCCESS or error or len(data) != length:
+            raise PhysicalGatewayError("Isolated hold read failed.", details=details)
+        return list(data)
+
+    def word(data: list[int], offset: int = 0) -> int:
+        return data[offset] | data[offset + 1] << 8
+
+    def signed(value: int, bit: int) -> int:
+        return -(value & ~(1 << bit)) if value & (1 << bit) else value
+
+    def write_value(address: int, value: int) -> None:
+        nonlocal pending_write, touched
+        if address == 40 and value == 0:
+            values = (0,)
+        elif address == 42 and value == target and report["goal_writes"] == 0:
+            values = (value & 255, value >> 8)
+            report["goal_writes"] += 1  # Consume before an uncertain transmission.
+        elif address == 48 and value in (output_limit, original_limit):
+            values = (value & 255, value >> 8)
+            report["setting_writes"].append(value)
+        else:
+            raise PhysicalGatewayError("Isolated hold write is outside its scope.")
+        touched = True
+        pending_write = (address, values)
+        try:
+            if len(values) == 1:
+                result, error = protocol.write1ByteTxRx(handler, servo_id, address, value)
+            else:
+                result, error = protocol.write2ByteTxRx(handler, servo_id, address, value)
+        finally:
+            pending_write = None
+        if result != scs.COMM_SUCCESS or error:
+            raise PhysicalGatewayError("Isolated hold write acknowledgement failed.", details={
+                "address": address, "value": value, "communication_result": result, "packet_error": error})
+
+    def feedback(label: str, baseline_voltage: float | None = None) -> dict[str, Any]:
+        started = clock()
+        try:
+            data = read_bytes(56, 15)
+        except PhysicalGatewayError as exc:
+            report["samples"].append({"stage": label, "error": str(exc), "details": exc.details})
+            raise
+        row = {"stage": label, "started_monotonic": started, "completed_monotonic": clock(),
+               "data": data, "position_raw": signed(word(data), 15), "voltage_volts": data[6] / 10,
+               "current_raw": signed(word(data, 13), 15), "status": data[9], "moving": data[10]}
+        report["samples"].append(row)
+        if (row["status"] or abs(row["current_raw"]) > 50 or not 10.5 <= row["voltage_volts"] <= 12.6
+            or (anchor is not None and (
+                not min(anchor, anchor + goal_offset_raw) - 5 <= row["position_raw"] <= max(anchor, anchor + goal_offset_raw) + 5
+                if bounded_sweep else abs(row["position_raw"] - anchor) > 11))
+            or not raw_limits[0] <= row["position_raw"] <= raw_limits[1]
+            or (baseline_voltage is not None and row["voltage_volts"] <= baseline_voltage - 0.5)):
+            raise PhysicalGatewayError("Isolated hold feedback guard tripped.", details=row)
+        return row
+
+    def check_peer(peer: int, label: str, *, verify_persistent: bool = False) -> dict[str, Any]:
+        data = read_bytes(56, 15, peer)
+        control = read_bytes(40, 10, peer)
+        row = {"servo_id": peer, "stage": label, "t": clock(), "data": data, "control": control,
+               "position_raw": signed(word(data), 15), "voltage_volts": data[6] / 10,
+               "current_raw": signed(word(data, 13), 15), "status": data[9], "moving": data[10]}
+        report["passive_peer_samples"].append(row)
+        limits, offset = peers[peer]
+        if (control[0] != 0 or word(control, 8) != 1000 or row["status"] or row["moving"]
+            or abs(row["current_raw"]) > 50 or not 10.5 <= row["voltage_volts"] <= 12.6
+            or not limits[0] <= row["position_raw"] <= limits[1]
+            or (peer in peer_anchors and abs(row["position_raw"] - peer_anchors[peer]) > 3)
+            or (peer in peer_baselines and row["voltage_volts"] <= peer_baselines[peer] - 0.5)):
+            raise PhysicalGatewayError("Passive peer guard tripped.", details=row)
+        if verify_persistent:
+            configuration = read_bytes(0, 40, peer)
+            if (configuration[:2] != [3, 9] or word(configuration, 3) != 777
+                or configuration[5] != peer or configuration[33] != 0
+                or (word(configuration, 9), word(configuration, 11)) != limits
+                or signed(word(configuration, 31), 11) != offset or word(configuration, 16) != 1000):
+                raise PhysicalGatewayError("Passive peer identity/calibration/mode mismatch.")
+            row["persistent"] = configuration
+        return row
+
+    try:
+        camera_guard()
+        if not handler.setBaudRate(1_000_000):
+            raise PhysicalGatewayError("Could not open isolated hold adapter.")
+        report["pings"] = {}
+        for candidate in range(1, 7):
+            reply = protocol.ping(handler, candidate)
+            report["pings"][candidate] = list(reply)
+            expected_present = candidate == servo_id or candidate in peers
+            if ((expected_present and reply != (777, scs.COMM_SUCCESS, 0))
+                or (not expected_present and reply[1] != scs.COMM_RX_TIMEOUT)):
+                raise PhysicalGatewayError("Probe requires exactly the declared connected arm IDs.")
+        for peer in peers:
+            peer_row = check_peer(peer, "admission", verify_persistent=True)
+            report["passive_peers_before"][peer] = peer_row
+            peer_anchors[peer] = peer_row["position_raw"]
+            peer_baselines[peer] = peer_row["voltage_volts"]
+        persistent = read_bytes(0, 40)
+        report["persistent_before"] = persistent
+        if (persistent[:2] != [3, 9] or word(persistent, 3) != 777 or persistent[5] != servo_id
+            or (word(persistent, 9), word(persistent, 11)) != raw_limits
+            or signed(word(persistent, 31), 11) != expected_homing_offset or persistent[33] != 0):
+            raise PhysicalGatewayError("Isolated hold identity/calibration/mode mismatch.")
+        control = read_bytes(40, 10)
+        report["control_before"] = control
+        original_limit = word(control, 8)
+        if control[0] != 0 or original_limit != 1000 or word(persistent, 16) != 1000:
+            raise PhysicalGatewayError("Isolated hold requires torque off and original limits 1000.")
+        first = feedback("stationary_check")
+        sleep(0.05)
+        second = feedback("stationary_check")
+        if first["moving"] or second["moving"] or abs(second["position_raw"] - first["position_raw"]) > 1:
+            raise PhysicalGatewayError("Isolated servo is not stationary.")
+        anchor = second["position_raw"]
+        target = anchor + goal_offset_raw
+        if not raw_limits[0] <= target <= raw_limits[1]:
+            raise PhysicalGatewayError("Isolated probe offset would exceed calibration.")
+        report["anchor_raw"] = anchor
+        report["target_raw"] = target
+        stage = "setting"
+        if output_limit != original_limit:
+            write_value(48, output_limit)
+        configured = read_bytes(40, 10)
+        expected = control[:8] + [output_limit & 255, output_limit >> 8]
+        if configured != expected or read_bytes(0, 40) != persistent:
+            raise PhysicalGatewayError("Isolated hold setting verification failed.")
+        report["control_configured"] = configured
+        stage = "baseline"
+        for sample_index in range(100):
+            camera_guard()
+            row = feedback("baseline")
+            if row["moving"] or abs(row["position_raw"] - anchor) > 1:
+                raise PhysicalGatewayError("Isolated hold baseline drifted.")
+            if sample_index % 10 == 0:
+                for peer in peers:
+                    check_peer(peer, "baseline")
+            sleep(max(0.0, row["started_monotonic"] + 0.002 - clock()))
+        baseline_voltage = min(r["voltage_volts"] for r in report["samples"] if r["stage"] == "baseline")
+        camera_guard()
+        control = read_bytes(40, 10)
+        fresh = feedback("pre_goal")
+        if control[0] != 0 or word(control, 8) != output_limit or fresh["position_raw"] != anchor or fresh["moving"]:
+            raise PhysicalGatewayError("Isolated hold state changed before goal.")
+        for peer in peers:
+            check_peer(peer, "pre_goal")
+        stage = "goal"
+        report["goal_started_monotonic"] = clock()
+        write_value(42, target)
+        report["goal_ack_monotonic"] = clock()
+        stage = "hold"
+        report["hold_control_checks"] = []
+        hold_samples = 0
+        while clock() - report["goal_ack_monotonic"] < observation_seconds:
+            row = feedback("hold", baseline_voltage)
+            hold_samples += 1
+            if hold_samples % 10 == 0:
+                camera_guard()
+                control = read_bytes(40, 10)
+                report["hold_control_checks"].append({"t": clock(), "data": control})
+                if control[0] != 1 or word(control, 2) != target or word(control, 8) != output_limit:
+                    raise PhysicalGatewayError("Isolated hold torque/goal/limit readback changed.")
+                for peer in peers:
+                    check_peer(peer, "hold")
+            sleep(max(0.0, row["started_monotonic"] + 0.002 - clock()))
+        if hold_samples < 100:
+            raise PhysicalGatewayError("Insufficient hold feedback.")
+        control = read_bytes(40, 10)
+        if control[0] != 1 or word(control, 2) != target or word(control, 8) != output_limit:
+            raise PhysicalGatewayError("Final isolated hold state mismatch.")
+        report["observed_final_delta_raw"] = row["position_raw"] - anchor
+        report["status"] = ("three_second_position_probe_completed" if observation_seconds == 3
+                            else "one_second_position_probe_completed" if goal_offset_raw else "one_second_hold_completed")
+    except Exception as exc:
+        report.update(error=str(exc), error_details=getattr(exc, "details", None), error_monotonic=clock())
+    finally:
+        stage = "shutdown"
+        report["shutdown_started_monotonic"] = clock()
+        if handler.is_open and touched:
+            for delay in (0.0, 0.05, 0.2):
+                sleep(delay)
+                attempt: dict[str, Any] = {"t": clock()}
+                report["shutdown_attempts"].append(attempt)
+                try:
+                    write_value(40, 0)
+                    if read_bytes(40, 1) != [0]:
+                        raise PhysicalGatewayError("Isolated shutdown did not verify torque off.")
+                    attempt["torque_off_verified"] = True
+                    break
+                except Exception as exc:
+                    attempt["error"] = str(exc)
+            stage = "restoration"
+            sleep(0.5)
+            try:
+                if read_bytes(40, 1) != [0]:
+                    raise PhysicalGatewayError("Restoration requires verified torque off.")
+                health = feedback("after_stop")
+                if health["moving"]:
+                    raise PhysicalGatewayError("Restoration requires stationary servo.")
+                before_restore = word(read_bytes(48, 2))
+                if before_restore != original_limit:
+                    write_value(48, original_limit)
+                if word(read_bytes(48, 2)) != original_limit or read_bytes(40, 1) != [0]:
+                    raise PhysicalGatewayError("Isolated hold restoration failed.")
+                if read_bytes(0, 40) != persistent:
+                    raise PhysicalGatewayError("Persistent settings changed during isolated hold.")
+                report["restoration"] = {"previous": before_restore, "restored": original_limit,
+                                         "write_sent": before_restore != original_limit, "torque_off": True}
+            except Exception as exc:
+                report["restoration_error"] = str(exc)
+            for peer in peers:
+                try:
+                    peer_row = check_peer(peer, "after_stop", verify_persistent=True)
+                    if peer_row["persistent"] != report["passive_peers_before"][peer]["persistent"]:
+                        raise PhysicalGatewayError("Passive peer persistent settings changed.")
+                    report["passive_peers_after"][peer] = peer_row
+                except Exception as exc:
+                    report.setdefault("passive_peer_restoration_errors", {})[peer] = {
+                        "error": str(exc), "details": getattr(exc, "details", None)}
+        if handler.is_open:
+            handler.closePort()
+        report["port_closed"] = not handler.is_open
+    return report
+
+
+def assign_isolated_servo_id(
+    port: str,
+    expected_serial_number: str,
+    *,
+    source_id: int = 1,
+    target_id: int = 3,
+) -> dict[str, Any]:
+    """Assign an explicitly authorized ID with torque already off, without motion.
+
+    The only permitted writes are the requested ID byte and, when needed,
+    temporarily unlocking and restoring the EEPROM lock. No baud, calibration,
+    torque, or position setting is written. Never retry the ID write after an
+    uncertain acknowledgement; determine the outcome through reads instead.
+    """
+    import scservo_sdk as scs
+
+    if (
+        type(source_id) is not int or type(target_id) is not int
+        or source_id == target_id
+        or not 0 <= source_id <= 253 or not 0 <= target_id <= 253
+    ):
+        raise PhysicalGatewayError("Require distinct source and target unicast IDs.")
+    candidates = tuple(sorted({*range(1, 7), source_id, target_id}))
+    before = inspect_isolated_servo_read_only(
+        port, expected_serial_number, candidate_ids=candidates,
+    )
+    responding = [p for p in before["probes"] if p["communication_result"] == 0]
+    if len(responding) != 1 or responding[0]["id"] != source_id:
+        raise PhysicalGatewayError("Expected only the isolated source motor to respond.")
+    source = responding[0]
+    registers = source.get("registers", {})
+    if (
+        source["model_number"] != 777 or source["device_error"] != 0
+        or len(registers) != 3
+        or any(not r["complete"] or r["device_error"] for r in registers.values())
+        or registers["torque_enable"]["data"] != [0]
+        or not 60 <= registers["present_telemetry"]["data"][6] <= 126
+        or registers["present_telemetry"]["data"][9:11] != [0, 0]
+    ):
+        raise PhysicalGatewayError("Require a fault-free stationary STS3215 with torque off.")
+
+    handler = scs.PortHandler(port)
+    protocol = scs.PacketHandler(0)
+    write_port = handler.writePort
+    sent: list[list[int]] = []
+    pending_write: tuple[int, int, int] | None = None
+    allowed_reads = {(3, 2), (5, 1), (40, 1), (55, 1), (62, 2), (65, 2)}
+
+    def guarded_transmit(packet: Any) -> int:
+        nonlocal pending_write
+        frame = list(packet)
+        valid = (
+            len(frame) >= 6 and frame[:2] == [255, 255]
+            and frame[2] in (source_id, target_id)
+            and len(frame) == frame[3] + 4 and sum(frame[2:]) & 255 == 255
+        )
+        ping = len(frame) == 6 and frame[3:5] == [2, 1]
+        read = len(frame) == 8 and frame[3:5] == [4, 2] and tuple(frame[5:7]) in allowed_reads
+        write = (
+            len(frame) == 8 and frame[3:5] == [4, 3]
+            and pending_write is not None
+            and (frame[2], frame[5], frame[6]) == pending_write
+        )
+        if not valid or not (ping or read or write):
+            raise PhysicalGatewayError("Servo ID gateway rejected an unapproved packet.")
+        if write:
+            pending_write = None  # Consume before sending: no implicit write retries.
+        sent.append(frame)
+        return write_port(packet)
+
+    def read_bytes(servo_id: int, address: int, length: int) -> list[int]:
+        data, result, error = protocol.readTxRx(handler, servo_id, address, length)
+        if result != scs.COMM_SUCCESS or error or len(data) != length:
+            raise PhysicalGatewayError(f"Could not verify register {address} at ID {servo_id}.")
+        return list(data)
+
+    def write_byte(servo_id: int, address: int, value: int) -> tuple[int, int]:
+        nonlocal pending_write
+        if not (
+            (servo_id == source_id and address == 5 and value == target_id)
+            or (address == 55 and value in (0, 1))
+        ):
+            raise PhysicalGatewayError("Only the requested ID and EEPROM lock may be written.")
+        pending_write = (servo_id, address, value)
+        try:
+            return protocol.write1ByteTxRx(handler, servo_id, address, value)
+        finally:
+            pending_write = None
+
+    handler.writePort = guarded_transmit
+    report: dict[str, Any] = {
+        "schema_version": "sim2claw.isolated_servo_id_assignment.v1",
+        "proof_class": "physical_servo_configuration_no_motion",
+        "source_id": source_id, "target_id": target_id, "before": before,
+        "status": "failed", "motion_commands_sent": 0, "torque_writes_sent": 0,
+    }
+    original_lock = None
+    lock_restore_needed = False
+    current_id = source_id
+    try:
+        if not handler.setBaudRate(1_000_000):
+            raise PhysicalGatewayError("Could not open the verified servo adapter.")
+        if protocol.ping(handler, source_id) != (777, scs.COMM_SUCCESS, 0):
+            raise PhysicalGatewayError("Source identity changed before ID assignment.")
+        if protocol.ping(handler, target_id)[1] != scs.COMM_RX_TIMEOUT:
+            raise PhysicalGatewayError("Target ID is occupied or could not be checked.")
+        if read_bytes(source_id, 40, 1) != [0] or read_bytes(source_id, 65, 2) != [0, 0]:
+            raise PhysicalGatewayError("Motor must remain stationary, fault-free, and torque off.")
+        if not 60 <= read_bytes(source_id, 62, 2)[0] <= 126:
+            raise PhysicalGatewayError("Supply voltage is outside the replacement specification.")
+        original_lock = read_bytes(source_id, 55, 1)[0]
+        if original_lock not in (0, 1):
+            raise PhysicalGatewayError("Unexpected EEPROM lock value.")
+        report["original_eeprom_lock"] = original_lock
+        if original_lock == 1:
+            lock_restore_needed = True
+            write_byte(source_id, 55, 0)
+            if read_bytes(source_id, 55, 1) != [0]:
+                raise PhysicalGatewayError("EEPROM unlock did not verify.")
+        report["id_write_acknowledgement"] = list(write_byte(source_id, 5, target_id))
+        time.sleep(0.02)
+        if protocol.ping(handler, target_id) != (777, scs.COMM_SUCCESS, 0):
+            raise PhysicalGatewayError("New ID did not verify; the ID write was not retried.")
+        current_id = target_id
+        if read_bytes(target_id, 5, 1) != [target_id]:
+            raise PhysicalGatewayError("ID register readback did not match.")
+        if protocol.ping(handler, source_id)[1] != scs.COMM_RX_TIMEOUT:
+            raise PhysicalGatewayError("Old ID still responds or absence could not be verified.")
+        if lock_restore_needed:
+            write_byte(target_id, 55, original_lock)
+            if read_bytes(target_id, 55, 1) != [original_lock]:
+                raise PhysicalGatewayError("EEPROM lock restoration did not verify.")
+            lock_restore_needed = False
+        if read_bytes(target_id, 40, 1) != [0] or read_bytes(target_id, 65, 2) != [0, 0]:
+            raise PhysicalGatewayError("Post-change torque/status verification failed.")
+        report["status"] = "assigned_and_verified"
+        report["verified_id"] = target_id
+        report["torque_enable"] = 0
+    except Exception as error:
+        report["error"] = str(error)
+    finally:
+        if handler.is_open and lock_restore_needed:
+            # Recover only the lock state, never retry an uncertain ID write.
+            try:
+                if protocol.ping(handler, target_id) == (777, scs.COMM_SUCCESS, 0):
+                    current_id = target_id
+                write_byte(current_id, 55, original_lock)
+                report["cleanup_lock_restored"] = read_bytes(current_id, 55, 1) == [original_lock]
+            except Exception as error:
+                report["cleanup_error"] = str(error)
+        if handler.is_open:
+            handler.closePort()
+    report["transmitted_packets"] = sent
+    report["port_closed"] = not handler.is_open
+    return report
 
 
 def synchronize_physical_gateway(
